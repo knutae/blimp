@@ -253,8 +253,8 @@ public class LayerPropertyEditor extends Composite {
 	        Layer.Property prop = layerProperties.get(index);
 	        tryApplyTextValue(prop, newText);
 	        Object val = prop.getValue();
-	            if (val != null)
-	                editedItem.setText(1, propertyValueToString(val));
+            if (val != null)
+                editedItem.setText(1, propertyValueToString(val));
     	}
     }
     
