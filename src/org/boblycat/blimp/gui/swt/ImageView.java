@@ -37,14 +37,13 @@ public class ImageView extends Composite {
         		//System.out.println("paint " + paintCounter);
         		paintCounter++;
         		updateImage();
-        		//GC gc = e.gc;
         		if (currentImage == null) {
-        			e.gc.fillRectangle(canvas.getBounds());
+        			e.gc.fillRectangle(canvas.getClientArea());
         			return;
         		}
-        		Point canvasSize = canvas.getSize();
+        		Rectangle clientArea = canvas.getClientArea();
         		Image bufferImage = new Image(canvas.getDisplay(),
-        				canvasSize.x, canvasSize.y);
+        				clientArea.width, clientArea.height);
         		GC imageGC = new GC(bufferImage);
     			imageGC.setBackground(new Color(imageGC.getDevice(), 0, 0, 0));
     			imageGC.fillRectangle(bufferImage.getBounds());
@@ -57,11 +56,11 @@ public class ImageView extends Composite {
         		if (canvas.getHorizontalBar().isEnabled())
         			x = -canvas.getHorizontalBar().getSelection();
         		else
-            		x = (canvasSize.x - imageBounds.width) / 2;
+            		x = (clientArea.width - imageBounds.width) / 2;
         		if (canvas.getVerticalBar().isEnabled())
         			y = -canvas.getVerticalBar().getSelection();
         		else
-            		y = (canvasSize.y - imageBounds.height) / 2;
+            		y = (clientArea.height - imageBounds.height) / 2;
         		imageGC.drawImage(currentImage, x, y);
         		imageGC.dispose();
         		e.gc.drawImage(bufferImage, 0, 0);
@@ -155,12 +154,14 @@ public class ImageView extends Composite {
     private void updateImage() {
     	if (!dirty)
     		return;
-    	Point destSize = canvas.getSize();
-        Bitmap bitmap = session.getSizedBitmap(destSize.x, destSize.y);
+    	Rectangle destArea = canvas.getClientArea();
+        Bitmap bitmap = session.getSizedBitmap(destArea.width, destArea.height);
         if (bitmap == null || bitmap.getImage() == null)
             return;
-        prepareScrollBar(canvas.getHorizontalBar(), destSize.x, bitmap.getWidth());
-        prepareScrollBar(canvas.getVerticalBar(), destSize.y, bitmap.getHeight());
+        prepareScrollBar(canvas.getHorizontalBar(),
+        		destArea.width, bitmap.getWidth());
+        prepareScrollBar(canvas.getVerticalBar(),
+        		destArea.height, bitmap.getHeight());
         int zoomPercentage = (int) (session.getCurrentZoom()*100.0);
         zoomLabel.setText(Integer.toString(zoomPercentage) + "%");
         layout();
