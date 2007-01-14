@@ -17,14 +17,15 @@ public class FileInputLayer extends InputLayer {
         bitmap.setImage(ToolkitLoader.loadViaToolkitOrCodecs(path));
     }
     
+    public String getFilePath() {
+    	return filePath;
+    }
+    
     public Bitmap getBitmap() {
         return bitmap;
     }
     
     public String getDescription() {
-        if (filePath == null || filePath == "")
-            return "No file";
-        File file = new File(filePath);
-        return file.getName();
+    	return Util.getFileNameFromPath(filePath);
     }
 }

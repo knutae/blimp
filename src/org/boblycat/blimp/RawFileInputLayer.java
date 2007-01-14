@@ -2,6 +2,7 @@ package org.boblycat.blimp;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.util.Vector;
 //import net.sourceforge.jiu.codecs.PNMCodec;
 import org.boblycat.blimp.jiu.PNMCodec;
 import net.sourceforge.jiu.ops.OperationFailedException;
@@ -9,10 +10,10 @@ import net.sourceforge.jiu.ops.OperationFailedException;
 public class RawFileInputLayer extends InputLayer {
 	Bitmap bitmap;
 	String filePath;
+	boolean use16BitColor;
 	
 	public RawFileInputLayer(String filePath) {
-		bitmap = new Bitmap();
-		this.filePath = filePath;
+		setFilePath(filePath);
 		load();
 	}
 	
@@ -25,17 +26,46 @@ public class RawFileInputLayer extends InputLayer {
 		return path;
 	}
 	
+	public void setFilePath(String filePath) {
+		if (filePath != null && filePath.equals(this.filePath))
+			return;
+		this.filePath = filePath;
+		bitmap = null;
+	}
+	
+	public String getFilePath() {
+		return filePath;
+	}
+	
+	public void set16BitColor(boolean value) {
+		if (use16BitColor == value)
+			return;
+		use16BitColor = value;
+		bitmap = null;
+	}
+	
+	public boolean get16BitColor() {
+		return use16BitColor;
+	}
+	
 	public void load() {
 		try {
-			ProcessBuilder processBuilder = new ProcessBuilder(dcrawExecutable(),
-					"-4", "-c", filePath);
+			Vector<String> commandLine = new Vector<String>();
+			commandLine.add(dcrawExecutable());
+			if (use16BitColor)
+				commandLine.add("-4");
+			commandLine.add("-c");
+			commandLine.add(filePath);
+			ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
 			Process process = processBuilder.start();
 			PNMCodec codec = new PNMCodec();
 			codec.setInputStream(new BufferedInputStream(process.getInputStream()));
 			codec.process();
 			System.out.println(codec.getImage().getClass());
-			bitmap.setImage(codec.getImage());
+			Bitmap tmpBitmap = new Bitmap();
+			tmpBitmap.setImage(codec.getImage());
 			process.destroy();
+			bitmap = tmpBitmap;
 		}
 		catch (IOException e) {
 			System.err.println("Error executing dcraw or loading RAW file: "
@@ -50,11 +80,13 @@ public class RawFileInputLayer extends InputLayer {
 	}
 	
 	public Bitmap getBitmap() {
+		if (bitmap == null)
+			load();
 		return bitmap;
 	}
 
 	public String getDescription() {
-		return "Raw image loader (dcraw)";
+		return Util.getFileNameFromPath(filePath);
 	}
 
 }

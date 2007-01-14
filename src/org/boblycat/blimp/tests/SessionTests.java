@@ -6,14 +6,14 @@ import static org.junit.Assert.*;
 
 class TestBitmap extends Bitmap {
     String creator;
-    int testValue;
+    String testValue;
 }
 
 class TestInput extends InputLayer {
     public Bitmap getBitmap() {
         TestBitmap bitmap = new TestBitmap();
         bitmap.creator = "TestSource";
-        bitmap.testValue = 0;
+        bitmap.testValue = "";
         return bitmap;
     }
     
@@ -23,9 +23,9 @@ class TestInput extends InputLayer {
 }
 
 class TestLayer extends AdjustmentLayer {
-	int increment;
-    TestLayer(int increment) {
-        this.increment = increment;
+	String suffix;
+    TestLayer(String suffix) {
+        this.suffix = suffix;
     }
     
     public Bitmap applyLayer(Bitmap source) {
@@ -33,7 +33,7 @@ class TestLayer extends AdjustmentLayer {
         TestBitmap oldBitmap = (TestBitmap) source;
         TestBitmap bitmap = new TestBitmap();
         bitmap.creator = "TestLayer";
-        bitmap.testValue = oldBitmap.testValue + increment;
+        bitmap.testValue = oldBitmap.testValue + suffix;
         //bitmap.setImage(oldBitmap.getImage());
         return bitmap;
     }
@@ -65,75 +65,74 @@ public class SessionTests {
         BlimpSession session = createTestSession();
         TestBitmap testBitmap = getTestBitmap(session);
         assertEquals("TestSource", testBitmap.creator);
-        assertEquals(0, testBitmap.testValue);
+        assertEquals("", testBitmap.testValue);
     }
     
     @Test
     public void testSingleLayer() {
-        for (int increment=0; increment<4; increment++) {
+        for (int i=0; i<4; i++) {
             BlimpSession session = createTestSession();
-            assertEquals(0, session.layerCount());
-            session.addLayer(0, new TestLayer(increment));
             assertEquals(1, session.layerCount());
+            session.addLayer(new TestLayer(Integer.toString(i)));
+            assertEquals(2, session.layerCount());
             TestBitmap testBitmap = getTestBitmap(session);
             assertEquals("TestLayer", testBitmap.creator);
-            assertEquals(increment, testBitmap.testValue);
+            assertEquals(Integer.toString(i), testBitmap.testValue);
         }
     }
     
     @Test
     public void testSingleInactiveLayer() {
-        int increment = 5;
         BlimpSession session = createTestSession();
-        assertEquals(0, session.layerCount());
-        session.addLayer(new TestLayer(increment));
         assertEquals(1, session.layerCount());
-        session.activateLayer(0, false);
+        session.addLayer(new TestLayer("TEST"));
+        assertEquals(2, session.layerCount());
+        session.activateLayer(1, false);
         TestBitmap testBitmap = getTestBitmap(session);
         assertEquals("TestSource", testBitmap.creator);
-        assertEquals(0, testBitmap.testValue);
+        assertEquals("", testBitmap.testValue);
     }
     
     @Test
     public void testMultipleLayers() {
         BlimpSession session = createTestSession();
-        assertEquals(0, session.layerCount());
-        session.addLayer(new TestLayer(1));
-        session.addLayer(new TestLayer(2));
-        session.addLayer(new TestLayer(4));
-        assertEquals(3, session.layerCount());
+        assertEquals(1, session.layerCount());
+        session.addLayer(new TestLayer("A"));
+        session.addLayer(new TestLayer("B"));
+        session.addLayer(new TestLayer("C"));
+        assertEquals(4, session.layerCount());
         TestBitmap testBitmap = getTestBitmap(session);
         assertEquals("TestLayer", testBitmap.creator);
-        assertEquals(1+2+4, testBitmap.testValue);
+        assertEquals("ABC", testBitmap.testValue);
     }
     
     @Test
     public void testMultipleLayersInactive() {
         BlimpSession session = createTestSession();
-        assertEquals(0, session.layerCount());
-        session.addLayer(new TestLayer(1));
-        session.addLayer(new TestLayer(2));
-        session.addLayer(new TestLayer(4));
-        assertEquals(3, session.layerCount());
+        assertEquals(1, session.layerCount());
+        session.addLayer(new TestLayer("a"));
+        session.addLayer(new TestLayer("b"));
+        session.addLayer(new TestLayer("c"));
+        assertEquals(4, session.layerCount());
         TestBitmap testBitmap;
         // all layers active
         testBitmap = getTestBitmap(session);
-        assertEquals(1+2+4, testBitmap.testValue);
-        // layer 0 inactive
-        session.activateLayer(0, false);
-        testBitmap = getTestBitmap(session);
-        assertEquals(2+4, testBitmap.testValue);
-        session.activateLayer(0, true);
-        // layer 1 inactive
+        assertEquals("abc", testBitmap.testValue);
+        // layer a inactive
         session.activateLayer(1, false);
         testBitmap = getTestBitmap(session);
-        assertEquals(1+4, testBitmap.testValue);
+        assertEquals("bc", testBitmap.testValue);
         session.activateLayer(1, true);
-        // layer 0 inactive
+        // layer b inactive
         session.activateLayer(2, false);
         testBitmap = getTestBitmap(session);
-        assertEquals(1+2, testBitmap.testValue);
+        assertEquals("ac", testBitmap.testValue);
         session.activateLayer(2, true);
+        // layer c inactive
+        session.activateLayer(3, false);
+        testBitmap = getTestBitmap(session);
+        assertEquals("ab", testBitmap.testValue);
+        session.activateLayer(3, true);
     }
     
     @Test
@@ -147,9 +146,9 @@ public class SessionTests {
         });
         
         assertEquals(0, eventCount);
-        session.addLayer(new TestLayer(1));
+        session.addLayer(new TestLayer("a"));
         assertEquals(1, eventCount);
-        session.addLayer(new TestLayer(2));
+        session.addLayer(new TestLayer("b"));
         assertEquals(2, eventCount);
         session.activateLayer(0, false);
         assertEquals(3, eventCount);
@@ -173,7 +172,7 @@ public class SessionTests {
     public void testLayerChangeEvent() {
         eventCount = 0;
         lastLayerEvent = null;
-        Layer layer = new TestLayer(0);
+        Layer layer = new TestLayer("TEST");
         layer.invalidate();
         LayerChangeListener listener = new LayerChangeListener() {
             public void handleChange(LayerEvent event) {

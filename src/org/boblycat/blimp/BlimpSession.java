@@ -3,14 +3,13 @@ package org.boblycat.blimp;
 import java.util.Vector;
 
 public class BlimpSession extends InputLayer implements LayerChangeListener {
-    InputLayer input;
-    Vector<AdjustmentLayer> layerList;
+    Vector<Layer> layerList;
     Bitmap currentBitmap;
     String currentFilePath;
     ResizeLayer resizeLayer;
     
     public BlimpSession() {
-        layerList = new Vector<AdjustmentLayer>();
+        layerList = new Vector<Layer>();
         currentBitmap = null;
     }
     
@@ -27,36 +26,47 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     public void openFile(String path) {
         currentFilePath = path;
         if (isRawFile(path))
-        	input = new RawFileInputLayer(path);
+        	setInput(new RawFileInputLayer(path));
         else
-        	input = new FileInputLayer(path);
+        	setInput(new FileInputLayer(path));
         invalidate();
     }
     
     public void applyLayers() {
-        if (input == null)
-            return;
-        currentBitmap = input.getBitmap();
-        if (currentBitmap == null)
-            return;
-        if (resizeLayer != null) {
-            currentBitmap = resizeLayer.applyLayer(currentBitmap);
-        }
-        for (int i=0; i<layerList.size(); i++) {
-            AdjustmentLayer layer = layerList.get(i);
-            if (layer.isActive() && layer instanceof AdjustmentLayer) {
-                currentBitmap = layer.applyLayer(currentBitmap);
-                if (currentBitmap == null)
-                    return;
+    	currentBitmap = null;
+    	for (Layer layer: layerList) {
+            if (layer instanceof InputLayer) {
+            	if (currentBitmap != null)
+            		System.err.println("Warning: more than one input layer?");
+            	InputLayer input = (InputLayer) layer;
+            	currentBitmap = input.getBitmap();
+            	if (currentBitmap != null && resizeLayer != null) {
+            		currentBitmap = resizeLayer.applyLayer(currentBitmap);
+            	}
+            }
+            else if (layer.isActive() && layer instanceof AdjustmentLayer) {
+            	if (currentBitmap == null) {
+            		System.err.println("Warning: no input to apply "
+            				+ layer.getDescription());
+            		continue;
+            	}
+            	AdjustmentLayer adjust = (AdjustmentLayer) layer;
+                currentBitmap = adjust.applyLayer(currentBitmap);
             }
         }
     }
     
     public void setInput(InputLayer newInput) {
-        input = newInput;
+    	if (layerList.size() > 0) {
+    		assert(layerList.get(0) instanceof InputLayer);
+    		layerList.set(0, newInput);
+    	}
+    	else {
+    		layerList.add(newInput);
+    	}
         invalidate();
     }
-    
+
     public Bitmap getBitmap() {
         if (resizeLayer != null)
             invalidate();
@@ -119,9 +129,9 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     }
     
     public String getDescription() {
-        if (input != null)
-            return input.getDescription();
-        return "Empty session";
+    	if (layerList.isEmpty())
+    		return "Empty session";
+    	return layerList.get(0).getDescription();
     }
     
     public void handleChange(LayerEvent event) {

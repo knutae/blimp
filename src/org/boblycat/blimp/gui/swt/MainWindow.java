@@ -6,7 +6,6 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.events.*;
-import java.io.File;
 import java.util.Vector;
 
 class ImageTab {
@@ -174,8 +173,7 @@ public class MainWindow {
         ImageView imageView = new ImageView(mainTabFolder);
         imageView.getSession().openFile(filename);
         CTabItem item = new CTabItem(mainTabFolder, SWT.CLOSE);
-        File file = new File(filename);
-        item.setText(file.getName());
+        item.setText(imageView.getSession().getDescription());
         item.setControl(imageView);
         mainTabFolder.setSelection(item);
         currentImageTab = new ImageTab(item, imageView);
@@ -186,9 +184,9 @@ public class MainWindow {
     void doMenuOpen() {
         //status("File->Open");
         FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-        dialog.setFilterNames(new String[] {"Images (jpeg, tiff, png, gif, bmp)", "All Files"});
+        dialog.setFilterNames(new String[] {"Images (jpeg, tiff, png, gif, bmp, raw, dng, crw, cr2)", "All Files"});
         // the following is MS windows-specific
-        dialog.setFilterExtensions(new String[] {"*.jpg;*.jpeg;*.tiff;*.tif;*.png;*.gif;*.bmp", "*.*"});
+        dialog.setFilterExtensions(new String[] {"*.jpg;*.jpeg;*.tiff;*.tif;*.png;*.gif;*.bmp;*.raw;*.dng;*.crw;*.cr2", "*.*"});
         String filename = dialog.open();
         if (filename != null) {
             ImageView imageView = addImageView(filename);
