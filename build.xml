@@ -34,6 +34,12 @@
     <!-- dcraw executable -->
     <property name="dcraw.exe" location="${build}/dcraw.exe"/>
 
+	<!-- LCMS variables -->
+	<property name="lcms.base" location="lcms-1.16"/>
+	<property name="lcms.dir" location="${lcms.base}/src"/>
+	<property name="lcms.include" location="${lcms.base}/include"/>
+	<property name="lcms.lib" location="build/lcms"/>
+
     <path id="build.classpath">
         <pathelement location="${swt.jar}"/>
         <pathelement location="${jiu.jar}"/>
@@ -65,13 +71,22 @@
         </javac>
     </target>
     
-    <target name="dcraw">
-	<cc outfile="${dcraw.exe}" outtype="executable" optimize="extreme">
-	    <defineset define="NO_LCMS,NO_JPEG"/>
-	    <fileset dir="dcraw" includes="dcraw.c"/>
-	</cc>
-    </target>
+	<target name="lcms" depends="init">
+		<cc outfile="${lcms.lib}" outtype="static" optimize="speed">
+			<includepath location="${lcms.include}"/>
+			<fileset dir="${lcms.dir}" includes="*.c"/>
+		</cc>
+	</target>
     
+    <target name="dcraw" depends="lcms,init">
+		<cc outfile="${dcraw.exe}" outtype="executable" optimize="extreme">
+			<includepath location="${lcms.include}"/>
+		    <defineset define="NO_JPEG"/>
+		    <fileset dir="dcraw" includes="dcraw.c"/>
+			<libset dir="build" libs="lcms"/>
+		</cc>
+    </target>
+	
     <target name="run" depends="compile,dcraw">
         <java fork="true"
               classname="org.boblycat.blimp.gui.swt.MainWindow">
