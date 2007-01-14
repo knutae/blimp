@@ -24,11 +24,15 @@ public class Util {
     	System.err.println("Warning: " + message);
     }
     
-    private static boolean isRawFile(String path) {
-    	int dotpos = path.lastIndexOf('.');
+    public static String getFileExtension(String filePath) {
+    	int dotpos = filePath.lastIndexOf('.');
     	if (dotpos < 0)
-    		return false;
-    	String ext = path.substring(dotpos + 1).toLowerCase();
+    		return "";
+    	return filePath.substring(dotpos + 1).toLowerCase();
+    }
+    
+    private static boolean isRawFile(String path) {
+    	String ext = getFileExtension(path);
     	return ext.equals("raw") || ext.equals("crw") || ext.equals("cr2")
     		|| ext.equals("dng");
     	// todo: add more raw extensions

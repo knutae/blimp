@@ -58,6 +58,9 @@ public class MainWindow {
             else if (event.widget == menuFileSaveSession) {
             	doMenuSaveSession();
             }
+            else if (event.widget == menuFileExportImage) {
+            	doMenuExportImage();
+            }
             else if (event.widget instanceof MenuItem) {
         		MenuItem item = (MenuItem) event.widget;
         		if (item.getData() instanceof LayerRegistry.LayerInfo) {
@@ -298,8 +301,40 @@ public class MainWindow {
     	if (filename == null)
     		return;
     	BlimpSession session = currentImageTab.imageView.getSession();
-    	Serializer.saveBeanToFile(session, filename);
-    	
+    	Serializer.saveBeanToFile(session, filename);	
+    }
+    
+    void doMenuExportImage() {
+    	if (currentImageTab == null)
+    		return;
+    	FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+    	dialog.setFilterNames(new String[] {
+    			"Exportable image formats (jpeg, bmp)"});
+    	dialog.setFilterExtensions(new String[] {"*.jpeg;*.jpg;*.bmp"});
+    	String filename = dialog.open();
+    	if (filename == null)
+    		return;
+    	int format = SWT.IMAGE_UNDEFINED;
+    	String ext = Util.getFileExtension(filename);
+    	if (ext.equals("jpeg") || ext.equals("jpg"))
+    		format = SWT.IMAGE_JPEG;
+    	// Saving PNG is not support in current SWT ImageLoader
+    	//else if (ext.equals("png"))
+    	//	format = SWT.IMAGE_PNG;
+    	// Saving TIFF gives strange colors...?
+    	//else if (ext.equals("tiff") || ext.equals("tif"))
+    	//	format = SWT.IMAGE_TIFF;
+    	else if (ext.equals("bmp"))
+    		format = SWT.IMAGE_BMP;
+    	else {
+    		MessageBox box = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+    		box.setText("Image export");
+    		box.setMessage("Unsupported file extension: " + ext);
+    		box.open();
+    		return;
+    	}
+    	BlimpSession session = currentImageTab.imageView.getSession();
+    	ImageConverter.saveBitmap(session.getFullBitmap(), filename, format);
     }
     
     void status(String msg) {

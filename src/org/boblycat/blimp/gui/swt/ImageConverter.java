@@ -2,6 +2,8 @@ package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.Bitmap;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.ImageLoader;
+
 import net.sourceforge.jiu.data.*;
 import net.sourceforge.jiu.codecs.*;
 import net.sourceforge.jiu.ops.MissingParameterException;
@@ -33,9 +35,7 @@ public class ImageConverter {
         return new Image(device, inputStream);
     }
     
-    static Image jiuToSwtImageViaPixels(Device device, PixelImage pixelImage)
-        throws OperationFailedException
-    {
+    static ImageData jiuToSwtImageData(PixelImage pixelImage) {
     	if (pixelImage instanceof RGB48Image) {
     		RGB48Image rgb = (RGB48Image) pixelImage;
     		int width = rgb.getWidth();
@@ -59,7 +59,7 @@ public class ImageConverter {
                     bytes[bytepos++] = (byte) ((redLine[x] >> 8) & 0xff);
                 }
             }
-            return new Image(device, data);
+            return data;
     	}
         if (pixelImage instanceof RGB24Image) {
             RGB24Image rgb = (RGB24Image) pixelImage;
@@ -84,9 +84,17 @@ public class ImageConverter {
                     bytes[bytepos++] = redLine[x];
                 }
             }
-            return new Image(device, data);
+            return data;
         }
         return null;
+   	
+    }
+    
+    static Image jiuToSwtImageViaPixels(Device device, PixelImage pixelImage) {
+    	ImageData data = jiuToSwtImageData(pixelImage);
+    	if (data != null)
+    		return new Image(device, data);
+    	return null;
     }
     
     public static Image bitmapToSwtImage(Device device, Bitmap bitmap)
@@ -100,5 +108,15 @@ public class ImageConverter {
         if (image == null)
         	image = jiuToSwtImageViaPNG(device, bitmap.getImage());
         return image;
+    }
+    
+    public static void saveBitmap(Bitmap bitmap, String filename, int format)
+    {
+    	ImageData data = jiuToSwtImageData(bitmap.getImage());
+    	ImageLoader loader = new ImageLoader();
+    	loader.data = new ImageData[1];
+    	loader.data[0] = data;
+    	loader.save(filename, format);
+    	
     }
 }

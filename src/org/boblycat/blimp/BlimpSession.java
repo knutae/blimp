@@ -60,38 +60,44 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     }
     */
     
-    void applyViewport() {
-    	if (currentBitmap == null)
-    		return;
-    	ResizeLayer resize = viewport.getResizeLayer(currentBitmap.getWidth(),
-    			currentBitmap.getWidth());
+    Bitmap applyViewport(Bitmap bm) {
+    	if (bm == null)
+    		return null;
+    	ResizeLayer resize = viewport.getResizeLayer(bm.getWidth(), bm.getHeight());
     	if (resize != null)
-    		currentBitmap = resize.applyLayer(currentBitmap);
+    		return resize.applyLayer(bm);
+    	return bm;
     }
     
     public void applyLayers() {
-    	currentBitmap = null;
+    	currentBitmap = generateBitmap(true);
+    }
+    
+    Bitmap generateBitmap(boolean useViewport) {
+    	Bitmap bm = null;
     	for (Layer layer: layerList) {
             if (layer instanceof InputLayer) {
-            	if (currentBitmap != null)
+            	if (bm != null)
             		System.err.println("Warning: more than one input layer?");
         		if (!layer.isActive())
         			// non-active input layer: abort
         			break;
             	InputLayer input = (InputLayer) layer;
-            	currentBitmap = input.getBitmap();
-            	applyViewport();
+            	bm = input.getBitmap();
+            	if (useViewport)
+            		bm = applyViewport(bm);
             }
             else if (layer.isActive() && layer instanceof AdjustmentLayer) {
-            	if (currentBitmap == null) {
+            	if (bm == null) {
             		System.err.println("Warning: no input to apply "
             				+ layer.getDescription());
             		continue;
             	}
             	AdjustmentLayer adjust = (AdjustmentLayer) layer;
-                currentBitmap = adjust.applyLayer(currentBitmap);
+                bm = adjust.applyLayer(bm);
             }
-        }
+    	}
+    	return bm;
     }
     
     public void setInput(InputLayer newInput) {
@@ -132,6 +138,10 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     	viewport.viewHeight = height;
         applyLayers();
         return currentBitmap;
+    }
+    
+    public Bitmap getFullBitmap() {
+    	return generateBitmap(false);
     }
     
     public void zoomIn() {
