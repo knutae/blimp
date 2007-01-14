@@ -30,6 +30,7 @@ public class MainWindow {
     MenuItem menuFileExit;
     MenuItem menuFileSaveSession;
     MenuItem menuFileExportImage;
+    MenuItem menuHelpAbout;
     CTabFolder mainTabFolder;
     CTabFolder rightTabFolder;
     LayersView layers;
@@ -61,6 +62,9 @@ public class MainWindow {
             else if (event.widget == menuFileExportImage) {
             	doMenuExportImage();
             }
+            else if (event.widget == menuHelpAbout) {
+            	doMenuAbout();
+            }
             else if (event.widget instanceof MenuItem) {
         		MenuItem item = (MenuItem) event.widget;
         		if (item.getData() instanceof LayerRegistry.LayerInfo) {
@@ -80,7 +84,7 @@ public class MainWindow {
         }
     }
     
-    public MenuItem addMenuItem(Menu menu, String text, String description) {
+    MenuItem addMenuItem(Menu menu, String text, String description) {
         MenuItem item = new MenuItem(menu, SWT.PUSH);
         item.setText(text);
         item.addListener(SWT.Arm, new MenuArmListener(description));
@@ -88,10 +92,20 @@ public class MainWindow {
         return item;
     }
     
+    Menu addMenu(Menu parentMenu, String text) {
+    	MenuItem item = new MenuItem(parentMenu, SWT.CASCADE);
+    	item.setText(text);
+    	Menu subMenu = new Menu(shell, SWT.DROP_DOWN);
+    	subMenu.addListener(SWT.Hide, menuHideListener);
+    	item.setMenu(subMenu);
+    	return subMenu;
+    }
+    
 	public MainWindow() {
         imageTabs = new Vector<ImageTab>();
         display = new Display();
         shell = new Shell(display);
+        shell.setText("Blimp");
         FormLayout layout = new FormLayout();
         shell.setLayout(layout);
         
@@ -106,11 +120,7 @@ public class MainWindow {
         };
         menuItemListener = new MenuItemListener();
         
-        MenuItem fileItem = new MenuItem(bar, SWT.CASCADE);
-        fileItem.setText("&File");
-        Menu fileMenu = new Menu(shell, SWT.DROP_DOWN);
-        fileItem.setMenu(fileMenu);
-        fileMenu.addListener(SWT.Hide, menuHideListener);
+        Menu fileMenu = addMenu(bar, "&File");
         menuFileOpen = addMenuItem(fileMenu, "&Open", "Open an image or a project");
         menuFileSaveSession = addMenuItem(fileMenu, "&Save Project",
         		"Save the current project");
@@ -125,18 +135,16 @@ public class MainWindow {
         	}
         });
         
-        MenuItem layerItem = new MenuItem(bar, SWT.CASCADE);
-        layerItem.setText("Add &Layer");
-        Menu layerMenu = new Menu(shell, SWT.DROP_DOWN);
-        layerItem.setMenu(layerMenu);
-        layerMenu.addListener(SWT.Hide, menuHideListener);
-
+        Menu layerMenu = addMenu(bar, "Add &Layer");
         layerRegistry = LayerRegistry.createDefaultRegister();
         for (LayerRegistry.LayerInfo info: layerRegistry) {
         	MenuItem item = addMenuItem(layerMenu, info.label, info.description);
         	item.setData(info);
         }
-
+        
+        Menu helpMenu = addMenu(bar, "&Help");
+        menuHelpAbout = addMenuItem(helpMenu, "&About", "About Blimp...");
+        
         // Bottom status line
         statusLabel = new Label(shell, SWT.BORDER);
         FormData statusLabelData = new FormData();
@@ -335,6 +343,39 @@ public class MainWindow {
     	}
     	BlimpSession session = currentImageTab.imageView.getSession();
     	ImageConverter.saveBitmap(session.getFullBitmap(), filename, format);
+    }
+    
+    void doMenuAbout() {
+    	final Shell dialog = new Shell(shell, SWT.APPLICATION_MODAL | SWT.CLOSE);
+    	dialog.setText("About Blimp");
+    	GridLayout layout = new GridLayout();
+    	layout.marginHeight = 20;
+    	layout.marginWidth = 20;
+    	layout.verticalSpacing = 20;
+    	dialog.setLayout(layout);
+    	Link linkText = new Link(dialog, SWT.NONE);
+    	linkText.setText(
+    			"Blimp, a layered photo editor.\n" +
+    			"Copyright 2006-2007 Knut Arild Erstad\n" +
+    			"\n" +
+    			"Credits:\n" +
+    			"<a href=\"http://schmidt.devlib.org/jiu/\">Java Imaging Utilities</a> by Marco Schmidt and others\n" +
+    			"<a href=\"http://cybercom.net/~dcoffin/dcraw/\">dcraw</a> (Raw input) by Dave Coffin");
+    	linkText.addListener(SWT.Selection, new Listener() {
+    		public void handleEvent(Event e) {
+    			Util.openLinkInBrowser(e.text);
+    		}
+    	});
+    	Button button = new Button(dialog, SWT.PUSH);
+    	button.setText("Close");
+    	button.addListener(SWT.Selection, new Listener() {
+    		public void handleEvent(Event e) {
+    			dialog.close();
+    		}
+    	});
+    	button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
+    	dialog.pack();
+    	dialog.open();
     }
     
     void status(String msg) {

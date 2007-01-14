@@ -2,6 +2,8 @@ package org.boblycat.blimp;
 
 import java.io.File;
 
+import edu.stanford.ejalbert.BrowserLauncher;
+
 public class Util {
     public static int constrainedValue(int value, int min, int max) {
         if (max < min)
@@ -87,5 +89,28 @@ public class Util {
     	else if (signedIntValue > UNSIGNED_SHORT_MAX)
     		signedIntValue = UNSIGNED_SHORT_MAX;
     	return (short) (0xffff & signedIntValue);
+    }
+    
+    /** Detect if the OS is MS Windows */
+    public static boolean isWindowsOS() {
+    	return System.getProperty("os.name").toLowerCase().contains("windows");
+    }
+    
+    public static void openLinkInBrowser(String link) {
+    	try {
+        	// For some reason, BrowserLauncher can be really slow on windows, so
+        	// avoid it if possible (sigh!)
+	    	if (isWindowsOS()) {
+	    		Runtime rt = Runtime.getRuntime();
+	    		rt.exec(new String[] { "cmd", "/c", "start " + link});
+	    	}
+	    	else {
+	    		BrowserLauncher launcher = new BrowserLauncher(null);
+	    		launcher.openURLinBrowser(link);
+	    	}
+    	}
+    	catch (Exception e) {
+    		System.err.println("Failed to open link: " + link);
+    	}
     }
 }
