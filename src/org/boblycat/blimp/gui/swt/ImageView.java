@@ -183,6 +183,8 @@ public class ImageView extends Composite {
                 ImageData data = workerThread.getImageData();
                 if (data == null)
                     return;
+                if (currentImage != null)
+                    currentImage.dispose();
                 currentImage = new Image(getDisplay(), data);
                 currentZoom = workerThread.getCurrentZoom();
                 invalidateImage();
