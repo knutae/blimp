@@ -34,6 +34,12 @@ public class Bitmap {
         return image.getHeight();
     }
     
+    public int getChannelBitDepth() {
+    	if (image == null)
+    		return -1;
+    	return image.getBitsPerPixel() / image.getNumChannels();
+    }
+    
     public void printDebugInfo(String prefix) {
         if (!debug)
             return;

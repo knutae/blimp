@@ -47,10 +47,9 @@ public class CurvesLayer extends AdjustmentLayer {
 	}
 
 	public Bitmap applyLayer(Bitmap source) {
-		PixelImage image = source.getImage();
-		int bitDepth = image.getBitsPerPixel() / image.getNumChannels();
 		CurvesOperation curvesOp = new CurvesOperation();
-		curvesOp.setSpline(spline, bitDepth);
+		curvesOp.setSpline(spline, source.getChannelBitDepth());
+		PixelImage image = source.getImage();
 		image = applyJiuOperation(image, curvesOp);
 		return new Bitmap(image);
 	}
