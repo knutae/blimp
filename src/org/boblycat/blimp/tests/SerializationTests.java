@@ -169,7 +169,7 @@ public class SerializationTests {
         String xml = Serializer.layerToXml(layer);
         // System.out.println(xml);
         Element root = parseLayerXml(xml);
-        assertEquals("org.boblycat.blimp.CurvesLayer", root
+        assertEquals("org.boblycat.blimp.layers.CurvesLayer", root
                 .getAttribute("class"));
         Element property = findNamedChild(root, "property", "points");
         assertNotNull(property);
@@ -193,7 +193,7 @@ public class SerializationTests {
 
     @Test
     public void testCurvesFromXml() throws Exception {
-        String xml = "<layer class=\"org.boblycat.blimp.CurvesLayer\">"
+        String xml = "<layer class=\"org.boblycat.blimp.layers.CurvesLayer\">"
                 + "  <property name=\"points\">" + "    <value>0.1,1.0</value>"
                 + "    <value>0.5,0.98</value>" + "    <value>0.7,0.5</value>"
                 + "    <value>1.0,0.34</value>" + "  </property>" + "</layer>";
