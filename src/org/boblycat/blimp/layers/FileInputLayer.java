@@ -32,7 +32,6 @@ public class FileInputLayer extends InputLayer {
 
     public Bitmap getBitmap() {
         if (bitmap == null && filePath != null) {
-            System.out.println("Loading bitmap from file...");
             bitmap = new Bitmap();
             bitmap.setImage(ToolkitLoader.loadViaToolkitOrCodecs(filePath));
         }

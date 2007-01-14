@@ -128,8 +128,6 @@ public class ImageView extends Composite {
         toolItem.setText("Zoom In");
         toolItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
-                //if (session != null)
-                //    session.zoomIn();
                 workerThread.zoomIn(bitmapGeneratedTask);
                 
             }
@@ -138,8 +136,6 @@ public class ImageView extends Composite {
         toolItem.setText("Zoom Out");
         toolItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
-                //if (session != null)
-                //    session.zoomOut();
                 workerThread.zoomOut(bitmapGeneratedTask);
             }
         });
