@@ -75,7 +75,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     
     ResizeLayer getResizeLayer() {
     	for (Layer layer: layerList)
-    		if (layer instanceof ResizeLayer)
+    		if (layer instanceof ResizeLayer && layer.isActive())
     			return (ResizeLayer) layer;
     	return null;
     }
