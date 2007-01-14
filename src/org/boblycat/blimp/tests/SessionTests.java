@@ -101,6 +101,24 @@ public class SessionTests {
         assertEquals("ab", testBitmap.testValue);
         session.activateLayer(3, true);
     }
+    
+    @Test
+    public void testMoveLayer() {
+        BlimpSession session = createTestSession();
+        session.addLayer(new TestLayer("a"));
+        session.addLayer(new TestLayer("b"));
+        session.addLayer(new TestLayer("c"));
+        assertEquals("abc", getTestBitmap(session).testValue);
+        
+        session.moveLayer(1, 3);
+        assertEquals("bca", getTestBitmap(session).testValue);
+        
+        session.moveLayer(3, 2);
+        assertEquals("bac", getTestBitmap(session).testValue);
+        
+        session.moveLayer(2, 1);
+        assertEquals("abc", getTestBitmap(session).testValue);
+    }
 
     @Test
     public void testChangeEvents() {

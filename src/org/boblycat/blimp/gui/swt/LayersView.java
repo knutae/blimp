@@ -11,6 +11,8 @@ import org.boblycat.blimp.layers.RawFileInputLayer;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;
+import org.eclipse.swt.dnd.*;
+import org.eclipse.swt.graphics.Point;
 
 public class LayersView extends SashForm {
     Table layerTable;
@@ -21,10 +23,11 @@ public class LayersView extends SashForm {
     int selectedLayerIndex; // layer index, not table item index
     LayerPropertyEditor propertyEditor;
     LayerEditorRegistry editorRegistry;
+    int dragIndex;
 
     public LayersView(Composite parent) {
         super(parent, SWT.VERTICAL);
-        layerTable = new Table(this, SWT.MULTI | SWT.CHECK);
+        layerTable = new Table(this, SWT.CHECK);
         // layerTable.setHeaderVisible(true);
         // layerTable.setLayout(new FillLayout());
 
@@ -33,22 +36,74 @@ public class LayersView extends SashForm {
         col.setWidth(150);
 
         selectedLayerIndex = -1;
+        dragIndex = -1;
 
         layerTable.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
                 TableItem item = (TableItem) e.item;
-                selectedLayerIndex = layerTable.getItemCount() - 1
-                        - layerTable.indexOf(item);
-                // System.out.println("index " + index);
+                selectedLayerIndex = layerIndexOfItem(item);
                 if (selectedLayerIndex >= 0) {
-                    session
-                            .activateLayer(selectedLayerIndex, item
-                                    .getChecked());
+                    session.activateLayer(selectedLayerIndex, item.getChecked());
                     propertyEditor.setLayer(session
                             .getLayer(selectedLayerIndex));
                 }
                 else {
                     propertyEditor.setLayer(null);
+                }
+            }
+        });
+        
+        DragSource dragSource = new DragSource(layerTable, DND.DROP_MOVE);
+        dragSource.setTransfer(new Transfer[] {TextTransfer.getInstance()});
+        dragSource.addDragListener(new DragSourceListener() {
+            public void dragStart(DragSourceEvent e) {
+                TableItem item = layerTable.getItem(new Point(e.x, e.y));
+                dragIndex = layerIndexOfItem(item);
+                if (dragIndex <= 0) {
+                    e.doit = false;
+                    dragIndex = -1;
+                }
+            }
+            
+            public void dragSetData(DragSourceEvent e) {
+                // not used for anything, but looks like it needs to be there...?
+                e.data = Integer.toString(dragIndex);
+            }
+            
+            public void dragFinished(DragSourceEvent e) {
+                dragIndex = -1;
+            }
+        });
+        DropTarget dropTarget = new DropTarget(layerTable, DND.DROP_MOVE);
+        dropTarget.setTransfer(new Transfer[] {TextTransfer.getInstance()});
+        dropTarget.addDropListener(new DropTargetAdapter() {
+            public void dragOver(DropTargetEvent e) {
+                Point p = layerTable.toControl(e.x, e.y);
+                TableItem item = layerTable.getItem(p);
+                int index = layerIndexOfItem(item);
+                if (index <= 0 || index == dragIndex) {
+                    e.detail = DND.DROP_NONE;
+                    return;
+                }
+                e.detail = DND.DROP_MOVE;
+            }
+            
+            public void drop(DropTargetEvent e) {
+                e.detail = DND.DROP_NONE;
+                try {
+                    if (dragIndex < 0)
+                        return;
+                    Point p = layerTable.toControl(e.x, e.y);
+                    TableItem item = layerTable.getItem(p);
+                    int dropIndex = layerIndexOfItem(item);
+                    if (dropIndex <= 0 || dropIndex == dragIndex)
+                        return;
+                    e.detail = DND.DROP_MOVE;
+                    session.moveLayer(dragIndex, dropIndex);
+                    refresh();
+                }
+                finally {
+                    dragIndex = -1;
                 }
             }
         });
@@ -96,6 +151,15 @@ public class LayersView extends SashForm {
         editorRegistry.register(GammaLayer.class, GammaEditor.class);
         editorRegistry.register(GrayscaleMixerLayer.class,
                 GrayscaleMixerEditor.class);
+    }
+    
+    private int layerIndexOfItem(TableItem item) {
+        if (item == null)
+            return -1;
+        int index = layerTable.indexOf(item);
+        if (index < 0)
+            return index;
+        return layerTable.getItemCount() - index - 1;
     }
 
     public void updateWithSession(BlimpSession session, Layer currentLayer,

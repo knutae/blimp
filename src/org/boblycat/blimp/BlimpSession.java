@@ -289,6 +289,23 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             invalidate();
         triggerChangeEvent();
     }
+    
+    private boolean validIndex(int index) {
+        return (index >= 0) && (index < layerList.size());
+    }
+    
+    public void moveLayer(int oldIndex, int newIndex) {
+        if (!validIndex(oldIndex) || !validIndex(newIndex)
+                || (oldIndex == newIndex)) {
+            Util.err("invalid indexes in moveLayer("
+                    + oldIndex + "," + newIndex + ")");
+            return;
+        }
+        Layer layer = layerList.remove(oldIndex);
+        layerList.add(newIndex, layer);
+        invalidate();
+        triggerChangeEvent();
+    }
 
     public void removeLayer(Layer layer) {
         int index = layerList.indexOf(layer);

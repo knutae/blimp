@@ -27,8 +27,20 @@ public class Util {
         return file.getName();
     }
 
+    /**
+     * Print a warning message.
+     * @param message a warning message.
+     */
     public static void warn(String message) {
         System.err.println("Warning: " + message);
+    }
+    
+    /**
+     * Print a non-fatal error message. 
+     * @param message an error message.
+     */
+    public static void err(String message) {
+        System.err.println("Error: " + message);
     }
 
     public static String getFileExtension(String filePath) {
