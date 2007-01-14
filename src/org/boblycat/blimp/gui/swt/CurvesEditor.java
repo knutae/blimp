@@ -3,10 +3,13 @@ package org.boblycat.blimp.gui.swt;
 import org.boblycat.blimp.CurvesLayer;
 import org.boblycat.blimp.NaturalCubicSpline;
 import org.boblycat.blimp.PointDouble;
+import org.boblycat.blimp.Util;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -42,14 +45,16 @@ public class CurvesEditor extends LayerEditor {
 	public CurvesEditor(Composite parent, int style) {
 		super(parent, style);
 		setLayout(new FillLayout());
-		canvas = new Canvas(this, SWT.NONE) {
+		canvas = new Canvas(this, SWT.NO_BACKGROUND) {
 			public Point computeSize(int wHint, int hHint, boolean changed) {
 				return new Point(200, 200);
 			}
 		};
 		canvas.addListener(SWT.Paint, new Listener() {
 			public void handleEvent(Event e) {
-				GC gc = e.gc;
+				Rectangle rect = canvas.getClientArea();
+				Image tmpImage = new Image(getDisplay(), rect.width, rect.height);
+				GC gc = new GC(tmpImage);
 				// fill background
 				gc.setBackground(new Color(gc.getDevice(), 255, 255, 255));
 				gc.fillRectangle(canvas.getBounds());
@@ -68,26 +73,21 @@ public class CurvesEditor extends LayerEditor {
 				double prevY = 0;
 				PointDouble[] points = curvesLayer.getPoints();
 				NaturalCubicSpline spline = curvesLayer.getSpline();
+				int iMaxY = size.y - 1;
 				if (points.length > 0)
 					prevY = points[0].y;
-				/*
-				for (int x=1; x<size.x; x++) {
-					double nextX = ((double) x) / ((double) size.x);
-					double nextY = spline.getSplineValue(nextX);
-					int iPrevY = size.y - (int) (prevY * size.y);
-					int iNextY = size.y - (int) (nextY * size.y);
-					gc.drawLine(x-1, iPrevY, x, iNextY);
-					prevY = nextY;
-				}
-				*/
+				int iPrevY = Util.constrainedValue(
+						size.y - (int) (prevY * size.y),
+						0, iMaxY);
 				double[] splineValues = spline.getSplineValues(0.0, 1.0, size.x);
 				for (int x=1; x<size.x; x++) {
-					//double nextX = ((double) x) / ((double) size.x);
 					double nextY = splineValues[x];
-					int iPrevY = size.y - (int) (prevY * size.y);
-					int iNextY = size.y - (int) (nextY * size.y);
+					int iNextY = Util.constrainedValue(
+							size.y - (int) (nextY * size.y),
+							0, iMaxY);
 					gc.drawLine(x-1, iPrevY, x, iNextY);
 					prevY = nextY;
+					iPrevY = iNextY;
 				}
 				// draw points
 				gc.setBackground(new Color(gc.getDevice(), 0, 0, 0));
@@ -98,12 +98,15 @@ public class CurvesEditor extends LayerEditor {
 					int ypos = size.y - (int) (y * size.y);
 					gc.fillRectangle(xpos-1, ypos-1, 3, 3);
 				}
+				// copy image
+				e.gc.drawImage(tmpImage, 0, 0);
+				tmpImage.dispose();
 			}
 		});
 		
 		canvas.addListener(SWT.MouseDown, new Listener() {
 			public void handleEvent(Event e) {
-				System.out.println("mouse down " + e.x + " " + e.y);
+				//System.out.println("mouse down " + e.x + " " + e.y);
 				if (curvesLayer == null)
 					return;
 				NaturalCubicSpline spline = curvesLayer.getSpline();
@@ -149,7 +152,7 @@ public class CurvesEditor extends LayerEditor {
 		
 		canvas.addListener(SWT.MouseUp, new Listener() {
 			public void handleEvent(Event e) {
-				System.out.println("mouse up " + e.x + " " + e.y);
+				//System.out.println("mouse up " + e.x + " " + e.y);
 				currentPointX = null;
 			}
 		});
