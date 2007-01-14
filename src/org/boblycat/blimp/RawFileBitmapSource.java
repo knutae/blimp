@@ -2,7 +2,8 @@ package org.boblycat.blimp;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import net.sourceforge.jiu.codecs.PNMCodec;
+//import net.sourceforge.jiu.codecs.PNMCodec;
+import org.boblycat.blimp.jiu.PNMCodec;
 import net.sourceforge.jiu.ops.OperationFailedException;
 
 public class RawFileBitmapSource extends BitmapSource {
@@ -27,7 +28,7 @@ public class RawFileBitmapSource extends BitmapSource {
 	public void load() {
 		try {
 			ProcessBuilder processBuilder = new ProcessBuilder(dcrawExecutable(),
-					/*"-4",*/ "-c", filePath);
+					"-4", "-c", filePath);
 			Process process = processBuilder.start();
 			PNMCodec codec = new PNMCodec();
 			codec.setInputStream(new BufferedInputStream(process.getInputStream()));
@@ -53,7 +54,7 @@ public class RawFileBitmapSource extends BitmapSource {
 	}
 
 	public String getDescription() {
-		return "RAW image loader (dcraw)";
+		return "Raw image loader (dcraw)";
 	}
 
 }
