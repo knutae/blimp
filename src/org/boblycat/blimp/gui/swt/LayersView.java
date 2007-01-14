@@ -50,7 +50,7 @@ public class LayersView extends SashForm {
             public void handleEvent(Event e) {
                 if (selectedLayerIndex >= 0) {
                     session.removeLayer(selectedLayerIndex);
-                    updateWithSession(session, null);
+                    updateWithSession(session, null, null);
                 }
             }
         });
@@ -61,7 +61,12 @@ public class LayersView extends SashForm {
         		if (selectedLayerIndex < 0)
         			return;
         		Layer layer = session.getLayer(selectedLayerIndex);
-        		openLayerEditor(layer);
+        		openLayerEditor(layer, new LayerEditorCallback() {
+        			public void editingFinished(Layer layer, boolean cancelled) {
+        				if (cancelled)
+        					layer.triggerChangeEvent();
+        			}
+        		});
         	}
         });
         
@@ -81,7 +86,8 @@ public class LayersView extends SashForm {
         editorRegistry.register(GammaLayer.class, GammaEditor.class);
     }
     
-    public void updateWithSession(BlimpSession session, Layer currentLayer) {
+    public void updateWithSession(BlimpSession session, Layer currentLayer,
+    		LayerEditorCallback callback) {
         this.session = session;
         layerTable.removeAll();
         if (session == null)
@@ -95,11 +101,15 @@ public class LayersView extends SashForm {
         propertyEditor.setLayer(null);
         if (currentLayer != null) {
         	// TODO: also select the layer
-        	openLayerEditor(currentLayer);
+        	openLayerEditor(currentLayer, callback);
         }
     }
     
-    void openLayerEditor(Layer layer) {
-    	editorRegistry.showEditorDialog(layer);
+    public void refresh() {
+    	updateWithSession(session, null, null);
+    }
+    
+    void openLayerEditor(Layer layer, LayerEditorCallback callback) {
+    	editorRegistry.showEditorDialog(layer, callback);
     }
 }

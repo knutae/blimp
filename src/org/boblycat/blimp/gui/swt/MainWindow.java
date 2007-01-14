@@ -145,7 +145,7 @@ public class MainWindow {
                     if (imageTabs.get(i).item == e.item) {
                         currentImageTab = imageTabs.get(i);
                         layers.updateWithSession(currentImageTab.imageView.getSession(),
-                        		null);
+                        		null, null);
                         return;
                     }
             }
@@ -196,7 +196,27 @@ public class MainWindow {
         if (filename != null) {
             ImageView imageView = addImageView(filename);
             BlimpSession session = imageView.getSession();
-            layers.updateWithSession(session, session.getInput());
+            layers.updateWithSession(session, session.getInput(),
+            		new LayerEditorCallback() {
+            	public void editingFinished(Layer layer, boolean cancelled) {
+        			ImageTab tab = currentImageTab;
+            		if (cancelled) {
+            			tab.item.dispose();
+            		}
+            		else if (layer instanceof RawFileInputLayer) {
+            			RawFileInputLayer rawInput = (RawFileInputLayer) layer;
+            			if (rawInput.getColorDepth() == ColorDepth.Depth16Bit) {
+            				// Automatically add a gamma layer for 16-bit raw input,
+            				// because dcraw 16-bit output is not gamma corrected
+            				// (linear color mapping).
+            				GammaLayer gamma = new GammaLayer();
+            				gamma.setGamma(2.2);
+            				tab.imageView.getSession().addLayer(gamma);
+            				layers.refresh();
+            			}
+            		}
+            	}
+            });
             //layers.updateWithSession(session, null);
             imageView.invalidateImage();
         }
@@ -217,7 +237,17 @@ public class MainWindow {
             return;
         tab.imageView.getSession().addLayer(layer);
         tab.imageView.invalidateImage();
-        layers.updateWithSession(tab.imageView.getSession(), layer);
+        layers.updateWithSession(tab.imageView.getSession(), layer,
+        		new LayerEditorCallback() {
+        	public void editingFinished(Layer layer, boolean cancelled) {
+        		if (cancelled) {
+        			BlimpSession session = currentImageTab.imageView.getSession();
+        			session.removeLayer(layer);
+        			layers.refresh();
+        		}
+        			
+        	}
+        });
     }
     
     public static void main(String[] args) {

@@ -20,12 +20,14 @@ public class LayerEditorRegistry {
 		Layer editedLayer;
 		Layer layerClone;
 		Shell dialog;
+		LayerEditorCallback callback;
 		Entry(Class<? extends LayerEditor> editorClass) {
 			this.editorClass = editorClass;
 			editorConstructor = getConstructor(editorClass);
 		}
 		
-		void showDialog(Layer layer) {
+		void showDialog(Layer layer, LayerEditorCallback cb) {
+			callback = cb;
 			dialog = new Shell(parentShell,
 					SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
 			dialog.setLayout(new GridLayout());
@@ -52,6 +54,8 @@ public class LayerEditorRegistry {
 					editedLayer.setActive(true); // quick hack for raw input
 					editedLayer.triggerChangeEvent();
 					closeDialog();
+					if (callback != null)
+						callback.editingFinished(editedLayer, false);
 				}
 			});
 			button = new Button(buttonRow, SWT.NONE);
@@ -61,6 +65,8 @@ public class LayerEditorRegistry {
 					// revert layer changes
 					Serializer.copyBeanProperties(layerClone, editedLayer);
 					closeDialog();
+					if (callback != null)
+						callback.editingFinished(editedLayer, true);
 				}
 			});
 			
@@ -103,11 +109,11 @@ public class LayerEditorRegistry {
 		registry.put(layerClass.getName(), new Entry(editorClass));
 	}
 	
-	public boolean showEditorDialog(Layer layer) {
+	public boolean showEditorDialog(Layer layer, LayerEditorCallback callback) {
 		Entry entry = registry.get(layer.getClass().getName());
 		if (entry == null)
 			return false;
-		entry.showDialog(layer);
+		entry.showDialog(layer, callback);
 		return true;
 	}
 }

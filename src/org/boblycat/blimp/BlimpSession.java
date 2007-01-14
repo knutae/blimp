@@ -198,6 +198,12 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         triggerChangeEvent();
     }
     
+    public void removeLayer(Layer layer) {
+    	int index = layerList.indexOf(layer);
+    	if (index >= 0)
+    		removeLayer(index);
+    }
+    
     public String getDescription() {
     	if (layerList.isEmpty())
     		return "Empty session";
