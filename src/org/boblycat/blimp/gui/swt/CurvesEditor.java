@@ -137,7 +137,7 @@ public class CurvesEditor extends LayerEditor {
 			public void handleEvent(Event e) {
 				if (currentPointX == null || curvesLayer == null)
 					return;
-				System.out.println("mouse move " + e.x + " " + e.y);
+				//System.out.println("mouse move " + e.x + " " + e.y);
 				NaturalCubicSpline spline = curvesLayer.getSpline();
 				PointDouble p = canvasToSplinePos(e.x, e.y);
 				spline.movePoint(currentPointX, p.x, p.y);
