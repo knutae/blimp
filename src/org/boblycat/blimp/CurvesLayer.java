@@ -38,18 +38,15 @@ class CurvesOperation extends LookupTableOperation {
 }
 
 public class CurvesLayer extends Layer {
-	TreeMap<Double,Double> points;
 	NaturalCubicSpline spline;
 	
 	public CurvesLayer() {
-		points = new TreeMap<Double, Double>();
-		points.put(0.0, 0.0);
-		points.put(1.0, 1.0);
+		spline = new NaturalCubicSpline();
+		spline.addPoint(0.0, 0.0);
+		spline.addPoint(1.0, 1.0);
 	}
 
 	public Bitmap applyLayer(Bitmap source) {
-		// TODO: actually implement
-		getSpline();
 		PixelImage image = source.getImage();
 		int bitDepth = image.getBitsPerPixel() / image.getNumChannels();
 		CurvesOperation curvesOp = new CurvesOperation();
@@ -63,10 +60,10 @@ public class CurvesLayer extends Layer {
 	}
 	
 	void normalizePoints() {
-		spline = null; // invalidate spline
+		TreeMap<Double,Double> oldPoints = spline.getPoints();
 		TreeMap<Double,Double> newPoints = new TreeMap<Double, Double>();
-		for (double x: points.keySet()) {
-			double y = points.get(x);
+		for (double x: oldPoints.keySet()) {
+			double y = oldPoints.get(x);
 			if (x <= 0.0) {
 				// no X smaller than zero allowed, biggest value wins
 				newPoints.put(0.0, y);
@@ -91,10 +88,11 @@ public class CurvesLayer extends Layer {
 			else
 				newPoints.put(0.0, 0.0);
 		}
-		points = newPoints;
+		spline.setPoints(newPoints);
 	}
 	
 	public void setPoints(PointDouble[] value) {
+		TreeMap<Double,Double> points = spline.getPoints();
 		points.clear();
 		for (PointDouble p: value) {
 			if (!points.containsKey(p.x)) {
@@ -106,6 +104,7 @@ public class CurvesLayer extends Layer {
 	}
 
 	public PointDouble[] getPoints() {
+		TreeMap<Double,Double> points = spline.getPoints();
 		PointDouble[] ret = new PointDouble[points.size()];
 		int i = 0;
 		for (double x: points.keySet()) {
@@ -116,12 +115,6 @@ public class CurvesLayer extends Layer {
 	}
 	
 	public NaturalCubicSpline getSpline() {
-		if (spline == null) {
-			spline = new NaturalCubicSpline();
-			for (double x: points.keySet()) {
-				spline.addPoint(x, points.get(x));
-			}			
-		}
 		return spline;
 	}
 }

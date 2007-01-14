@@ -2,7 +2,6 @@ package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.*;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
