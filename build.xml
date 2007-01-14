@@ -39,6 +39,9 @@
 	<property name="lcms.dir" location="${lcms.base}/src"/>
 	<property name="lcms.include" location="${lcms.base}/include"/>
 	<property name="lcms.lib" location="build/lcms"/>
+	
+	<!-- C compiler -->
+	<property name="c-compiler" value="gcc"/>
 
     <path id="build.classpath">
         <pathelement location="${swt.jar}"/>
@@ -73,6 +76,7 @@
     
 	<target name="lcms" depends="init">
 		<cc outfile="${lcms.lib}" outtype="static" optimize="speed">
+			<compiler name="${c-compiler}"/>
 			<includepath location="${lcms.include}"/>
 			<fileset dir="${lcms.dir}" includes="*.c"/>
 		</cc>
@@ -80,6 +84,7 @@
     
     <target name="dcraw" depends="lcms,init">
 		<cc outfile="${dcraw.exe}" outtype="executable" optimize="extreme">
+			<compiler name="${c-compiler}"/>
 			<includepath location="${lcms.include}"/>
 		    <defineset define="NO_JPEG"/>
 		    <fileset dir="dcraw" includes="dcraw.c"/>
