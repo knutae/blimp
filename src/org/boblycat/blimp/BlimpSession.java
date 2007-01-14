@@ -79,6 +79,14 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         currentBitmap = null;
         viewport = new ViewportInfo();
     }
+    
+    protected Bitmap applyLayer(Bitmap source, AdjustmentLayer layer) {
+        return layer.applyLayer(source);
+    }
+    
+    protected Bitmap inputBitmap(InputLayer input) {
+        return input.getBitmap();
+    }
 
     Bitmap applyViewport(Bitmap bm) {
         if (bm == null)
@@ -86,7 +94,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         ViewResizeLayer resize = viewport.getResizeLayer(bm.getWidth(), bm
                 .getHeight());
         if (resize != null)
-            return resize.applyLayer(bm);
+            return applyLayer(bm, resize);
         return bm;
     }
 
@@ -112,7 +120,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             return null;
         }
         Bitmap bm = null;
-        bm = input.getBitmap();
+        bm = inputBitmap(input);
         if (bm == null) {
             System.err.println("Input failed!");
             return null;
@@ -120,7 +128,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         // TODO: let a view quality setting decide when/how to resize
         ResizeLayer resize = getResizeLayer();
         if (resize != null && resize.isActive())
-            bm = resize.applyLayer(bm);
+            bm = applyLayer(bm, resize);
         if (useViewport)
             bm = applyViewport(bm);
 
@@ -137,7 +145,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
                     continue;
                 }
                 AdjustmentLayer adjust = (AdjustmentLayer) layer;
-                bm = adjust.applyLayer(bm);
+                bm = applyLayer(bm, adjust);
             }
         }
         return bm;

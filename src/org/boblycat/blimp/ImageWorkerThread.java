@@ -42,7 +42,8 @@ public abstract class ImageWorkerThread extends Thread {
     public ImageWorkerThread() {
         super("Blimp Image Worker");
         requestQueue = new LinkedBlockingQueue<Request>();
-        session = new BlimpSession();
+        //session = new BlimpSession();
+        session = new CachedBlimpSession();
     }
     
     private static void debugPrint(String msg) {

@@ -52,6 +52,22 @@ public class ViewResizeLayer extends AdjustmentLayer {
         // ret.printDebugInfo("Invert dest");
         return ret;
     }
+    
+    public void setWidth(int w) {
+        width = w;
+    }
+    
+    public int getWidth() {
+        return width;
+    }
+
+    public void setHeight(int h) {
+        height = h;
+    }
+    
+    public int getHeight() {
+        return height;
+    }
 
     public String getDescription() {
         return "Resize";

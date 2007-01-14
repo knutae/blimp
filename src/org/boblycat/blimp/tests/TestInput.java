@@ -6,7 +6,7 @@ import net.sourceforge.jiu.data.PixelImage;
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.layers.InputLayer;
 
-public class DummyInput extends InputLayer {
+public class TestInput extends InputLayer {
     String path;
 
     public void setPath(String newPath) {
@@ -20,12 +20,15 @@ public class DummyInput extends InputLayer {
     @Override
     public Bitmap getBitmap() {
         PixelImage image = new MemoryRGB24Image(100, 100);
-        return new Bitmap(image);
+        TestBitmap bitmap = new TestBitmap(image);
+        bitmap.creator = "TestInput";
+        bitmap.testValue = "";
+        return bitmap;
     }
 
     @Override
     public String getDescription() {
-        return "Dummy Input";
+        return "Test Input";
     }
 
 }

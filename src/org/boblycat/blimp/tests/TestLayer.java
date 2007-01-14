@@ -3,7 +3,7 @@ package org.boblycat.blimp.tests;
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.layers.AdjustmentLayer;
 
-public class DummyLayer extends AdjustmentLayer {
+public class TestLayer extends AdjustmentLayer {
     public enum Enum {
         ONE, TWO, THREE
     };
@@ -12,6 +12,13 @@ public class DummyLayer extends AdjustmentLayer {
     double doubleValue;
     String stringValue;
     Enum enumValue;
+    
+    public TestLayer() {
+    }
+    
+    public TestLayer(String strValue) {
+        stringValue = strValue;
+    }
 
     public void setIntValue(int i) {
         intValue = i;
@@ -49,12 +56,18 @@ public class DummyLayer extends AdjustmentLayer {
 
     @Override
     public Bitmap applyLayer(Bitmap source) {
-        return source;
+        if (!(source instanceof TestBitmap))
+            return source;
+        TestBitmap testSource = (TestBitmap) source;
+        TestBitmap result = new TestBitmap(source.getImage());
+        result.creator = "TestLayer";
+        result.testValue = testSource.testValue + getStringValue();
+        return result;
     }
 
     @Override
     public String getDescription() {
-        return "Dummy";
+        return "Test Layer";
     }
 
 }

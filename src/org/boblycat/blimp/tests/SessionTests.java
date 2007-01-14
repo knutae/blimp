@@ -1,59 +1,21 @@
 package org.boblycat.blimp.tests;
 
 import org.boblycat.blimp.*;
-import org.boblycat.blimp.layers.AdjustmentLayer;
-import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.Layer;
 import org.junit.*;
 import static org.junit.Assert.*;
-
-class TestBitmap extends Bitmap {
-    String creator;
-    String testValue;
-}
-
-class TestInput extends InputLayer {
-    public Bitmap getBitmap() {
-        TestBitmap bitmap = new TestBitmap();
-        bitmap.creator = "TestSource";
-        bitmap.testValue = "";
-        return bitmap;
-    }
-
-    public String getDescription() {
-        return "TestDescription";
-    }
-}
-
-class TestLayer extends AdjustmentLayer {
-    String suffix;
-
-    TestLayer(String suffix) {
-        this.suffix = suffix;
-    }
-
-    public Bitmap applyLayer(Bitmap source) {
-        assertSame(source.getClass(), TestBitmap.class);
-        TestBitmap oldBitmap = (TestBitmap) source;
-        TestBitmap bitmap = new TestBitmap();
-        bitmap.creator = "TestLayer";
-        bitmap.testValue = oldBitmap.testValue + suffix;
-        // bitmap.setImage(oldBitmap.getImage());
-        return bitmap;
-    }
-
-    public String getDescription() {
-        return "Test";
-    }
-}
 
 public class SessionTests {
     int eventCount;
 
     LayerEvent lastLayerEvent;
+    
+    protected BlimpSession newSession() {
+        return new BlimpSession();
+    }
 
     BlimpSession createTestSession() {
-        BlimpSession session = new BlimpSession();
+        BlimpSession session = newSession();
         session.setInput(new TestInput());
         return session;
     }
@@ -69,7 +31,7 @@ public class SessionTests {
     public void testNoLayers() {
         BlimpSession session = createTestSession();
         TestBitmap testBitmap = getTestBitmap(session);
-        assertEquals("TestSource", testBitmap.creator);
+        assertEquals("TestInput", testBitmap.creator);
         assertEquals("", testBitmap.testValue);
     }
 
@@ -94,7 +56,7 @@ public class SessionTests {
         assertEquals(2, session.layerCount());
         session.activateLayer(1, false);
         TestBitmap testBitmap = getTestBitmap(session);
-        assertEquals("TestSource", testBitmap.creator);
+        assertEquals("TestInput", testBitmap.creator);
         assertEquals("", testBitmap.testValue);
     }
 
@@ -200,21 +162,21 @@ public class SessionTests {
     
     @Test
     public void testSynchonizeSessionData() {
-        BlimpSession session1 = new BlimpSession();
-        BlimpSession session2 = new BlimpSession();
-        DummyInput input1 = new DummyInput();
+        BlimpSession session1 = newSession();
+        BlimpSession session2 = newSession();
+        TestInput input1 = new TestInput();
         input1.setPath("input1 path");
         session1.setInput(input1);
-        DummyLayer layer1 = new DummyLayer();
+        TestLayer layer1 = new TestLayer();
         layer1.setStringValue("layer1 value");
         session1.addLayer(layer1);
         
         session2.synchronizeSessionData(session1);
-        DummyInput input2 = (DummyInput) session2.getInput();
+        TestInput input2 = (TestInput) session2.getInput();
         assertNotNull(input2);
         assertTrue(input1 != input2); // objects must be different
         assertEquals("input1 path", input2.getPath());
-        DummyLayer layer2 = (DummyLayer) session2.getLayer(1);
+        TestLayer layer2 = (TestLayer) session2.getLayer(1);
         assertNotNull(layer2);
         assertTrue(layer1 != layer2);
         assertEquals("layer1 value", layer2.getStringValue());
