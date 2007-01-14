@@ -9,6 +9,7 @@ import org.boblycat.blimp.layers.RawFileInputLayer;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;
+import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.events.*;
 import org.xml.sax.SAXException;
@@ -212,6 +213,29 @@ public class MainWindow {
         tmpItem.setText("Layers");
         tmpItem.setControl(layers);
         rightTabFolder.setSelection(0);
+        
+        // Drag and drop from external programs
+        DropTarget target = new DropTarget(shell, DND.DROP_COPY);
+        target.setTransfer(new Transfer[] {FileTransfer.getInstance()});
+        target.addDropListener(new DropTargetAdapter() {
+            public void dragEnter(DropTargetEvent e) {
+                if (FileTransfer.getInstance().isSupportedType(e.currentDataType))
+                    e.detail = DND.DROP_COPY;
+            }
+
+            public void drop(DropTargetEvent e) {
+                Object obj = FileTransfer.getInstance().nativeToJava(
+                        e.currentDataType);
+                if (obj instanceof String[]) {
+                    e.detail = DND.DROP_COPY;
+                    for (String filename: (String[]) obj) {
+                        openProjectOrImageFile(filename);
+                        // TODO: support more than one file
+                        break;
+                    }
+                }
+            }
+        });
 
         shell.open();
     }
@@ -262,9 +286,11 @@ public class MainWindow {
                         "*.jpg;*.jpeg;*.tiff;*.tif;*.png;*.gif;*.bmp;*.raw;*.dng;*.crw;*.cr2",
                         "*.blimp", "*.*" });
         String filename = dialog.open();
-        if (filename == null)
-            return;
+        if (filename != null)
+            openProjectOrImageFile(filename);
+    }
 
+    void openProjectOrImageFile(String filename) {
         if (filename.toLowerCase().endsWith(".blimp")) {
             // open a saved session
             try {
