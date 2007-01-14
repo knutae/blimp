@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
     
-<project name="Blimp" default="compile">
+<project name="Blimp" default="all">
+    <!-- xmlns:cpp="antlib:net.sf.antcontrib.cpptasks"> -->
+    <!-- Cpptasks for <cc> targets -->
+    <taskdef resource="cpptasks.tasks"/>
+    <typedef resource="cpptasks.types"/>
+
+
     <property name="src" location="src"/>
     <property name="build" location="build"/>
     
@@ -21,6 +27,9 @@
 	
     <!-- Xerces XML libraries -->
     <property name="xerces.jar" location="jars/xercesImpl.jar"/>
+    
+    <!-- dcraw executable -->
+    <property name="dcraw.exe" location="${build}/dcraw.exe"/>
 
     <path id="build.classpath">
         <pathelement location="${swt.jar}"/>
@@ -50,13 +59,21 @@
         </javac>
     </target>
     
-    <target name="run" depends="compile">
+    <target name="dcraw">
+	<cc outfile="${dcraw.exe}" outtype="executable" optimize="extreme">
+	    <defineset define="NO_LCMS,NO_JPEG"/>
+	    <fileset dir="dcraw" includes="dcraw.c"/>
+	</cc>
+    </target>
+    
+    <target name="run" depends="compile,dcraw">
         <java fork="true"
               classname="org.boblycat.blimp.gui.swt.MainWindow">
             <classpath refid="run.classpath"/>
             <!-- <jvmarg value="-server"/> -->
             <jvmarg value="-Xmx256M"/>
             <sysproperty key="java.library.path" path="${swt.dir}"/>
+	    <sysproperty key="blimp.dcraw.path" path="${dcraw.exe}"/>
         </java>
     </target>
     
@@ -78,5 +95,7 @@
         <delete dir="${build}"/>
     </target>
     
-    <target name="all" depends="clean,tests"/>
+    <target name="rebuild" depends="clean,all"/>
+    
+    <target name="all" depends="compile,dcraw,tests"/>
 </project>

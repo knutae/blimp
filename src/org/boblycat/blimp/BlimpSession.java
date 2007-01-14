@@ -13,12 +13,33 @@ public class BlimpSession extends BitmapSource implements LayerChangeListener {
         layerList = new Vector<Layer>();
         currentBitmap = null;
     }
+    
+    private static boolean isRawFile(String path) {
+    	int dotpos = path.lastIndexOf('.');
+    	if (dotpos < 0)
+    		return false;
+    	String ext = path.substring(dotpos + 1).toLowerCase();
+    	return ext.equals("raw") || ext.equals("crw") || ext.equals("cr2")
+    		|| ext.equals("dng");
+    	// todo: add more raw extensions
+    }
 
     public void openFile(String path) {
         currentFilePath = path;
-        source = new FileBitmapSource(path);
+        if (isRawFile(path))
+        	source = new RawFileBitmapSource(path);
+        else
+        	source = new FileBitmapSource(path);
         invalidate();
     }
+    
+    /*
+    public void openRawFile(String path) {
+    	currentFilePath = path;
+    	source = new RawFileBitmapSource(path);
+    	invalidate();
+    }
+    */
     
     public void applyLayers() {
         if (source == null)
