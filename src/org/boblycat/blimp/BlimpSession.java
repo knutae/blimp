@@ -2,14 +2,55 @@ package org.boblycat.blimp;
 
 import java.util.Vector;
 
+class ViewportInfo {
+	int viewWidth;
+	int viewHeight;
+	ZoomFactor zoomFactor;
+	
+	boolean isActive() {
+		return (viewWidth > 0 && viewHeight > 0);
+	}
+	
+	ZoomFactor getAutoZoomFactor(int imageWidth, int imageHeight) {
+		ZoomFactor autoZoomFactor = new ZoomFactor();
+		while (autoZoomFactor.scale(imageWidth) > viewWidth ||
+				autoZoomFactor.scale(imageHeight) > viewWidth)
+			autoZoomFactor.zoomOut();
+		return autoZoomFactor;
+	}
+	
+	static ResizeLayer resizeLayerFromZoom(ZoomFactor zoom, int w, int h) {
+		return new ResizeLayer(zoom.scale(w), zoom.scale(h), true);
+	}
+	
+	ResizeLayer getResizeLayer(int imageWidth, int imageHeight) {
+		if (!isActive())
+			return null;
+		if (zoomFactor == null)
+			zoomFactor = getAutoZoomFactor(imageWidth, imageHeight);
+		return resizeLayerFromZoom(zoomFactor, imageWidth, imageHeight);
+	}
+	
+	void zoomIn() {
+		if (zoomFactor != null)
+			zoomFactor.zoomIn();
+	}
+	
+	void zoomOut() {
+		if (zoomFactor != null)
+			zoomFactor.zoomOut();
+	}
+}
+
 public class BlimpSession extends InputLayer implements LayerChangeListener {
     Vector<Layer> layerList;
     Bitmap currentBitmap;
-    ResizeLayer resizeLayer;
+    ViewportInfo viewport;
     
     public BlimpSession() {
     	layerList = new Vector<Layer>();
         currentBitmap = null;
+        viewport = new ViewportInfo();
     }
 
     /*
@@ -29,8 +70,11 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         			break;
             	InputLayer input = (InputLayer) layer;
             	currentBitmap = input.getBitmap();
-            	if (currentBitmap != null && resizeLayer != null) {
-            		currentBitmap = resizeLayer.applyLayer(currentBitmap);
+            	if (currentBitmap != null) {
+            		ResizeLayer tmpResize = viewport.getResizeLayer(
+            				currentBitmap.getWidth(), currentBitmap.getWidth());
+            		if (tmpResize != null)
+            			currentBitmap = tmpResize.applyLayer(currentBitmap);
             	}
             }
             else if (layer.isActive() && layer instanceof AdjustmentLayer) {
@@ -73,17 +117,35 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     }
     
     public Bitmap getBitmap() {
-        if (resizeLayer != null)
-            invalidate();
         if (currentBitmap == null)
             applyLayers();
         return currentBitmap;
     }
     
     public Bitmap getSizedBitmap(int width, int height) {
-        resizeLayer = new ResizeLayer(width, height, true);
+    	viewport.viewWidth = width;
+    	viewport.viewHeight = height;
         applyLayers();
         return currentBitmap;
+    }
+    
+    public void zoomIn() {
+    	viewport.zoomIn();
+    	invalidate();
+    	triggerChangeEvent();
+    }
+    
+    public void zoomOut() {
+    	viewport.zoomOut();
+    	invalidate();
+    	triggerChangeEvent();
+    }
+    
+    public double getCurrentZoom() {
+    	if (viewport.zoomFactor == null)
+    		return 1.0;
+    	else
+    		return viewport.zoomFactor.toDouble();
     }
     
     public int layerCount() {
@@ -111,7 +173,6 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     
     public void invalidate() {
         currentBitmap = null;
-        resizeLayer = null;
     }
     
     public void activateLayer(int index, boolean active) {

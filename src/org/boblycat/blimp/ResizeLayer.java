@@ -27,6 +27,9 @@ public class ResizeLayer extends AdjustmentLayer {
                 targetHeight = targetWidth * sourceHeight / sourceWidth;
             }
             resize.setSize(targetWidth, targetHeight);
+            if (targetWidth == sourceWidth && targetHeight == sourceHeight)
+            	// optimize by returning the source
+            	return source;
         }
         else {
             resize.setSize(width, height);
