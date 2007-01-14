@@ -1,8 +1,7 @@
 package org.boblycat.blimp.layers;
 
-import java.util.Vector;
-
 import org.boblycat.blimp.BlimpBean;
+import org.boblycat.blimp.EventSource;
 import org.boblycat.blimp.LayerChangeListener;
 import org.boblycat.blimp.LayerEvent;
 
@@ -14,7 +13,7 @@ import org.boblycat.blimp.LayerEvent;
 public abstract class Layer extends BlimpBean {
     boolean active;
 
-    Vector<LayerChangeListener> changeListeners;
+    LayerEventSource eventSource;
 
     public abstract String getDescription();
 
@@ -28,30 +27,19 @@ public abstract class Layer extends BlimpBean {
 
     public Layer() {
         active = true;
-        changeListeners = new Vector<LayerChangeListener>();
+        eventSource = new LayerEventSource();
     }
 
     public void addChangeListener(LayerChangeListener listener) {
-        int i = changeListeners.indexOf(null);
-        if (i >= 0)
-            changeListeners.setElementAt(listener, i);
-        else
-            changeListeners.add(listener);
+        eventSource.addListener(listener);
     }
 
     public void removeChangeListener(LayerChangeListener listener) {
-        int i = changeListeners.indexOf(listener);
-        if (i >= 0)
-            changeListeners.setElementAt(null, i);
+        eventSource.removeListener(listener);
     }
 
     public void triggerChangeEvent() {
-        LayerEvent event = new LayerEvent(this);
-        for (LayerChangeListener listener : changeListeners) {
-            if (listener == null)
-                continue;
-            listener.handleChange(event);
-        }
+        eventSource.triggerChangeWithEvent(new LayerEvent(this));
     }
 
     public void invalidate() {
@@ -65,5 +53,12 @@ public abstract class Layer extends BlimpBean {
      */
     public String elementName() {
         return "layer";
+    }
+}
+
+class LayerEventSource extends EventSource<LayerChangeListener, LayerEvent> {
+    protected void triggerListenerEvent(LayerChangeListener listener,
+            LayerEvent event) {
+        listener.handleChange(event);
     }
 }
