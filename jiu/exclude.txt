@@ -1,0 +1,6 @@
+*.bak
+*.class
+*.java~
+*.dvi
+*.ps
+CVS

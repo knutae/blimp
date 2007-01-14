@@ -1,0 +1,45 @@
+package org.boblycat.blimp;
+
+import java.util.Iterator;
+import java.util.Vector;
+
+public class LayerRegistry implements Iterable<LayerRegistry.LayerInfo> {
+	public class LayerInfo {
+		public Class<? extends Layer> layerClass;
+		public String label;
+		public String description;
+		//String category;
+	}
+
+	private Vector<LayerInfo> layerInfoList;
+	
+	public LayerRegistry() {
+		layerInfoList = new Vector<LayerInfo>();
+	}
+	
+	public void registerLayer(Class<? extends Layer> layerClass, String label,
+			String description)
+	{
+		LayerInfo info = new LayerInfo();
+		info.layerClass = layerClass;
+		info.label = label;
+		info.description = description;
+		layerInfoList.add(info);
+	}
+	
+	public Iterator<LayerInfo> iterator() {
+		return layerInfoList.iterator();
+	}
+	
+	/** Returns a layer register with the built-in layers. */
+	public static LayerRegistry createDefaultRegister() {
+		LayerRegistry reg = new LayerRegistry();
+		reg.registerLayer(InvertLayer.class, "&Invert", "Invert (negative)");
+		reg.registerLayer(BrightnessContrastLayer.class, "&Brightness/Contrast",
+				"Brightness and Contrast");
+		reg.registerLayer(CurvesLayer.class, "&Curves", "Curves");
+		reg.registerLayer(Color16BitLayer.class, "&16-Bit",
+				"Convert image to 16-bit per color channel");
+		return reg;
+	}
+}
