@@ -309,7 +309,12 @@ public class MainWindow {
     	if (filename == null)
     		return;
     	BlimpSession session = currentImageTab.imageView.getSession();
-    	Serializer.saveBeanToFile(session, filename);	
+    	try {
+    		Serializer.saveBeanToFile(session, filename);
+    	}
+    	catch (IOException e) {
+    		System.err.println("An I/O error occured: " + e.getMessage());
+    	}
     }
     
     void doMenuExportImage() {

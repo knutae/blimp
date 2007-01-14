@@ -2,11 +2,10 @@ package org.boblycat.blimp;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Array;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -327,16 +326,17 @@ public class Serializer {
 	 * @param bean The bean to save.
 	 * @param filename File to save.
 	 */
-	public static void saveBeanToFile(BlimpBean bean, String filename) {
+	public static void saveBeanToFile(BlimpBean bean, String filename)
+	throws IOException {
+		FileWriter writer = new FileWriter(filename);
 		try {
+			LSOutput output = domImplLS.createLSOutput();
+			output.setCharacterStream(writer);
 			LSSerializer serializer = domImplLS.createLSSerializer();
-			URI uri = new URI("file", filename, null);
-			serializer.writeToURI(beanToDOM(bean), uri.toString());
+			serializer.write(beanToDOM(bean), output);
 		}
-		catch (URISyntaxException e) {
-			// should never happen?
-			e.printStackTrace();
-			assert(false);
+		finally {
+			writer.close();
 		}
 	}
 	
