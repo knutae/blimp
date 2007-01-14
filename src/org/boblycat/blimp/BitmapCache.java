@@ -7,11 +7,8 @@ import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.Layer;
 
 class BitmapTable extends PriorityCacheMap<String, Bitmap> {
-    Bitmap source;
-    
-    BitmapTable(Bitmap source, int capacity) {
+    BitmapTable(int capacity) {
         super(capacity);
-        this.source = source;
     }
     
     void put(Layer layer, Bitmap bitmap) {
@@ -34,7 +31,7 @@ public class BitmapCache {
     WeakHashMap<Bitmap, BitmapTable> adjustmentTables;
     
     public BitmapCache() {
-        inputTable = new BitmapTable(null, INPUT_CAPACITY);
+        inputTable = new BitmapTable(INPUT_CAPACITY);
         //adjustmentTables = new PriorityCacheMap<Bitmap, BitmapTable>(POOL_SIZE);
         adjustmentTables = new WeakHashMap<Bitmap, BitmapTable>();
     }
@@ -42,7 +39,7 @@ public class BitmapCache {
     private BitmapTable getAdjustmentTable(Bitmap source) {
         if (adjustmentTables.containsKey(source))
             return adjustmentTables.get(source);
-        BitmapTable newTable = new BitmapTable(source, ADJUSTMENT_CAPACITIES);
+        BitmapTable newTable = new BitmapTable(ADJUSTMENT_CAPACITIES);
         adjustmentTables.put(source, newTable);
         return newTable;
     }
