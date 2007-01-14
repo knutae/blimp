@@ -9,7 +9,7 @@ class TestBitmap extends Bitmap {
     int testValue;
 }
 
-class TestSource extends BitmapSource {
+class TestInput extends InputLayer {
     public Bitmap getBitmap() {
         TestBitmap bitmap = new TestBitmap();
         bitmap.creator = "TestSource";
@@ -22,7 +22,7 @@ class TestSource extends BitmapSource {
     }
 }
 
-class TestLayer extends Layer {
+class TestLayer extends AdjustmentLayer {
 	int increment;
     TestLayer(int increment) {
         this.increment = increment;
@@ -38,7 +38,7 @@ class TestLayer extends Layer {
         return bitmap;
     }
     
-    public String getName() {
+    public String getDescription() {
         return "Test";
     }
 }
@@ -49,7 +49,7 @@ public class SessionTests {
     
     BlimpSession createTestSession() {
         BlimpSession session = new BlimpSession();
-        session.setBitmapSource(new TestSource());
+        session.setInput(new TestInput());
         return session;
     }
     
@@ -140,8 +140,8 @@ public class SessionTests {
     public void testChangeEvents() {
         eventCount = 0;
         BlimpSession session = createTestSession();
-        session.addChangeListener(new BitmapSourceListener() {
-            public void handleChange(BitmapSource source) {
+        session.addChangeListener(new LayerChangeListener() {
+            public void handleChange(LayerEvent e) {
                 eventCount++;
             }
         });
@@ -165,7 +165,7 @@ public class SessionTests {
         assertEquals(7, eventCount);
         
         // explicitly trigger event
-        session.notifyChangeListeners();
+        session.triggerChangeEvent();
         assertEquals(8, eventCount);
     }
     

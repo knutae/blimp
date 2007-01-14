@@ -4,7 +4,7 @@ import net.sourceforge.jiu.color.promotion.PromotionRGB48;
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.data.RGB48Image;
 
-public class Color16BitLayer extends Layer {
+public class Color16BitLayer extends AdjustmentLayer {
 
 	@Override
 	public Bitmap applyLayer(Bitmap source) {
@@ -15,7 +15,7 @@ public class Color16BitLayer extends Layer {
 	}
 
 	@Override
-	public String getName() {
+	public String getDescription() {
 		return "16-bit Color Depth";
 	}
 

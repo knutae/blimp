@@ -2,7 +2,7 @@ package org.boblycat.blimp;
 
 import net.sourceforge.jiu.geometry.ScaleReplication;
 
-public class ResizeLayer extends Layer {
+public class ResizeLayer extends AdjustmentLayer {
     int width, height;
     boolean keepAspect;
     
@@ -43,7 +43,7 @@ public class ResizeLayer extends Layer {
         return ret;
     }
     
-    public String getName() {
+    public String getDescription() {
         return "Resize";
     }
 }

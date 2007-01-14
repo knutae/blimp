@@ -22,7 +22,7 @@ public class LayerEditorRegistry {
 			Shell dialog = new Shell(parentShell,
 					SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
 			dialog.setLayout(new FillLayout());
-			dialog.setText(layer.getName());
+			dialog.setText(layer.getDescription());
 			Object args[] = { dialog, new Integer(SWT.NONE) };
 			LayerEditor editor = null;
 			try {

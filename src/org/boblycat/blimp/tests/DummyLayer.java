@@ -1,9 +1,9 @@
 package org.boblycat.blimp.tests;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Layer;
+import org.boblycat.blimp.AdjustmentLayer;
 
-public class DummyLayer extends Layer {
+public class DummyLayer extends AdjustmentLayer {
 
 	int intValue;
 	String stringValue;
@@ -32,7 +32,7 @@ public class DummyLayer extends Layer {
 	}
 
 	@Override
-	public String getName() {
+	public String getDescription() {
 		return "Dummy";
 	}
 

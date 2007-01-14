@@ -4,7 +4,7 @@ import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.color.adjustment.Brightness;
 import net.sourceforge.jiu.color.adjustment.Contrast;
 
-public class BrightnessContrastLayer extends Layer {
+public class BrightnessContrastLayer extends AdjustmentLayer {
     int brightness;
     int contrast;
     
@@ -48,7 +48,7 @@ public class BrightnessContrastLayer extends Layer {
         return new Bitmap(image);
     }
     
-    public String getName() {
+    public String getDescription() {
         return "Brightness and Contrast";
     }
 }

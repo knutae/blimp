@@ -3,9 +3,12 @@ package org.boblycat.blimp;
 import java.util.Iterator;
 import java.util.Vector;
 
+/**
+ * Registry for adjustment layers (not input layers).
+ */
 public class LayerRegistry implements Iterable<LayerRegistry.LayerInfo> {
 	public class LayerInfo {
-		public Class<? extends Layer> layerClass;
+		public Class<? extends AdjustmentLayer> layerClass;
 		public String label;
 		public String description;
 		//String category;
@@ -17,8 +20,8 @@ public class LayerRegistry implements Iterable<LayerRegistry.LayerInfo> {
 		layerInfoList = new Vector<LayerInfo>();
 	}
 	
-	public void registerLayer(Class<? extends Layer> layerClass, String label,
-			String description)
+	public void registerLayer(Class<? extends AdjustmentLayer> layerClass,
+			String label, String description)
 	{
 		LayerInfo info = new LayerInfo();
 		info.layerClass = layerClass;

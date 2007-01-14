@@ -2,15 +2,15 @@ package org.boblycat.blimp;
 
 import java.util.Vector;
 
-public class BlimpSession extends BitmapSource implements LayerChangeListener {
-    BitmapSource source;
-    Vector<Layer> layerList;
+public class BlimpSession extends InputLayer implements LayerChangeListener {
+    InputLayer input;
+    Vector<AdjustmentLayer> layerList;
     Bitmap currentBitmap;
     String currentFilePath;
     ResizeLayer resizeLayer;
     
     public BlimpSession() {
-        layerList = new Vector<Layer>();
+        layerList = new Vector<AdjustmentLayer>();
         currentBitmap = null;
     }
     
@@ -27,32 +27,24 @@ public class BlimpSession extends BitmapSource implements LayerChangeListener {
     public void openFile(String path) {
         currentFilePath = path;
         if (isRawFile(path))
-        	source = new RawFileBitmapSource(path);
+        	input = new RawFileInputLayer(path);
         else
-        	source = new FileBitmapSource(path);
+        	input = new FileInputLayer(path);
         invalidate();
     }
     
-    /*
-    public void openRawFile(String path) {
-    	currentFilePath = path;
-    	source = new RawFileBitmapSource(path);
-    	invalidate();
-    }
-    */
-    
     public void applyLayers() {
-        if (source == null)
+        if (input == null)
             return;
-        currentBitmap = source.getBitmap();
+        currentBitmap = input.getBitmap();
         if (currentBitmap == null)
             return;
         if (resizeLayer != null) {
             currentBitmap = resizeLayer.applyLayer(currentBitmap);
         }
         for (int i=0; i<layerList.size(); i++) {
-            Layer layer = layerList.get(i);
-            if (layer.isActive()) {
+            AdjustmentLayer layer = layerList.get(i);
+            if (layer.isActive() && layer instanceof AdjustmentLayer) {
                 currentBitmap = layer.applyLayer(currentBitmap);
                 if (currentBitmap == null)
                     return;
@@ -60,8 +52,8 @@ public class BlimpSession extends BitmapSource implements LayerChangeListener {
         }
     }
     
-    public void setBitmapSource(BitmapSource newSource) {
-        source = newSource;
+    public void setInput(InputLayer newInput) {
+        input = newInput;
         invalidate();
     }
     
@@ -83,7 +75,7 @@ public class BlimpSession extends BitmapSource implements LayerChangeListener {
         return layerList.size();
     }
     
-    public void addLayer(int index, Layer newLayer) {
+    public void addLayer(int index, AdjustmentLayer newLayer) {
     	if (index < 0)
     		layerList.add(newLayer);
     	else
@@ -91,10 +83,10 @@ public class BlimpSession extends BitmapSource implements LayerChangeListener {
         newLayer.addChangeListener(this);
         if (newLayer.isActive())
             invalidate();
-        notifyChangeListeners();
+        triggerChangeEvent();
     }
     
-    public void addLayer(Layer newLayer) {
+    public void addLayer(AdjustmentLayer newLayer) {
     	addLayer(-1, newLayer);
     }
     
@@ -112,7 +104,7 @@ public class BlimpSession extends BitmapSource implements LayerChangeListener {
         if (layer.isActive() != active) {
             layer.setActive(active);
             invalidate();
-            notifyChangeListeners();
+            triggerChangeEvent();
         }
         layer.addChangeListener(this);
     }
@@ -123,17 +115,17 @@ public class BlimpSession extends BitmapSource implements LayerChangeListener {
         layerList.removeElementAt(index);
         if (layer.isActive())
             invalidate();
-        notifyChangeListeners();
+        triggerChangeEvent();
     }
     
     public String getDescription() {
-        if (source != null)
-            return source.getDescription();
+        if (input != null)
+            return input.getDescription();
         return "Empty session";
     }
     
     public void handleChange(LayerEvent event) {
         invalidate();
-        notifyChangeListeners();
+        triggerChangeEvent();
     }
 }

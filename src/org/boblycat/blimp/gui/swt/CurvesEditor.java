@@ -54,10 +54,10 @@ public class CurvesEditor extends LayerEditor {
 				gc.setBackground(new Color(gc.getDevice(), 255, 255, 255));
 				gc.fillRectangle(canvas.getBounds());
 				// draw rulers
-				final int RULER_COUNT = 10;
+				final int RULER_COUNT = 4;
 				Point size = canvas.getSize();
 				gc.setForeground(new Color(gc.getDevice(), 190, 190, 190));
-				for (int i=0; i<RULER_COUNT; i++) {
+				for (int i=1; i<RULER_COUNT; i++) {
 					int ypos = size.y * i / RULER_COUNT;
 					gc.drawLine(0, ypos, size.x, ypos);
 					int xpos = size.x * i / RULER_COUNT;

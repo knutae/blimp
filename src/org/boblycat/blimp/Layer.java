@@ -1,22 +1,18 @@
 package org.boblycat.blimp;
 
-import net.sourceforge.jiu.ops.ImageToImageOperation;
-import net.sourceforge.jiu.data.PixelImage;
-
 import java.util.Vector;
 
 /**
- * Abstract base class for adjustment layers in Blimp.
+ * Abstract base class for all layers in Blimp, which includes adjustment
+ * layers (for image modification) and input layers.
  * In Blimp, all image operations are based upon adjustment layers which
- * must extend this class.
+ * must extend the AdjustmentLayer subclass.
  */
 public abstract class Layer extends BlimpBean {
     boolean active;
     Vector<LayerChangeListener> changeListeners;
     
-    public abstract Bitmap applyLayer(Bitmap source);
-    
-    public abstract String getName();
+    public abstract String getDescription();
 
     public boolean isActive() {
         return active;
@@ -45,26 +41,13 @@ public abstract class Layer extends BlimpBean {
             changeListeners.setElementAt(null, i);
     }
     
-    void triggerChangeEvent() {
+    public void triggerChangeEvent() {
         LayerEvent event = new LayerEvent(this);
         for (LayerChangeListener listener: changeListeners) {
             if (listener == null)
                 continue;
             listener.handleChange(event);
         }
-    }
-    
-    protected PixelImage applyJiuOperation(PixelImage input, ImageToImageOperation op) {
-        PixelImage image = input;
-        op.setInputImage(image);
-        try {
-            op.process();
-            image = op.getOutputImage();
-        }
-        catch (Exception e) {
-            System.out.println(op.getClass().getName() + ": " + e.getMessage());
-        }
-        return image;
     }
     
     public void invalidate() {

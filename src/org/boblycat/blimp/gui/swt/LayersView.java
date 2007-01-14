@@ -88,7 +88,7 @@ public class LayersView extends SashForm {
             Layer layer = session.getLayer(i);
             TableItem item = new TableItem(layerTable, SWT.NONE);
             item.setChecked(layer.isActive());
-            item.setText(layer.getName());
+            item.setText(layer.getDescription());
         }
         propertyEditor.setLayer(null);
         if (currentLayer != null) {

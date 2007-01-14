@@ -37,7 +37,7 @@ class CurvesOperation extends LookupTableOperation {
 	}
 }
 
-public class CurvesLayer extends Layer {
+public class CurvesLayer extends AdjustmentLayer {
 	NaturalCubicSpline spline;
 	
 	public CurvesLayer() {
@@ -55,7 +55,7 @@ public class CurvesLayer extends Layer {
 		return new Bitmap(image);
 	}
 
-	public String getName() {
+	public String getDescription() {
 		return "Curves";
 	}
 	

@@ -205,7 +205,7 @@ public class MainWindow {
         statusLabel.setText(msg);
     }
     
-    void addLayer(Layer layer) {
+    void addLayer(AdjustmentLayer layer) {
         //ImageTab tab = getCurrentTab();
         ImageTab tab = currentImageTab;
         if (tab == null)

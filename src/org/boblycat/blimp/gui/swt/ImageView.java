@@ -46,8 +46,8 @@ public class ImageView extends Composite {
         	}
         });
         session = new BlimpSession();
-        session.addChangeListener(new BitmapSourceListener() {
-            public void handleChange(BitmapSource source) {
+        session.addChangeListener(new LayerChangeListener() {
+            public void handleChange(LayerEvent event) {
             	//invalidateImage();
             	invalidateWithDelay(100);
             }
