@@ -1,6 +1,7 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.BitmapUtil;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.graphics.ImageLoader;
 
@@ -36,58 +37,13 @@ public class ImageConverter {
     }
     
     static ImageData jiuToSwtImageData(PixelImage pixelImage) {
-    	if (pixelImage instanceof RGB48Image) {
-    		RGB48Image rgb = (RGB48Image) pixelImage;
-    		int width = rgb.getWidth();
-    		int height = rgb.getHeight();
-            byte[] bytes = new byte[width*height*3];
-            PaletteData paletteData = new PaletteData(0xff, 0xff00, 0xff0000);
-            ImageData data = new ImageData(width, height, 24, paletteData, 1, bytes);
-            short[] redLine = new short[width];
-            short[] greenLine = new short[width];
-            short[] blueLine = new short[width];
-            //System.out.println("length: " + data.data.length);
-            //System.out.println("w*h*3 = " + width + "*" + height + "*3 = " + (width*height*3));
-            int bytepos = 0;
-            for (int y=0; y<height; y++) {
-                rgb.getShortSamples(RGBIndex.INDEX_RED, 0, y, width, 1, redLine, 0);
-                rgb.getShortSamples(RGBIndex.INDEX_GREEN, 0, y, width, 1, greenLine, 0);
-                rgb.getShortSamples(RGBIndex.INDEX_BLUE, 0, y, width, 1, blueLine, 0);
-                for (int x=0; x<width; x++) {
-                    bytes[bytepos++] = (byte) ((blueLine[x] >> 8) & 0xff);
-                    bytes[bytepos++] = (byte) ((greenLine[x] >> 8) & 0xff);
-                    bytes[bytepos++] = (byte) ((redLine[x] >> 8) & 0xff);
-                }
-            }
-            return data;
-    	}
-        if (pixelImage instanceof RGB24Image) {
-            RGB24Image rgb = (RGB24Image) pixelImage;
-            int width = rgb.getWidth();
-            int height = rgb.getHeight();
-            PaletteData paletteData = new PaletteData(0xff, 0xff00, 0xff0000);
-            byte[] bytes = new byte[width*height*3];
-            ImageData data = new ImageData(width, height, 24, paletteData, 1, bytes);
-            byte[] redLine = new byte[width];
-            byte[] greenLine = new byte[width];
-            byte[] blueLine = new byte[width];
-            //System.out.println("length: " + data.data.length);
-            //System.out.println("w*h*3 = " + width + "*" + height + "*3 = " + (width*height*3));
-            int bytepos = 0;
-            for (int y=0; y<height; y++) {
-                rgb.getByteSamples(RGBIndex.INDEX_RED, 0, y, width, 1, redLine, 0);
-                rgb.getByteSamples(RGBIndex.INDEX_GREEN, 0, y, width, 1, greenLine, 0);
-                rgb.getByteSamples(RGBIndex.INDEX_BLUE, 0, y, width, 1, blueLine, 0);
-                for (int x=0; x<width; x++) {
-                    bytes[bytepos++] = blueLine[x];
-                    bytes[bytepos++] = greenLine[x];
-                    bytes[bytepos++] = redLine[x];
-                }
-            }
-            return data;
-        }
-        return null;
-   	
+    	byte[] bytes = BitmapUtil.get8BitBGRData(pixelImage);
+    	if (bytes == null)
+    		return null;
+        PaletteData paletteData = new PaletteData(0xff, 0xff00, 0xff0000);
+        ImageData data = new ImageData(pixelImage.getWidth(), pixelImage.getHeight(),
+        		24, paletteData, 1, bytes);
+        return data;
     }
     
     static Image jiuToSwtImageViaPixels(Device device, PixelImage pixelImage) {

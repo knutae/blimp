@@ -220,12 +220,10 @@ public class MainWindow {
         return addImageViewWithSession(session);
     }
     
-    void fileOpenError(String filename, String errorType, Exception e) {
-		MessageBox msg = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-		msg.setText(errorType + " error");
-		msg.setMessage(errorType + " error while opening file: " + filename + "\n"
+    private void fileOpenError(String filename, String errorType, Exception e) {
+    	SwtUtil.errorDialog(shell, errorType + " error",
+    			errorType + " error while opening file: " + filename + "\n"
 				+ e.getMessage());
-		msg.open();    	
     }
 
     void doMenuOpen() {
@@ -327,27 +325,20 @@ public class MainWindow {
     	String filename = dialog.open();
     	if (filename == null)
     		return;
-    	int format = SWT.IMAGE_UNDEFINED;
     	String ext = Util.getFileExtension(filename);
-    	if (ext.equals("jpeg") || ext.equals("jpg"))
-    		format = SWT.IMAGE_JPEG;
-    	// Saving PNG is not support in current SWT ImageLoader
-    	//else if (ext.equals("png"))
-    	//	format = SWT.IMAGE_PNG;
-    	// Saving TIFF gives strange colors...?
-    	//else if (ext.equals("tiff") || ext.equals("tif"))
-    	//	format = SWT.IMAGE_TIFF;
-    	else if (ext.equals("bmp"))
-    		format = SWT.IMAGE_BMP;
-    	else {
-    		MessageBox box = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-    		box.setText("Image export");
-    		box.setMessage("Unsupported file extension: " + ext);
-    		box.open();
+    	if (!BitmapUtil.canSaveToFormat(ext)) {
+    		SwtUtil.errorDialog(shell, "Image export",
+    				"Unsupported file type: " + ext);
     		return;
     	}
     	BlimpSession session = currentImageTab.imageView.getSession();
-    	ImageConverter.saveBitmap(session.getFullBitmap(), filename, format);
+    	try {
+    		BitmapUtil.writeBitmap(session.getFullBitmap(), ext, filename, 0.9);
+    	}
+    	catch (IOException e) {
+    		SwtUtil.errorDialog(shell, "Image Export",
+    				"An I/O error occured: " + e.getMessage());
+    	}
     }
     
     void doMenuAbout() {
