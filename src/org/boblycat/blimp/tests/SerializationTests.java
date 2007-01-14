@@ -112,6 +112,18 @@ public class SerializationTests {
 	}
 	
 	@Test
+	public void testClone() {
+		DummyLayer layer = new DummyLayer();
+		layer.setIntValue(-4231);
+		layer.setStringValue("A 'string' value!");
+		BlimpBean copy = layer.clone();
+		assertEquals(DummyLayer.class, copy.getClass());
+		DummyLayer layerCopy = (DummyLayer) copy;
+		assertEquals(-4231, layerCopy.getIntValue());
+		assertEquals("A 'string' value!", layerCopy.getStringValue());
+	}
+	
+	@Test
 	public void testFromXmlWithWhiteSpace() throws Exception {
 		String xml =
 			"<layer class=\"org.boblycat.blimp.tests.DummyLayer\">" +

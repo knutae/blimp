@@ -75,10 +75,13 @@ public class Serializer {
     }
 
     public static Element layerToDOM(Layer layer) {
-		Element element = document.createElement("layer");
-		//element.setAttribute("name", layer.getName());
-		element.setAttribute("class", layer.getClass().getName());
-		for (Layer.Property p: layer) {
+    	return beanToDOM(layer);
+	}
+    
+    public static Element beanToDOM(BlimpBean bean) {
+		Element element = document.createElement(bean.elementName());
+		element.setAttribute("class", bean.getClass().getName());
+		for (BlimpBean.Property p: bean) {
 			String name = p.getName();
 			Element property = document.createElement("property");
 			property.setAttribute("name", name);
@@ -86,7 +89,7 @@ public class Serializer {
 			element.appendChild(property);
 		}
 		return element;
-	}
+    }
 	
 	public static String layerToXml(Layer layer) {
 		LSSerializer serializer = domImplLS.createLSSerializer();
@@ -105,13 +108,22 @@ public class Serializer {
 		return layerFromDOM((Element) root);
 	}
 	
+	private static void beanParseFailure(String message) {
+		// todo: create a new exception type
+		throw new RuntimeException(message);
+	}
+
 	private static void layerParseFailure(String message) {
 		// todo: create a new exception type
 		throw new RuntimeException(message);
 	}
 	
-	private static void layerParseWarning(String message) {
+	private static void beanParseWarning(String message) {
 		System.err.println("Warning: " + message);
+	}
+	
+	private static void layerParseWarning(String message) {
+		beanParseWarning(message);
 	}
 	
 	private static String getChildText(Element parent) {
@@ -197,28 +209,39 @@ public class Serializer {
 		}
 	}
 	
-	static Layer newLayerInstance(String className)
+	static BlimpBean newBeanInstance(String className,
+			Class<? extends BlimpBean> baseClass)
 	throws ClassNotFoundException {
-		Class layerClass = Class.forName(className);
-		if (!Layer.class.isAssignableFrom(layerClass))
-			layerParseFailure("layer class not a subclass of Layer: " + className);
-		Layer newLayer = null;
+		Class beanClass = Class.forName(className);
+		if (!baseClass.isAssignableFrom(beanClass))
+			beanParseFailure("class not a subclass of " + baseClass.getName()
+					+ ": " + className);
 		try {
-			newLayer = (Layer) layerClass.newInstance();
+			return (BlimpBean) beanClass.newInstance();
 		}
 		catch (Exception e) {
-			layerParseFailure(e.getMessage());
+			beanParseFailure(e.getMessage());
 		}
-		return newLayer;
+		return null;
+			
 	}
 	
-	public static Layer layerFromDOM(Element layerNode)
-		throws ClassNotFoundException {
-		if (!layerNode.getNodeName().equals("layer"))
-			layerParseFailure("layer node must be named 'layer'");
-		String className = layerNode.getAttribute("class");
-		Layer layer = newLayerInstance(className);
-		for (Node child: new DOMNodeIterator(layerNode, true)) {
+	static Layer newLayerInstance(String className)
+	throws ClassNotFoundException {
+		return (Layer) newBeanInstance(className, Layer.class);
+	}
+	
+	public static BlimpBean beanFromDOM(Element beanNode)
+	throws ClassNotFoundException {
+		String className = beanNode.getAttribute("class");
+		BlimpBean bean = newBeanInstance(className, BlimpBean.class);
+		if (bean == null)
+			beanParseFailure("failed to instantiate bean of class " + className);
+		if (!bean.elementName().equals(beanNode.getNodeName()))
+			beanParseWarning("element name '" + beanNode.getNodeName()
+					+ "' differs from expected bean element '"
+					+ bean.elementName() + "'");
+		for (Node child: new DOMNodeIterator(beanNode, true)) {
 			if (!(child instanceof Element)
 					|| !child.getNodeName().equals("property")) {
 				layerParseWarning("ignoring unrecognized child node ("
@@ -227,13 +250,19 @@ public class Serializer {
 			}
 			Element propertyElement = (Element) child;
 			String propName = propertyElement.getAttribute("name");
-			Layer.Property prop = layer.findProperty(propName);
+			BlimpBean.Property prop = bean.findProperty(propName);
 			if (prop == null)
-				layerParseWarning("property not found: " + propName);
+				beanParseWarning("property not found: " + propName);
 			else
 				propertyValueFromDOM(propertyElement, prop);
-			
 		}
-		return layer;
+		return bean;
+	}
+	
+	public static Layer layerFromDOM(Element layerNode)
+		throws ClassNotFoundException {
+		if (!layerNode.getNodeName().equals("layer"))
+			layerParseFailure("layer node must be named 'layer'");
+		return (Layer) beanFromDOM(layerNode);
 	}
 }
