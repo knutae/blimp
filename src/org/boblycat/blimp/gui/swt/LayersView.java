@@ -84,6 +84,7 @@ public class LayersView extends SashForm {
         editorRegistry.register(CurvesLayer.class, CurvesEditor.class);
         editorRegistry.register(RawFileInputLayer.class, RawInputEditor.class);
         editorRegistry.register(GammaLayer.class, GammaEditor.class);
+        editorRegistry.register(GrayscaleMixerLayer.class, GrayscaleMixerEditor.class);
     }
     
     public void updateWithSession(BlimpSession session, Layer currentLayer,

@@ -44,6 +44,8 @@ public class LayerRegistry implements Iterable<LayerRegistry.LayerInfo> {
 		reg.registerLayer(Color16BitLayer.class, "&16-Bit",
 				"Convert image to 16-bit per color channel");
 		reg.registerLayer(GammaLayer.class, "&Gamma", "Adjust gamma");
+		reg.registerLayer(GrayscaleMixerLayer.class, "&Grayscale Mixer",
+				"Convert to grayscale using an RGB mixer");
 		return reg;
 	}
 }

@@ -58,7 +58,7 @@ public class ValueSlider extends Composite {
 				try {
 					int value = Util.valueOfFixPointDecimal(valueEdit.getText(),
 							digits);
-					setSelectionNoUpdate(value);
+					setSelectionNoUpdate(value, true);
 				}
 				catch (NumberFormatException ex) {
 					// value will be reverted in updateSelection()
@@ -72,7 +72,7 @@ public class ValueSlider extends Composite {
 		scale = new Scale(this, SWT.NONE);
 		scale.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
-				setSelection(scale.getSelection() + minimum);
+				setSelection(scale.getSelection() + minimum, true);
 			}
 		});
 
@@ -136,7 +136,7 @@ public class ValueSlider extends Composite {
 		return maximum;
 	}
 	
-	void setSelectionNoUpdate(int selection) {
+	void setSelectionNoUpdate(int selection, boolean sendSelectionEvent) {
 		//System.out.println("setSelection: " + selection);
 		if (selection < minimum)
 			selection = minimum;
@@ -145,14 +145,20 @@ public class ValueSlider extends Composite {
 		if (selection == this.selection)
 			return;
 		this.selection = selection;
-		Event e = new Event();
-		e.type = SWT.Selection;
-		notifyListeners(SWT.Selection, e);		
+		if (sendSelectionEvent) {
+			Event e = new Event();
+			e.type = SWT.Selection;
+			notifyListeners(SWT.Selection, e);
+		}
 	}
 
-	public void setSelection(int selection) {
-		setSelectionNoUpdate(selection);
+	public void setSelection(int selection, boolean sendSelectionEvent) {
+		setSelectionNoUpdate(selection, sendSelectionEvent);
 		updateSelection();
+	}
+	
+	public void setSelection(int selection) {
+		setSelection(selection, false);
 	}
 
 	public int getSelection() {

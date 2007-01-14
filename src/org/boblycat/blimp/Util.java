@@ -72,4 +72,20 @@ public class Util {
     	return Math.round(fval);
     }
 	
+    public static byte cropToUnsignedByte(int signedIntValue) {
+    	if (signedIntValue < 0)
+    		signedIntValue = 0;
+    	else if (signedIntValue > 255)
+    		signedIntValue = 255;
+    	return (byte) (0xff & signedIntValue);
+    }
+    
+    public static short cropToUnsignedShort(int signedIntValue) {
+    	final int UNSIGNED_SHORT_MAX = 65535;
+    	if (signedIntValue < 0)
+    		signedIntValue = 0;
+    	else if (signedIntValue > UNSIGNED_SHORT_MAX)
+    		signedIntValue = UNSIGNED_SHORT_MAX;
+    	return (short) (0xffff & signedIntValue);
+    }
 }
