@@ -11,10 +11,12 @@ public class RawFileInputLayer extends InputLayer {
 	Bitmap bitmap;
 	String filePath;
 	ColorDepth colorDepth;
+	ColorSpace colorSpace;
 	
 	public RawFileInputLayer() {
 		filePath = "";
 		colorDepth = ColorDepth.Depth8Bit;
+		colorSpace = ColorSpace.sRGB;
 	}
 	
 	public RawFileInputLayer(String filePath) {
@@ -56,6 +58,25 @@ public class RawFileInputLayer extends InputLayer {
 		return colorDepth;
 	}
 	
+	static String dcrawColorSpaceArgument(ColorSpace colorSpace) {
+		if (colorSpace == ColorSpace.Uncalibrated)
+			return "0";
+		else if (colorSpace == ColorSpace.sRGB)
+			return "1";
+		else if (colorSpace == ColorSpace.Adobe)
+			return "2";
+		else if (colorSpace == ColorSpace.AdobeWide)
+			return "3";
+		else if (colorSpace == ColorSpace.ProPhoto)
+			return "4";
+		else if (colorSpace == ColorSpace.XYZ)
+			return "5";
+		else {
+			System.err.println("Warning: unknown color space enum value, falling back to sRGB");
+			return "1";
+		}
+	}
+	
 	public void load() {
 		if (!isActive())
 			return;
@@ -64,6 +85,12 @@ public class RawFileInputLayer extends InputLayer {
 			commandLine.add(dcrawExecutable());
 			if (getColorDepth() == ColorDepth.Depth16Bit)
 				commandLine.add("-4");
+			String colorSpaceArg = dcrawColorSpaceArgument(colorSpace);
+			if (colorSpaceArg != null && colorSpaceArg.length() > 0) {
+				commandLine.add("-o");
+				commandLine.add(colorSpaceArg);
+			}
+			commandLine.add("-h");
 			commandLine.add("-c");
 			commandLine.add(filePath);
 			ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
@@ -97,6 +124,19 @@ public class RawFileInputLayer extends InputLayer {
 
 	public String getDescription() {
 		return Util.getFileNameFromPath(filePath);
+	}
+
+	public void setColorSpace(ColorSpace colorSpace) {
+		if (colorSpace == null)
+			colorSpace = ColorSpace.sRGB;
+		if (colorSpace == this.colorSpace)
+			return;
+		this.colorSpace = colorSpace;
+		bitmap = null;
+	}
+
+	public ColorSpace getColorSpace() {
+		return colorSpace;
 	}
 
 }
