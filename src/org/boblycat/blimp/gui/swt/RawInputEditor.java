@@ -1,7 +1,7 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.ColorDepth;
-import org.boblycat.blimp.RawFileInputLayer;
+import org.boblycat.blimp.layers.RawFileInputLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;

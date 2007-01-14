@@ -2,6 +2,10 @@ package org.boblycat.blimp;
 
 import java.io.File;
 
+import org.boblycat.blimp.layers.FileInputLayer;
+import org.boblycat.blimp.layers.InputLayer;
+import org.boblycat.blimp.layers.RawFileInputLayer;
+
 import edu.stanford.ejalbert.BrowserLauncher;
 
 public class Util {

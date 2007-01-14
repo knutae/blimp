@@ -1,6 +1,10 @@
-package org.boblycat.blimp;
+package org.boblycat.blimp.layers;
 
 import java.util.Vector;
+
+import org.boblycat.blimp.BlimpBean;
+import org.boblycat.blimp.LayerChangeListener;
+import org.boblycat.blimp.LayerEvent;
 
 /**
  * Abstract base class for all layers in Blimp, which includes adjustment layers

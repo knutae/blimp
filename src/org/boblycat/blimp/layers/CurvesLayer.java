@@ -1,6 +1,10 @@
-package org.boblycat.blimp;
+package org.boblycat.blimp.layers;
 
 import java.util.TreeMap;
+
+import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.NaturalCubicSpline;
+import org.boblycat.blimp.PointDouble;
 
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.ops.LookupTableOperation;

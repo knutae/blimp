@@ -3,6 +3,12 @@ package org.boblycat.blimp;
 import java.beans.PropertyDescriptor;
 import java.util.Vector;
 
+import org.boblycat.blimp.layers.AdjustmentLayer;
+import org.boblycat.blimp.layers.InputLayer;
+import org.boblycat.blimp.layers.Layer;
+import org.boblycat.blimp.layers.ResizeLayer;
+import org.boblycat.blimp.layers.ViewResizeLayer;
+
 class ViewportInfo {
     int viewWidth;
     int viewHeight;

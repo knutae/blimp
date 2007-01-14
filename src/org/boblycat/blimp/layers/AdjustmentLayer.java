@@ -1,4 +1,6 @@
-package org.boblycat.blimp;
+package org.boblycat.blimp.layers;
+
+import org.boblycat.blimp.Bitmap;
 
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.ops.ImageToImageOperation;

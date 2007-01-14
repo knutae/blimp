@@ -1,4 +1,6 @@
-package org.boblycat.blimp;
+package org.boblycat.blimp.layers;
+
+import org.boblycat.blimp.Bitmap;
 
 /**
  * An input layer generates a bitmap from some source, such as a file.

@@ -1,7 +1,7 @@
 package org.boblycat.blimp.tests;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.InputLayer;
+import org.boblycat.blimp.layers.InputLayer;
 
 public class DummyInput extends InputLayer {
     String path;

@@ -1,6 +1,9 @@
 package org.boblycat.blimp.tests;
 
 import org.boblycat.blimp.*;
+import org.boblycat.blimp.layers.AdjustmentLayer;
+import org.boblycat.blimp.layers.InputLayer;
+import org.boblycat.blimp.layers.Layer;
 import org.junit.*;
 import static org.junit.Assert.*;
 

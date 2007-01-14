@@ -1,7 +1,7 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.eclipse.swt.widgets.Composite;
-import org.boblycat.blimp.*;
+import org.boblycat.blimp.layers.Layer;
 
 public abstract class LayerEditor extends Composite {
     protected Layer layer;

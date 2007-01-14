@@ -3,6 +3,15 @@ package org.boblycat.blimp;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.boblycat.blimp.layers.AdjustmentLayer;
+import org.boblycat.blimp.layers.BrightnessContrastLayer;
+import org.boblycat.blimp.layers.Color16BitLayer;
+import org.boblycat.blimp.layers.CurvesLayer;
+import org.boblycat.blimp.layers.GammaLayer;
+import org.boblycat.blimp.layers.GrayscaleMixerLayer;
+import org.boblycat.blimp.layers.InvertLayer;
+import org.boblycat.blimp.layers.ResizeLayer;
+
 /**
  * Registry for adjustment layers (not input layers).
  */

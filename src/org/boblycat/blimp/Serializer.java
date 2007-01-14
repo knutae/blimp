@@ -11,6 +11,7 @@ import java.util.Vector;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.boblycat.blimp.layers.Layer;
 import org.w3c.dom.*;
 import org.w3c.dom.ls.*;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;

@@ -1,7 +1,7 @@
 package org.boblycat.blimp.tests;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.AdjustmentLayer;
+import org.boblycat.blimp.layers.AdjustmentLayer;
 
 public class DummyLayer extends AdjustmentLayer {
     public enum Enum {

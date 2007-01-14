@@ -1,6 +1,12 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.*;
+import org.boblycat.blimp.layers.BrightnessContrastLayer;
+import org.boblycat.blimp.layers.CurvesLayer;
+import org.boblycat.blimp.layers.GammaLayer;
+import org.boblycat.blimp.layers.GrayscaleMixerLayer;
+import org.boblycat.blimp.layers.Layer;
+import org.boblycat.blimp.layers.RawFileInputLayer;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;

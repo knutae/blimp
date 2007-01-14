@@ -1,9 +1,13 @@
-package org.boblycat.blimp;
+package org.boblycat.blimp.layers;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.Vector;
 //import net.sourceforge.jiu.codecs.PNMCodec;
+import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.ColorDepth;
+import org.boblycat.blimp.ColorSpace;
+import org.boblycat.blimp.Util;
 import org.boblycat.blimp.jiu.PNMCodec;
 import net.sourceforge.jiu.ops.OperationFailedException;
 

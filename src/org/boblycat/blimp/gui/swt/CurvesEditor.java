@@ -1,9 +1,9 @@
 package org.boblycat.blimp.gui.swt;
 
-import org.boblycat.blimp.CurvesLayer;
 import org.boblycat.blimp.NaturalCubicSpline;
 import org.boblycat.blimp.PointDouble;
 import org.boblycat.blimp.Util;
+import org.boblycat.blimp.layers.CurvesLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;

@@ -7,6 +7,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.boblycat.blimp.*;
+import org.boblycat.blimp.layers.CurvesLayer;
+import org.boblycat.blimp.layers.Layer;
 import org.junit.*;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;

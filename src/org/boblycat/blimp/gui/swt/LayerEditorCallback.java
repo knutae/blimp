@@ -1,6 +1,6 @@
 package org.boblycat.blimp.gui.swt;
 
-import org.boblycat.blimp.Layer;
+import org.boblycat.blimp.layers.Layer;
 
 /**
  * A simple callback interface for layer editors.

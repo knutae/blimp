@@ -2,6 +2,8 @@ package org.boblycat.blimp;
 
 import java.util.EventObject;
 
+import org.boblycat.blimp.layers.Layer;
+
 public class LayerEvent extends EventObject {
     private Layer layer;
 
