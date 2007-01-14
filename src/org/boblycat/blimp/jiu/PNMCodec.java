@@ -352,7 +352,6 @@ public class PNMCodec extends ImageCodec
 					}
 					return result;
 				}
-				StringBuffer sb = new StringBuffer();
 				do
 				{
 					b = in.read();
@@ -423,7 +422,7 @@ public class PNMCodec extends ImageCodec
 		int pixelsToSkip = width * getBoundsY1();
 		for (int i = 0; i < pixelsToSkip; i++)
 		{
-			int value = loadAsciiNumber();
+			loadAsciiNumber();
 		}
 		final int NUM_ROWS = getBoundsHeight();
 		final int COLUMNS = getBoundsWidth();
@@ -469,7 +468,7 @@ public class PNMCodec extends ImageCodec
 		// instead the following while loop is used
 		while (bytesToSkip-- > 0)
 		{
-			int value = in.read();
+			in.read();
 		}
 		// allocate buffer large enough for a complete row
 		byte[] row = new byte[bytesPerRow];
