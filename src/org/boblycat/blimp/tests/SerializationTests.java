@@ -59,6 +59,7 @@ public class SerializationTests {
 	public void testToXml() throws Exception {
 		DummyLayer layer = new DummyLayer();
 		layer.setIntValue(42);
+		layer.setDoubleValue(-3.13);
 		layer.setStringValue("abcDEF");
 		layer.setEnumValue(DummyLayer.Enum.TWO);
 		String xml = Serializer.layerToXml(layer);
@@ -72,7 +73,7 @@ public class SerializationTests {
 		// The following is very strict: check the exact number of layer
 		// properties.  If more properties are added to Layer in the future,
 		// the test will have to be extended. 
-		assertEquals(4, root.getChildNodes().getLength());
+		assertEquals(5, root.getChildNodes().getLength());
 		
 		Element child = (Element) root.getFirstChild();
 		assertEquals("property", child.getNodeName());
@@ -81,6 +82,13 @@ public class SerializationTests {
 		Text textNode = (Text) child.getFirstChild();
 		assertEquals("true", textNode.getNodeValue());
 		
+		child = (Element) child.getNextSibling();
+		assertEquals("property", child.getNodeName());
+		assertEquals("doubleValue", child.getAttribute("name"));
+		assertNotNull(child.getFirstChild());
+		textNode = (Text) child.getFirstChild();
+		assertEquals("-3.13", textNode.getNodeValue());
+
 		child = (Element) child.getNextSibling();
 		assertEquals("property", child.getNodeName());
 		assertEquals("enumValue", child.getAttribute("name"));
@@ -111,6 +119,7 @@ public class SerializationTests {
 			"  <property name=\"intValue\">-33</property>" +
 			"  <property name=\"stringValue\">Ouagadougou</property>" +
 			"  <property name=\"enumValue\">THREE</property>" +
+			"  <property name=\"doubleValue\">42.43</property>" +
 			"</layer>";
 		Layer layer = Serializer.layerFromXml(xml);
 		assertNotNull(layer);
@@ -120,6 +129,7 @@ public class SerializationTests {
 		assertEquals(-33, dummyLayer.getIntValue());
 		assertEquals("Ouagadougou", dummyLayer.getStringValue());
 		assertEquals(DummyLayer.Enum.THREE, dummyLayer.getEnumValue());
+		assertEquals(42.43, dummyLayer.getDoubleValue());
 	}
 	
 	@Test

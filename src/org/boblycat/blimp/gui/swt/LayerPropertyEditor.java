@@ -267,6 +267,8 @@ public class LayerPropertyEditor extends Composite {
     		return Integer.valueOf(strValue);
     	else if (propertyClass == Boolean.class || propertyClass == Boolean.TYPE)
     		return Boolean.valueOf(strValue);
+    	else if (propertyClass == Double.class || propertyClass == Double.TYPE)
+    		return Double.valueOf(strValue);
     	else if (propertyClass == PointDouble.class)
     		return PointDouble.valueOfCommaString(strValue);
     	else if (propertyClass.isEnum()) {

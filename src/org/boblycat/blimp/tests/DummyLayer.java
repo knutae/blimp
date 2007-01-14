@@ -7,6 +7,7 @@ public class DummyLayer extends AdjustmentLayer {
 	public enum Enum { ONE, TWO, THREE };
 
 	int intValue;
+	double doubleValue;
 	String stringValue;
 	Enum enumValue;
 	
@@ -16,6 +17,14 @@ public class DummyLayer extends AdjustmentLayer {
 	
 	public int getIntValue() {
 		return intValue;
+	}
+	
+	public void setDoubleValue(double d) {
+		doubleValue = d;
+	}
+	
+	public double getDoubleValue() {
+		return doubleValue;
 	}
 	
 	public void setStringValue(String str) {

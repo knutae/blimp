@@ -40,4 +40,32 @@ public class Util {
     	else
     		return new FileInputLayer(filePath);
     }
+
+    public static String fixPointDecimalToString(int value, int digits) {
+    	if (value < 0)
+    		return '-' + fixPointDecimalToString(-value, digits);
+		String ivalue = Integer.toString(value);
+		if (digits <= 0)
+			return ivalue;
+		int len = ivalue.length();
+		if (len <= digits) {
+			StringBuffer buf = new StringBuffer("0.");
+			for (int i=len; i<digits; i++)
+				buf.append('0');
+			buf.append(ivalue);
+			return buf.toString();
+		}
+		return ivalue.substring(0, len-digits) + '.'
+			+ ivalue.substring(len-digits);
+	}
+    
+    public static int valueOfFixPointDecimal(String str, int digits)
+    throws NumberFormatException {
+    	// TODO: avoid using float as an intermediate value
+    	float fval = Float.valueOf(str);
+    	for (int i=0; i<digits; i++)
+    		fval *= 10;
+    	return Math.round(fval);
+    }
+	
 }

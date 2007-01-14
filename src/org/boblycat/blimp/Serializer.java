@@ -149,6 +149,8 @@ public class Serializer {
 			return Integer.valueOf(strValue);
 		else if (propertyClass == Boolean.class || propertyClass == Boolean.TYPE)
 			return Boolean.valueOf(strValue);
+		else if (propertyClass == Double.class || propertyClass == Double.TYPE)
+			return Double.valueOf(strValue);
 		else if (propertyClass.isEnum()) {
 			if (strValue.length() == 0)
 				return null;
