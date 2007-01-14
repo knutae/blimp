@@ -12,15 +12,26 @@ import org.boblycat.blimp.jiu.PNMCodec;
 import net.sourceforge.jiu.ops.OperationFailedException;
 
 public class RawFileInputLayer extends InputLayer {
+    public enum Quality {
+        HalfSize,
+        Low,
+        Normal,
+        High,
+    }
+    
+    private static Quality DEFAULT_QUALITY = Quality.Normal;
+    
     Bitmap bitmap;
     String filePath;
     ColorDepth colorDepth;
     ColorSpace colorSpace;
+    Quality quality;
 
     public RawFileInputLayer() {
         filePath = "";
         colorDepth = ColorDepth.Depth8Bit;
         colorSpace = ColorSpace.sRGB;
+        quality = DEFAULT_QUALITY;
     }
 
     public RawFileInputLayer(String filePath) {
@@ -61,6 +72,17 @@ public class RawFileInputLayer extends InputLayer {
             colorDepth = ColorDepth.Depth8Bit;
         return colorDepth;
     }
+    
+    public void setQuality(Quality q) {
+        if (q == null || q == quality)
+            return;
+        quality = q;
+        bitmap = null;
+    }
+    
+    public Quality getQuality() {
+        return quality;
+    }
 
     static String dcrawColorSpaceArgument(ColorSpace colorSpace) {
         if (colorSpace == ColorSpace.Uncalibrated)
@@ -95,7 +117,21 @@ public class RawFileInputLayer extends InputLayer {
                 commandLine.add("-o");
                 commandLine.add(colorSpaceArg);
             }
-            commandLine.add("-h");
+            if (quality == Quality.HalfSize) {
+                commandLine.add("-h");
+            }
+            else if (quality == Quality.Low) {
+                commandLine.add("-q");
+                commandLine.add("0");
+            }
+            else if (quality == Quality.Normal) {
+                commandLine.add("-q");
+                commandLine.add("2");
+            }
+            else if (quality == Quality.High) {
+                commandLine.add("-q");
+                commandLine.add("3");
+            }
             commandLine.add("-c");
             commandLine.add(filePath);
             ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
