@@ -52,6 +52,8 @@ public class Serializer {
 	}
 	
     public static String propertyValueToString(Object value) {
+    	if (value == null)
+    		return "";
     	Class pClass = value.getClass();
     	if (pClass == PointDouble.class)
     		return ((PointDouble) value).toCommaString();
@@ -147,6 +149,18 @@ public class Serializer {
 			return Integer.valueOf(strValue);
 		else if (propertyClass == Boolean.class || propertyClass == Boolean.TYPE)
 			return Boolean.valueOf(strValue);
+		else if (propertyClass.isEnum()) {
+			if (strValue.length() == 0)
+				return null;
+			//return Enum.valueOf(propertyClass, strValue); // doesn't work
+			// This works, but is potentially slow
+			for (Object enumObj: propertyClass.getEnumConstants()) {
+				if (strValue.equals(enumObj.toString()))
+					return enumObj;
+			}
+			layerParseWarning("Unknown enum value " + strValue);
+			return null;
+		}
 		else if (propertyClass == PointDouble.class)
 			return PointDouble.valueOfCommaString(strValue);
 		layerParseWarning("Unsupported property type " + propertyClass.getName());
