@@ -12,11 +12,11 @@ import java.lang.reflect.Array;
 import java.util.Vector;
 
 public class LayerPropertyEditor extends Composite {
+    final int VALUE_COLUMN = 1;
     Layer layer;
     Tree propertyTree;
     TreeEditor treeEditor;
     TreeItem editedItem;
-    Text textEditor;
     Vector <Layer.Property> layerProperties;
     Menu contextMenu;
     MenuItem menuAddValue;
@@ -66,25 +66,80 @@ public class LayerPropertyEditor extends Composite {
         propertyTree.setMenu(contextMenu);
     }
     
+    String[] getEnumValuesForItem(TreeItem item) {
+    	if (item.getParentItem() != null)
+    		// enums not supported for subitems yet
+    		return null;
+    	int index = propertyTree.indexOf(item);
+    	if (index < 0 || index >= layerProperties.size())
+    		return null;
+    	Layer.Property prop = layerProperties.get(index);
+    	Class propClass = prop.getPropertyClass();
+    	if (propClass == Boolean.class || propClass == Boolean.TYPE) {
+    		return new String[] { "true", "false" };
+    	}
+    	else if (propClass.isEnum()) {
+    		Object[] enums = propClass.getEnumConstants();
+    		String[] values = new String[enums.length];
+    		for (int i = 0; i < enums.length; i++)
+    			values[i] = enums[i].toString();
+    		return values;
+    	}
+    	return null;
+    }
+    
+    void setTreeEditor(Control editor) {
+    	treeEditor.setEditor(editor, editedItem, VALUE_COLUMN);
+    }
+    
+    void disposeOldEditor() {
+        Control oldEditor = treeEditor.getEditor();
+        if (oldEditor != null) {
+        	//System.out.println("disposing old editor");
+        	oldEditor.dispose();
+        }    	
+    }
+    
     void startEditing() {
-        final int VALUE_COLUMN = 1;
+        disposeOldEditor();
+
         if (editedItem == null)
             return;
         if (editedItem.getItemCount() > 0)
-        	return;
+        	return;        
         
-        if (textEditor == null) {
-        	textEditor = new Text(propertyTree, SWT.NONE);
+        String[] enumValues = getEnumValuesForItem(editedItem);
+        if (enumValues != null) {
+        	//System.out.println("combo editor...");
+        	Combo comboEditor = new Combo(propertyTree, SWT.DROP_DOWN);
+        	Listener comboListener = new Listener() {
+        		public void handleEvent(Event e) {
+        			assert(e.widget instanceof Combo);
+        			Combo c = (Combo) e.widget;
+        			cellEdited(c.getText());
+        		}
+        	};
+        	comboEditor.addListener(SWT.Selection, comboListener);
+        	comboEditor.addListener(SWT.DefaultSelection, comboListener);
+        	for (String val: enumValues)
+        		comboEditor.add(val);
+        	comboEditor.setText(editedItem.getText(VALUE_COLUMN));
+        	comboEditor.setFocus();
+        	setTreeEditor(comboEditor);
+        }
+        else {
+        	//System.out.println("text editor...");
+            Text textEditor = new Text(propertyTree, SWT.NONE);
             textEditor.addListener(SWT.DefaultSelection, new Listener() {
-                public void handleEvent(Event se) {
-                    cellEdited(textEditor.getText());
+                public void handleEvent(Event e) {
+                	cellEdited(e.text);
                 }
             });
+            textEditor.setText(editedItem.getText(VALUE_COLUMN));
+            textEditor.selectAll();
+            textEditor.setFocus();
+            setTreeEditor(textEditor);        	
         }
-        textEditor.setText(editedItem.getText(VALUE_COLUMN));
-        textEditor.selectAll();
-        textEditor.setFocus();
-        treeEditor.setEditor(textEditor, editedItem, VALUE_COLUMN);
     }
     
     void doMenuAddValue() {
@@ -120,6 +175,7 @@ public class LayerPropertyEditor extends Composite {
     
     public void setLayer(Layer layer) {
         this.layer = layer;
+        disposeOldEditor();
         propertyTree.removeAll();
         layerProperties.clear();
         if (layer == null)
@@ -185,25 +241,20 @@ public class LayerPropertyEditor extends Composite {
 
     void cellEdited(String newText) {
         //System.out.println("new text: " + newText);
-        try {
-        	TreeItem parentItem = editedItem.getParentItem();
-        	if (parentItem != null) {
-        		subTreeEdited(parentItem, newText);
-        	}
-        	else {
-            	int index = propertyTree.indexOf(editedItem);
-    	        if ((index < 0) || (index >= layerProperties.size()))
-    	            return;
-    	        Layer.Property prop = layerProperties.get(index);
-    	        tryApplyTextValue(prop, newText);
-    	        Object val = prop.getValue();
-   	            if (val != null)
-   	                editedItem.setText(1, propertyValueToString(val));
-        	}
-        }
-        finally {
-        	textEditor.setVisible(false);
-        }
+    	TreeItem parentItem = editedItem.getParentItem();
+    	if (parentItem != null) {
+    		subTreeEdited(parentItem, newText);
+    	}
+    	else {
+        	int index = propertyTree.indexOf(editedItem);
+	        if ((index < 0) || (index >= layerProperties.size()))
+	            return;
+	        Layer.Property prop = layerProperties.get(index);
+	        tryApplyTextValue(prop, newText);
+	        Object val = prop.getValue();
+	            if (val != null)
+	                editedItem.setText(1, propertyValueToString(val));
+    	}
     }
     
     Object parsePropertyValue(Class propertyClass, String strValue)
@@ -217,6 +268,14 @@ public class LayerPropertyEditor extends Composite {
     		return Boolean.valueOf(strValue);
     	else if (propertyClass == PointDouble.class)
     		return PointDouble.valueOfCommaString(strValue);
+    	else if (propertyClass.isEnum()) {
+    		for (Object enumConst: propertyClass.getEnumConstants()) {
+    			if (enumConst.toString().equals(strValue))
+    				return enumConst;
+    		}
+    		System.err.println("Unknown enum value " + strValue);
+    		return null;
+    	}
     	System.err.println("Unsupported property type " + propertyClass.getName());
     	return null;
     }
