@@ -16,8 +16,8 @@ public class ImageView extends Composite {
     int paintCounter;
     CLabel zoomLabel;
     
-    public ImageView(Composite parent) {
-        super(parent, SWT.NONE);
+    public ImageView(Composite parent, int style, BlimpSession aSession) {
+        super(parent, style);
 
         Listener redrawListener = new Listener() {
         	public void handleEvent(Event e) {
@@ -117,7 +117,10 @@ public class ImageView extends Composite {
         setLayout(new FormLayout());
         
         // Create session
-        session = new BlimpSession();
+        if (aSession != null)
+        	session = aSession;
+        else
+        	session = new BlimpSession();
         session.addChangeListener(new LayerChangeListener() {
             public void handleChange(LayerEvent event) {
             	//invalidateImage();

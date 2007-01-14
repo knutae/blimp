@@ -6,6 +6,9 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.events.*;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 import java.util.Vector;
 
 class ImageTab {
@@ -25,6 +28,8 @@ public class MainWindow {
     Listener menuItemListener;
     MenuItem menuFileOpen;
     MenuItem menuFileExit;
+    MenuItem menuFileSaveSession;
+    MenuItem menuFileExportImage;
     CTabFolder mainTabFolder;
     CTabFolder rightTabFolder;
     LayersView layers;
@@ -49,6 +54,9 @@ public class MainWindow {
             }
             else if (event.widget == menuFileExit) {
                 doMenuExit();
+            }
+            else if (event.widget == menuFileSaveSession) {
+            	doMenuSaveSession();
             }
             else if (event.widget instanceof MenuItem) {
         		MenuItem item = (MenuItem) event.widget;
@@ -100,8 +108,19 @@ public class MainWindow {
         Menu fileMenu = new Menu(shell, SWT.DROP_DOWN);
         fileItem.setMenu(fileMenu);
         fileMenu.addListener(SWT.Hide, menuHideListener);
-        menuFileOpen = addMenuItem(fileMenu, "&Open", "Open an image");
+        menuFileOpen = addMenuItem(fileMenu, "&Open", "Open an image or a project");
+        menuFileSaveSession = addMenuItem(fileMenu, "&Save Project",
+        		"Save the current project");
+        menuFileExportImage = addMenuItem(fileMenu, "&Export Image",
+        		"Export the current image");
         menuFileExit = addMenuItem(fileMenu, "E&xit", "Exit the program");
+        fileMenu.addListener(SWT.Show, new Listener() {
+        	public void handleEvent(Event e) {
+        		boolean canSave = (currentImageTab != null);
+        		menuFileSaveSession.setEnabled(canSave);
+        		menuFileExportImage.setEnabled(canSave);
+        	}
+        });
         
         MenuItem layerItem = new MenuItem(bar, SWT.CASCADE);
         layerItem.setText("Add &Layer");
@@ -170,60 +189,117 @@ public class MainWindow {
         display.dispose();
     }
     
-    ImageView addImageView(String filename) {
-        ImageView imageView = new ImageView(mainTabFolder);
-        //imageView.getSession().openFile(filename);
-        InputLayer input = Util.getInputLayerFromFile(filename);
-        if (input instanceof RawFileInputLayer)
-        	input.setActive(false); // TODO: quick hack for raw input, improve
-        imageView.getSession().setInput(input);
+    ImageView addImageViewWithSession(BlimpSession session) {
+        ImageView imageView = new ImageView(mainTabFolder, SWT.NONE, session);
         CTabItem item = new CTabItem(mainTabFolder, SWT.CLOSE);
         item.setText(imageView.getSession().getDescription());
         item.setControl(imageView);
         mainTabFolder.setSelection(item);
         currentImageTab = new ImageTab(item, imageView);
         imageTabs.add(currentImageTab);
-        return imageView;
+        return imageView;    	
+    }
+    
+    ImageView addImageView(String imageFilename) {
+        InputLayer input = Util.getInputLayerFromFile(imageFilename);
+        if (input instanceof RawFileInputLayer)
+        	input.setActive(false); // TODO: quick hack for raw input, improve
+        BlimpSession session = new BlimpSession();
+        session.setInput(input);
+        return addImageViewWithSession(session);
+    }
+    
+    void fileOpenError(String filename, String errorType, Exception e) {
+		MessageBox msg = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+		msg.setText(errorType + " error");
+		msg.setMessage(errorType + " error while opening file: " + filename + "\n"
+				+ e.getMessage());
+		msg.open();    	
     }
 
     void doMenuOpen() {
         //status("File->Open");
         FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-        dialog.setFilterNames(new String[] {"Images (jpeg, tiff, png, gif, bmp, raw, dng, crw, cr2)", "All Files"});
+        dialog.setFilterNames(new String[] {
+        		"Images (jpeg, tiff, png, gif, bmp, raw, dng, crw, cr2)",
+        		"Blimp projects (blimp)",
+        		"All Files"});
         // the following is MS windows-specific
-        dialog.setFilterExtensions(new String[] {"*.jpg;*.jpeg;*.tiff;*.tif;*.png;*.gif;*.bmp;*.raw;*.dng;*.crw;*.cr2", "*.*"});
+        dialog.setFilterExtensions(new String[] {
+        		"*.jpg;*.jpeg;*.tiff;*.tif;*.png;*.gif;*.bmp;*.raw;*.dng;*.crw;*.cr2",
+        		"*.blimp",
+        		"*.*"});
         String filename = dialog.open();
-        if (filename != null) {
-            ImageView imageView = addImageView(filename);
-            BlimpSession session = imageView.getSession();
-            layers.updateWithSession(session, session.getInput(),
-            		new LayerEditorCallback() {
-            	public void editingFinished(Layer layer, boolean cancelled) {
-        			ImageTab tab = currentImageTab;
-            		if (cancelled) {
-            			tab.item.dispose();
-            		}
-            		else if (layer instanceof RawFileInputLayer) {
-            			RawFileInputLayer rawInput = (RawFileInputLayer) layer;
-            			if (rawInput.getColorDepth() == ColorDepth.Depth16Bit) {
-            				// Automatically add a gamma layer for 16-bit raw input,
-            				// because dcraw 16-bit output is not gamma corrected
-            				// (linear color mapping).
-            				GammaLayer gamma = new GammaLayer();
-            				gamma.setGamma(2.2);
-            				tab.imageView.getSession().addLayer(gamma);
-            				layers.refresh();
-            			}
-            		}
-            	}
-            });
-            //layers.updateWithSession(session, null);
-            imageView.invalidateImage();
+        if (filename == null)
+        	return;
+        
+        if (filename.toLowerCase().endsWith(".blimp")) {
+        	// open a saved session
+        	try {
+        		BlimpSession session = (BlimpSession)
+        			Serializer.loadBeanFromFile(filename);
+        		addImageViewWithSession(session);
+        		layers.updateWithSession(session, null, null);
+        	}
+        	catch (ClassCastException e) {
+        		fileOpenError(filename, "Class cast", e);
+        	}
+        	catch (ClassNotFoundException e) {
+        		fileOpenError(filename, "Class not found", e);
+        	}
+        	catch (IOException e) {
+        		fileOpenError(filename, "I/O", e);
+        	}
+        	catch (SAXException e) {
+        		fileOpenError(filename, "XML parse", e);
+        	}
+        	return;
         }
+
+        // open an image
+        ImageView imageView = addImageView(filename);
+        BlimpSession session = imageView.getSession();
+        layers.updateWithSession(session, session.getInput(),
+        		new LayerEditorCallback() {
+        	public void editingFinished(Layer layer, boolean cancelled) {
+    			ImageTab tab = currentImageTab;
+        		if (cancelled) {
+        			tab.item.dispose();
+        		}
+        		else if (layer instanceof RawFileInputLayer) {
+        			RawFileInputLayer rawInput = (RawFileInputLayer) layer;
+        			if (rawInput.getColorDepth() == ColorDepth.Depth16Bit) {
+        				// Automatically add a gamma layer for 16-bit raw input,
+        				// because dcraw 16-bit output is not gamma corrected
+        				// (linear color mapping).
+        				GammaLayer gamma = new GammaLayer();
+        				gamma.setGamma(2.2);
+        				tab.imageView.getSession().addLayer(gamma);
+        				layers.refresh();
+        			}
+        		}
+        	}
+        });
+        //layers.updateWithSession(session, null);
+        imageView.invalidateImage();
     }
     
     void doMenuExit() {
         shell.close();
+    }
+    
+    void doMenuSaveSession() {
+    	if (currentImageTab == null)
+    		return;
+    	FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+    	dialog.setFilterNames(new String[] {"Blimp projects (*.blimp)"});
+    	dialog.setFilterExtensions(new String[] {"*.blimp"});
+    	String filename = dialog.open();
+    	if (filename == null)
+    		return;
+    	BlimpSession session = currentImageTab.imageView.getSession();
+    	Serializer.saveBeanToFile(session, filename);
+    	
     }
     
     void status(String msg) {

@@ -1,8 +1,12 @@
 package org.boblycat.blimp;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Array;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -316,5 +320,43 @@ public class Serializer {
 	public static Layer layerFromDOM(Element layerNode)
 		throws ClassNotFoundException {
 		return (Layer) beanFromDOM(layerNode);
+	}
+	
+	/**
+	 * Save the bean in XML format to the given file.
+	 * @param bean The bean to save.
+	 * @param filename File to save.
+	 */
+	public static void saveBeanToFile(BlimpBean bean, String filename) {
+		try {
+			LSSerializer serializer = domImplLS.createLSSerializer();
+			URI uri = new URI("file", filename, null);
+			serializer.writeToURI(beanToDOM(bean), uri.toString());
+		}
+		catch (URISyntaxException e) {
+			// should never happen?
+			e.printStackTrace();
+			assert(false);
+		}
+	}
+	
+	/**
+	 * Load the bean from the given file, which must be in XML format.
+	 * @param filename File to load.
+	 * @return A new bean object.
+	 * @throws FileNotFoundException If the file does not exist.
+	 * @throws SAXException If the XML parsing fails.
+	 * @throws IOException If a file expection occurs.
+	 * @throws ClassNotFoundException If the bean class is not known.
+	 */
+	public static BlimpBean loadBeanFromFile(String filename)
+	throws FileNotFoundException, SAXException, IOException, ClassNotFoundException
+	{
+		FileReader reader = new FileReader(filename);
+		Document doc = documentBuilder.parse(new InputSource(reader));
+		Node root = doc.getFirstChild();
+		if ((root == null) || !(root instanceof Element))
+			layerParseFailure("unknown XML parse error");
+		return layerFromDOM((Element) root);
 	}
 }
