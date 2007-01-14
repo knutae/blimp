@@ -20,11 +20,11 @@ class ViewportInfo {
 		return autoZoomFactor;
 	}
 	
-	static ResizeLayer resizeLayerFromZoom(ZoomFactor zoom, int w, int h) {
-		return new ResizeLayer(zoom.scale(w), zoom.scale(h), true);
+	static ViewResizeLayer resizeLayerFromZoom(ZoomFactor zoom, int w, int h) {
+		return new ViewResizeLayer(zoom.scale(w), zoom.scale(h), true);
 	}
 	
-	ResizeLayer getResizeLayer(int imageWidth, int imageHeight) {
+	ViewResizeLayer getResizeLayer(int imageWidth, int imageHeight) {
 		if (!isActive())
 			return null;
 		if (zoomFactor == null)
@@ -63,7 +63,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     Bitmap applyViewport(Bitmap bm) {
     	if (bm == null)
     		return null;
-    	ResizeLayer resize = viewport.getResizeLayer(bm.getWidth(), bm.getHeight());
+    	ViewResizeLayer resize = viewport.getResizeLayer(bm.getWidth(), bm.getHeight());
     	if (resize != null)
     		return resize.applyLayer(bm);
     	return bm;

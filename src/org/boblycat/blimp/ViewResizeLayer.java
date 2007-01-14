@@ -2,11 +2,15 @@ package org.boblycat.blimp;
 
 import net.sourceforge.jiu.geometry.ScaleReplication;
 
-public class ResizeLayer extends AdjustmentLayer {
+/**
+ * A fast resize layer for e.g. zooming in the image view.
+ * @author Knut Arild Erstad
+ */
+public class ViewResizeLayer extends AdjustmentLayer {
     int width, height;
     boolean keepAspect;
     
-    public ResizeLayer(int width, int height, boolean keepAspect) {
+    public ViewResizeLayer(int width, int height, boolean keepAspect) {
         this.width = width;
         this.height = height;
         this.keepAspect = keepAspect;
