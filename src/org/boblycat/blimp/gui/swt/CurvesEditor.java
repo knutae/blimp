@@ -93,6 +93,7 @@ public class CurvesEditor extends LayerEditor {
                 // copy image
                 e.gc.drawImage(tmpImage, 0, 0);
                 tmpImage.dispose();
+                gc.dispose();
             }
         });
 
