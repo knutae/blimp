@@ -73,19 +73,41 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     	currentBitmap = generateBitmap(true);
     }
     
+    ResizeLayer getResizeLayer() {
+    	for (Layer layer: layerList)
+    		if (layer instanceof ResizeLayer)
+    			return (ResizeLayer) layer;
+    	return null;
+    }
+    
     Bitmap generateBitmap(boolean useViewport) {
+    	InputLayer input = getInput();
+    	if (input == null) {
+    		System.err.println("No input!");
+    		return null;
+    	}
+   		if (!input.isActive()) {
+			// non-active input layer: abort
+   			return null;
+   		}
     	Bitmap bm = null;
+   		bm = input.getBitmap();
+   		if (bm == null) {
+   			System.err.println("Input failed!");
+   			return null;
+   		}
+   		// TODO: let a view quality setting decide when/how to resize
+    	ResizeLayer resize = getResizeLayer();
+    	if (resize != null && resize.isActive())
+    		bm = resize.applyLayer(bm);
+    	if (useViewport)
+    		bm = applyViewport(bm);
+    	
     	for (Layer layer: layerList) {
+    		if (layer == input || layer == resize)
+    			continue;
             if (layer instanceof InputLayer) {
-            	if (bm != null)
-            		System.err.println("Warning: more than one input layer?");
-        		if (!layer.isActive())
-        			// non-active input layer: abort
-        			break;
-            	InputLayer input = (InputLayer) layer;
-            	bm = input.getBitmap();
-            	if (useViewport)
-            		bm = applyViewport(bm);
+           		System.err.println("Warning: more than one input layer?");
             }
             else if (layer.isActive() && layer instanceof AdjustmentLayer) {
             	if (bm == null) {

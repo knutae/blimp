@@ -46,6 +46,7 @@ public class LayerRegistry implements Iterable<LayerRegistry.LayerInfo> {
 		reg.registerLayer(GammaLayer.class, "&Gamma", "Adjust gamma");
 		reg.registerLayer(GrayscaleMixerLayer.class, "&Grayscale Mixer",
 				"Convert to grayscale using an RGB mixer");
+		reg.registerLayer(ResizeLayer.class, "&Resize", "Resize Image");
 		return reg;
 	}
 }
