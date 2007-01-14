@@ -52,6 +52,7 @@
         <pathelement location="${build}"/>
     	<pathelement location="${xerces.jar}"/>
         <pathelement location="${jiu.jar}"/>
+    	<pathelement location="${browser.jar}"/>
     </path>
     
     <target name="init">
