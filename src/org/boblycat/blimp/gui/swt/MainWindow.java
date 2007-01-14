@@ -125,13 +125,14 @@ public class MainWindow {
         
         // Main GUI with two notebooks
         //int bottomHeight = statusLabel.getSize().y;
-        int bottomHeight = 20;
+        //int bottomHeight = 20;
         SashForm sashForm = new SashForm(shell, SWT.HORIZONTAL);
         FormData formData = new FormData();
         formData.left = new FormAttachment(0);
         formData.right = new FormAttachment(100);
         formData.top = new FormAttachment(0);
-        formData.bottom = new FormAttachment(100, -bottomHeight);
+        //formData.bottom = new FormAttachment(100, -bottomHeight);
+        formData.bottom = new FormAttachment(statusLabel, -2);
         sashForm.setLayoutData(formData);
         
         mainTabFolder = new CTabFolder(sashForm, SWT.TOP| SWT.BORDER | SWT.CLOSE);

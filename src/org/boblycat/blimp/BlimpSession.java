@@ -59,6 +59,15 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     }
     */
     
+    void applyViewport() {
+    	if (currentBitmap == null)
+    		return;
+    	ResizeLayer resize = viewport.getResizeLayer(currentBitmap.getWidth(),
+    			currentBitmap.getWidth());
+    	if (resize != null)
+    		currentBitmap = resize.applyLayer(currentBitmap);
+    }
+    
     public void applyLayers() {
     	currentBitmap = null;
     	for (Layer layer: layerList) {
@@ -70,12 +79,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         			break;
             	InputLayer input = (InputLayer) layer;
             	currentBitmap = input.getBitmap();
-            	if (currentBitmap != null) {
-            		ResizeLayer tmpResize = viewport.getResizeLayer(
-            				currentBitmap.getWidth(), currentBitmap.getWidth());
-            		if (tmpResize != null)
-            			currentBitmap = tmpResize.applyLayer(currentBitmap);
-            	}
+            	applyViewport();
             }
             else if (layer.isActive() && layer instanceof AdjustmentLayer) {
             	if (currentBitmap == null) {

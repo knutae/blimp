@@ -110,7 +110,7 @@ public class CurvesEditor extends LayerEditor {
 				PointDouble p = canvasToSplinePos(e.x, e.y);
 				double closest = spline.findClosestPoint(p.x);
 				if (e.button == 1) {
-					// left mouse button: add or remove point
+					// left mouse button: add or move point
 					if (almostEqual(closest, p.x)) {
 						// move existing point
 						currentPointX = closest;
