@@ -20,7 +20,7 @@ public class ResizeLayer extends AdjustmentLayer {
 
     static final Filter DEFAULT_FILTER = Filter.Lanczos3;
 
-    static final int DEFAULT_SIZE = 500;
+    static final int DEFAULT_SIZE = 640;
 
     Filter resampleFilter;
 
