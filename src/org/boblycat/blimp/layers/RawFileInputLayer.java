@@ -19,6 +19,13 @@ public class RawFileInputLayer extends InputLayer {
         High,
     }
     
+    public enum WhiteBalance {
+        Camera, // as shot
+        Auto,
+        // TODO: add many more, including custom white balance
+        // Need camera-specific tables to make this user friendly.
+    }
+    
     private static Quality DEFAULT_QUALITY = Quality.Normal;
     
     Bitmap bitmap;
@@ -26,12 +33,14 @@ public class RawFileInputLayer extends InputLayer {
     ColorDepth colorDepth;
     ColorSpace colorSpace;
     Quality quality;
+    WhiteBalance whiteBalance;
 
     public RawFileInputLayer() {
         filePath = "";
         colorDepth = ColorDepth.Depth8Bit;
         colorSpace = ColorSpace.sRGB;
         quality = DEFAULT_QUALITY;
+        whiteBalance = WhiteBalance.Camera;
     }
 
     public RawFileInputLayer(String filePath) {
@@ -110,13 +119,19 @@ public class RawFileInputLayer extends InputLayer {
         try {
             Vector<String> commandLine = new Vector<String>();
             commandLine.add(dcrawExecutable());
+
+            // 8 or 16-bit depth
             if (getColorDepth() == ColorDepth.Depth16Bit)
                 commandLine.add("-4");
+            
+            // color space, probably only sRGB makes sense for now 
             String colorSpaceArg = dcrawColorSpaceArgument(colorSpace);
             if (colorSpaceArg != null && colorSpaceArg.length() > 0) {
                 commandLine.add("-o");
                 commandLine.add(colorSpaceArg);
             }
+            
+            // interpolation quality (or half-size)
             if (quality == Quality.HalfSize) {
                 commandLine.add("-h");
             }
@@ -132,19 +147,31 @@ public class RawFileInputLayer extends InputLayer {
                 commandLine.add("-q");
                 commandLine.add("3");
             }
-            commandLine.add("-c");
-            commandLine.add(filePath);
+            
+            // white balance
+            if (whiteBalance == WhiteBalance.Auto)
+                commandLine.add("-a");
+            else if (whiteBalance == WhiteBalance.Camera)
+                commandLine.add("-w");
+            
+            commandLine.add("-c"); // write to stdout
+            commandLine.add(filePath); // raw file
+            
             ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
             Process process = processBuilder.start();
-            PNMCodec codec = new PNMCodec();
-            codec.setInputStream(new BufferedInputStream(process
-                    .getInputStream()));
-            codec.process();
-            // System.out.println(codec.getImage().getClass());
-            Bitmap tmpBitmap = new Bitmap();
-            tmpBitmap.setImage(codec.getImage());
-            process.destroy();
-            bitmap = tmpBitmap;
+            try {
+                PNMCodec codec = new PNMCodec();
+                codec.setInputStream(new BufferedInputStream(process
+                        .getInputStream()));
+                codec.process();
+                // System.out.println(codec.getImage().getClass());
+                Bitmap tmpBitmap = new Bitmap();
+                tmpBitmap.setImage(codec.getImage());
+                bitmap = tmpBitmap;
+            }
+            finally {
+                process.destroy();
+            }
         }
         catch (IOException e) {
             System.err.println("Error executing dcraw or loading RAW file: "
@@ -181,4 +208,14 @@ public class RawFileInputLayer extends InputLayer {
         return colorSpace;
     }
 
+    public void setWhiteBalance(WhiteBalance whiteBalance) {
+        if (whiteBalance == null || whiteBalance == this.whiteBalance)
+            return;
+        this.whiteBalance = whiteBalance;
+        bitmap = null;
+    }
+
+    public WhiteBalance getWhiteBalance() {
+        return whiteBalance;
+    }
 }
