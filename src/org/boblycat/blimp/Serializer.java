@@ -92,7 +92,7 @@ public class Serializer {
 		}
 		return element;
     }
-	
+    
 	public static String layerToXml(Layer layer) {
 		LSSerializer serializer = domImplLS.createLSSerializer();
 		return serializer.writeToString(layerToDOM(layer));
@@ -245,6 +245,24 @@ public class Serializer {
 		return (Layer) newBeanInstance(className, Layer.class);
 	}
 	
+	private static void copyBeanPropertiesFromDOM(Element beanNode, BlimpBean dest) {
+		for (Node child: new DOMNodeIterator(beanNode, true)) {
+			if (!(child instanceof Element)
+					|| !child.getNodeName().equals("property")) {
+				layerParseWarning("ignoring unrecognized child node ("
+						+ child.getNodeName() + ")");
+				continue;
+			}
+			Element propertyElement = (Element) child;
+			String propName = propertyElement.getAttribute("name");
+			BlimpBean.Property prop = dest.findProperty(propName);
+			if (prop == null)
+				beanParseWarning("property not found: " + propName);
+			else
+				propertyValueFromDOM(propertyElement, prop);
+		}
+	}
+	
 	public static BlimpBean beanFromDOM(Element beanNode)
 	throws ClassNotFoundException {
 		String className = beanNode.getAttribute("class");
@@ -255,23 +273,14 @@ public class Serializer {
 			beanParseWarning("element name '" + beanNode.getNodeName()
 					+ "' differs from expected bean element '"
 					+ bean.elementName() + "'");
-		for (Node child: new DOMNodeIterator(beanNode, true)) {
-			if (!(child instanceof Element)
-					|| !child.getNodeName().equals("property")) {
-				layerParseWarning("ignoring unrecognized child node ("
-						+ child.getNodeName() + ")");
-				continue;
-			}
-			Element propertyElement = (Element) child;
-			String propName = propertyElement.getAttribute("name");
-			BlimpBean.Property prop = bean.findProperty(propName);
-			if (prop == null)
-				beanParseWarning("property not found: " + propName);
-			else
-				propertyValueFromDOM(propertyElement, prop);
-		}
+		copyBeanPropertiesFromDOM(beanNode, bean);
 		return bean;
 	}
+	
+    public static void copyBeanProperties(BlimpBean source, BlimpBean dest) {
+    	Element beanNode = beanToDOM(source);
+    	copyBeanPropertiesFromDOM(beanNode, dest);
+    }
 	
 	public static Layer layerFromDOM(Element layerNode)
 		throws ClassNotFoundException {

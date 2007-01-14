@@ -77,6 +77,7 @@ public class LayersView extends SashForm {
         editorRegistry.register(BrightnessContrastLayer.class,
         		BrightnessContrastEditor.class);
         editorRegistry.register(CurvesLayer.class, CurvesEditor.class);
+        editorRegistry.register(RawFileInputLayer.class, RawInputEditor.class);
     }
     
     public void updateWithSession(BlimpSession session, Layer currentLayer) {

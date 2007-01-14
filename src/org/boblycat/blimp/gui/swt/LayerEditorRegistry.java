@@ -6,22 +6,29 @@ import java.util.Hashtable;
 import org.boblycat.blimp.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 public class LayerEditorRegistry {
 	class Entry {
 		Class<? extends LayerEditor> editorClass;
 		Constructor<? extends LayerEditor> editorConstructor;
+		Layer editedLayer;
+		Layer layerClone;
+		Shell dialog;
 		Entry(Class<? extends LayerEditor> editorClass) {
 			this.editorClass = editorClass;
 			editorConstructor = getConstructor(editorClass);
 		}
 		
 		void showDialog(Layer layer) {
-			Shell dialog = new Shell(parentShell,
+			dialog = new Shell(parentShell,
 					SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
-			dialog.setLayout(new FillLayout());
+			dialog.setLayout(new GridLayout());
 			dialog.setText(layer.getDescription());
 			Object args[] = { dialog, new Integer(SWT.NONE) };
 			LayerEditor editor = null;
@@ -32,9 +39,38 @@ public class LayerEditorRegistry {
 				System.err.println("Failed to construct editor: " + e.getMessage());
 				return;
 			}
+			editedLayer = layer;
+			layerClone = (Layer) layer.clone();
 			editor.setLayer(layer);
+			
+			Composite buttonRow = new Composite(dialog, SWT.NONE);
+			buttonRow.setLayout(new FillLayout());
+			Button button = new Button(buttonRow, SWT.NONE);
+			button.setText("Ok");
+			button.addListener(SWT.Selection, new Listener() {
+				public void handleEvent(Event e) {
+					editedLayer.setActive(true); // quick hack for raw input
+					editedLayer.triggerChangeEvent();
+					closeDialog();
+				}
+			});
+			button = new Button(buttonRow, SWT.NONE);
+			button.setText("Cancel");
+			button.addListener(SWT.Selection, new Listener() {
+				public void handleEvent(Event e) {
+					// revert layer changes
+					Serializer.copyBeanProperties(layerClone, editedLayer);
+					closeDialog();
+				}
+			});
+			
 			dialog.pack();
 			dialog.open();
+		}
+		
+		void closeDialog() {
+			dialog.close();
+			dialog = null;
 		}
 	}
 

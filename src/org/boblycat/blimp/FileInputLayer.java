@@ -1,11 +1,15 @@
 package org.boblycat.blimp;
 
 import net.sourceforge.jiu.gui.awt.ToolkitLoader;
-import java.io.File;
 
 public class FileInputLayer extends InputLayer {
     Bitmap bitmap;
     String filePath;
+    
+    public FileInputLayer() {
+    	bitmap = new Bitmap();
+    	filePath = null;
+    }
     
     public FileInputLayer(String filePath) {
         bitmap = new Bitmap();

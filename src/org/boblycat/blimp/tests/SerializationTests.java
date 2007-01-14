@@ -62,6 +62,7 @@ public class SerializationTests {
 		layer.setStringValue("abcDEF");
 		layer.setEnumValue(DummyLayer.Enum.TWO);
 		String xml = Serializer.layerToXml(layer);
+		//System.out.println(xml);
 		assertTrue(xml.length() > 0);
 
 		Element root = parseLayerXml(xml);

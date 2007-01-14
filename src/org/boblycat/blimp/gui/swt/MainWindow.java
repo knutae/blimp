@@ -171,7 +171,11 @@ public class MainWindow {
     
     ImageView addImageView(String filename) {
         ImageView imageView = new ImageView(mainTabFolder);
-        imageView.getSession().openFile(filename);
+        //imageView.getSession().openFile(filename);
+        InputLayer input = Util.getInputLayerFromFile(filename);
+        if (input instanceof RawFileInputLayer)
+        	input.setActive(false); // TODO: quick hack for raw input, improve
+        imageView.getSession().setInput(input);
         CTabItem item = new CTabItem(mainTabFolder, SWT.CLOSE);
         item.setText(imageView.getSession().getDescription());
         item.setControl(imageView);
@@ -190,8 +194,10 @@ public class MainWindow {
         String filename = dialog.open();
         if (filename != null) {
             ImageView imageView = addImageView(filename);
+            BlimpSession session = imageView.getSession();
+            layers.updateWithSession(session, session.getInput());
+            //layers.updateWithSession(session, null);
             imageView.invalidateImage();
-            layers.updateWithSession(imageView.getSession(), null);
         }
     }
     

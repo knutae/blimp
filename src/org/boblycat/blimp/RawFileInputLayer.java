@@ -10,11 +10,17 @@ import net.sourceforge.jiu.ops.OperationFailedException;
 public class RawFileInputLayer extends InputLayer {
 	Bitmap bitmap;
 	String filePath;
-	boolean use16BitColor;
+	ColorDepth colorDepth;
+	
+	public RawFileInputLayer() {
+		filePath = "";
+		colorDepth = ColorDepth.Depth8Bit;
+	}
 	
 	public RawFileInputLayer(String filePath) {
+		this();
 		setFilePath(filePath);
-		load();
+		//load();
 	}
 	
 	private String dcrawExecutable() {
@@ -37,22 +43,26 @@ public class RawFileInputLayer extends InputLayer {
 		return filePath;
 	}
 	
-	public void set16BitColor(boolean value) {
-		if (use16BitColor == value)
+	public void setColorDepth(ColorDepth depth) {
+		if (depth == colorDepth)
 			return;
-		use16BitColor = value;
+		colorDepth = depth;
 		bitmap = null;
 	}
 	
-	public boolean get16BitColor() {
-		return use16BitColor;
+	public ColorDepth getColorDepth() {
+		if (colorDepth == null)
+			colorDepth = ColorDepth.Depth8Bit;
+		return colorDepth;
 	}
 	
 	public void load() {
+		if (!isActive())
+			return;
 		try {
 			Vector<String> commandLine = new Vector<String>();
 			commandLine.add(dcrawExecutable());
-			if (use16BitColor)
+			if (getColorDepth() == ColorDepth.Depth16Bit)
 				commandLine.add("-4");
 			commandLine.add("-c");
 			commandLine.add(filePath);
@@ -61,7 +71,7 @@ public class RawFileInputLayer extends InputLayer {
 			PNMCodec codec = new PNMCodec();
 			codec.setInputStream(new BufferedInputStream(process.getInputStream()));
 			codec.process();
-			System.out.println(codec.getImage().getClass());
+			//System.out.println(codec.getImage().getClass());
 			Bitmap tmpBitmap = new Bitmap();
 			tmpBitmap.setImage(codec.getImage());
 			process.destroy();

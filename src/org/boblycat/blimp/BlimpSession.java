@@ -5,32 +5,18 @@ import java.util.Vector;
 public class BlimpSession extends InputLayer implements LayerChangeListener {
     Vector<Layer> layerList;
     Bitmap currentBitmap;
-    String currentFilePath;
     ResizeLayer resizeLayer;
     
     public BlimpSession() {
-        layerList = new Vector<Layer>();
+    	layerList = new Vector<Layer>();
         currentBitmap = null;
     }
-    
-    private static boolean isRawFile(String path) {
-    	int dotpos = path.lastIndexOf('.');
-    	if (dotpos < 0)
-    		return false;
-    	String ext = path.substring(dotpos + 1).toLowerCase();
-    	return ext.equals("raw") || ext.equals("crw") || ext.equals("cr2")
-    		|| ext.equals("dng");
-    	// todo: add more raw extensions
-    }
 
+    /*
     public void openFile(String path) {
-        currentFilePath = path;
-        if (isRawFile(path))
-        	setInput(new RawFileInputLayer(path));
-        else
-        	setInput(new FileInputLayer(path));
-        invalidate();
+        setInput(Util.getInputLayerFromFile(path));
     }
+    */
     
     public void applyLayers() {
     	currentBitmap = null;
@@ -38,6 +24,9 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             if (layer instanceof InputLayer) {
             	if (currentBitmap != null)
             		System.err.println("Warning: more than one input layer?");
+        		if (!layer.isActive())
+        			// non-active input layer: abort
+        			break;
             	InputLayer input = (InputLayer) layer;
             	currentBitmap = input.getBitmap();
             	if (currentBitmap != null && resizeLayer != null) {
@@ -57,16 +46,32 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     }
     
     public void setInput(InputLayer newInput) {
-    	if (layerList.size() > 0) {
-    		assert(layerList.get(0) instanceof InputLayer);
+    	assert(newInput != null);
+    	if (layerList.isEmpty()) {
+    		layerList.add(newInput);
+    	}
+    	else if (layerList.firstElement() instanceof InputLayer) {
+    		layerList.firstElement().removeChangeListener(this);
     		layerList.set(0, newInput);
     	}
     	else {
-    		layerList.add(newInput);
+    		Util.warn("the first layer is not an input layer (setInput)");
+    		layerList.add(0, newInput);
     	}
+    	newInput.addChangeListener(this);
         invalidate();
     }
-
+    
+    public InputLayer getInput() {
+    	if (layerList.isEmpty())
+    		return null;
+    	Layer first = layerList.firstElement();
+    	if (first instanceof InputLayer)
+    		return (InputLayer) first;
+		Util.warn("the first layer is not an input layer (getInput)");
+    	return null;
+    }
+    
     public Bitmap getBitmap() {
         if (resizeLayer != null)
             invalidate();

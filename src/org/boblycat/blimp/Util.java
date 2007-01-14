@@ -19,4 +19,25 @@ public class Util {
         File file = new File(path);
         return file.getName();
     }
+    
+    public static void warn(String message) {
+    	System.err.println("Warning: " + message);
+    }
+    
+    private static boolean isRawFile(String path) {
+    	int dotpos = path.lastIndexOf('.');
+    	if (dotpos < 0)
+    		return false;
+    	String ext = path.substring(dotpos + 1).toLowerCase();
+    	return ext.equals("raw") || ext.equals("crw") || ext.equals("cr2")
+    		|| ext.equals("dng");
+    	// todo: add more raw extensions
+    }
+    
+    public static InputLayer getInputLayerFromFile(String filePath) {
+    	if (isRawFile(filePath))
+    		return new RawFileInputLayer(filePath);
+    	else
+    		return new FileInputLayer(filePath);
+    }
 }
