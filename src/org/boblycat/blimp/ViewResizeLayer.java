@@ -4,12 +4,13 @@ import net.sourceforge.jiu.geometry.ScaleReplication;
 
 /**
  * A fast resize layer for e.g. zooming in the image view.
+ * 
  * @author Knut Arild Erstad
  */
 public class ViewResizeLayer extends AdjustmentLayer {
     int width, height;
     boolean keepAspect;
-    
+
     public ViewResizeLayer(int width, int height, boolean keepAspect) {
         this.width = width;
         this.height = height;
@@ -32,8 +33,8 @@ public class ViewResizeLayer extends AdjustmentLayer {
             }
             resize.setSize(targetWidth, targetHeight);
             if (targetWidth == sourceWidth && targetHeight == sourceHeight)
-            	// optimize by returning the source
-            	return source;
+                // optimize by returning the source
+                return source;
         }
         else {
             resize.setSize(width, height);
@@ -46,10 +47,10 @@ public class ViewResizeLayer extends AdjustmentLayer {
             return source;
         }
         Bitmap ret = new Bitmap(resize.getOutputImage());
-        //ret.printDebugInfo("Invert dest");
+        // ret.printDebugInfo("Invert dest");
         return ret;
     }
-    
+
     public String getDescription() {
         return "Resize";
     }

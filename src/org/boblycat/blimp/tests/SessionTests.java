@@ -16,28 +16,29 @@ class TestInput extends InputLayer {
         bitmap.testValue = "";
         return bitmap;
     }
-    
+
     public String getDescription() {
         return "TestDescription";
     }
 }
 
 class TestLayer extends AdjustmentLayer {
-	String suffix;
+    String suffix;
+
     TestLayer(String suffix) {
         this.suffix = suffix;
     }
-    
+
     public Bitmap applyLayer(Bitmap source) {
         assertSame(source.getClass(), TestBitmap.class);
         TestBitmap oldBitmap = (TestBitmap) source;
         TestBitmap bitmap = new TestBitmap();
         bitmap.creator = "TestLayer";
         bitmap.testValue = oldBitmap.testValue + suffix;
-        //bitmap.setImage(oldBitmap.getImage());
+        // bitmap.setImage(oldBitmap.getImage());
         return bitmap;
     }
-    
+
     public String getDescription() {
         return "Test";
     }
@@ -45,21 +46,22 @@ class TestLayer extends AdjustmentLayer {
 
 public class SessionTests {
     int eventCount;
+
     LayerEvent lastLayerEvent;
-    
+
     BlimpSession createTestSession() {
         BlimpSession session = new BlimpSession();
         session.setInput(new TestInput());
         return session;
     }
-    
+
     TestBitmap getTestBitmap(BlimpSession session) {
         Bitmap bitmap = session.getBitmap();
         assertNotNull(bitmap);
         assertSame(bitmap.getClass(), TestBitmap.class);
         return (TestBitmap) bitmap;
     }
-    
+
     @Test
     public void testNoLayers() {
         BlimpSession session = createTestSession();
@@ -67,10 +69,10 @@ public class SessionTests {
         assertEquals("TestSource", testBitmap.creator);
         assertEquals("", testBitmap.testValue);
     }
-    
+
     @Test
     public void testSingleLayer() {
-        for (int i=0; i<4; i++) {
+        for (int i = 0; i < 4; i++) {
             BlimpSession session = createTestSession();
             assertEquals(1, session.layerCount());
             session.addLayer(new TestLayer(Integer.toString(i)));
@@ -80,7 +82,7 @@ public class SessionTests {
             assertEquals(Integer.toString(i), testBitmap.testValue);
         }
     }
-    
+
     @Test
     public void testSingleInactiveLayer() {
         BlimpSession session = createTestSession();
@@ -92,7 +94,7 @@ public class SessionTests {
         assertEquals("TestSource", testBitmap.creator);
         assertEquals("", testBitmap.testValue);
     }
-    
+
     @Test
     public void testMultipleLayers() {
         BlimpSession session = createTestSession();
@@ -105,7 +107,7 @@ public class SessionTests {
         assertEquals("TestLayer", testBitmap.creator);
         assertEquals("ABC", testBitmap.testValue);
     }
-    
+
     @Test
     public void testMultipleLayersInactive() {
         BlimpSession session = createTestSession();
@@ -134,7 +136,7 @@ public class SessionTests {
         assertEquals("ab", testBitmap.testValue);
         session.activateLayer(3, true);
     }
-    
+
     @Test
     public void testChangeEvents() {
         eventCount = 0;
@@ -144,7 +146,7 @@ public class SessionTests {
                 eventCount++;
             }
         });
-        
+
         assertEquals(0, eventCount);
         session.addLayer(new TestLayer("a"));
         assertEquals(1, eventCount);
@@ -162,12 +164,12 @@ public class SessionTests {
         assertEquals(6, eventCount);
         session.removeLayer(0);
         assertEquals(7, eventCount);
-        
+
         // explicitly trigger event
         session.triggerChangeEvent();
         assertEquals(8, eventCount);
     }
-    
+
     @Test
     public void testLayerChangeEvent() {
         eventCount = 0;
@@ -181,13 +183,13 @@ public class SessionTests {
             }
         };
         layer.addChangeListener(listener);
-        
+
         assertEquals(0, eventCount);
         assertEquals(null, lastLayerEvent);
         layer.invalidate();
         assertEquals(1, eventCount);
         assertEquals(layer, lastLayerEvent.getLayer());
-        
+
         layer.removeChangeListener(listener);
         layer.invalidate();
         assertEquals(1, eventCount);

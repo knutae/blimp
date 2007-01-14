@@ -7,11 +7,11 @@ import net.sourceforge.jiu.ops.ImageToImageOperation;
  * Abstract base class for adjustment layers.
  */
 public abstract class AdjustmentLayer extends Layer {
-	public abstract Bitmap applyLayer(Bitmap source);
+    public abstract Bitmap applyLayer(Bitmap source);
 
-	/** Helper function for applying JIU operations */
-	protected static PixelImage applyJiuOperation(PixelImage input,
-			ImageToImageOperation op) {
+    /** Helper function for applying JIU operations */
+    protected static PixelImage applyJiuOperation(PixelImage input,
+            ImageToImageOperation op) {
         PixelImage image = input;
         op.setInputImage(image);
         try {

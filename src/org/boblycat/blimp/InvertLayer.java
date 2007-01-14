@@ -9,7 +9,7 @@ public class InvertLayer extends AdjustmentLayer {
         image = applyJiuOperation(image, new Invert());
         return new Bitmap(image);
     }
-    
+
     public String getDescription() {
         return "Invert";
     }

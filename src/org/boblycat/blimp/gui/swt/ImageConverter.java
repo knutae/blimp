@@ -15,14 +15,12 @@ import java.io.DataOutputStream;
 
 public class ImageConverter {
     static Image jiuToSwtImageViaPNG(Device device, PixelImage pixelImage)
-        throws InvalidFileStructureException,
-            MissingParameterException,
-            OperationFailedException
-    {
+            throws InvalidFileStructureException, MissingParameterException,
+            OperationFailedException {
         // pixelImage.getAllocatedMemory() should be enough to avoid reallocs
         ByteArrayOutputStream outputStream =
-            //new ByteArrayOutputStream(pixelImage.getAllocatedMemory());
-            new ByteArrayOutputStream();
+        // new ByteArrayOutputStream(pixelImage.getAllocatedMemory());
+        new ByteArrayOutputStream();
 
         // PNG supports everything we need
         PNGCodec codec = new PNGCodec();
@@ -30,49 +28,48 @@ public class ImageConverter {
         codec.setDataOutput(new DataOutputStream(outputStream));
         codec.setImage(pixelImage);
         codec.process();
-        
-        // Whee, we have a PNG in memory!  Now create an SWT image
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+
+        // Whee, we have a PNG in memory! Now create an SWT image
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(
+                outputStream.toByteArray());
         return new Image(device, inputStream);
     }
-    
+
     static ImageData jiuToSwtImageData(PixelImage pixelImage) {
-    	byte[] bytes = BitmapUtil.get8BitBGRData(pixelImage);
-    	if (bytes == null)
-    		return null;
+        byte[] bytes = BitmapUtil.get8BitBGRData(pixelImage);
+        if (bytes == null)
+            return null;
         PaletteData paletteData = new PaletteData(0xff, 0xff00, 0xff0000);
-        ImageData data = new ImageData(pixelImage.getWidth(), pixelImage.getHeight(),
-        		24, paletteData, 1, bytes);
+        ImageData data = new ImageData(
+                pixelImage.getWidth(), pixelImage.getHeight(),
+                24, paletteData, 1, bytes);
         return data;
     }
-    
+
     static Image jiuToSwtImageViaPixels(Device device, PixelImage pixelImage) {
-    	ImageData data = jiuToSwtImageData(pixelImage);
-    	if (data != null)
-    		return new Image(device, data);
-    	return null;
+        ImageData data = jiuToSwtImageData(pixelImage);
+        if (data != null)
+            return new Image(device, data);
+        return null;
     }
-    
+
     public static Image bitmapToSwtImage(Device device, Bitmap bitmap)
-        throws InvalidFileStructureException,
-            MissingParameterException,
-            OperationFailedException
-    {
+            throws InvalidFileStructureException, MissingParameterException,
+            OperationFailedException {
         if (bitmap.getImage() == null)
             return null;
         Image image = jiuToSwtImageViaPixels(device, bitmap.getImage());
         if (image == null)
-        	image = jiuToSwtImageViaPNG(device, bitmap.getImage());
+            image = jiuToSwtImageViaPNG(device, bitmap.getImage());
         return image;
     }
-    
-    public static void saveBitmap(Bitmap bitmap, String filename, int format)
-    {
-    	ImageData data = jiuToSwtImageData(bitmap.getImage());
-    	ImageLoader loader = new ImageLoader();
-    	loader.data = new ImageData[1];
-    	loader.data[0] = data;
-    	loader.save(filename, format);
-    	
+
+    public static void saveBitmap(Bitmap bitmap, String filename, int format) {
+        ImageData data = jiuToSwtImageData(bitmap.getImage());
+        ImageLoader loader = new ImageLoader();
+        loader.data = new ImageData[1];
+        loader.data[0] = data;
+        loader.save(filename, format);
+
     }
 }
