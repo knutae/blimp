@@ -7,14 +7,55 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.*;
 
+class SwtImageWorkerThread extends ImageWorkerThread {
+    Display display;
+    private ImageData imageData;
+    private double zoom;
+    
+    public SwtImageWorkerThread(Display display) {
+        this.display = display;
+    }
+    
+    protected void bitmapGenerated(Runnable runnable, Bitmap bitmap) {
+        if (isFinished())
+            return;
+        // convert to SWT image data on the worker thread
+        if (bitmap != null) {
+            ImageData data = ImageConverter.jiuToSwtImageData(bitmap.getImage());
+            double currentZoom = session.getCurrentZoom();
+            synchronized (this) {
+                imageData = data;
+                zoom = currentZoom;
+            }
+        }
+        display.asyncExec(runnable);
+    }
+    
+    protected boolean isFinished() {
+        return display.isDisposed();
+    }
+    
+    public synchronized ImageData getImageData() {
+        return imageData;
+    }
+    
+    public synchronized double getCurrentZoom() {
+        return zoom;
+    }
+}
+
 public class ImageView extends Composite {
     BlimpSession session;
     boolean dirty;
-    Runnable redrawTask;
+    Runnable bitmapGeneratedTask;
     Canvas canvas;
     Image currentImage;
     int paintCounter;
     CLabel zoomLabel;
+    SwtImageWorkerThread workerThread;
+    int asyncRequestCount;
+    boolean needNewRequest;
+    double currentZoom;
 
     public ImageView(Composite parent, int style, BlimpSession aSession) {
         super(parent, style);
@@ -24,6 +65,9 @@ public class ImageView extends Composite {
                 canvas.redraw();
             }
         };
+        
+        workerThread = new SwtImageWorkerThread(getDisplay());
+        workerThread.start();
 
         // Create GUI components
         canvas = new Canvas(this, SWT.NO_BACKGROUND | SWT.H_SCROLL
@@ -37,11 +81,12 @@ public class ImageView extends Composite {
             public void handleEvent(Event e) {
                 // System.out.println("paint " + paintCounter);
                 paintCounter++;
-                updateImage();
                 if (currentImage == null) {
                     e.gc.fillRectangle(canvas.getClientArea());
+                    asyncGenerateBitmap();
                     return;
                 }
+                updateImageParams();
                 Rectangle clientArea = canvas.getClientArea();
                 Image bufferImage = new Image(canvas.getDisplay(),
                         clientArea.width, clientArea.height);
@@ -83,16 +128,19 @@ public class ImageView extends Composite {
         toolItem.setText("Zoom In");
         toolItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
-                if (session != null)
-                    session.zoomIn();
+                //if (session != null)
+                //    session.zoomIn();
+                workerThread.zoomIn(bitmapGeneratedTask);
+                
             }
         });
         toolItem = new ToolItem(toolBar, SWT.NONE);
         toolItem.setText("Zoom Out");
         toolItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
-                if (session != null)
-                    session.zoomOut();
+                //if (session != null)
+                //    session.zoomOut();
+                workerThread.zoomOut(bitmapGeneratedTask);
             }
         });
 
@@ -124,18 +172,32 @@ public class ImageView extends Composite {
             session = new BlimpSession();
         session.addChangeListener(new LayerChangeListener() {
             public void handleChange(LayerEvent event) {
-                // invalidateImage();
-                invalidateWithDelay(100);
+                asyncGenerateBitmap();
             }
         });
 
-        // Runnable used for delayed update
-        redrawTask = new Runnable() {
+        // task that is run after the worker thread has generated a bitmap
+        bitmapGeneratedTask = new Runnable() {
             public void run() {
-                if (!canvas.isDisposed())
-                    canvas.redraw();
+                asyncRequestCount--;
+                if (needNewRequest) {
+                    asyncGenerateBitmap();
+                    return;
+                }
+                ImageData data = workerThread.getImageData();
+                if (data == null)
+                    return;
+                currentImage = new Image(getDisplay(), data);
+                currentZoom = workerThread.getCurrentZoom();
+                invalidateImage();
             }
         };
+        
+        addListener(SWT.Dispose, new Listener() {
+            public void handleEvent(Event e) {
+                workerThread.quit();
+            }
+        });
     }
 
     public BlimpSession getSession() {
@@ -155,37 +217,38 @@ public class ImageView extends Composite {
         // bar.setSelection(0);
     }
 
-    private void updateImage() {
-        if (!dirty)
+    private void updateImageParams() {
+        if (!dirty || currentImage == null)
             return;
         Rectangle destArea = canvas.getClientArea();
-        Bitmap bitmap = session.getSizedBitmap(destArea.width, destArea.height);
-        if (bitmap == null || bitmap.getImage() == null)
-            return;
-        prepareScrollBar(canvas.getHorizontalBar(), destArea.width, bitmap
-                .getWidth());
-        prepareScrollBar(canvas.getVerticalBar(), destArea.height, bitmap
-                .getHeight());
-        int zoomPercentage = (int) (session.getCurrentZoom() * 100.0);
+        prepareScrollBar(canvas.getHorizontalBar(), destArea.width,
+                currentImage.getBounds().width);
+        prepareScrollBar(canvas.getVerticalBar(), destArea.height,
+                currentImage.getBounds().height);
+        int zoomPercentage = (int) (currentZoom * 100.0);
         zoomLabel.setText(Integer.toString(zoomPercentage) + "%");
         layout();
-        try {
-            currentImage = ImageConverter
-                    .bitmapToSwtImage(getDisplay(), bitmap);
-            dirty = false;
-        }
-        catch (Exception e) {
-            // status("Exception: " + e.getMessage());
-            e.printStackTrace();
-        }
+        dirty = false;
     }
-
-    private void invalidateWithDelay(int delay) {
-        dirty = true;
-        getDisplay().timerExec(delay, redrawTask);
+    
+    private void asyncGenerateBitmap() {
+        if (asyncRequestCount > 0) {
+            needNewRequest = true;
+            return;
+        }
+        needNewRequest = false;
+        workerThread.cancelRequests();
+        Rectangle destArea = canvas.getClientArea();
+        workerThread.asyncGenerateSizedBitmap(session, bitmapGeneratedTask,
+                destArea.width, destArea.height);
+        asyncRequestCount++;
     }
 
     public void invalidateImage() {
+        if (needNewRequest) {
+            asyncGenerateBitmap();
+            return;
+        }
         dirty = true;
         canvas.redraw();
     }

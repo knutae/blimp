@@ -1,5 +1,8 @@
 package org.boblycat.blimp.tests;
 
+import net.sourceforge.jiu.data.MemoryRGB24Image;
+import net.sourceforge.jiu.data.PixelImage;
+
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.layers.InputLayer;
 
@@ -16,7 +19,8 @@ public class DummyInput extends InputLayer {
 
     @Override
     public Bitmap getBitmap() {
-        return new Bitmap();
+        PixelImage image = new MemoryRGB24Image(100, 100);
+        return new Bitmap(image);
     }
 
     @Override

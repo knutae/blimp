@@ -10,18 +10,20 @@ public class FileInputLayer extends InputLayer {
     String filePath;
 
     public FileInputLayer() {
-        bitmap = new Bitmap();
+        bitmap = null;
         filePath = null;
     }
 
     public FileInputLayer(String filePath) {
-        bitmap = new Bitmap();
+        bitmap = null;
         setFilePath(filePath);
     }
 
     public void setFilePath(String path) {
+        if (filePath != null && filePath.equals(path))
+            return;
         filePath = path;
-        bitmap.setImage(ToolkitLoader.loadViaToolkitOrCodecs(path));
+        bitmap = null;
     }
 
     public String getFilePath() {
@@ -29,6 +31,11 @@ public class FileInputLayer extends InputLayer {
     }
 
     public Bitmap getBitmap() {
+        if (bitmap == null && filePath != null) {
+            System.out.println("Loading bitmap from file...");
+            bitmap = new Bitmap();
+            bitmap.setImage(ToolkitLoader.loadViaToolkitOrCodecs(filePath));
+        }
         return bitmap;
     }
 

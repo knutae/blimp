@@ -197,4 +197,34 @@ public class SessionTests {
         layer.invalidate();
         assertEquals(1, eventCount);
     }
+    
+    @Test
+    public void testSynchonizeSessionData() {
+        BlimpSession session1 = new BlimpSession();
+        BlimpSession session2 = new BlimpSession();
+        DummyInput input1 = new DummyInput();
+        input1.setPath("input1 path");
+        session1.setInput(input1);
+        DummyLayer layer1 = new DummyLayer();
+        layer1.setStringValue("layer1 value");
+        session1.addLayer(layer1);
+        
+        session2.synchronizeSessionData(session1);
+        DummyInput input2 = (DummyInput) session2.getInput();
+        assertNotNull(input2);
+        assertTrue(input1 != input2); // objects must be different
+        assertEquals("input1 path", input2.getPath());
+        DummyLayer layer2 = (DummyLayer) session2.getLayer(1);
+        assertNotNull(layer2);
+        assertTrue(layer1 != layer2);
+        assertEquals("layer1 value", layer2.getStringValue());
+        
+        input2.setPath("input2 path");
+        layer2.setStringValue("layer2 value");
+        session1.synchronizeSessionData(session2);
+        assertTrue(session1.getInput() == input1); // layer must be re-used
+        assertEquals("input2 path", input1.getPath());
+        assertTrue(layer1 == session1.getLayer(1));
+        assertEquals("layer2 value", layer1.getStringValue());
+    }
 }

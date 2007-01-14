@@ -191,6 +191,19 @@ public class MainWindow {
                     }
             }
         });
+        mainTabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
+           public void close(CTabFolderEvent e) {
+               for (ImageTab tab: imageTabs) {
+                   if (tab.item == e.item) {
+                       imageTabs.remove(tab);
+                       tab.imageView.dispose();
+                       if (tab == currentImageTab)
+                           currentImageTab = null;
+                       break;
+                   }
+               }
+           }
+        });
 
         // Layers view
         layers = new LayersView(rightTabFolder);

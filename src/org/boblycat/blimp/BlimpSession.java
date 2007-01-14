@@ -12,8 +12,14 @@ import org.boblycat.blimp.layers.ViewResizeLayer;
 class ViewportInfo {
     int viewWidth;
     int viewHeight;
+    int imageWidth;
+    int imageHeight;
     ZoomFactor zoomFactor;
-
+    
+    public ViewportInfo() {
+        zoomFactor = new ZoomFactor();
+    }
+    
     boolean isActive() {
         return (viewWidth > 0 && viewHeight > 0);
     }
@@ -21,7 +27,7 @@ class ViewportInfo {
     ZoomFactor getAutoZoomFactor(int imageWidth, int imageHeight) {
         ZoomFactor autoZoomFactor = new ZoomFactor();
         while (autoZoomFactor.scale(imageWidth) > viewWidth
-                || autoZoomFactor.scale(imageHeight) > viewWidth)
+                || autoZoomFactor.scale(imageHeight) > viewHeight)
             autoZoomFactor.zoomOut();
         return autoZoomFactor;
     }
@@ -29,23 +35,35 @@ class ViewportInfo {
     static ViewResizeLayer resizeLayerFromZoom(ZoomFactor zoom, int w, int h) {
         return new ViewResizeLayer(zoom.scale(w), zoom.scale(h), true);
     }
-
+    
+    void setImageSize(int w, int h) {
+        if (w != imageWidth || h != imageHeight)
+            // invalidate current zoom when size changes
+            zoomFactor = getAutoZoomFactor(w, h);
+        imageWidth = w;
+        imageHeight = h;
+    }
+    
     ViewResizeLayer getResizeLayer(int imageWidth, int imageHeight) {
         if (!isActive())
             return null;
-        if (zoomFactor == null)
-            zoomFactor = getAutoZoomFactor(imageWidth, imageHeight);
+        setImageSize(imageWidth, imageHeight);
         return resizeLayerFromZoom(zoomFactor, imageWidth, imageHeight);
     }
 
     void zoomIn() {
-        if (zoomFactor != null)
-            zoomFactor.zoomIn();
+        zoomFactor.zoomIn();
     }
 
     void zoomOut() {
-        if (zoomFactor != null)
-            zoomFactor.zoomOut();
+        zoomFactor.zoomOut();
+    }
+
+    void copyDataFrom(ViewportInfo other) {
+        viewWidth = other.viewWidth;
+        viewHeight = other.viewHeight;
+        zoomFactor.multiplier = other.zoomFactor.multiplier;
+        zoomFactor.divisor = other.zoomFactor.divisor;
     }
 }
 
@@ -61,11 +79,6 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         currentBitmap = null;
         viewport = new ViewportInfo();
     }
-
-    /*
-     * public void openFile(String path) {
-     * setInput(Util.getInputLayerFromFile(path)); }
-     */
 
     Bitmap applyViewport(Bitmap bm) {
         if (bm == null)
@@ -128,6 +141,36 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             }
         }
         return bm;
+    }
+    
+    /**
+     * Copy session data from the other session.  The implementation will attempt
+     * to reuse existing layer object, if possible.
+     * 
+     * @param other The session to copy layers from. 
+     */
+    public void synchronizeSessionData(BlimpSession other) {
+        Vector<Layer> newList = new Vector<Layer>();
+        for (Layer otherLayer: other.layerList)
+            newList.add(findOrCloneLayer(otherLayer));
+        layerList = newList;
+        //viewport.copyDataFrom(other.viewport);
+    }
+    
+    private Layer findOrCloneLayer(Layer otherLayer) {
+        Class layerClass = otherLayer.getClass();
+        Layer foundLayer = null;
+        for (Layer layer: layerList) {
+            if (layer.getClass() == layerClass) {
+                foundLayer = layer;
+                break;
+            }
+        }
+        if (foundLayer == null)
+            return (Layer) otherLayer.clone();
+        layerList.remove(foundLayer);
+        Serializer.copyBeanData(otherLayer, foundLayer);
+        return foundLayer;
     }
 
     public void setInput(InputLayer newInput) {
