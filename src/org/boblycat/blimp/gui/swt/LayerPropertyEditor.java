@@ -132,7 +132,8 @@ public class LayerPropertyEditor extends Composite {
             Text textEditor = new Text(propertyTree, SWT.NONE);
             textEditor.addListener(SWT.DefaultSelection, new Listener() {
                 public void handleEvent(Event e) {
-                	cellEdited(e.text);
+                	Text text = (Text) e.widget;
+                	cellEdited(text.getText());
                 }
             });
             textEditor.setText(editedItem.getText(VALUE_COLUMN));
