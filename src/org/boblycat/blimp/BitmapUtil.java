@@ -14,6 +14,7 @@ import javax.imageio.stream.ImageOutputStream;
 
 import com.sun.imageio.plugins.jpeg.JPEGImageWriter;
 
+import net.sourceforge.jiu.data.MemoryRGB24Image;
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.data.RGB24Image;
 import net.sourceforge.jiu.data.RGB48Image;
@@ -103,6 +104,48 @@ public class BitmapUtil {
     public static byte[] get8BitRGBData(PixelImage pixelImage) {
         return getRGBData(pixelImage, RGBIndex.INDEX_RED, RGBIndex.INDEX_GREEN,
                 RGBIndex.INDEX_BLUE);
+    }
+    
+    /**
+     * Create a copy of the bitmap, reducing to 8-bit color depth if necessary.
+     * @param bitmap The bitmap to copy.
+     * @return A copy of the bitmap, containing a MemoryRGB24Image.
+     */
+    public static Bitmap create8BitCopy(Bitmap bitmap) {
+        if (bitmap.getImage() == null)
+            return new Bitmap();
+        PixelImage inPixelImage = bitmap.getImage();
+        int width = inPixelImage.getWidth();
+        int height = inPixelImage.getHeight();
+        MemoryRGB24Image outImage = new MemoryRGB24Image(width, height);
+        if (inPixelImage instanceof RGB24Image) {
+            RGB24Image inImage = (RGB24Image) inPixelImage;
+            byte[] channelData = new byte[width*height];
+            for (int channel=0; channel<outImage.getNumChannels(); channel++) {
+                inImage.getByteSamples(channel, 0, 0, width, height,
+                        channelData, 0);
+                outImage.putByteSamples(channel, 0, 0, width, height,
+                        channelData, 0);
+            }
+        }
+        else if (inPixelImage instanceof RGB48Image) {
+            RGB48Image inImage = (RGB48Image) inPixelImage;
+            short[] inChannelData = new short[width*height];
+            byte[] outChannelData = new byte[width*height];
+            for (int channel=0; channel<outImage.getNumChannels(); channel++) {
+                inImage.getShortSamples(channel, 0, 0, width, height,
+                        inChannelData, 0);
+                for (int i=0; i<inChannelData.length; i++) {
+                    outChannelData[i] = (byte) ((inChannelData[i] >> 8) & 0xff);
+                }
+                outImage.putByteSamples(channel, 0, 0, width, height,
+                        outChannelData, 0);
+            }
+        }
+        else {
+            Util.err("Unknown image class: " + inPixelImage.getClass().getName());
+        }
+        return new Bitmap(outImage);
     }
 
     private static BufferedImage toAwtImage(PixelImage pixelImage) {

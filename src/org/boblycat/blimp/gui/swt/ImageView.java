@@ -7,13 +7,25 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.*;
 
+class SharedData {
+    ImageData imageData;
+    double zoom;
+    Bitmap viewBitmap;
+}
+
 class SwtImageWorkerThread extends ImageWorkerThread {
     Display display;
-    private ImageData imageData;
-    private double zoom;
+    private SharedData sharedData;
+    private boolean finished;
     
     public SwtImageWorkerThread(Display display) {
         this.display = display;
+        display.addListener(SWT.Dispose, new Listener() {
+           public void handleEvent(Event e) {
+               setFinished(true);
+           }
+        });
+        sharedData = new SharedData();
     }
     
     protected void bitmapGenerated(Runnable runnable, Bitmap bitmap) {
@@ -21,26 +33,41 @@ class SwtImageWorkerThread extends ImageWorkerThread {
             return;
         // convert to SWT image data on the worker thread
         if (bitmap != null) {
-            ImageData data = ImageConverter.jiuToSwtImageData(bitmap.getImage());
+            Bitmap tmpBitmap = BitmapUtil.create8BitCopy(bitmap);
+            ImageData data = ImageConverter.jiuToSwtImageData(tmpBitmap.getImage());
             double currentZoom = session.getCurrentZoom();
-            synchronized (this) {
-                imageData = data;
-                zoom = currentZoom;
+            synchronized (sharedData) {
+                sharedData.viewBitmap = tmpBitmap;
+                sharedData.imageData = data;
+                sharedData.zoom = currentZoom;
             }
         }
         display.asyncExec(runnable);
     }
     
-    protected boolean isFinished() {
-        return display.isDisposed();
+    protected synchronized boolean isFinished() {
+        return finished;
     }
     
-    public synchronized ImageData getImageData() {
-        return imageData;
+    private synchronized void setFinished(boolean finished) {
+        this.finished = finished;
     }
     
-    public synchronized double getCurrentZoom() {
-        return zoom;
+    public SharedData getSharedData() {
+        SharedData returnData = new SharedData();
+        synchronized (sharedData) {
+            returnData.imageData = sharedData.imageData;
+            returnData.viewBitmap = sharedData.viewBitmap;
+            returnData.zoom = sharedData.zoom;
+        }
+        return returnData;
+    }
+}
+
+class BitmapEventSource extends EventSource<BitmapChangeListener, BitmapEvent> {
+    protected void triggerListenerEvent(BitmapChangeListener listener,
+            BitmapEvent event) {
+        listener.handleChange(event);
     }
 }
 
@@ -55,7 +82,8 @@ public class ImageView extends Composite {
     SwtImageWorkerThread workerThread;
     int asyncRequestCount;
     boolean needNewRequest;
-    double currentZoom;
+    SharedData threadData;
+    BitmapEventSource bitmapEventSource;
 
     public ImageView(Composite parent, int style, BlimpSession aSession) {
         super(parent, style);
@@ -171,6 +199,8 @@ public class ImageView extends Composite {
                 asyncGenerateBitmap();
             }
         });
+        
+        bitmapEventSource = new BitmapEventSource();
 
         // task that is run after the worker thread has generated a bitmap
         bitmapGeneratedTask = new Runnable() {
@@ -180,20 +210,22 @@ public class ImageView extends Composite {
                     asyncGenerateBitmap();
                     return;
                 }
-                ImageData data = workerThread.getImageData();
+                threadData = workerThread.getSharedData();
+                ImageData data = threadData.imageData;
                 if (data == null)
                     return;
                 if (currentImage != null)
                     currentImage.dispose();
                 currentImage = new Image(getDisplay(), data);
-                currentZoom = workerThread.getCurrentZoom();
                 invalidateImage();
+                triggerBitmapChange();
             }
         };
         
         addListener(SWT.Dispose, new Listener() {
             public void handleEvent(Event e) {
                 workerThread.quit();
+                SwtUtil.dispose(currentImage);
             }
         });
     }
@@ -216,14 +248,14 @@ public class ImageView extends Composite {
     }
 
     private void updateImageParams() {
-        if (!dirty || currentImage == null)
+        if (!dirty || currentImage == null || threadData == null)
             return;
         Rectangle destArea = canvas.getClientArea();
         prepareScrollBar(canvas.getHorizontalBar(), destArea.width,
                 currentImage.getBounds().width);
         prepareScrollBar(canvas.getVerticalBar(), destArea.height,
                 currentImage.getBounds().height);
-        int zoomPercentage = (int) (currentZoom * 100.0);
+        int zoomPercentage = (int) (threadData.zoom * 100.0);
         zoomLabel.setText(Integer.toString(zoomPercentage) + "%");
         layout();
         dirty = false;
@@ -249,5 +281,19 @@ public class ImageView extends Composite {
         }
         dirty = true;
         canvas.redraw();
+    }
+    
+    public void addBitmapListener(BitmapChangeListener listener) {
+        bitmapEventSource.addListener(listener);
+    }
+    
+    public void removeBitmapListener(BitmapChangeListener listener) {
+        bitmapEventSource.removeListener(listener);
+    }
+    
+    private void triggerBitmapChange() {
+        if (threadData.viewBitmap != null)
+            bitmapEventSource.triggerChangeWithEvent(
+                    new BitmapEvent(this, threadData.viewBitmap));
     }
 }

@@ -45,6 +45,7 @@ public class MainWindow {
     Vector<ImageTab> imageTabs;
     ImageTab currentImageTab;
     LayerRegistry layerRegistry;
+    HistogramView histogramView;
 
     class MenuArmListener implements Listener {
         String helpText;
@@ -178,9 +179,13 @@ public class MainWindow {
 
         mainTabFolder = new CTabFolder(sashForm, SWT.TOP | SWT.BORDER
                 | SWT.CLOSE);
-        rightTabFolder = new CTabFolder(sashForm, SWT.TOP | SWT.BORDER);
+        SashForm rightSash = new SashForm(sashForm, SWT.VERTICAL);
+        histogramView = new HistogramView(rightSash, SWT.NONE);
+        rightTabFolder = new CTabFolder(rightSash, SWT.TOP | SWT.BORDER);
         int[] weights = { 4, 1 };
         sashForm.setWeights(weights);
+        int[] rightWeights = { 1, 5 };
+        rightSash.setWeights(rightWeights);
         mainTabFolder.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 for (int i = 0; i < imageTabs.size(); i++)
@@ -256,6 +261,14 @@ public class MainWindow {
         mainTabFolder.setSelection(item);
         currentImageTab = new ImageTab(item, imageView);
         imageTabs.add(currentImageTab);
+        imageView.addBitmapListener(new BitmapChangeListener() {
+            public void handleChange(BitmapEvent e) {
+                if (currentImageTab == null
+                        || currentImageTab.imageView != e.getSource())
+                    return;
+                histogramView.setBitmap(e.getBitmap());
+            }
+        });
         return imageView;
     }
 
