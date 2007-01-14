@@ -56,10 +56,11 @@ public abstract class Layer extends BlimpBean {
     
     /**
      * Overridden to return "layer" for serialization.
-     * This function cannot be overridden any further since it could
-     * break serialization.
+     * Overriding this function any further can break serialization,
+     * so be careful.  (Some classes like BlimpSession needs to
+     * override it, so it is not final.)
      */
-    public final String elementName() {
+    public String elementName() {
     	return "layer";
     }
 }

@@ -75,6 +75,21 @@ public abstract class BlimpBean  implements Iterable<BlimpBean.Property> {
 		}
 	}
 	
+	@SuppressWarnings("serial")
+	public class NotImplementedException extends Exception {
+	}
+	
+	/**
+	 * This function can be overridden to filter out properties that should not
+	 * be included when serializing the bean.  By default all read-write properties
+	 * are included, so the default implementation always returns <code>true</code>.
+	 * @param A property descriptor.
+	 * @return <code>true</code> by default.
+	 */
+	protected boolean isSerializableProperty(PropertyDescriptor pd) {
+		return true;
+	}
+	
     /**
      * Iterator for BlimpBean properties.  This includes all JavaBean properties
      * defined in subclasses of BlimpBean which are both readable and writable.
@@ -89,6 +104,8 @@ public abstract class BlimpBean  implements Iterable<BlimpBean.Property> {
     			PropertyDescriptor pd = propertyDesc[i];
     			if (pd.getReadMethod() == null || pd.getWriteMethod() == null)
     				// skip properties without both read and write access
+    				continue;
+    			if (!isSerializableProperty(pd))
     				continue;
     			// todo: skip unsupported types?
       			props.add(new Property(this, pd));
@@ -125,6 +142,24 @@ public abstract class BlimpBean  implements Iterable<BlimpBean.Property> {
      */
     public String elementName() {
     	return "bean";
+    }
+
+    /**
+     * Retrieves a list of child beans.  Override this for beans with children.
+     * @return A list of child beans, or <code>null</code>.
+     */
+    public Vector<? extends BlimpBean> getChildren() {
+    	return null;
+    }
+
+    /**
+     * Add a child bean.  Override this for beans with children.
+     * @param child The new child to add.
+     * @throws NotImplementedException If this bean cannot have children, or
+     * the child type is not supported.
+     */
+    public void addChild(BlimpBean child) throws NotImplementedException {
+    	throw new NotImplementedException();
     }
 
     /**

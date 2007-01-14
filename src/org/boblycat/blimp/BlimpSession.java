@@ -1,5 +1,6 @@
 package org.boblycat.blimp;
 
+import java.beans.PropertyDescriptor;
 import java.util.Vector;
 
 class ViewportInfo {
@@ -213,5 +214,37 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     public void handleChange(LayerEvent event) {
         invalidate();
         triggerChangeEvent();
+    }
+    
+    public String elementName() {
+    	return "session";
+    }
+    
+    /**
+     * Overrides the BlimpBean function used by serialization.
+     */
+    public Vector<? extends BlimpBean> getChildren() {
+    	return layerList;
+    }
+    
+    /**
+     * Overrides the BlimpBean function used by serialization.
+     */
+    public void addChild(BlimpBean bean) throws NotImplementedException {
+    	if (bean instanceof AdjustmentLayer)
+    		addLayer((AdjustmentLayer) bean);
+    	else if (bean instanceof InputLayer)
+    		setInput((InputLayer) bean);
+    	else
+    		super.addChild(bean);
+    }
+    
+    /**
+     * Overridden so that the input property is not serialized directly. 
+     */
+    protected boolean isSerializableProperty(PropertyDescriptor pd) {
+    	if (pd.getName().equals("input"))
+    		return false;
+    	return super.isSerializableProperty(pd);
     }
 }

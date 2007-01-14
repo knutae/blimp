@@ -90,6 +90,9 @@ public class Serializer {
 			appendPropertyValue(property, p.getValue());
 			element.appendChild(property);
 		}
+		if (bean.getChildren() != null)
+			for (BlimpBean child: bean.getChildren())
+				element.appendChild(beanToDOM(child));
 		return element;
     }
     
@@ -247,21 +250,47 @@ public class Serializer {
 		return (Layer) newBeanInstance(className, Layer.class);
 	}
 	
-	private static void copyBeanPropertiesFromDOM(Element beanNode, BlimpBean dest) {
+	/**
+	 * Iterate through the children of the given node and copy the data,
+	 * which can include properties and child beans.
+	 * @param beanNode The bean DOM node.
+	 * @param dest The destination bean.
+	 */
+	private static void copyBeanChildrenFromDOM(Element beanNode, BlimpBean dest) {
 		for (Node child: new DOMNodeIterator(beanNode, true)) {
-			if (!(child instanceof Element)
-					|| !child.getNodeName().equals("property")) {
-				layerParseWarning("ignoring unrecognized child node ("
-						+ child.getNodeName() + ")");
+			if (!(child instanceof Element)) {
+				layerParseWarning("ignoring unrecognized child of type ("
+						+ child.getClass() + ")");
 				continue;
 			}
-			Element propertyElement = (Element) child;
-			String propName = propertyElement.getAttribute("name");
-			BlimpBean.Property prop = dest.findProperty(propName);
-			if (prop == null)
-				beanParseWarning("property not found: " + propName);
-			else
-				propertyValueFromDOM(propertyElement, prop);
+			Element element = (Element) child;
+			String nodeName = element.getNodeName();
+			if (nodeName.equals("property")) {
+				String propName = element.getAttribute("name");
+				BlimpBean.Property prop = dest.findProperty(propName);
+				if (prop == null)
+					beanParseWarning("property not found: " + propName);
+				else
+					propertyValueFromDOM(element, prop);
+			}
+			else if (nodeName.equals("bean") || nodeName.equals("layer")) {
+				try {
+					BlimpBean childBean = beanFromDOM(element);
+					dest.addChild(childBean);
+				}
+				catch (ClassNotFoundException e) {
+					beanParseWarning("failed to create child layer of class "
+							+ element.getAttribute("class"));
+				}
+				catch (BlimpBean.NotImplementedException e) {
+					beanParseWarning("failed to add child layer of class "
+							+ element.getAttribute("class"));
+				}
+				
+			}
+			else {
+				beanParseWarning("ignoring unknown element " + nodeName);
+			}
 		}
 	}
 	
@@ -275,19 +304,17 @@ public class Serializer {
 			beanParseWarning("element name '" + beanNode.getNodeName()
 					+ "' differs from expected bean element '"
 					+ bean.elementName() + "'");
-		copyBeanPropertiesFromDOM(beanNode, bean);
+		copyBeanChildrenFromDOM(beanNode, bean);
 		return bean;
 	}
 	
-    public static void copyBeanProperties(BlimpBean source, BlimpBean dest) {
+    public static void copyBeanData(BlimpBean source, BlimpBean dest) {
     	Element beanNode = beanToDOM(source);
-    	copyBeanPropertiesFromDOM(beanNode, dest);
+    	copyBeanChildrenFromDOM(beanNode, dest);
     }
 	
 	public static Layer layerFromDOM(Element layerNode)
 		throws ClassNotFoundException {
-		if (!layerNode.getNodeName().equals("layer"))
-			layerParseFailure("layer node must be named 'layer'");
 		return (Layer) beanFromDOM(layerNode);
 	}
 }

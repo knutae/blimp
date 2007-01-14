@@ -28,14 +28,19 @@ public class SerializationTests {
 		return builder;
 	}
 	
-	private Element parseLayerXml(String xml)
+	private Element parseXml(String xml)
 	throws IOException, SAXException {
 		DocumentBuilder builder = createDocBuilder();
 		StringReader reader = new StringReader(xml);
 		Document doc = builder.parse(new InputSource(reader));
 		assertNotNull(doc);
 		assertNotNull(doc.getFirstChild());
-		Element root = (Element) doc.getFirstChild();
+		return (Element) doc.getFirstChild();
+	}
+	
+	private Element parseLayerXml(String xml)
+	throws IOException, SAXException {
+		Element root = parseXml(xml);
 		assertEquals("layer", root.getNodeName());
 		return root;
 	}
@@ -219,5 +224,109 @@ public class SerializationTests {
 		
 		assertEquals(1.0, points[3].x);
 		assertEquals(0.34, points[3].y);
+	}
+	
+	static void assertHasPropertyChild(Element layerElement,
+			String propertyName, String propertyValue) {
+		int foundCount = 0;
+		for (Node child: new DOMNodeIterator(layerElement)) {
+			if (!(child instanceof Element))
+				continue;
+			Element element = (Element) child;
+			if (!(element.getNodeName().equals("property") &&
+					propertyName.equals(element.getAttribute("name"))))
+				continue;
+			// found the property
+			foundCount++;
+			assertTrue(element.getFirstChild() instanceof Text);
+			Text text = (Text) element.getFirstChild();
+			assertEquals(propertyValue, text.getNodeValue());
+		}
+		assertEquals(1, foundCount);
+	}
+	
+	@Test
+	public void testSessionToXml() throws Exception {
+		BlimpSession session = new BlimpSession();
+		DummyInput input = new DummyInput();
+		input.setPath("dummy/path");
+		session.setInput(input);
+		DummyLayer layer = new DummyLayer();
+		layer.setIntValue(54);
+		session.addLayer(layer);
+		String xml = Serializer.layerToXml(session);
+		//System.out.println(xml);
+		Element root = parseXml(xml);
+		assertEquals("session", root.getNodeName());
+		
+		Element child = (Element) root.getFirstChild();
+
+		// skip all properties
+		while (child != null && child.getNodeName().equals("property"))
+			child = (Element) child.getNextSibling();
+		
+		assertNotNull(child);
+		assertEquals("layer", child.getNodeName());
+		assertEquals("org.boblycat.blimp.tests.DummyInput",
+				child.getAttribute("class"));
+		assertHasPropertyChild(child, "path", "dummy/path");
+		
+		child = (Element) child.getNextSibling();
+		assertNotNull(child);
+		assertEquals("layer", child.getNodeName());
+		assertEquals("org.boblycat.blimp.tests.DummyLayer",
+				child.getAttribute("class"));
+		assertHasPropertyChild(child, "intValue", "54");
+	}
+	
+	@Test
+	public void testSessionFromXml() throws Exception {
+		String xml =
+			"<session class=\"org.boblycat.blimp.BlimpSession\">" +
+			"  <layer class=\"org.boblycat.blimp.tests.DummyInput\">" +
+			"    <property name=\"path\">some.path</property>" +
+			"  </layer>" +
+			"  <layer class=\"org.boblycat.blimp.tests.DummyLayer\">" +
+			"    <property name=\"stringValue\">Some string value</property>" +
+			"  </layer>" +
+			"</session>";
+		BlimpSession session = (BlimpSession) Serializer.layerFromXml(xml);
+		assertNotNull(session);
+		assertEquals(2, session.layerCount());
+		
+		DummyInput input = (DummyInput) session.getLayer(0);
+		assertNotNull(input);
+		assertEquals("some.path", input.getPath());
+		assertTrue(input == session.getInput());
+		
+		DummyLayer layer = (DummyLayer) session.getLayer(1);
+		assertNotNull(layer);
+		assertEquals("Some string value", layer.getStringValue());
+	}
+	
+	@Test
+	public void testCloneSession() {
+		BlimpSession session = new BlimpSession();
+		DummyInput input = new DummyInput();
+		input.setPath("a path");
+		session.setInput(input);
+		DummyLayer layer = new DummyLayer();
+		layer.setDoubleValue(3.45);
+		session.addLayer(layer);
+		
+		BlimpSession sessionClone = (BlimpSession) session.clone();
+		assertNotNull(sessionClone);
+		assertTrue(session != sessionClone);
+		assertEquals(2, sessionClone.layerCount());
+		
+		DummyInput inputClone = (DummyInput) sessionClone.getLayer(0);
+		assertNotNull(inputClone);
+		assertTrue(input != inputClone);
+		assertEquals("a path", inputClone.getPath());
+		
+		DummyLayer layerClone = (DummyLayer) sessionClone.getLayer(1);
+		assertNotNull(layerClone);
+		assertTrue(layer != layerClone);
+		assertEquals(3.45, layerClone.getDoubleValue());
 	}
 }

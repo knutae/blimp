@@ -63,7 +63,7 @@ public class LayerEditorRegistry {
 			button.addListener(SWT.Selection, new Listener() {
 				public void handleEvent(Event e) {
 					// revert layer changes
-					Serializer.copyBeanProperties(layerClone, editedLayer);
+					Serializer.copyBeanData(layerClone, editedLayer);
 					closeDialog();
 					if (callback != null)
 						callback.editingFinished(editedLayer, true);
