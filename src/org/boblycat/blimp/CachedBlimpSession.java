@@ -22,7 +22,7 @@ public class CachedBlimpSession extends BlimpSession {
         Bitmap bitmap = cache.get(source, layer);
         if (bitmap == null) {
             log("miss: " + layer.getClass());
-            bitmap = layer.applyLayer(source);
+            bitmap = super.applyLayer(source, layer);
             cache.put(source, layer, bitmap);
         }
         else {
@@ -35,7 +35,7 @@ public class CachedBlimpSession extends BlimpSession {
         Bitmap bitmap = cache.get(input);
         if (bitmap == null) {
             log("miss: " + input.getClass());
-            bitmap = input.getBitmap();
+            bitmap = super.inputBitmap(input);
             cache.put(input, bitmap);
         }
         else {

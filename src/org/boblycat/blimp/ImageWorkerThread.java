@@ -44,6 +44,11 @@ public abstract class ImageWorkerThread extends Thread {
         requestQueue = new LinkedBlockingQueue<Request>();
         //session = new BlimpSession();
         session = new CachedBlimpSession();
+        session.addProgressListener(new ProgressListener() {
+            public void reportProgress(ProgressEvent event) {
+                progressReported(event);
+            }
+        });
     }
     
     private static void debugPrint(String msg) {
@@ -61,6 +66,8 @@ public abstract class ImageWorkerThread extends Thread {
      * @param bitmap A generated bitmap, which could be <code>null</code>.
      */
     protected abstract void bitmapGenerated(Runnable runnable, Bitmap bitmap);
+    
+    protected abstract void progressReported(ProgressEvent event);
     
     protected abstract boolean isFinished();
     

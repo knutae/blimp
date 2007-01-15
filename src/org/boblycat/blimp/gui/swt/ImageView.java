@@ -1,5 +1,7 @@
 package org.boblycat.blimp.gui.swt;
 
+import java.util.concurrent.LinkedBlockingQueue;
+
 import org.boblycat.blimp.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -17,6 +19,8 @@ class SwtImageWorkerThread extends ImageWorkerThread {
     Display display;
     private SharedData sharedData;
     private boolean finished;
+    ProgressEventSource guiProgressEventSource;
+    LinkedBlockingQueue<ProgressEvent> progressEventQueue;
     
     public SwtImageWorkerThread(Display display) {
         this.display = display;
@@ -26,6 +30,8 @@ class SwtImageWorkerThread extends ImageWorkerThread {
            }
         });
         sharedData = new SharedData();
+        guiProgressEventSource = new ProgressEventSource();
+        progressEventQueue = new LinkedBlockingQueue<ProgressEvent>();
     }
     
     protected void bitmapGenerated(Runnable runnable, Bitmap bitmap) {
@@ -45,6 +51,21 @@ class SwtImageWorkerThread extends ImageWorkerThread {
         display.asyncExec(runnable);
     }
     
+    protected void progressReported(ProgressEvent event) {
+        progressEventQueue.add(event);
+        display.asyncExec(new Runnable() {
+            public void run() {
+                try {
+                    guiProgressEventSource.triggerChangeWithEvent(
+                            progressEventQueue.take());
+                }
+                catch (InterruptedException e) {
+                    Util.err(e.getMessage());
+                }
+            }
+        });
+    }
+    
     protected synchronized boolean isFinished() {
         return finished;
     }
@@ -62,6 +83,14 @@ class SwtImageWorkerThread extends ImageWorkerThread {
         }
         return returnData;
     }
+    
+    public void addProgressListener(ProgressListener listener) {
+        guiProgressEventSource.addListener(listener);
+    }
+    
+    public void removeProgressListener(ProgressListener listener) {
+        guiProgressEventSource.removeListener(listener);
+    }
 }
 
 class BitmapEventSource extends EventSource<BitmapChangeListener, BitmapEvent> {
@@ -72,6 +101,8 @@ class BitmapEventSource extends EventSource<BitmapChangeListener, BitmapEvent> {
 }
 
 public class ImageView extends Composite {
+    static final int PROGRESS_REDRAW_DELAY = 500;
+    
     BlimpSession session;
     boolean dirty;
     Runnable bitmapGeneratedTask;
@@ -84,6 +115,8 @@ public class ImageView extends Composite {
     boolean needNewRequest;
     SharedData threadData;
     BitmapEventSource bitmapEventSource;
+    String currentProgressMessage;
+    boolean delayedRedrawInProgress;
 
     public ImageView(Composite parent, int style, BlimpSession aSession) {
         super(parent, style);
@@ -95,6 +128,17 @@ public class ImageView extends Composite {
         };
         
         workerThread = new SwtImageWorkerThread(getDisplay());
+        workerThread.addProgressListener(new ProgressListener() {
+            public void reportProgress(ProgressEvent e) {
+                //System.out.println("Worker thread: " + e.message);
+                // TODO: show a nice progress bar instead of this?
+                if (e.index < e.size)
+                    setProgressMessage(e.message);
+                else
+                    setProgressMessage(null);
+                layout();
+            }
+        });
         workerThread.start();
 
         // Create GUI components
@@ -110,7 +154,9 @@ public class ImageView extends Composite {
                 // System.out.println("paint " + paintCounter);
                 paintCounter++;
                 if (currentImage == null) {
+                    e.gc.setBackground(new Color(e.gc.getDevice(), 0, 0, 0));
                     e.gc.fillRectangle(canvas.getClientArea());
+                    drawProgressMessage(e.gc);
                     asyncGenerateBitmap();
                     return;
                 }
@@ -136,6 +182,7 @@ public class ImageView extends Composite {
                 else
                     y = (clientArea.height - imageBounds.height) / 2;
                 imageGC.drawImage(currentImage, x, y);
+                drawProgressMessage(imageGC);
                 imageGC.dispose();
                 e.gc.drawImage(bufferImage, 0, 0);
                 bufferImage.dispose(); // important!
@@ -150,7 +197,7 @@ public class ImageView extends Composite {
 
         zoomLabel = new CLabel(this, SWT.NONE);
         zoomLabel.setText("100%");
-
+        
         ToolBar toolBar = new ToolBar(this, SWT.BORDER);
         ToolItem toolItem = new ToolItem(toolBar, SWT.NONE);
         toolItem.setText("Zoom In");
@@ -173,7 +220,7 @@ public class ImageView extends Composite {
         data.top = new FormAttachment(0);
         data.right = new FormAttachment(100);
         zoomLabel.setLayoutData(data);
-
+        
         data = new FormData();
         data.top = new FormAttachment(0);
         data.left = new FormAttachment(0);
@@ -259,6 +306,28 @@ public class ImageView extends Composite {
         zoomLabel.setText(Integer.toString(zoomPercentage) + "%");
         layout();
         dirty = false;
+    }
+    
+    private void setProgressMessage(String message) {
+        currentProgressMessage = message;
+        //canvas.redraw();
+        if (delayedRedrawInProgress)
+            return;
+        delayedRedrawInProgress = true;
+        getDisplay().timerExec(PROGRESS_REDRAW_DELAY, new Runnable() {
+            public void run() {
+                if (!canvas.isDisposed())
+                    canvas.redraw();
+                delayedRedrawInProgress = false;
+            }
+        });
+    }
+    
+    private void drawProgressMessage(GC gc) {
+        if (currentProgressMessage == null)
+            return;
+        gc.setForeground(new Color(gc.getDevice(), 255, 255, 255));
+        gc.drawText("Processing: " + currentProgressMessage, 10, 10);
     }
     
     private void asyncGenerateBitmap() {

@@ -73,19 +73,39 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     Bitmap currentBitmap;
 
     ViewportInfo viewport;
+    
+    ProgressEventSource progressEventSource;
 
     public BlimpSession() {
         layerList = new Vector<Layer>();
         currentBitmap = null;
         viewport = new ViewportInfo();
+        progressEventSource = new ProgressEventSource();
+    }
+    
+    private void reportProgress(Layer layer, int index, int size) {
+        //System.out.println("Progress: " + message);
+        if (layer instanceof ViewResizeLayer)
+            return;
+        ProgressEvent event = new ProgressEvent(layer);
+        event.message = layer.getDescription();
+        event.index = index;
+        event.size = size;
+        progressEventSource.triggerChangeWithEvent(event);
     }
     
     protected Bitmap applyLayer(Bitmap source, AdjustmentLayer layer) {
-        return layer.applyLayer(source);
+        reportProgress(layer, 0, 1);
+        Bitmap result = layer.applyLayer(source);
+        reportProgress(layer, 1, 1);
+        return result;
     }
     
     protected Bitmap inputBitmap(InputLayer input) {
-        return input.getBitmap();
+        reportProgress(input, 0, 1);
+        Bitmap result = input.getBitmap();
+        reportProgress(input, 0, 1);
+        return result;
     }
 
     Bitmap applyViewport(Bitmap bm) {
@@ -354,5 +374,13 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         if (pd.getName().equals("input"))
             return false;
         return super.isSerializableProperty(pd);
+    }
+    
+    public void addProgressListener(ProgressListener li) {
+        progressEventSource.addListener(li);
+    }
+    
+    public void removeProgressListener(ProgressListener li) {
+        progressEventSource.removeListener(li);
     }
 }
