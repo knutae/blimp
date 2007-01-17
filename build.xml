@@ -13,7 +13,22 @@
     <!-- <property name="build.compiler" value="jikes"/> -->
 
     <!-- SWT GUI framework -->
-    <property name="swt.dir" location="swt-M20060629-1905-win32-win32-x86"/>
+    <!-- <property name="swt.dir" location="swt-M20060629-1905-win32-win32-x86"/> -->
+    <condition property="swt.dir" value="swt-M20060629-1905-win32-win32-x86">
+      <os family="windows"/>
+    </condition>
+    <condition property="swt.jni.dir" value="${swt.dir}">
+      <os family="windows"/>
+    </condition>
+
+
+    <condition property="swt.dir" value="/usr/lib/java">
+      <os family="unix"/>
+    </condition>
+    <condition property="swt.jni.dir" value="/usr/lib/jni">
+      <os family="unix"/>
+    </condition>
+
     <property name="swt.jar" location="${swt.dir}/swt.jar"/>
 
     <!-- JUnit testing -->
@@ -24,7 +39,7 @@
     <!-- Image processing library -->
     <property name="jiu.dir" location="jiu"/>
     <property name="jiu.jar" location="${jiu.dir}/jiu.jar"/>
-	
+
     <!-- Xerces XML libraries -->
     <property name="xerces.jar" location="jars/xercesImpl.jar"/>
 	
@@ -88,7 +103,7 @@
 			<includepath location="${lcms.include}"/>
 		    <defineset define="NO_JPEG"/>
 		    <fileset dir="dcraw" includes="dcraw.c"/>
-			<libset dir="build" libs="lcms"/>
+			<libset dir="build" libs="lcms,m"/>
 		</cc>
     </target>
 	
@@ -98,7 +113,7 @@
             <classpath refid="run.classpath"/>
             <!-- <jvmarg value="-server"/> -->
             <jvmarg value="-Xmx256M"/>
-            <sysproperty key="java.library.path" path="${swt.dir}"/>
+            <sysproperty key="java.library.path" path="${swt.jni.dir}"/>
 	    <sysproperty key="blimp.dcraw.path" path="${dcraw.exe}"/>
         </java>
     </target>
