@@ -293,11 +293,12 @@ public class MainWindow {
         dialog.setFilterNames(new String[] {
                 "Images (jpeg, tiff, png, gif, bmp, raw, dng, crw, cr2)",
                 "Blimp projects (blimp)", "All Files" });
-        // the following is MS windows-specific
-        dialog
-                .setFilterExtensions(new String[] {
-                        "*.jpg;*.jpeg;*.tiff;*.tif;*.png;*.gif;*.bmp;*.raw;*.dng;*.crw;*.cr2",
-                        "*.blimp", "*.*" });
+        dialog.setFilterExtensions(new String[] {
+                SwtUtil.getFilterExtensionList(new String[] { "jpg", "jpeg", "tiff", "tif",
+                        "png", "gif", "bmp", "raw", "dng", "crw", "cr2" }),
+                SwtUtil.getFilterExtensionList(new String[] { "blimp" }),
+                SwtUtil.getFilterExtensionList(new String[] { "*" }),
+        });
         String filename = dialog.open();
         if (filename != null)
             openProjectOrImageFile(filename);
@@ -366,13 +367,14 @@ public class MainWindow {
             return;
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         dialog.setFilterNames(new String[] { "Blimp projects (*.blimp)" });
-        dialog.setFilterExtensions(new String[] { "*.blimp" });
+        dialog.setFilterExtensions(new String[] {
+                SwtUtil.getFilterExtensionList(new String[] { "blimp" }) });
         String filename = dialog.open();
         if (filename == null)
             return;
         BlimpSession session = currentImageTab.imageView.getSession();
         try {
-            Serializer.saveBeanToFile(session, filename);
+            Serializer.saveBeanToFile(session, Util.changeFileExtension(filename, "blimp"));
         }
         catch (IOException e) {
             System.err.println("An I/O error occured: " + e.getMessage());
@@ -384,8 +386,10 @@ public class MainWindow {
             return;
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         dialog
-                .setFilterNames(new String[] { "Exportable image formats (jpeg, bmp)" });
-        dialog.setFilterExtensions(new String[] { "*.jpeg;*.jpg;*.bmp" });
+                .setFilterNames(new String[] { "Exportable image formats (jpeg, png, bmp)" });
+        dialog.setFilterExtensions(new String[] {
+                SwtUtil.getFilterExtensionList(new String[] {
+                        "jpeg", "jpg",  "png", "bmp" }) });
         String filename = dialog.open();
         if (filename == null)
             return;

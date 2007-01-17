@@ -1,5 +1,6 @@
 package org.boblycat.blimp.gui.swt;
 
+import org.boblycat.blimp.Util;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Resource;
 import org.eclipse.swt.widgets.MessageBox;
@@ -38,5 +39,40 @@ public class SwtUtil {
         if (resource == null || resource.isDisposed())
             return;
         resource.dispose();
+    }
+    
+    /**
+     * Get a platform-dependent list of extensions useful for SWT file dialogs.
+     * @param names An array of extension names not including the dot, or "*" for all files.
+     * @return A platform-dependent string of wildcards, separated by semicolons.
+     */
+    public static String getFilterExtensionList(String[] extensions) {
+        StringBuilder builder = new StringBuilder();
+    	if (Util.isWindowsOS()) {
+            for (String ext : extensions) {
+                builder.append(";*." + ext);
+            }
+        }
+        else {
+            // not windows: assume unix
+            for (String ext : extensions) {
+                builder.append(';');
+                if (ext.equals("*"))
+                    builder.append("*");
+                else if (ext.toLowerCase().equals(ext.toUpperCase())) {
+                    // no case
+                    builder.append("*." + ext);
+                }
+                else {
+                    // allow both cases
+                    builder.append("*." + ext.toLowerCase());
+                    builder.append(";*." + ext.toUpperCase());
+                }
+            }
+        }
+        if (builder.length() == 0)
+            return "";
+        // strip first separator
+        return builder.substring(1);
     }
 }

@@ -130,4 +130,21 @@ public class Util {
             System.err.println("Failed to open link: " + link);
         }
     }
+    
+    /**
+     * Add or change a file name extension.
+     * @param filename A file name or path, with or without an extension.
+     * @param ext A file extension, not including a leading dot.
+     * @return A file name ending with the given extension.
+     */
+    public static String changeFileExtension(String filename, String ext) {
+        if (filename.toLowerCase().endsWith("." + ext.toLowerCase()))
+            return filename;
+        int lastDotPos = filename.lastIndexOf('.');
+        int lastSlashPos = Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\'));
+        if (lastDotPos < 0 || lastSlashPos > lastDotPos)
+            return filename + '.' + ext;
+        else
+            return filename.substring(0, lastDotPos) + '.' + ext;
+    }
 }
