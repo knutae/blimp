@@ -47,7 +47,9 @@
 	<property name="browser.jar" location="jars/BrowserLauncher2-10rc4.jar"/>
     
     <!-- dcraw executable -->
-    <property name="dcraw.exe" location="${build}/dcraw.exe"/>
+	<condition property="dcraw.exe" value="${build}/dcraw.exe" else="${build}/dcraw">
+		<os family="windows"/>
+	</condition>
 
 	<!-- LCMS variables -->
 	<property name="lcms.base" location="lcms-1.16"/>
