@@ -26,7 +26,8 @@ public class RawFileInputLayer extends InputLayer {
         // Need camera-specific tables to make this user friendly.
     }
     
-    private static Quality DEFAULT_QUALITY = Quality.Normal;
+    private static Quality DEFAULT_QUALITY = Quality.HalfSize;
+    private static ColorDepth DEFAULT_COLOR_DEPTH = ColorDepth.Depth16Bit;
     
     Bitmap bitmap;
     String filePath;
@@ -37,7 +38,7 @@ public class RawFileInputLayer extends InputLayer {
 
     public RawFileInputLayer() {
         filePath = "";
-        colorDepth = ColorDepth.Depth8Bit;
+        colorDepth = DEFAULT_COLOR_DEPTH;
         colorSpace = ColorSpace.sRGB;
         quality = DEFAULT_QUALITY;
         whiteBalance = WhiteBalance.Camera;
