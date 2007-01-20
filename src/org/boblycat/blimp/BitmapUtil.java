@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
@@ -195,6 +196,15 @@ public class BitmapUtil {
             return null;
         ImageWriter writer = iter.next();
         return writer;
+    }
+    
+    public static ImageReader getImageReader(String formatName) {
+        Iterator<ImageReader> iter
+            = ImageIO.getImageReadersByFormatName(formatName);
+        if (!iter.hasNext())
+            return null;
+        ImageReader reader = iter.next();
+        return reader;
     }
 
     private static IIOImage toIIOImage(Bitmap bitmap) {

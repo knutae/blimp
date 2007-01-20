@@ -108,6 +108,12 @@ public class Serializer {
         LSSerializer serializer = domImplLS.createLSSerializer();
         return serializer.writeToString(layerToDOM(layer));
     }
+    
+    public static String domToXml(Node node) {
+        LSSerializer serializer = domImplLS.createLSSerializer();
+        serializer.getDomConfig().setParameter("format-pretty-print", true);
+        return serializer.writeToString(node);
+    }
 
     public static Layer layerFromXml(String xml) throws ClassNotFoundException,
             SAXException, IOException {
