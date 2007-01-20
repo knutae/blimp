@@ -11,6 +11,7 @@ import org.boblycat.blimp.layers.GammaLayer;
 import org.boblycat.blimp.layers.GrayscaleMixerLayer;
 import org.boblycat.blimp.layers.InvertLayer;
 import org.boblycat.blimp.layers.ResizeLayer;
+import org.boblycat.blimp.layers.UnsharpMaskLayer;
 
 /**
  * Registry for adjustment layers (not input layers).
@@ -55,6 +56,8 @@ public class LayerRegistry implements Iterable<LayerRegistry.LayerInfo> {
         reg.registerLayer(GrayscaleMixerLayer.class, "&Grayscale Mixer",
                 "Convert to grayscale using an RGB mixer");
         reg.registerLayer(ResizeLayer.class, "&Resize", "Resize Image");
+        reg.registerLayer(UnsharpMaskLayer.class, "&Unsharp Mask",
+                "Image sharpening");
         return reg;
     }
 }
