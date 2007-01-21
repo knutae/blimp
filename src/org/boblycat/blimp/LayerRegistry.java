@@ -3,15 +3,7 @@ package org.boblycat.blimp;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.boblycat.blimp.layers.AdjustmentLayer;
-import org.boblycat.blimp.layers.BrightnessContrastLayer;
-import org.boblycat.blimp.layers.Color16BitLayer;
-import org.boblycat.blimp.layers.CurvesLayer;
-import org.boblycat.blimp.layers.GammaLayer;
-import org.boblycat.blimp.layers.GrayscaleMixerLayer;
-import org.boblycat.blimp.layers.InvertLayer;
-import org.boblycat.blimp.layers.ResizeLayer;
-import org.boblycat.blimp.layers.UnsharpMaskLayer;
+import org.boblycat.blimp.layers.*;
 
 /**
  * Registry for adjustment layers (not input layers).
@@ -58,6 +50,8 @@ public class LayerRegistry implements Iterable<LayerRegistry.LayerInfo> {
         reg.registerLayer(ResizeLayer.class, "&Resize", "Resize Image");
         reg.registerLayer(UnsharpMaskLayer.class, "&Unsharp Mask",
                 "Image sharpening");
+        reg.registerLayer(LocalContrastLayer.class, "&Local Contrast Enhancement",
+                "Increase contrast locally in adjacent areas of the image");
         return reg;
     }
 }
