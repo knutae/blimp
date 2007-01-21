@@ -67,8 +67,10 @@ class MultiLineData {
  */
 class LocalContrastOperation extends ImageToImageOperation {
     static final double AMOUNT_DIVISOR = 100.0;
+    static final double ADAPTIVE_MULTIPLIER = 10.0;
     int radius;
     int amount;
+    int adaptive;
     
     public void process() throws MissingParameterException,
     WrongParameterException {
@@ -85,8 +87,20 @@ class LocalContrastOperation extends ImageToImageOperation {
         IntegerImage input = (IntegerImage) pinput;
         IntegerImage output = (IntegerImage) poutput;
         boolean is16Bit = (output instanceof ShortChannelImage);
-        double originalMult = (amount / AMOUNT_DIVISOR) + 1;
-        double otherMult = 1 - originalMult;
+        int maxSample;
+        if (is16Bit)
+            maxSample = 1 << 16;
+        else
+            maxSample = 1 << 8;
+        double realAmount = amount / AMOUNT_DIVISOR;
+        double adaptiveExponent = ADAPTIVE_MULTIPLIER / (adaptive + ADAPTIVE_MULTIPLIER);
+        assert(adaptiveExponent > 0 && adaptiveExponent <= 1);
+        
+        // Note: when increasing the adaptive parameter, also increase the amount,
+        // otherwise the overall effect will be reduced too much.
+        // TODO: figure out a way to do this that is mathematically sensible.
+        realAmount = realAmount + Math.pow(realAmount, adaptiveExponent);
+        
         for (int channel = 0; channel<channels; channel++) {
             MultiLineData activeLineData = new MultiLineData(input);
             
@@ -104,7 +118,7 @@ class LocalContrastOperation extends ImageToImageOperation {
                 int numLines = activeLineData.getNumLines();
                 // an int can be too small for 16-bit depths with a large radius
                 long value = 0;
-                int divisor = 0;
+                long divisor = 0;
                 
                 for (int x = 0; x < Math.min(width, radius+1); x++) {
                     value += combinedLineData[x];
@@ -122,9 +136,16 @@ class LocalContrastOperation extends ImageToImageOperation {
                     }
                     assert(divisor > 0);
                     int originalSample = input.getSample(channel, x, y);
-                    double newSampleD = originalMult * originalSample +
-                        otherMult * value / divisor;
-                    int newSample = (int) newSampleD;
+                    double blurredSample = ((double) value) / divisor;
+                    double sampleDiff = Math.abs(originalSample - blurredSample);
+                    double relativeDiff = ((double) sampleDiff) / maxSample; 
+                    relativeDiff = Math.pow(relativeDiff, adaptiveExponent);
+                    double newAmount = realAmount * (1 - relativeDiff);
+                    double originalMult = newAmount + 1;
+                    double newMult = (1 - originalMult);
+                    double newValue = originalMult * originalSample +
+                        newMult * blurredSample;
+                    int newSample = (int) newValue;
                     if (is16Bit)
                         output.putSample(channel, x, y, Util.cropToUnsignedShort(newSample));
                     else
@@ -138,16 +159,22 @@ class LocalContrastOperation extends ImageToImageOperation {
 }
 
 public class LocalContrastLayer extends AdjustmentLayer {
-    static final int MAX_AMOUNT = 10000;
-    static final int MAX_RADIUS = 1000;
+    public static final int MIN_AMOUNT = 1;
+    public static final int MIN_RADIUS = 1;
+    public static final int MIN_ADAPTIVE = 0;
+    public static final int MAX_AMOUNT = 10000;
+    public static final int MAX_RADIUS = 1000;
+    public static final int MAX_ADAPTIVE = 1000;
     private int radius = 50;
     private int amount = 30;
+    private int adaptive = 0;
     
     @Override
     public Bitmap applyLayer(Bitmap source) {
         LocalContrastOperation op = new LocalContrastOperation();
         op.radius = radius;
         op.amount = amount;
+        op.adaptive = adaptive;
         return new Bitmap(applyJiuOperation(source.getImage(), op));
     }
 
@@ -157,7 +184,7 @@ public class LocalContrastLayer extends AdjustmentLayer {
     }
 
     public void setRadius(int radius) {
-        this.radius = Util.constrainedValue(radius, 1, MAX_RADIUS);
+        this.radius = Util.constrainedValue(radius, MIN_RADIUS, MAX_RADIUS);
     }
 
     public int getRadius() {
@@ -165,11 +192,19 @@ public class LocalContrastLayer extends AdjustmentLayer {
     }
 
     public void setAmount(int level) {
-        this.amount = Util.constrainedValue(level, 1, MAX_AMOUNT);
+        this.amount = Util.constrainedValue(level, MIN_AMOUNT, MAX_AMOUNT);
     }
 
     public int getAmount() {
         return amount;
+    }
+
+    public void setAdaptive(int adaptive) {
+        this.adaptive = Util.constrainedValue(adaptive, MIN_ADAPTIVE, MAX_ADAPTIVE);
+    }
+
+    public int getAdaptive() {
+        return adaptive;
     }
 
 }

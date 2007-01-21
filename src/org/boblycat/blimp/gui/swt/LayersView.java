@@ -6,6 +6,7 @@ import org.boblycat.blimp.layers.CurvesLayer;
 import org.boblycat.blimp.layers.GammaLayer;
 import org.boblycat.blimp.layers.GrayscaleMixerLayer;
 import org.boblycat.blimp.layers.Layer;
+import org.boblycat.blimp.layers.LocalContrastLayer;
 import org.boblycat.blimp.layers.RawFileInputLayer;
 
 import org.eclipse.swt.*;
@@ -151,6 +152,7 @@ public class LayersView extends SashForm {
         editorRegistry.register(GammaLayer.class, GammaEditor.class);
         editorRegistry.register(GrayscaleMixerLayer.class,
                 GrayscaleMixerEditor.class);
+        editorRegistry.register(LocalContrastLayer.class, LocalContrastEditor.class);
     }
     
     private int layerIndexOfItem(TableItem item) {
