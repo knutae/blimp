@@ -39,13 +39,14 @@ public class CommandLine {
     private static IIOMetadataNode findExifNode(Node tree) {
         return findUnknownNodeType(tree, 225);
     }
-    
+
     private static void printMetaData(IIOMetadata metadata) {
         //System.out.println(metadata.toString());
         String[] formats = metadata.getMetadataFormatNames();
         for (String format: formats) {
             //System.out.println("*** Format: " + format);
             IIOMetadataNode tree = (IIOMetadataNode) metadata.getAsTree(format);
+            //System.out.println(Serializer.domToXml(tree));
             IIOMetadataNode exifNode = findExifNode(tree);
             if (exifNode != null) {
                 System.out.println("Found Exif node in format " + format);
@@ -64,17 +65,25 @@ public class CommandLine {
             for (ImageFileDirectory ifd: dirs) {
                 System.out.println("-------------------");
                 for (ExifField field: ifd) {
-                    System.out.println("  tag   : 0x" + Integer.toHexString(field.getTag()));
+                    int tag = field.getTag();
+                    ExifTag exifTag = ExifTag.fromTag(tag);
+                    if (exifTag == null)
+                        System.out.println("+++ Unknown tag " + tag);
+                    else
+                        System.out.println("+++ " + exifTag.toString());
+                    System.out.println("  tag   : " + Integer.toString(field.getTag())
+                            + " (0x" + Integer.toHexString(field.getTag()) + ")");
                     System.out.println("  type  : " + field.getType());
-                    System.out.println("  count : " + field.getCount());
+                    if (field.getCount() != 1)
+                        System.out.println("  count : " + field.getCount());
                     System.out.println("  value : " + field.getValue());
-                    System.out.println("+++");
+                    //System.out.println("+++");
                 }
             }
         }
         catch (ReaderError e) {
             e.printStackTrace();
-            fatal(e.getMessage());
+            //fatal(e.getMessage());
         }
     }
     

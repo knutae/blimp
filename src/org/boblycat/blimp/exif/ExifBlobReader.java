@@ -12,6 +12,7 @@ public class ExifBlobReader {
     byte[] data;
     int baseOffset;
     int currentOffset;
+    int exifPointer;
     boolean bigEndian;
     
     public ExifBlobReader(byte[] data, int baseOffset) throws ReaderError {
@@ -21,6 +22,9 @@ public class ExifBlobReader {
     }
     
     public ExifBlobReader(byte[] data) throws ReaderError {
+        //System.out.println("ExifBlobReader... ");
+        //String str = new String(data, 0, 100);
+        //System.out.println("first bytes: " + str);
         this.data = data;
         detectBaseOffset();
         detectEndianness();
@@ -65,9 +69,8 @@ public class ExifBlobReader {
     }
     
     protected int extractInt(int offset, int byteCount) throws ReaderError {
+        assert(byteCount <= 4);
         long result = extractLong(offset, byteCount);
-        if (Math.abs(result) > Integer.MAX_VALUE)
-            throw new ReaderError("Too large integer value: " + result);
         return (int) (result & 0xffffffff);
     }
     
@@ -144,6 +147,8 @@ public class ExifBlobReader {
                 break;
             }
             ifd.addField(field);
+            if (field.getTag() == ExifTag.Exif_IFD_Pointer.getTag())
+                exifPointer = (Integer) field.getValue(); 
             currentOffset += 12;
         }
         return ifd;
@@ -153,8 +158,14 @@ public class ExifBlobReader {
         Vector<ImageFileDirectory> directories = new Vector<ImageFileDirectory>();
         currentOffset = extractInt(4, 4);
         while (currentOffset != 0) {
+            //System.out.println("current offset: " + currentOffset);
             directories.add(extractIFD());
             currentOffset = extractInt(currentOffset, 4);
+            if (currentOffset == 0 && exifPointer != 0) {
+                //System.out.println("jumping to exif pointer: " + exifPointer);
+                currentOffset = exifPointer;
+                exifPointer = 0;
+            }
         }
         return directories;
     }
