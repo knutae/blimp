@@ -360,9 +360,8 @@ public class ImageView extends Composite {
         bitmapEventSource.removeListener(listener);
     }
     
-    private void triggerBitmapChange() {
-        if (threadData.viewBitmap != null)
-            bitmapEventSource.triggerChangeWithEvent(
-                    new BitmapEvent(this, threadData.viewBitmap));
+    public void triggerBitmapChange() {
+        bitmapEventSource.triggerChangeWithEvent(
+                new BitmapEvent(this, threadData.viewBitmap));
     }
 }

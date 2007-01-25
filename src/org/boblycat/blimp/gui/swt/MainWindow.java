@@ -196,23 +196,25 @@ public class MainWindow {
             public void widgetSelected(SelectionEvent e) {
                 for (int i = 0; i < imageTabs.size(); i++)
                     if (imageTabs.get(i).item == e.item) {
-                        currentImageTab = imageTabs.get(i);
-                        layers.updateWithSession(currentImageTab.imageView
-                                .getSession(), null, null);
+                        updateCurrentImageTab(imageTabs.get(i));
                         return;
                     }
             }
         });
         mainTabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
            public void close(CTabFolderEvent e) {
+               ImageTab activeImageTab = currentImageTab;
                for (ImageTab tab: imageTabs) {
                    if (tab.item == e.item) {
                        imageTabs.remove(tab);
                        tab.imageView.dispose();
-                       if (tab == currentImageTab)
-                           currentImageTab = null;
+                       if (tab == activeImageTab)
+                           activeImageTab = null;
                        break;
                    }
+               }
+               if (activeImageTab == null && imageTabs.size() == 0) {
+                   updateCurrentImageTab(null);
                }
            }
         });
@@ -285,6 +287,19 @@ public class MainWindow {
         BlimpSession session = new BlimpSession();
         session.setInput(input);
         return addImageViewWithSession(session);
+    }
+    
+    void updateCurrentImageTab(ImageTab newImageTab) {
+        currentImageTab = newImageTab;
+        if (currentImageTab == null) {
+            layers.updateWithSession(null, null, null);
+            histogramView.setBitmap(null);
+        }
+        else {
+            layers.updateWithSession(currentImageTab.imageView.getSession(),
+                    null, null);
+            currentImageTab.imageView.triggerBitmapChange();
+        }
     }
 
     private void fileOpenError(String filename, String errorType, Exception e) {
