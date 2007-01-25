@@ -180,12 +180,18 @@ public class MainWindow {
         mainTabFolder = new CTabFolder(sashForm, SWT.TOP | SWT.BORDER
                 | SWT.CLOSE);
         SashForm rightSash = new SashForm(sashForm, SWT.VERTICAL);
-        histogramView = new HistogramView(rightSash, SWT.NONE);
+
+        CTabFolder histogramTabFolder = new CTabFolder(rightSash,
+                SWT.TOP | SWT.BORDER);
+        histogramView = new HistogramView(histogramTabFolder, SWT.NONE);
+        CTabItem histogramTabItem = new CTabItem(histogramTabFolder, SWT.NONE);
+        histogramTabItem.setText("Histogram");
+        histogramTabItem.setControl(histogramView);
+        histogramTabFolder.setSelection(histogramTabItem);
+        
         rightTabFolder = new CTabFolder(rightSash, SWT.TOP | SWT.BORDER);
-        int[] weights = { 4, 1 };
-        sashForm.setWeights(weights);
-        int[] rightWeights = { 1, 5 };
-        rightSash.setWeights(rightWeights);
+        sashForm.setWeights(new int[] { 4, 1 });
+        rightSash.setWeights(new int[] { 1, 4 });
         mainTabFolder.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 for (int i = 0; i < imageTabs.size(); i++)
