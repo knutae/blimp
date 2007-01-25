@@ -67,8 +67,6 @@ public class ValueSlider extends Composite {
             }
         };
         valueEdit.addListener(SWT.DefaultSelection, applyTextValueListener);
-        // valueEdit.addListener(SWT.FocusOut, applyTextValueListener); //
-        // unreliable
 
         scale = new Scale(this, SWT.NONE);
         scale.addListener(SWT.Selection, new Listener() {
@@ -83,14 +81,15 @@ public class ValueSlider extends Composite {
         gridLayout.numColumns = 2;
         setLayout(gridLayout);
 
-        captionLabel
-                .setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        captionLabel.setLayoutData(
+                new GridData(SWT.FILL, SWT.FILL, true, false));
         GridData valueData = new GridData(SWT.FILL, SWT.FILL, false, false);
         valueData.widthHint = 30;
         valueEdit.setLayoutData(valueData);
-        scale
-                .setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2,
-                        1));
+        GridData scaleData = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
+        scaleData.widthHint = 150;
+        scale.setLayoutData(scaleData);
+        setAutoPageIncrement();
     }
 
     boolean isLegalValueChar(char c) {
@@ -173,13 +172,13 @@ public class ValueSlider extends Composite {
         if (digits < 0)
             return;
         this.digits = digits;
-        /*
-         * int mult = 1; for (int i=0; i<digits; i++) mult *= 10;
-         * scale.setIncrement(mult); scale.setPageIncrement(mult);
-         */
     }
-
-    public void setPageIncrement(int incr) {
+    
+    private void setAutoPageIncrement() {
+        int range = maximum - minimum;
+        int incr = 1;
+        while (incr * 20 < range)
+            incr *= 10;
         scale.setPageIncrement(incr);
     }
 

@@ -24,7 +24,6 @@ public class GrayscaleMixerEditor extends LayerEditor {
         ValueSlider slider = new ValueSlider(this, SWT.NONE, caption,
                 GrayscaleMixerLayer.MINIMUM_WEIGHT,
                 GrayscaleMixerLayer.MAXIMUM_WEIGHT, 0);
-        slider.setPageIncrement(GrayscaleMixerLayer.FULL_WEIGHT);
         slider.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
                 updateLayer();

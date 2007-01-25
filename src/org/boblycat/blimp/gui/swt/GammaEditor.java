@@ -16,7 +16,6 @@ public class GammaEditor extends LayerEditor {
         super(parent, style);
         // allow gamma values from 0.50 to 5.00
         gammaSlider = new ValueSlider(this, SWT.NONE, "Gamma", 50, 500, 2);
-        gammaSlider.setPageIncrement(50);
         gammaSlider.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
                 updateLayer();
