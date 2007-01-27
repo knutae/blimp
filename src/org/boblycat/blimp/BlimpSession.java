@@ -65,6 +65,10 @@ class ViewportInfo {
         zoomFactor.multiplier = other.zoomFactor.multiplier;
         zoomFactor.divisor = other.zoomFactor.divisor;
     }
+    
+    boolean isZoomedIn() {
+        return zoomFactor.getMultiplier() > zoomFactor.getDivisor();
+    }
 }
 
 public class BlimpSession extends InputLayer implements LayerChangeListener {
@@ -149,7 +153,8 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         ResizeLayer resize = getResizeLayer();
         if (resize != null && resize.isActive())
             bm = applyLayer(bm, resize);
-        if (useViewport)
+        
+        if (useViewport && !viewport.isZoomedIn())
             bm = applyViewport(bm);
 
         for (Layer layer : layerList) {
@@ -168,6 +173,10 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
                 bm = applyLayer(bm, adjust);
             }
         }
+        
+        if (useViewport && viewport.isZoomedIn())
+            bm = applyViewport(bm);
+        
         return bm;
     }
     
