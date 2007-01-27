@@ -48,7 +48,8 @@ class SwtImageWorkerThread extends ImageWorkerThread {
                 sharedData.zoom = currentZoom;
             }
         }
-        display.asyncExec(runnable);
+        if (!display.isDisposed())
+            display.asyncExec(runnable);
     }
     
     protected void progressReported(ProgressEvent event) {
