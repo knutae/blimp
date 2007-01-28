@@ -4,6 +4,7 @@ import java.beans.PropertyDescriptor;
 import java.util.Vector;
 
 import org.boblycat.blimp.layers.AdjustmentLayer;
+import org.boblycat.blimp.layers.CropLayer;
 import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.Layer;
 import org.boblycat.blimp.layers.ResizeLayer;
@@ -130,11 +131,13 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         currentBitmap = generateBitmap(true);
     }
 
-    ResizeLayer getResizeLayer() {
-        for (Layer layer : layerList)
-            if (layer instanceof ResizeLayer && layer.isActive())
-                return (ResizeLayer) layer;
-        return null;
+    Vector<AdjustmentLayer> getCropAndResize() {
+        Vector<AdjustmentLayer> layers = new Vector<AdjustmentLayer>();
+        for (Layer layer: layerList) {
+            if (layer instanceof CropLayer || layer instanceof ResizeLayer)
+                layers.add((AdjustmentLayer) layer);
+        }
+        return layers;
     }
 
     Bitmap generateBitmap(boolean useViewport) {
@@ -153,16 +156,18 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             System.err.println("Input failed!");
             return null;
         }
+
         // TODO: let a view quality setting decide when/how to resize
-        ResizeLayer resize = getResizeLayer();
-        if (resize != null && resize.isActive())
-            bm = applyLayer(bm, resize);
+        Vector<AdjustmentLayer> cropAndResize = getCropAndResize();
+        for (AdjustmentLayer layer: cropAndResize)
+            if (layer.isActive())
+                bm = applyLayer(bm, layer);
         
         if (useViewport && !viewport.isZoomedIn())
             bm = applyViewport(bm);
 
         for (Layer layer : layerList) {
-            if (layer == input || layer == resize)
+            if (layer == input || cropAndResize.contains(layer))
                 continue;
             if (layer instanceof InputLayer) {
                 System.err.println("Warning: more than one input layer?");
