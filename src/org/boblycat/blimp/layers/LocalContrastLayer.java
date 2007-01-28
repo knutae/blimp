@@ -172,7 +172,9 @@ public class LocalContrastLayer extends AdjustmentLayer {
     @Override
     public Bitmap applyLayer(Bitmap source) {
         LocalContrastOperation op = new LocalContrastOperation();
-        op.radius = radius;
+        op.radius = (int) (radius / source.getPixelScaleFactor());
+        //System.out.println("defined radius: " + radius);
+        //System.out.println("used radius: " + op.radius);
         op.amount = amount;
         op.adaptive = adaptive;
         return new Bitmap(applyJiuOperation(source.getImage(), op));

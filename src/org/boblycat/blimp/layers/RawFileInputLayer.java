@@ -168,6 +168,9 @@ public class RawFileInputLayer extends InputLayer {
                 // System.out.println(codec.getImage().getClass());
                 Bitmap tmpBitmap = new Bitmap();
                 tmpBitmap.setImage(codec.getImage());
+                if (quality == Quality.HalfSize)
+                    // compensate for half-size performed by dcraw 
+                    tmpBitmap.setPixelScaleFactor(2);
                 bitmap = tmpBitmap;
             }
             finally {

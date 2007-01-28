@@ -49,6 +49,8 @@ public class ViewResizeLayer extends AdjustmentLayer {
             return source;
         }
         Bitmap ret = new Bitmap(resize.getOutputImage());
+        double scaleFactor = source.getWidth() / (double) ret.getWidth(); 
+        ret.setPixelScaleFactor(source.getPixelScaleFactor() * scaleFactor);
         // ret.printDebugInfo("Invert dest");
         return ret;
     }

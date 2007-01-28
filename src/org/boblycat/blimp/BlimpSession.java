@@ -101,6 +101,8 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     protected Bitmap applyLayer(Bitmap source, AdjustmentLayer layer) {
         reportProgress(layer, 0, 1);
         Bitmap result = layer.applyLayer(source);
+        if (result != null && result.getPixelScaleFactor() <= 0)
+            result.setPixelScaleFactor(source.getPixelScaleFactor());
         reportProgress(layer, 1, 1);
         return result;
     }
@@ -108,6 +110,8 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     protected Bitmap inputBitmap(InputLayer input) {
         reportProgress(input, 0, 1);
         Bitmap result = input.getBitmap();
+        if (result != null && result.getPixelScaleFactor() <= 0)
+            result.setPixelScaleFactor(1);
         reportProgress(input, 0, 1);
         return result;
     }

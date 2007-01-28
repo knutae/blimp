@@ -56,6 +56,9 @@ public class ResizeLayer extends AdjustmentLayer {
         resampleOp.setSize(width, height);
         lastInput = source;
         lastOutput = new Bitmap(applyJiuOperation(input, resampleOp));
+        double scaleFactor = source.getWidth() / (double) width;
+        lastOutput.setPixelScaleFactor(source.getPixelScaleFactor()
+                * scaleFactor);
         return lastOutput;
     }
 

@@ -2,6 +2,8 @@ package org.boblycat.blimp.tests;
 
 import org.boblycat.blimp.*;
 import org.boblycat.blimp.layers.Layer;
+import org.boblycat.blimp.layers.ResizeLayer;
+import org.boblycat.blimp.layers.ViewResizeLayer;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -206,5 +208,32 @@ public class SessionTests {
         assertEquals("input2 path", input1.getPath());
         assertTrue(layer1 == session1.getLayer(1));
         assertEquals("layer2 value", layer1.getStringValue());
+    }
+    
+    @Test
+    public void testPixelScaleFactor() {
+        BlimpSession session = createTestSession();
+        Bitmap output = session.getBitmap();
+        assertEquals(1.0, output.getPixelScaleFactor());
+        
+        int origWidth = output.getWidth();
+        int origHeight = output.getHeight();
+        
+        session.addLayer(new TestLayer());
+        output = session.getBitmap();
+        assertEquals(1.0, output.getPixelScaleFactor());
+        
+        ViewResizeLayer viewResize = new ViewResizeLayer(
+                origWidth / 2, origHeight / 2, true);
+        session.addLayer(viewResize);
+        output = session.getBitmap();
+        assertEquals(2.0, output.getPixelScaleFactor());
+        session.removeLayer(viewResize);
+        
+        ResizeLayer resize = new ResizeLayer();
+        resize.setMaxSize(origWidth / 4);
+        session.addLayer(resize);
+        output = session.getBitmap();
+        assertEquals(4.0, output.getPixelScaleFactor());
     }
 }
