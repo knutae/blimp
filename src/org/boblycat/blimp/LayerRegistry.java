@@ -44,15 +44,16 @@ public class LayerRegistry implements Iterable<LayerRegistry.LayerInfo> {
         reg.registerLayer(CurvesLayer.class, "&Curves", "Curves");
         reg.registerLayer(Color16BitLayer.class, "&16-Bit",
                 "Convert image to 16-bit per color channel");
-        reg.registerLayer(GammaLayer.class, "&Gamma", "Adjust gamma");
+        reg.registerLayer(GammaLayer.class, "Ga&mma", "Adjust gamma");
         reg.registerLayer(GrayscaleMixerLayer.class, "&Grayscale Mixer",
                 "Convert to grayscale using an RGB mixer");
         reg.registerLayer(ResizeLayer.class, "&Resize", "Resize Image");
         reg.registerLayer(UnsharpMaskLayer.class, "&Unsharp Mask",
                 "Image sharpening");
-        reg.registerLayer(LocalContrastLayer.class, "&Local Contrast Enhancement",
+        reg.registerLayer(LocalContrastLayer.class, "Local Contrast &Enhancement",
                 "Increase contrast locally in adjacent areas of the image");
         reg.registerLayer(CropLayer.class, "Cro&p", "Crop Image");
+        reg.registerLayer(LevelsLayer.class, "&Levels", "Levels");
         return reg;
     }
 }
