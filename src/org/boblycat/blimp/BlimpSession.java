@@ -401,4 +401,34 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     public void removeProgressListener(ProgressListener li) {
         progressEventSource.removeListener(li);
     }
+    
+    /**
+     * Test if the session data (the layers) is the same as the other session.
+     * Unlike equals(), this function can return true even if the session
+     * classes are not the same.
+     * @param other Another session object.
+     * @return <code>true</code> if all layers are equal and in the same order,
+     * <code>false</code> otherwise.
+     */
+    public boolean sessionDataEquals(BlimpSession other) {
+        if (layerCount() != other.layerCount())
+            return false;
+        for (int i=0; i < layerCount(); i++)
+            if (!getLayer(i).equals(other.getLayer(i)))
+                return false;
+        return true;
+    }
+    
+    /**
+     * Create a deep copy of the given session.  This differs from clone()
+     * because it will create a direct instance of BlimpSession even if the
+     * parameter is a subclass.
+     * @param session A blimp session object.
+     * @return A deep copy of the session.
+     */
+    public static BlimpSession createCopy(BlimpSession session) {
+        BlimpSession newSession = new BlimpSession();
+        Serializer.copyBeanData(session, newSession);
+        return newSession;
+    }
 }

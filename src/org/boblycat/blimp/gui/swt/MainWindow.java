@@ -39,6 +39,8 @@ public class MainWindow {
     MenuItem menuFileSaveSession;
     MenuItem menuFileExportImage;
     MenuItem menuHelpAbout;
+    MenuItem menuUndo;
+    MenuItem menuRedo;
     CTabFolder mainTabFolder;
     CTabFolder rightTabFolder;
     LayersView layers;
@@ -75,6 +77,12 @@ public class MainWindow {
             }
             else if (event.widget == menuHelpAbout) {
                 doMenuAbout();
+            }
+            else if (event.widget == menuUndo) {
+                doUndo();
+            }
+            else if (event.widget == menuRedo) {
+                doRedo();
             }
             else if (event.widget instanceof MenuItem) {
                 MenuItem item = (MenuItem) event.widget;
@@ -146,6 +154,12 @@ public class MainWindow {
                 menuFileExportImage.setEnabled(canSave);
             }
         });
+        
+        Menu editMenu = addMenu(bar, "&Edit");
+        menuUndo = addMenuItem(editMenu, "&Undo", "Undo a change");
+        menuUndo.setAccelerator(SWT.CONTROL | 'Z');
+        menuRedo = addMenuItem(editMenu, "&Redo", "Redo a change");
+        menuRedo.setAccelerator(SWT.CONTROL | 'Y');
 
         Menu layerMenu = addMenu(bar, "Add &Layer");
         layerRegistry = LayerRegistry.createDefaultRegister();
@@ -261,7 +275,7 @@ public class MainWindow {
         display.dispose();
     }
 
-    ImageView addImageViewWithSession(BlimpSession session) {
+    ImageView addImageViewWithSession(HistoryBlimpSession session) {
         ImageView imageView = new ImageView(mainTabFolder, SWT.NONE, session);
         CTabItem item = new CTabItem(mainTabFolder, SWT.CLOSE);
         item.setText(imageView.getSession().getDescription());
@@ -284,7 +298,7 @@ public class MainWindow {
         InputLayer input = Util.getInputLayerFromFile(imageFilename);
         if (input instanceof RawFileInputLayer)
             input.setActive(false); // TODO: quick hack for raw input, improve
-        BlimpSession session = new BlimpSession();
+        HistoryBlimpSession session = new HistoryBlimpSession();
         session.setInput(input);
         return addImageViewWithSession(session);
     }
@@ -296,7 +310,8 @@ public class MainWindow {
             histogramView.setBitmap(null);
         }
         else {
-            layers.updateWithSession(currentImageTab.imageView.getSession(),
+            layers.updateWithSession(
+                    currentImageTab.imageView.getSession(),
                     null, null);
             currentImageTab.imageView.triggerBitmapChange();
         }
@@ -331,8 +346,10 @@ public class MainWindow {
             try {
                 BlimpSession session = (BlimpSession) Serializer
                         .loadBeanFromFile(filename);
-                addImageViewWithSession(session);
-                layers.updateWithSession(session, null, null);
+                HistoryBlimpSession historySession = new HistoryBlimpSession();
+                historySession.synchronizeSessionData(session);
+                addImageViewWithSession(historySession);
+                layers.updateWithSession(historySession, null, null);
             }
             catch (ClassCastException e) {
                 fileOpenError(filename, "Class cast", e);
@@ -351,7 +368,7 @@ public class MainWindow {
 
         // open an image
         ImageView imageView = addImageView(filename);
-        BlimpSession session = imageView.getSession();
+        HistoryBlimpSession session = imageView.getSession();
         layers.updateWithSession(session, session.getInput(),
                 new LayerEditorCallback() {
                     public void editingFinished(Layer layer, boolean cancelled) {
@@ -462,6 +479,20 @@ public class MainWindow {
         dialog.pack();
         dialog.open();
     }
+    
+    void doUndo() {
+        if (currentImageTab == null)
+            return;
+        currentImageTab.imageView.getSession().undo();
+        layers.refresh();
+    }
+    
+    void doRedo() {
+        if (currentImageTab == null)
+            return;
+        currentImageTab.imageView.getSession().redo();
+        layers.refresh();
+    }
 
     void status(String msg) {
         statusLabel.setText(msg);
@@ -472,9 +503,12 @@ public class MainWindow {
         ImageTab tab = currentImageTab;
         if (tab == null)
             return;
-        tab.imageView.getSession().addLayer(layer);
-        tab.imageView.invalidateImage();
-        layers.updateWithSession(tab.imageView.getSession(), layer,
+        HistoryBlimpSession session = tab.imageView.getSession();
+        session.beginDisableAutoRecord();
+        try {
+            session.addLayer(layer);
+            tab.imageView.invalidateImage();
+            layers.updateWithSession(session, layer,
                 new LayerEditorCallback() {
                     public void editingFinished(Layer layer, boolean cancelled) {
                         if (cancelled) {
@@ -483,9 +517,13 @@ public class MainWindow {
                             session.removeLayer(layer);
                             layers.refresh();
                         }
-
+    
                     }
                 });
+        }
+        finally {
+            session.endDisableAutoRecord();
+        }
     }
 
     public static void main(String[] args) {

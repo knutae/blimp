@@ -144,7 +144,7 @@ public abstract class ImageWorkerThread extends Thread {
         // the following can happen on any thread
         Request req = new Request(RequestType.GENERATE_BITMAP);
         req.runnable = runnable;
-        req.sessionCopy = (BlimpSession) session.clone();
+        req.sessionCopy = BlimpSession.createCopy(session);
         req.viewWidth = width;
         req.viewHeight = height;
         putRequest(req);

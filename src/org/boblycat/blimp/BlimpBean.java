@@ -191,4 +191,27 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
             return null;
         }
     }
+
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof BlimpBean))
+            return false;
+        return equals((BlimpBean) obj);
+    }
+
+    public int hashCode() {
+        return Serializer.beanToXml(this).hashCode();
+    }
+
+    /**
+     * Test if this bean is equals to the given bean.
+     * @param bean A bean to test equality against.
+     * @return <code>true</code> if the bean's XML representation is equal.
+     */
+    public boolean equals(BlimpBean bean) {
+        if (bean == null)
+            return false;
+        // TODO: optimize this
+        return Serializer.beanToXml(bean).equals(Serializer.beanToXml(this));
+    }
+    
 }

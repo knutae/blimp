@@ -105,13 +105,18 @@ public class Serializer {
     }
 
     public static String layerToXml(Layer layer) {
-        LSSerializer serializer = domImplLS.createLSSerializer();
-        return serializer.writeToString(layerToDOM(layer));
+        return beanToXml(layer);
     }
     
-    public static String domToXml(Node node) {
+    public static String beanToXml(BlimpBean bean) {
         LSSerializer serializer = domImplLS.createLSSerializer();
-        serializer.getDomConfig().setParameter("format-pretty-print", true);
+        return serializer.writeToString(beanToDOM(bean));
+    }
+
+    public static String domToXml(Node node, boolean prettyPrint) {
+        LSSerializer serializer = domImplLS.createLSSerializer();
+        if (prettyPrint)
+            serializer.getDomConfig().setParameter("format-pretty-print", true);
         return serializer.writeToString(node);
     }
 

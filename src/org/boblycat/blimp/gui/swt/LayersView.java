@@ -16,8 +16,31 @@ import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.graphics.Point;
 
 public class LayersView extends SashForm {
+    class LayerEditorCallbackWrapper implements LayerEditorCallback {
+        LayerEditorCallback originalCallback;
+        HistoryBlimpSession session;
+        LayerEditorCallbackWrapper(LayerEditorCallback original,
+                HistoryBlimpSession session) {
+            originalCallback = original;
+            this.session = session;
+            session.beginDisableAutoRecord();
+        }
+        
+        public void editingFinished(Layer layer, boolean cancelled) {
+            session.endDisableAutoRecord();
+            if (originalCallback != null)
+                originalCallback.editingFinished(layer, cancelled);
+        }
+        
+        void openLayerEditor(Layer layer) {
+            if (!editorRegistry.showEditorDialog(layer, this))
+                // no editor shown: re-enable autoRecord at once
+                session.endDisableAutoRecord();
+        }
+    }
+
     Table layerTable;
-    BlimpSession session;
+    HistoryBlimpSession session;
     Menu contextMenu;
     MenuItem menuRemove;
     MenuItem menuEdit;
@@ -45,8 +68,8 @@ public class LayersView extends SashForm {
                 selectedLayerIndex = layerIndexOfItem(item);
                 if (selectedLayerIndex >= 0) {
                     session.activateLayer(selectedLayerIndex, item.getChecked());
-                    propertyEditor.setLayer(session
-                            .getLayer(selectedLayerIndex));
+                    propertyEditor.setLayer(session.getLayer(
+                            selectedLayerIndex));
                 }
                 else {
                     propertyEditor.setLayer(null);
@@ -142,7 +165,7 @@ public class LayersView extends SashForm {
 
         createEditorRegistry();
     }
-
+    
     private void createEditorRegistry() {
         editorRegistry = new LayerEditorRegistry(getShell());
         editorRegistry.register(BrightnessContrastLayer.class,
@@ -164,7 +187,7 @@ public class LayersView extends SashForm {
         return layerTable.getItemCount() - index - 1;
     }
 
-    public void updateWithSession(BlimpSession session, Layer currentLayer,
+    public void updateWithSession(HistoryBlimpSession session, Layer currentLayer,
             LayerEditorCallback callback) {
         this.session = session;
         layerTable.removeAll();
@@ -188,6 +211,8 @@ public class LayersView extends SashForm {
     }
 
     void openLayerEditor(Layer layer, LayerEditorCallback callback) {
-        editorRegistry.showEditorDialog(layer, callback);
+        LayerEditorCallbackWrapper wrapper =
+            new LayerEditorCallbackWrapper(callback, session);
+        wrapper.openLayerEditor(layer);
     }
 }

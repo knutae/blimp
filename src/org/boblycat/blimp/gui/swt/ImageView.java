@@ -104,7 +104,7 @@ class BitmapEventSource extends EventSource<BitmapChangeListener, BitmapEvent> {
 public class ImageView extends Composite {
     static final int PROGRESS_REDRAW_DELAY = 500;
     
-    BlimpSession session;
+    HistoryBlimpSession session;
     boolean dirty;
     Runnable bitmapGeneratedTask;
     Canvas canvas;
@@ -119,7 +119,7 @@ public class ImageView extends Composite {
     String currentProgressMessage;
     boolean delayedRedrawInProgress;
 
-    public ImageView(Composite parent, int style, BlimpSession aSession) {
+    public ImageView(Composite parent, int style, HistoryBlimpSession aSession) {
         super(parent, style);
 
         Listener redrawListener = new Listener() {
@@ -241,7 +241,7 @@ public class ImageView extends Composite {
         if (aSession != null)
             session = aSession;
         else
-            session = new BlimpSession();
+            session = new HistoryBlimpSession();
         session.addChangeListener(new LayerChangeListener() {
             public void handleChange(LayerEvent event) {
                 asyncGenerateBitmap();
@@ -278,10 +278,10 @@ public class ImageView extends Composite {
         });
     }
 
-    public BlimpSession getSession() {
+    public HistoryBlimpSession getSession() {
         return session;
     }
-
+    
     private static void prepareScrollBar(ScrollBar bar, int canvasPixels,
             int bitmapPixels) {
         int range = bitmapPixels - canvasPixels;
