@@ -59,6 +59,14 @@ public class SerializationTests {
         }
         return null;
     }
+    
+    private static void assertChildValueEquals(Element element, String expected) {
+        assertNotNull(element);
+        assertNotNull(element.getFirstChild());
+        assertTrue(element.getFirstChild() instanceof Text);
+        Text textNode = (Text) element.getFirstChild();
+        assertEquals(expected, textNode.getNodeValue());
+    }
 
     @Test
     public void testToXml() throws Exception {
@@ -75,45 +83,37 @@ public class SerializationTests {
         assertEquals("org.boblycat.blimp.tests.TestLayer", root
                 .getAttribute("class"));
 
-        // The following is very strict: check the exact number of layer
-        // properties. If more properties are added to Layer in the future,
-        // the test will have to be extended.
-        assertEquals(5, root.getChildNodes().getLength());
+        assertTrue(root.getChildNodes().getLength() >= 5);
 
-        Element child = (Element) root.getFirstChild();
-        assertEquals("property", child.getNodeName());
-        assertEquals("active", child.getAttribute("name"));
-        assertNotNull(child.getFirstChild());
-        Text textNode = (Text) child.getFirstChild();
-        assertEquals("true", textNode.getNodeValue());
+        Element activeElement = null;
+        Element doubleValueElement = null;
+        Element enumValueElement = null;
+        Element intValueElement = null;
+        Element stringValueElement = null;
+        
+        for (Node node: new DOMNodeIterator(root)) {
+            assertTrue(node instanceof Element);
+            Element child = (Element) node;
+            assertEquals("property", child.getNodeName());
+            String nameAttr = child.getAttribute("name");
+            
+            if (nameAttr.equals("active"))
+                activeElement = child;
+            else if (nameAttr.equals("doubleValue"))
+                doubleValueElement = child;
+            else if (nameAttr.equals("enumValue"))
+                enumValueElement = child;
+            else if (nameAttr.equals("intValue"))
+                intValueElement = child;
+            else if (nameAttr.equals("stringValue"))
+                stringValueElement = child;
+        }
 
-        child = (Element) child.getNextSibling();
-        assertEquals("property", child.getNodeName());
-        assertEquals("doubleValue", child.getAttribute("name"));
-        assertNotNull(child.getFirstChild());
-        textNode = (Text) child.getFirstChild();
-        assertEquals("-3.13", textNode.getNodeValue());
-
-        child = (Element) child.getNextSibling();
-        assertEquals("property", child.getNodeName());
-        assertEquals("enumValue", child.getAttribute("name"));
-        assertNotNull(child.getFirstChild());
-        textNode = (Text) child.getFirstChild();
-        assertEquals("TWO", textNode.getNodeValue());
-
-        child = (Element) child.getNextSibling();
-        assertEquals("property", child.getNodeName());
-        assertEquals("intValue", child.getAttribute("name"));
-        assertNotNull(child.getFirstChild());
-        textNode = (Text) child.getFirstChild();
-        assertEquals("42", textNode.getNodeValue());
-
-        child = (Element) child.getNextSibling();
-        assertEquals("property", child.getNodeName());
-        assertEquals("stringValue", child.getAttribute("name"));
-        assertNotNull(child.getFirstChild());
-        textNode = (Text) child.getFirstChild();
-        assertEquals("abcDEF", textNode.getNodeValue());
+        assertChildValueEquals(activeElement, "true");
+        assertChildValueEquals(doubleValueElement, "-3.13");
+        assertChildValueEquals(enumValueElement, "TWO");
+        assertChildValueEquals(intValueElement, "42");
+        assertChildValueEquals(stringValueElement, "abcDEF");
     }
 
     @Test

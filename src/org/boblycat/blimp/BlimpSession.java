@@ -204,14 +204,11 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     }
     
     private Layer findOrCloneLayer(Layer otherLayer) {
-        Class layerClass = otherLayer.getClass();
-        Layer foundLayer = null;
-        for (Layer layer: layerList) {
-            if (layer.getClass() == layerClass) {
-                foundLayer = layer;
-                break;
-            }
-        }
+        String layerName = otherLayer.getName();
+        Layer foundLayer = findLayer(layerName);
+        if (foundLayer != null && foundLayer.getClass() != otherLayer.getClass())
+            // different layer classes with same name
+            foundLayer = null;
         if (foundLayer == null)
             return (Layer) otherLayer.clone();
         layerList.remove(foundLayer);
@@ -285,8 +282,30 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     public int layerCount() {
         return layerList.size();
     }
+    
+    public Layer findLayer(String name) {
+        for (Layer layer: layerList) {
+            if (layer.getName().equals(name))
+                return layer;
+        }
+        return null;
+    }
+    
+    private void uniqifyLayerName(Layer layer) {
+        Layer found = findLayer(layer.getName());
+        if (found == null || found == layer)
+            return;
+        int i = 0;
+        String newName;
+        do {
+            i++;
+            newName = generateName(layer, i);
+        } while (findLayer(newName) != null);
+        layer.setName(newName);
+    }
 
     public void addLayer(int index, AdjustmentLayer newLayer) {
+        uniqifyLayerName(newLayer);
         if (index < 0)
             layerList.add(newLayer);
         else

@@ -181,14 +181,16 @@ public class SessionTests {
     }
     
     @Test
-    public void testSynchonizeSessionData() {
+    public void testSynchronizeSessionData() {
         BlimpSession session1 = newSession();
         BlimpSession session2 = newSession();
         TestInput input1 = new TestInput();
         input1.setPath("input1 path");
+        input1.setName("input1 name");
         session1.setInput(input1);
         TestLayer layer1 = new TestLayer();
         layer1.setStringValue("layer1 value");
+        layer1.setName("layer1 name");
         session1.addLayer(layer1);
         
         session2.synchronizeSessionData(session1);
@@ -196,10 +198,12 @@ public class SessionTests {
         assertNotNull(input2);
         assertTrue(input1 != input2); // objects must be different
         assertEquals("input1 path", input2.getPath());
+        assertEquals("input1 name", input2.getName());
         TestLayer layer2 = (TestLayer) session2.getLayer(1);
         assertNotNull(layer2);
         assertTrue(layer1 != layer2);
         assertEquals("layer1 value", layer2.getStringValue());
+        assertEquals("layer1 name", layer2.getName());
         
         input2.setPath("input2 path");
         layer2.setStringValue("layer2 value");
@@ -235,5 +239,17 @@ public class SessionTests {
         session.addLayer(resize);
         output = session.getBitmap();
         assertEquals(4.0, output.getPixelScaleFactor());
+    }
+    
+    @Test
+    public void testGeneratedNames() {
+        BlimpSession session = createTestSession();
+        assertEquals("TestInput1", session.getInput().getName());
+        TestLayer layer1 = new TestLayer();
+        TestLayer layer2 = new TestLayer();
+        session.addLayer(layer1);
+        session.addLayer(layer2);
+        assertEquals("Test1", layer1.getName());
+        assertEquals("Test2", layer2.getName());
     }
 }

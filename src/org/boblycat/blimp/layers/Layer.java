@@ -14,6 +14,8 @@ public abstract class Layer extends BlimpBean {
     boolean active;
 
     LayerEventSource eventSource;
+    
+    String name;
 
     public abstract String getDescription();
 
@@ -28,6 +30,7 @@ public abstract class Layer extends BlimpBean {
     public Layer() {
         active = true;
         eventSource = new LayerEventSource();
+        name = null;
     }
 
     public void addChangeListener(LayerChangeListener listener) {
@@ -53,6 +56,33 @@ public abstract class Layer extends BlimpBean {
      */
     public String elementName() {
         return "layer";
+    }
+    
+    /**
+     * Get a name which can be used as an identifier for the layer.
+     * Within a session all names should be unique.
+     * @return A name.
+     */
+    public String getName() {
+        if (name == null || name.length() == 0)
+            name = generateName(this, 1);
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+        // TODO: make sure it is unique within a session...?
+    }
+    
+    protected String getBaseName() {
+        String className = getClass().getSimpleName();
+        if (className.endsWith("Layer"))
+            className = className.substring(0, className.length()-5);
+        return className;
+    }
+    
+    protected static String generateName(Layer layer, int suffixNumber) {
+        return layer.getBaseName() + Integer.toString(suffixNumber);
     }
 }
 
