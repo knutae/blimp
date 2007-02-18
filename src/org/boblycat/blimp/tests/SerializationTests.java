@@ -66,6 +66,7 @@ public class SerializationTests {
         assertTrue(element.getFirstChild() instanceof Text);
         Text textNode = (Text) element.getFirstChild();
         assertEquals(expected, textNode.getNodeValue());
+        assertNull(textNode.getNextSibling());
     }
 
     @Test
@@ -75,6 +76,7 @@ public class SerializationTests {
         layer.setDoubleValue(-3.13);
         layer.setStringValue("abcDEF");
         layer.setEnumValue(TestLayer.Enum.TWO);
+        layer.setDoubleArrayValue(new double[] { -0.123, 4.567 });
         String xml = Serializer.layerToXml(layer);
         // System.out.println(xml);
         assertTrue(xml.length() > 0);
@@ -90,6 +92,7 @@ public class SerializationTests {
         Element enumValueElement = null;
         Element intValueElement = null;
         Element stringValueElement = null;
+        Element doubleArrayValueElement = null;
         
         for (Node node: new DOMNodeIterator(root)) {
             assertTrue(node instanceof Element);
@@ -107,6 +110,8 @@ public class SerializationTests {
                 intValueElement = child;
             else if (nameAttr.equals("stringValue"))
                 stringValueElement = child;
+            else if (nameAttr.equals("doubleArrayValue"))
+                doubleArrayValueElement = child;
         }
 
         assertChildValueEquals(activeElement, "true");
@@ -114,17 +119,32 @@ public class SerializationTests {
         assertChildValueEquals(enumValueElement, "TWO");
         assertChildValueEquals(intValueElement, "42");
         assertChildValueEquals(stringValueElement, "abcDEF");
+        
+        // array value
+        assertNotNull(doubleArrayValueElement);
+        Node child = doubleArrayValueElement.getFirstChild();
+        assertEquals("value", child.getNodeName());
+        assertChildValueEquals((Element) child, "-0.123");
+        child = child.getNextSibling();
+        assertEquals("value", child.getNodeName());
+        assertChildValueEquals((Element) child, "4.567");
+        assertNull(child.getNextSibling());
     }
 
     @Test
     public void testFromXml() throws Exception {
-        String xml = "<layer class=\"org.boblycat.blimp.tests.TestLayer\">"
-                + "  <property name=\"active\">false</property>"
-                + "  <property name=\"intValue\">-33</property>"
-                + "  <property name=\"stringValue\">Ouagadougou</property>"
-                + "  <property name=\"enumValue\">THREE</property>"
-                + "  <property name=\"doubleValue\">42.43</property>"
-                + "</layer>";
+        String xml =
+            "<layer class=\"org.boblycat.blimp.tests.TestLayer\">" +
+            "  <property name=\"active\">false</property>" +
+            "  <property name=\"intValue\">-33</property>" +
+            "  <property name=\"stringValue\">Ouagadougou</property>" +
+            "  <property name=\"enumValue\">THREE</property>" +
+            "  <property name=\"doubleValue\">42.43</property>" +
+            "  <property name=\"doubleArrayValue\">" +
+            "    <value>43.2</value>" +
+            "    <value>-23.4</value>" +
+            "  </property>" +
+            "</layer>";
         Layer layer = Serializer.layerFromXml(xml);
         assertNotNull(layer);
         assertTrue(layer instanceof TestLayer);
@@ -134,6 +154,11 @@ public class SerializationTests {
         assertEquals("Ouagadougou", dummyLayer.getStringValue());
         assertEquals(TestLayer.Enum.THREE, dummyLayer.getEnumValue());
         assertEquals(42.43, dummyLayer.getDoubleValue());
+        double[] array = dummyLayer.getDoubleArrayValue();
+        assertNotNull(array);
+        assertEquals(2, array.length);
+        assertEquals(43.2, array[0]);
+        assertEquals(-23.4, array[1]);
     }
 
     @Test
@@ -150,9 +175,10 @@ public class SerializationTests {
 
     @Test
     public void testFromXmlWithWhiteSpace() throws Exception {
-        String xml = "<layer class=\"org.boblycat.blimp.tests.TestLayer\">"
-                + "  <property name=\"stringValue\">    </property>"
-                + "</layer>";
+        String xml =
+            "<layer class=\"org.boblycat.blimp.tests.TestLayer\">" +
+            "  <property name=\"stringValue\">    </property>" +
+            "</layer>";
         Layer layer = Serializer.layerFromXml(xml);
         assertNotNull(layer);
         assertTrue(layer instanceof TestLayer);
@@ -193,10 +219,15 @@ public class SerializationTests {
 
     @Test
     public void testCurvesFromXml() throws Exception {
-        String xml = "<layer class=\"org.boblycat.blimp.layers.CurvesLayer\">"
-                + "  <property name=\"points\">" + "    <value>0.1,1.0</value>"
-                + "    <value>0.5,0.98</value>" + "    <value>0.7,0.5</value>"
-                + "    <value>1.0,0.34</value>" + "  </property>" + "</layer>";
+        String xml =
+            "<layer class=\"org.boblycat.blimp.layers.CurvesLayer\">" +
+            "  <property name=\"points\">" +
+            "    <value>0.1,1.0</value>" +
+            "    <value>0.5,0.98</value>" +
+            "    <value>0.7,0.5</value>" +
+            "    <value>1.0,0.34</value>" +
+            "  </property>" +
+            "</layer>";
         Layer layer = Serializer.layerFromXml(xml);
         assertNotNull(layer);
         assertTrue(layer instanceof CurvesLayer);
@@ -272,13 +303,15 @@ public class SerializationTests {
 
     @Test
     public void testSessionFromXml() throws Exception {
-        String xml = "<session class=\"org.boblycat.blimp.BlimpSession\">"
-                + "  <layer class=\"org.boblycat.blimp.tests.TestInput\">"
-                + "    <property name=\"path\">some.path</property>"
-                + "  </layer>"
-                + "  <layer class=\"org.boblycat.blimp.tests.TestLayer\">"
-                + "    <property name=\"stringValue\">Some string value</property>"
-                + "  </layer>" + "</session>";
+        String xml =
+            "<session class=\"org.boblycat.blimp.BlimpSession\">" +
+            "  <layer class=\"org.boblycat.blimp.tests.TestInput\">" +
+            "    <property name=\"path\">some.path</property>" +
+            "  </layer>" +
+            "  <layer class=\"org.boblycat.blimp.tests.TestLayer\">" +
+            "    <property name=\"stringValue\">Some string value</property>" +
+            "  </layer>" +
+            "</session>";
         BlimpSession session = (BlimpSession) Serializer.layerFromXml(xml);
         assertNotNull(session);
         assertEquals(2, session.layerCount());

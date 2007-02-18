@@ -69,11 +69,12 @@ public class Serializer {
     }
 
     private static void appendPropertyValue(Element property, Object value) {
-        if (value instanceof Object[]) {
-            Object[] array = (Object[]) value;
-            for (int i = 0; i < array.length; ++i) {
+        if (value == null)
+            return;
+        if (value.getClass().isArray()) {
+            for (int i = 0; i < Array.getLength(value); ++i) {
                 Element subProperty = document.createElement("value");
-                appendPropertyValue(subProperty, array[i]);
+                appendPropertyValue(subProperty, Array.get(value, i));
                 property.appendChild(subProperty);
             }
         }

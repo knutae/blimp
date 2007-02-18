@@ -12,6 +12,7 @@ public class TestLayer extends AdjustmentLayer {
     double doubleValue;
     String stringValue;
     Enum enumValue;
+    double[] doubleArrayValue;
     
     public TestLayer() {
     }
@@ -68,6 +69,14 @@ public class TestLayer extends AdjustmentLayer {
     @Override
     public String getDescription() {
         return "Test Layer";
+    }
+
+    public void setDoubleArrayValue(double[] doubleArrayValue) {
+        this.doubleArrayValue = doubleArrayValue;
+    }
+
+    public double[] getDoubleArrayValue() {
+        return doubleArrayValue;
     }
 
 }
