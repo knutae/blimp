@@ -2,6 +2,7 @@ package org.boblycat.blimp.layers;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Vector;
 //import net.sourceforge.jiu.codecs.PNMCodec;
 import org.boblycat.blimp.Bitmap;
@@ -22,6 +23,7 @@ public class RawFileInputLayer extends InputLayer {
     public enum WhiteBalance {
         Camera, // as shot
         Auto,
+        CustomRaw,
         // TODO: add many more, including custom white balance
         // Need camera-specific tables to make this user friendly.
     }
@@ -35,6 +37,7 @@ public class RawFileInputLayer extends InputLayer {
     ColorSpace colorSpace;
     Quality quality;
     WhiteBalance whiteBalance;
+    double[] rawWhiteBalance;
 
     public RawFileInputLayer() {
         filePath = "";
@@ -42,6 +45,12 @@ public class RawFileInputLayer extends InputLayer {
         colorSpace = ColorSpace.sRGB;
         quality = DEFAULT_QUALITY;
         whiteBalance = WhiteBalance.Camera;
+        
+        rawWhiteBalance = new double[4];
+        rawWhiteBalance[0] = 1.0; // R
+        rawWhiteBalance[1] = 0.5; // G1
+        rawWhiteBalance[2] = 1.0; // B
+        rawWhiteBalance[3] = 0.0; // G2 (or zero)
     }
 
     public RawFileInputLayer(String filePath) {
@@ -154,9 +163,16 @@ public class RawFileInputLayer extends InputLayer {
                 commandLine.add("-a");
             else if (whiteBalance == WhiteBalance.Camera)
                 commandLine.add("-w");
+            else if (whiteBalance == WhiteBalance.CustomRaw) {
+                commandLine.add("-r");
+                for (int i=0; i<rawWhiteBalance.length; i++)
+                    commandLine.add(Double.toString(rawWhiteBalance[i]));
+            }
             
             commandLine.add("-c"); // write to stdout
             commandLine.add(filePath); // raw file
+            
+            //System.out.println(commandLine.toString());
             
             ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
             Process process = processBuilder.start();
@@ -221,5 +237,26 @@ public class RawFileInputLayer extends InputLayer {
 
     public WhiteBalance getWhiteBalance() {
         return whiteBalance;
+    }
+
+    /**
+     * Set the "raw" white balance, four weights which are applied before the raw
+     * photo is decoded.  The interpretation of the weights depends on the
+     * camera-specific raw format.
+     * For cameras using a Bayer filter, this is RGBG weights, where the last
+     * green value can be zero to use the same as the first.
+     * This will only take effect if the whiteBalance property is CustomRaw.
+     * @param newWhiteBalance An array of length four.
+     */
+    public void setRawWhiteBalance(double[] newWhiteBalance) {
+        if (newWhiteBalance == null || newWhiteBalance.length != 4
+                || Arrays.equals(newWhiteBalance, rawWhiteBalance))
+            return;
+        rawWhiteBalance = newWhiteBalance;
+        bitmap = null;
+    }
+
+    public double[] getRawWhiteBalance() {
+        return rawWhiteBalance;
     }
 }
