@@ -196,11 +196,11 @@ public class LayerPropertyEditor extends Composite {
             }
             TreeItem item = new TreeItem(propertyTree, SWT.NONE);
             item.setText(name);
-            if (value instanceof Object[]) {
+            if (value.getClass().isArray()) {
                 // System.out.println("yep, array it is");
                 // item.setText(1, "...");
-                Object[] array = (Object[]) value;
-                for (Object sub : array) {
+                for (int i=0; i<Array.getLength(value); i++) {
+                    Object sub = Array.get(value, i);
                     TreeItem subItem = new TreeItem(item, SWT.NONE);
                     // subItem.setText("");
                     subItem.setText(1, propertyValueToString(sub));
@@ -230,11 +230,13 @@ public class LayerPropertyEditor extends Composite {
         }
         tryApplyArrayValue(prop, strValues);
         try {
-            Object[] objValues = (Object[]) prop.getValue();
-            parentItem.setItemCount(objValues.length);
-            for (int i = 0; i < objValues.length; i++) {
+            Object array = prop.getValue();
+            assert(array.getClass().isArray());
+            int length = Array.getLength(array);
+            parentItem.setItemCount(length);
+            for (int i = 0; i < length; i++) {
                 TreeItem subItem = parentItem.getItem(i);
-                subItem.setText(1, propertyValueToString(objValues[i]));
+                subItem.setText(1, propertyValueToString(Array.get(array, i)));
             }
         }
         catch (Exception e) {
