@@ -54,6 +54,8 @@ public class LayerRegistry implements Iterable<LayerRegistry.LayerInfo> {
                 "Increase contrast locally in adjacent areas of the image");
         reg.registerLayer(CropLayer.class, "Cro&p", "Crop Image");
         reg.registerLayer(LevelsLayer.class, "&Levels", "Levels");
+        reg.registerLayer(OrientationLayer.class, "&Orientation",
+                "Change the Image Orientation");
         return reg;
     }
 }
