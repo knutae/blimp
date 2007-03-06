@@ -7,6 +7,7 @@ import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.CropLayer;
 import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.Layer;
+import org.boblycat.blimp.layers.OrientationLayer;
 import org.boblycat.blimp.layers.ResizeLayer;
 import org.boblycat.blimp.layers.ViewResizeLayer;
 
@@ -131,10 +132,15 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         currentBitmap = generateBitmap(true);
     }
 
-    Vector<AdjustmentLayer> getCropAndResize() {
+    /**
+     * Get a subset of layers that can be moved first in the process in order to
+     * optimize editing.
+     */ 
+    Vector<AdjustmentLayer> getMovableLayers() {
         Vector<AdjustmentLayer> layers = new Vector<AdjustmentLayer>();
         for (Layer layer: layerList) {
-            if (layer instanceof CropLayer || layer instanceof ResizeLayer)
+            if (layer instanceof CropLayer || layer instanceof ResizeLayer
+                    || layer instanceof OrientationLayer)
                 layers.add((AdjustmentLayer) layer);
         }
         return layers;
@@ -158,8 +164,8 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         }
 
         // TODO: let a view quality setting decide when/how to resize
-        Vector<AdjustmentLayer> cropAndResize = getCropAndResize();
-        for (AdjustmentLayer layer: cropAndResize)
+        Vector<AdjustmentLayer> movableLayers = getMovableLayers();
+        for (AdjustmentLayer layer: movableLayers)
             if (layer.isActive())
                 bm = applyLayer(bm, layer);
         
@@ -167,7 +173,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             bm = applyViewport(bm);
 
         for (Layer layer : layerList) {
-            if (layer == input || cropAndResize.contains(layer))
+            if (layer == input || movableLayers.contains(layer))
                 continue;
             if (layer instanceof InputLayer) {
                 System.err.println("Warning: more than one input layer?");
