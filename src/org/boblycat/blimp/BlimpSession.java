@@ -1,6 +1,7 @@
 package org.boblycat.blimp;
 
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
 import java.util.Vector;
 
 import org.boblycat.blimp.layers.AdjustmentLayer;
@@ -109,7 +110,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return result;
     }
     
-    protected Bitmap inputBitmap(InputLayer input) {
+    protected Bitmap inputBitmap(InputLayer input) throws IOException {
         reportProgress(input, 0, 1);
         Bitmap result = input.getBitmap();
         if (result != null && result.getPixelScaleFactor() <= 0)
@@ -128,7 +129,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return bm;
     }
 
-    public void applyLayers() {
+    public void applyLayers() throws IOException {
         currentBitmap = generateBitmap(true);
     }
 
@@ -146,7 +147,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return layers;
     }
 
-    Bitmap generateBitmap(boolean useViewport) {
+    Bitmap generateBitmap(boolean useViewport) throws IOException {
         InputLayer input = getInput();
         if (input == null) {
             System.err.println("No input!");
@@ -249,20 +250,20 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return null;
     }
 
-    public Bitmap getBitmap() {
+    public Bitmap getBitmap() throws IOException {
         if (currentBitmap == null)
             applyLayers();
         return currentBitmap;
     }
 
-    public Bitmap getSizedBitmap(int width, int height) {
+    public Bitmap getSizedBitmap(int width, int height) throws IOException {
         viewport.viewWidth = width;
         viewport.viewHeight = height;
         applyLayers();
         return currentBitmap;
     }
 
-    public Bitmap getFullBitmap() {
+    public Bitmap getFullBitmap() throws IOException {
         return generateBitmap(false);
     }
 

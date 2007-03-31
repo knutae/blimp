@@ -1,5 +1,7 @@
 package org.boblycat.blimp.tests;
 
+import java.io.IOException;
+
 import org.boblycat.blimp.*;
 import org.boblycat.blimp.layers.Layer;
 import org.boblycat.blimp.layers.ResizeLayer;
@@ -23,10 +25,16 @@ public class SessionTests {
     }
 
     TestBitmap getTestBitmap(BlimpSession session) {
-        Bitmap bitmap = session.getBitmap();
-        assertNotNull(bitmap);
-        assertSame(bitmap.getClass(), TestBitmap.class);
-        return (TestBitmap) bitmap;
+        try {
+            Bitmap bitmap = session.getBitmap();
+            assertNotNull(bitmap);
+            assertSame(bitmap.getClass(), TestBitmap.class);
+            return (TestBitmap) bitmap;
+        }
+        catch (IOException e) {
+            assertTrue(false); // no exception expected
+            return null;
+        }
     }
 
     @Test
@@ -215,7 +223,7 @@ public class SessionTests {
     }
     
     @Test
-    public void testPixelScaleFactor() {
+    public void testPixelScaleFactor() throws IOException {
         BlimpSession session = createTestSession();
         Bitmap output = session.getBitmap();
         assertEquals(1.0, output.getPixelScaleFactor());

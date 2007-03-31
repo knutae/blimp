@@ -4,6 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Vector;
+
+import javax.imageio.IIOException;
 //import net.sourceforge.jiu.codecs.PNMCodec;
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.ColorDepth;
@@ -123,7 +125,7 @@ public class RawFileInputLayer extends InputLayer {
         }
     }
 
-    public void load() {
+    public void load() throws IOException {
         if (!isActive())
             return;
         try {
@@ -193,19 +195,15 @@ public class RawFileInputLayer extends InputLayer {
                 process.destroy();
             }
         }
-        catch (IOException e) {
-            System.err.println("Error executing dcraw or loading RAW file: "
-                    + filePath);
-            System.err.println(e.getMessage());
-        }
         catch (OperationFailedException e) {
-            System.err.println("Error reading RAW file: " + filePath);
-            System.err.println(e.getMessage());
+            String message = "Failed to read raw file " + filePath + ".";
+            Util.err(message);
+            throw new IIOException(message, e);
         }
         // catch (InterruptedException e) { e.printStackTrace(); }
     }
 
-    public Bitmap getBitmap() {
+    public Bitmap getBitmap() throws IOException {
         if (bitmap == null)
             load();
         return bitmap;

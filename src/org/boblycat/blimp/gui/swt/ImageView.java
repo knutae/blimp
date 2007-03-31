@@ -13,6 +13,7 @@ class SharedData {
     ImageData imageData;
     double zoom;
     Bitmap viewBitmap;
+    String errorMessage;
 }
 
 class SwtImageWorkerThread extends ImageWorkerThread {
@@ -46,6 +47,7 @@ class SwtImageWorkerThread extends ImageWorkerThread {
                 sharedData.viewBitmap = tmpBitmap;
                 sharedData.imageData = data;
                 sharedData.zoom = currentZoom;
+                sharedData.errorMessage = null;
             }
         }
         if (!display.isDisposed())
@@ -67,6 +69,16 @@ class SwtImageWorkerThread extends ImageWorkerThread {
         });
     }
     
+    protected void handleError(Runnable runnable, String errorMessage) {
+        if (isFinished())
+            return;
+        synchronized (sharedData) {
+            sharedData.errorMessage = errorMessage;
+        }
+        if (!display.isDisposed())
+            display.asyncExec(runnable);
+    }
+    
     protected synchronized boolean isFinished() {
         return finished;
     }
@@ -81,6 +93,7 @@ class SwtImageWorkerThread extends ImageWorkerThread {
             returnData.imageData = sharedData.imageData;
             returnData.viewBitmap = sharedData.viewBitmap;
             returnData.zoom = sharedData.zoom;
+            returnData.errorMessage = sharedData.errorMessage;
         }
         return returnData;
     }
@@ -260,13 +273,20 @@ public class ImageView extends Composite {
                 }
                 threadData = workerThread.getSharedData();
                 ImageData data = threadData.imageData;
-                if (data == null)
-                    return;
+                if (data == null) {
+                    // create a dummy image
+                    PaletteData paletteData = new PaletteData(0xff, 0xff00, 0xff0000);
+                    data = new ImageData(1, 1, 24, paletteData);
+                }
                 if (currentImage != null)
                     currentImage.dispose();
                 currentImage = new Image(getDisplay(), data);
                 invalidateImage();
                 triggerBitmapChange();
+                // The error dialog must be shown after currentImage has been updated
+                if (threadData.errorMessage != null)
+                    SwtUtil.errorDialog(getShell(), "Image processing error",
+                            threadData.errorMessage);
             }
         };
         

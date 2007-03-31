@@ -1,5 +1,7 @@
 package org.boblycat.blimp;
 
+import java.io.IOException;
+
 import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.InputLayer;
 
@@ -31,7 +33,7 @@ public class CachedBlimpSession extends BlimpSession {
         return bitmap;
     }
     
-    protected Bitmap inputBitmap(InputLayer input) {
+    protected Bitmap inputBitmap(InputLayer input) throws IOException {
         Bitmap bitmap = cache.get(input);
         if (bitmap == null) {
             log("miss: " + input.getClass());

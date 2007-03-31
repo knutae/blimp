@@ -1,5 +1,6 @@
 package org.boblycat.blimp;
 
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -71,32 +72,45 @@ public abstract class ImageWorkerThread extends Thread {
     
     protected abstract boolean isFinished();
     
+    protected abstract void handleError(Runnable runnable, String errorMessage);
+    
     private void processRequest(Request req) {
         assert(Thread.currentThread() == this);
 
         if (req.sessionCopy != null) {
             session.synchronizeSessionData(req.sessionCopy);
         }
-        if (req.type == RequestType.GENERATE_BITMAP) {
-            assert(req.runnable != null);
-            // Generate the bitmap on this thread.  It should not be transferred
-            // to other threads.
-            debugPrint("generating bitmap");
-            Bitmap bitmap;
-            if (req.viewWidth > 0 && req.viewHeight > 0)
-                bitmap = session.getSizedBitmap(req.viewWidth, req.viewHeight);
-            else
-                bitmap = session.getBitmap();
-            debugPrint("finished generating bitmap");
-            bitmapGenerated(req.runnable, bitmap);
+        try {
+            if (req.type == RequestType.GENERATE_BITMAP) {
+                assert(req.runnable != null);
+                // Generate the bitmap on this thread.  It should not be transferred
+                // to other threads.
+                debugPrint("generating bitmap");
+                Bitmap bitmap;
+                if (req.viewWidth > 0 && req.viewHeight > 0)
+                    bitmap = session.getSizedBitmap(req.viewWidth, req.viewHeight);
+                else
+                    bitmap = session.getBitmap();
+                debugPrint("finished generating bitmap");
+                bitmapGenerated(req.runnable, bitmap);
+            }
+            else if (req.type == RequestType.ZOOM_IN) {
+                session.zoomIn();
+                bitmapGenerated(req.runnable, session.getBitmap());
+            }
+            else if (req.type == RequestType.ZOOM_OUT) {
+                session.zoomOut();
+                bitmapGenerated(req.runnable, session.getBitmap());
+            }
         }
-        else if (req.type == RequestType.ZOOM_IN) {
-            session.zoomIn();
-            bitmapGenerated(req.runnable, session.getBitmap());
+        catch (IOException e) {
+            handleError(req.runnable, e.getMessage());
         }
-        else if (req.type == RequestType.ZOOM_OUT) {
-            session.zoomOut();
-            bitmapGenerated(req.runnable, session.getBitmap());
+        catch (Exception e) {
+            // should never happen?
+            e.printStackTrace(System.err);
+            handleError(req.runnable, "Unexpected error on image thread: "
+                    + e.getMessage());
         }
     }
     
