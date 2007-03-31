@@ -13,8 +13,6 @@ import javax.imageio.ImageWriter;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageOutputStream;
 
-import com.sun.imageio.plugins.jpeg.JPEGImageWriter;
-
 import net.sourceforge.jiu.data.MemoryRGB24Image;
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.data.RGB24Image;
@@ -170,9 +168,8 @@ public class BitmapUtil {
         ImageOutputStream output = ImageIO.createImageOutputStream(new File(
                 fileName));
         writer.setOutput(output);
-        ImageWriteParam param = null;
-        if (writer instanceof JPEGImageWriter) {
-            param = new JPEGImageWriteParam(null);
+        ImageWriteParam param = writer.getDefaultWriteParam();
+        if (param instanceof JPEGImageWriteParam) {
             param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
             param.setCompressionQuality((float) quality);
         }
