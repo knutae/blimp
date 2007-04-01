@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- JNLP File for Blimp -->
+<jnlp spec="1.5+"
+      codebase="file:///c:/projects/blimp/trunk/"
+      href="blimp.jnlp">
+    <information>
+        <title>Blimp</title>
+        <vendor>Boblycat</vendor>
+        <description>Blimp, a layered photo editor</description>
+        <offline-allowed/>
+        <shortcut online="false">
+            <desktop/>
+            <menu submenu="Boblycat"/>
+        </shortcut>
+    </information>
+    <security>
+        <all-permissions/>
+    </security>
+    <resources>
+        <j2se version="1.5+" java-vm-args="-Xmx256M"/>
+        <jar href="build/blimp.jar"/>
+        <jar href="build/jiu.jar"/>
+        <jar href="build/xercesImpl.jar"/>
+        <jar href="build/swt.jar"/>
+        <jar href="build/BrowserLauncher2-10rc4.jar"/>
+        <nativelib href="build/swt-lib.jar"/>
+    </resources>
+    <application-desc main-class="org.boblycat.blimp.gui.swt.MainWindow"/>
+</jnlp>

@@ -1,7 +1,12 @@
 package org.boblycat.blimp.layers;
 
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -32,6 +37,7 @@ public class RawFileInputLayer extends InputLayer {
     
     private static Quality DEFAULT_QUALITY = Quality.HalfSize;
     private static ColorDepth DEFAULT_COLOR_DEPTH = ColorDepth.Depth16Bit;
+    private static String dcrawPath = null;
     
     Bitmap bitmap;
     String filePath;
@@ -60,14 +66,58 @@ public class RawFileInputLayer extends InputLayer {
         setFilePath(filePath);
         // load();
     }
-
-    private String dcrawExecutable() {
-        // TODO: make this configurable
-        // return "c:/projects/java-imaging/build/dcraw.exe";
+    
+    private static String findDcrawExecutable() {
+        // Configured by system property
         String path = System.getProperty("blimp.dcraw.path");
-        if (path == null || path.length() == 0)
-            path = "dcraw";
-        return path;
+        if (Util.fileExists(path))
+            return path;
+
+        // Embedded as a jar file resource (for Java Web Start).
+        String dcrawExe;
+        if (Util.isWindowsOS())
+            dcrawExe = "blimp-dcraw.exe";
+        else
+            dcrawExe = "blimp-dcraw";
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL dcrawUrl = classLoader.getResource(dcrawExe);
+        if (dcrawUrl != null) {
+            try {
+                Util.info("Found dcraw as resource: " + dcrawUrl.toString());
+                URLConnection conn = dcrawUrl.openConnection();
+                InputStream istream = conn.getInputStream();
+                File tempFile = File.createTempFile("blimp-dcraw", "exe", null);
+                tempFile.deleteOnExit();
+                FileOutputStream ostream = new FileOutputStream(tempFile);
+                byte[] buffer = new byte[1024];
+                int count = istream.read(buffer);
+                while (count > 0) {
+                    ostream.write(buffer, 0, count);
+                    count = istream.read(buffer);
+                }
+                istream.close();
+                ostream.close();
+                tempFile.setExecutable(true);
+                Util.info("Extracted dcraw to " + tempFile);
+                return tempFile.toString();
+            }
+            catch (IOException e) {
+                Util.err(e.getMessage());
+            }
+        }
+        else {
+            Util.warn("Failed to find dcraw executable as a resource");
+        }
+
+        // return file name without path and hope for the best
+        Util.err("Failed to find or extract dcraw executable");
+        return dcrawExe;
+    }
+
+    private static String dcrawExecutable() {
+        if (dcrawPath == null)
+            dcrawPath = findDcrawExecutable();
+        return dcrawPath;
     }
 
     public void setFilePath(String filePath) {

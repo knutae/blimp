@@ -9,6 +9,7 @@
 
     <property name="src" location="src"/>
     <property name="build" location="build"/>
+    <property environment="env"/>
     
     <!-- <property name="build.compiler" value="jikes"/> -->
 
@@ -21,7 +22,6 @@
       <os family="windows"/>
     </condition>
 
-
     <condition property="swt.dir" value="/usr/lib/java">
       <os family="unix"/>
     </condition>
@@ -29,7 +29,9 @@
       <os family="unix"/>
     </condition>
 
+
     <property name="swt.jar" location="${swt.dir}/swt.jar"/>
+    <property name="swt.nativelib.jar" location="${build}/swt-lib.jar"/>
 
     <!-- JUnit testing -->
     <property name="junit.dir" location="junit4.1"/>
@@ -42,43 +44,45 @@
 
     <!-- Xerces XML libraries -->
     <property name="xerces.jar" location="jars/xercesImpl.jar"/>
-	
-	<!-- Browser Launcher library -->
-	<property name="browser.jar" location="jars/BrowserLauncher2-10rc4.jar"/>
+    
+    <!-- Browser Launcher library -->
+    <property name="browser.jar" location="jars/BrowserLauncher2-10rc4.jar"/>
     
     <!-- dcraw executable -->
-	<condition property="dcraw.exe" value="${build}/dcraw.exe" else="${build}/dcraw">
-		<os family="windows"/>
-	</condition>
+    <condition property="dcraw.exe" value="blimp-dcraw.exe" else="dcraw">
+        <os family="windows"/>
+    </condition>
+    
+    <property name="dcraw.exe.path" location="${build}/${dcraw.exe}"/>
 
-	<!-- LCMS variables -->
-	<property name="lcms.base" location="lcms-1.16"/>
-	<property name="lcms.dir" location="${lcms.base}/src"/>
-	<property name="lcms.include" location="${lcms.base}/include"/>
-	<property name="lcms.lib" location="build/lcms"/>
-	
-	<!-- C compiler -->
-	<property name="c-compiler" value="gcc"/>
+    <!-- LCMS variables -->
+    <property name="lcms.base" location="lcms-1.16"/>
+    <property name="lcms.dir" location="${lcms.base}/src"/>
+    <property name="lcms.include" location="${lcms.base}/include"/>
+    <property name="lcms.lib" location="build/lcms"/>
+    
+    <!-- C compiler -->
+    <property name="c-compiler" value="gcc"/>
 
     <path id="build.classpath">
         <pathelement location="${swt.jar}"/>
         <pathelement location="${jiu.jar}"/>
         <pathelement location="${junit.jar}"/>
-    	<pathelement location="${browser.jar}"/>
+        <pathelement location="${browser.jar}"/>
     </path>
     <path id="run.classpath">
         <pathelement location="${swt.jar}"/>
         <pathelement location="${jiu.jar}"/>
         <pathelement location="${build}"/>
-    	<pathelement location="${xerces.jar}"/>
-    	<pathelement location="${browser.jar}"/>
+        <pathelement location="${xerces.jar}"/>
+        <pathelement location="${browser.jar}"/>
     </path>
     <path id="test.classpath">
         <pathelement location="${junit.jar}"/>
         <pathelement location="${build}"/>
-    	<pathelement location="${xerces.jar}"/>
+        <pathelement location="${xerces.jar}"/>
         <pathelement location="${jiu.jar}"/>
-    	<pathelement location="${browser.jar}"/>
+        <pathelement location="${browser.jar}"/>
     </path>
     
     <target name="init">
@@ -91,24 +95,66 @@
         </javac>
     </target>
     
-	<target name="lcms" depends="init">
-		<cc outfile="${lcms.lib}" outtype="static" optimize="speed">
-			<compiler name="${c-compiler}"/>
-			<includepath location="${lcms.include}"/>
-			<fileset dir="${lcms.dir}" includes="*.c"/>
-		</cc>
-	</target>
+    <target name="lcms" depends="init">
+        <cc outfile="${lcms.lib}" outtype="static" optimize="speed">
+            <compiler name="${c-compiler}"/>
+            <includepath location="${lcms.include}"/>
+            <fileset dir="${lcms.dir}" includes="*.c"/>
+        </cc>
+    </target>
     
     <target name="dcraw" depends="lcms,init">
-		<cc outfile="${dcraw.exe}" outtype="executable" optimize="extreme">
-			<compiler name="${c-compiler}"/>
-			<includepath location="${lcms.include}"/>
-		    <defineset define="NO_JPEG"/>
-		    <fileset dir="dcraw" includes="dcraw.c"/>
-			<libset dir="build" libs="lcms,m"/>
-		</cc>
+        <cc outfile="${dcraw.exe.path}" outtype="executable" optimize="extreme">
+            <compiler name="${c-compiler}"/>
+            <includepath location="${lcms.include}"/>
+            <defineset define="NO_JPEG"/>
+            <fileset dir="dcraw" includes="dcraw.c"/>
+            <libset dir="build" libs="lcms,m"/>
+        </cc>
     </target>
-	
+    
+    <target name="blimp-jar" depends="compile,dcraw">
+        <jar destfile="${build}/blimp.jar">
+            <fileset dir="${build}" includes="**/*.class,${dcraw.exe}"/>
+        </jar>
+    </target>
+    
+    <target name="swt-native-jar" depends="init">
+        <jar destfile="${swt.nativelib.jar}">
+            <fileset dir="${swt.dir}" includes="*.dll"/>
+            <fileset dir="${build}" includes="${dcraw.exe}"/>
+        </jar>
+    </target>
+    
+    <target name="dcraw-native-jar" depends="dcraw">
+        <jar destfile="${build}/dcraw-lib.jar">
+            <fileset dir="${build}" includes="${dcraw.exe}"/>
+        </jar>
+    </target>
+    
+    <!-- target for copying distribution jars (to be signed) -->
+    <target name="copyjars">
+        <copy todir="${build}">
+            <fileset dir="jars" includes="*.jar"/>
+        </copy>
+        <copy todir="${build}">
+            <fileset dir="${swt.dir}" includes="*.jar"/>
+        </copy>
+        <copy todir="${build}" file="${jiu.jar}"/>
+        <copy todir="${build}" file="${swt.jar}"/>
+    </target>
+    
+    <target name="test-sign-environment">
+        <fail unless="env.BLIMP_STOREPASS">BLIMP_STOREPASS environment variable not set.</fail>
+    </target>
+    
+    <target name="signjars" depends="test-sign-environment,blimp-jar,swt-native-jar,copyjars">
+        <!-- The store password must be set as an environment variable. -->
+        <signjar alias="blimp" storepass="${env.BLIMP_STOREPASS}">
+            <fileset dir="${build}" includes="*.jar"/>
+        </signjar>
+    </target>
+    
     <target name="run" depends="compile,dcraw">
         <java fork="true"
               classname="org.boblycat.blimp.gui.swt.MainWindow">
@@ -116,7 +162,7 @@
             <!-- <jvmarg value="-server"/> -->
             <jvmarg value="-Xmx256M"/>
             <sysproperty key="java.library.path" path="${swt.jni.dir}"/>
-	    <sysproperty key="blimp.dcraw.path" path="${dcraw.exe}"/>
+            <sysproperty key="blimp.dcraw.path" path="${dcraw.exe.path}"/>
         </java>
     </target>
     

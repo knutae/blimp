@@ -42,7 +42,15 @@ public class Util {
     public static void err(String message) {
         System.err.println("Error: " + message);
     }
-
+    
+    /**
+     * Print (log) an informational message.
+     * @param message a message.
+     */
+    public static void info(String message) {
+        System.out.println("Info: " + message);
+    }
+    
     public static String getFileExtension(String filePath) {
         int dotpos = filePath.lastIndexOf('.');
         if (dotpos < 0)
@@ -55,6 +63,13 @@ public class Util {
         return ext.equals("raw") || ext.equals("crw") || ext.equals("cr2")
                 || ext.equals("dng");
         // todo: add more raw extensions
+    }
+    
+    public static boolean fileExists(String path) {
+        if (path == null || path.length() == 0)
+            return false;
+        File file = new File(path);
+        return file.exists();
     }
 
     public static InputLayer getInputLayerFromFile(String filePath) {
