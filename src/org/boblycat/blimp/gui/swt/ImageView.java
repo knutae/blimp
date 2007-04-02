@@ -23,13 +23,15 @@ class SwtImageWorkerThread extends ImageWorkerThread {
     ProgressEventSource guiProgressEventSource;
     LinkedBlockingQueue<ProgressEvent> progressEventQueue;
     
-    public SwtImageWorkerThread(Display display) {
-        this.display = display;
-        display.addListener(SWT.Dispose, new Listener() {
-           public void handleEvent(Event e) {
-               setFinished(true);
-           }
-        });
+    public SwtImageWorkerThread(Composite imageView) {
+        this.display = imageView.getDisplay();
+        Listener disposeListener = new Listener() {
+            public void handleEvent(Event e) {
+                setFinished(true);
+            }
+        };
+        display.addListener(SWT.Dispose, disposeListener);
+        imageView.addListener(SWT.Dispose, disposeListener);
         sharedData = new SharedData();
         guiProgressEventSource = new ProgressEventSource();
         progressEventQueue = new LinkedBlockingQueue<ProgressEvent>();
@@ -55,6 +57,8 @@ class SwtImageWorkerThread extends ImageWorkerThread {
     }
     
     protected void progressReported(ProgressEvent event) {
+        if (isFinished())
+            return;
         progressEventQueue.add(event);
         display.asyncExec(new Runnable() {
             public void run() {
@@ -141,7 +145,7 @@ public class ImageView extends Composite {
             }
         };
         
-        workerThread = new SwtImageWorkerThread(getDisplay());
+        workerThread = new SwtImageWorkerThread(this);
         workerThread.addProgressListener(new ProgressListener() {
             public void reportProgress(ProgressEvent e) {
                 //System.out.println("Worker thread: " + e.message);
@@ -330,6 +334,8 @@ public class ImageView extends Composite {
     }
     
     private void setProgressMessage(String message) {
+        if (isDisposed())
+            return;
         currentProgressMessage = message;
         //canvas.redraw();
         if (delayedRedrawInProgress)
