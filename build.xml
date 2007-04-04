@@ -21,11 +21,17 @@
     <condition property="swt.jni.dir" value="${swt.dir}">
       <os family="windows"/>
     </condition>
+    <condition property="swt.libs.dynamic" value="swt*.dll">
+      <os family="windows"/>
+    </condition>
 
     <condition property="swt.dir" value="/usr/lib/java">
       <os family="unix"/>
     </condition>
     <condition property="swt.jni.dir" value="/usr/lib/jni">
+      <os family="unix"/>
+    </condition>
+    <condition property="swt.libs.dynamic" value="libswt*.so">
       <os family="unix"/>
     </condition>
 
@@ -121,14 +127,7 @@
     
     <target name="swt-native-jar" depends="init">
         <jar destfile="${swt.nativelib.jar}">
-            <fileset dir="${swt.dir}" includes="*.dll"/>
-            <fileset dir="${build}" includes="${dcraw.exe}"/>
-        </jar>
-    </target>
-    
-    <target name="dcraw-native-jar" depends="dcraw">
-        <jar destfile="${build}/dcraw-lib.jar">
-            <fileset dir="${build}" includes="${dcraw.exe}"/>
+            <fileset dir="${swt.jni.dir}" includes="${swt.libs.dynamic}"/>
         </jar>
     </target>
     
@@ -136,9 +135,6 @@
     <target name="copyjars">
         <copy todir="${build}">
             <fileset dir="jars" includes="*.jar"/>
-        </copy>
-        <copy todir="${build}">
-            <fileset dir="${swt.dir}" includes="*.jar"/>
         </copy>
         <copy todir="${build}" file="${jiu.jar}"/>
         <copy todir="${build}" file="${swt.jar}"/>
