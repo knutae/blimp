@@ -55,7 +55,7 @@
     <property name="browser.jar" location="jars/BrowserLauncher2-10rc4.jar"/>
     
     <!-- dcraw executable -->
-    <condition property="dcraw.exe" value="blimp-dcraw.exe" else="dcraw">
+    <condition property="dcraw.exe" value="blimp-dcraw.exe" else="blimp-dcraw">
         <os family="windows"/>
     </condition>
     
