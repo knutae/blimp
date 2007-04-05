@@ -1,0 +1,30 @@
+# Common definitions of paths
+
+src = src
+build = build
+
+swt.dir = /usr/lib/java
+swt.jni.dir = /usr/lib/jni
+swt.libs.dynamic = libswt*.so
+swt.jar = ${swt.dir}/swt.jar
+swt.nativelib.jar = ${build}/swt-lib.jar
+
+junit.dir = junit4.1
+junit.jar = ${junit.dir}/junit-4.1.jar
+
+jiu.dir = jiu
+jiu.jar = ${jiu.dir}/jiu.jar
+
+xerces.jar = jars/xercesImpl.jar
+
+browser.jar = jars/BrowserLauncher2-10rc4.jar
+
+dcraw.exe = blimp-dcraw
+dcraw.exe.path = ${build}/${dcraw.exe}
+
+lcms.base = lcms-1.16
+lcms.dir = ${lcms.base}/src
+lcms.include = ${lcms.base}/include
+lcms.lib = ${build}/lcms
+
+c-compiler = gcc

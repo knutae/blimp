@@ -1,0 +1,6 @@
+# properties.unix
+
+swt.dir = /usr/lib/java
+swt.jni.dir = /usr/lib/jni
+swt.libs.dynamic = libswt*.so
+
