@@ -48,11 +48,13 @@
         <mkdir dir="${build}"/>
     </target>
     
-    <target name="compile" depends="init">
+    <target name="compile-java" depends="init">
         <javac srcdir="${src}" destdir="${build}" source="1.5" debug="on">
             <classpath refid="build.classpath"/>
         </javac>
     </target>
+
+    <target name="compile" depends="compile-java,dcraw"/>
     
     <target name="lcms" depends="init">
         <cc outfile="${lcms.lib}" outtype="static" optimize="speed">
@@ -72,9 +74,15 @@
         </cc>
     </target>
     
-    <target name="blimp-jar" depends="compile,dcraw">
-        <jar destfile="${build}/blimp.jar">
+    <target name="blimp-jar-webstart" depends="compile">
+        <jar destfile="${blimp.jar}">
             <fileset dir="${build}" includes="**/*.class,${dcraw.exe}"/>
+        </jar>
+    </target>
+    
+    <target name="blimp-jar" depends="compile-java">
+        <jar destfile="${blimp.jar}">
+            <fileset dir="${build}" includes="**/*.class"/>
         </jar>
     </target>
     
@@ -97,7 +105,7 @@
         <fail unless="env.BLIMP_STOREPASS">BLIMP_STOREPASS environment variable not set.</fail>
     </target>
     
-    <target name="signjars" depends="test-sign-environment,blimp-jar,swt-native-jar,copyjars">
+    <target name="signjars" depends="test-sign-environment,blimp-jar-webstart,swt-native-jar,copyjars">
         <!-- The store password must be set as an environment variable. -->
         <signjar alias="blimp" storepass="${env.BLIMP_STOREPASS}">
             <fileset dir="${build}" includes="*.jar"/>
@@ -134,6 +142,40 @@
     </target>
     
     <target name="rebuild" depends="clean,all"/>
+
+    <target name="install-dcraw" depends="dcraw">
+        <copy file="${dcraw.exe.path}" todir="${install.bin}"/>
+    </target>
+
+    <target name="install-jars" depends="blimp-jar">
+        <copy todir="${install.lib}">
+            <fileset dir="jars" includes="*.jar"/>
+        </copy>
+        <copy todir="${install.lib}" file="${jiu.jar}"/>
+        <copy todir="${install.lib}" file="${blimp.jar}"/>
+    </target>
+
+    <target name="install-launcher" depends="install-jars">
+        <path id="install.jars">
+            <fileset dir="${install.lib}" includes="*.jar"/>
+            <pathelement location="${swt.jar}"/>
+        </path>
+        <property name="install.classpath" refid="install.jars"/>
+        <copy file="blimp-launcher.template" tofile="${install.bin}/blimp">
+            <filterchain>
+              <expandproperties/>
+            </filterchain>
+        </copy>
+    </target>
+
+    <target name="install" depends="install-jars,install-launcher,install-dcraw">
+        <chmod dir="${install.bin}" perm="a+x" includes="*"/>
+    </target>
+
+    <target name="uninstall">
+        <!-- Wipes out all of ${install.home}, so make sure it is set correctly. -->
+        <delete dir="${install.home}"/>
+    </target>
     
     <target name="all" depends="compile,dcraw,tests"/>
 </project>

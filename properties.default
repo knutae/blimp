@@ -22,9 +22,15 @@ browser.jar = jars/BrowserLauncher2-10rc4.jar
 dcraw.exe = blimp-dcraw
 dcraw.exe.path = ${build}/${dcraw.exe}
 
+blimp.jar = ${build}/blimp.jar
+
 lcms.base = lcms-1.16
 lcms.dir = ${lcms.base}/src
 lcms.include = ${lcms.base}/include
 lcms.lib = ${build}/lcms
 
 c-compiler = gcc
+
+install.home = ${user.home}/blimp
+install.lib = ${install.home}/lib
+install.bin = ${install.home}/bin
