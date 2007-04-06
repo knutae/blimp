@@ -34,3 +34,4 @@ c-compiler = gcc
 install.home = ${user.home}/blimp
 install.lib = ${install.home}/lib
 install.bin = ${install.home}/bin
+blimp.home = ${install.home}
