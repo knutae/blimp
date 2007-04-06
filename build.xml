@@ -64,7 +64,7 @@
         </cc>
     </target>
     
-    <target name="dcraw" depends="lcms,init">
+    <target name="dcraw-with-lcms" depends="lcms,init">
         <cc outfile="${dcraw.exe.path}" outtype="executable" optimize="extreme">
             <compiler name="${c-compiler}"/>
             <includepath location="${lcms.include}"/>
@@ -73,6 +73,17 @@
             <libset dir="build" libs="lcms,m"/>
         </cc>
     </target>
+    
+    <target name="dcraw-minimal" depends="init">
+        <cc outfile="${dcraw.exe.path}" outtype="executable" optimize="extreme">
+            <compiler name="${c-compiler}"/>
+            <defineset define="NO_JPEG,NO_LCMS"/>
+            <fileset dir="dcraw" includes="dcraw.c"/>
+            <libset libs="m"/>
+        </cc>
+    </target>
+
+    <target name="dcraw" depends="dcraw-minimal"/>
     
     <target name="blimp-jar-webstart" depends="compile">
         <jar destfile="${blimp.jar}">
@@ -112,7 +123,7 @@
         </signjar>
     </target>
     
-    <target name="run" depends="compile,dcraw">
+    <target name="run" depends="compile">
         <java fork="true"
               classname="org.boblycat.blimp.gui.swt.MainWindow">
             <classpath refid="run.classpath"/>
@@ -123,7 +134,7 @@
         </java>
     </target>
     
-    <target name="tests" depends="compile">
+    <target name="tests" depends="compile-java">
         <!-- could not get the junit task to work, so use a java task instead
         <junit printsummary="yes" fork="yes">
             <classpath refid="run.classpath"/>
