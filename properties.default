@@ -34,4 +34,6 @@ c-compiler = gcc
 install.home = ${user.home}/blimp
 install.lib = ${install.home}/lib
 install.bin = ${install.home}/bin
+install.man = ${install.home}/man/man1
 blimp.home = ${install.home}
+dcraw.install.bin = ${install.bin}

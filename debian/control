@@ -1,0 +1,26 @@
+Source: blimp
+Section: graphics
+Priority: optional
+Maintainer: Knut Arild Erstad <knutae@gmail.com>
+Build-Depends: debhelper (>= 5), ant (>= 1.6.5), sun-java6-jdk, libswt3.2-gtk-java
+Standards-Version: 3.7.2
+
+Package: blimp-dcraw
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: blimp
+Description: dcraw program compiled for Blimp
+ A version of the dcraw program by Dave Coffin,
+ compiled for usage with the Blimp photo editor.
+ This provides support for many raw formats of
+ digital cameras.
+
+Package: blimp
+Architecture: all
+Depends: blimp-dcraw, sun-java6-jre, libswt3.2-gtk-java
+Description: A layered photo editor
+ Blimp is a layer-based photo editor.  It supports
+ many raw formats (through dcraw), 8-bit or 16-bit
+ color depth per channel and editing operations
+ including curves, grayscale mixer, resize and
+ unsharp mask, all of which are adjustment layers.

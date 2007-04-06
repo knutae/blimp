@@ -155,7 +155,8 @@
     <target name="rebuild" depends="clean,all"/>
 
     <target name="install-dcraw" depends="dcraw">
-        <copy file="${dcraw.exe.path}" todir="${install.bin}"/>
+        <copy file="${dcraw.exe.path}" todir="${dcraw.install.bin}"/>
+        <chmod file="${dcraw.install.bin}/${dcraw.exe}" perm="a+x"/>
     </target>
 
     <target name="install-jars" depends="blimp-jar">
@@ -177,15 +178,22 @@
               <expandproperties/>
             </filterchain>
         </copy>
-    </target>
-
-    <target name="install" depends="install-jars,install-launcher,install-dcraw">
         <chmod dir="${install.bin}" perm="a+x" includes="*"/>
     </target>
+
+    <target name="install-man">
+        <mkdir dir="${install.man}"/>
+        <gzip src="blimp.1" destfile="${install.man}/blimp.1.gz"/>
+    </target>
+
+    <target name="install-blimp" depends="install-jars,install-launcher,install-man"/>
+
+    <target name="install" depends="install-blimp,install-dcraw"/>
 
     <target name="uninstall">
         <!-- Wipes out all of ${install.home}, so make sure it is set correctly. -->
         <delete dir="${install.home}"/>
+	<delete file="${dcraw.install.bin}/${dcraw.exe}"/>
     </target>
     
     <target name="all" depends="compile,dcraw,tests"/>
