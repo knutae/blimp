@@ -186,7 +186,7 @@
         <gzip src="blimp.1" destfile="${install.man}/blimp.1.gz"/>
     </target>
 
-    <target name="install-blimp" depends="install-jars,install-launcher,install-man"/>
+    <target name="install-blimp" depends="install-jars,install-launcher"/>
 
     <target name="install" depends="install-blimp,install-dcraw"/>
 
