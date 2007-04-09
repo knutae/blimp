@@ -75,11 +75,12 @@
     </target>
     
     <target name="dcraw-minimal" depends="init">
-        <cc outfile="${dcraw.exe.path}" outtype="executable" optimize="extreme">
-            <compiler name="${c-compiler}"/>
-            <defineset define="NO_JPEG,NO_LCMS"/>
+        <cc name="${c-compiler}" outfile="${dcraw.exe.path}" outtype="executable" optimize="extreme">
+            <compilerarg value="${c-compiler-args}"/>
+            <linkerarg value="${c-linker-args}"/>
+            <defineset define="${dcraw.defines.minimal}"/>
             <fileset dir="dcraw" includes="dcraw.c"/>
-            <libset libs="m"/>
+            <libset libs="${dcraw.libs.minimal}"/>
         </cc>
     </target>
 
@@ -189,6 +190,15 @@
     <target name="install-blimp" depends="install-jars,install-launcher"/>
 
     <target name="install" depends="install-blimp,install-dcraw"/>
+    
+    <target name="install-windows" depends="copyjars,install-dcraw">
+        <copy todir="${install.lib}">
+            <fileset dir="${build}" includes="*.jar"/>
+        </copy>
+        <copy todir="${install.bin}">
+            <fileset dir="${swt.jni.dir}" includes="*.dll"/>
+        </copy>
+    </target>
 
     <target name="uninstall">
         <!-- Wipes out all of ${install.home}, so make sure it is set correctly. -->

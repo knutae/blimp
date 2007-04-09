@@ -131,6 +131,11 @@ struct {
   float tag_210;
 } ph1;
 
+#ifdef W32_GETC_UNLOCKED
+#define getc_unlocked(_stream) (--(_stream)->_cnt >= 0 ? \
+                                0xff & *(_stream)->_ptr++ : _filbuf(_stream))
+#endif
+
 #define CLASS
 #define fgetc getc_unlocked
 

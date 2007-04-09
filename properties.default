@@ -30,6 +30,8 @@ lcms.include = ${lcms.base}/include
 lcms.lib = ${build}/lcms
 
 c-compiler = gcc
+c-compiler-args =
+c-linker-args =
 
 install.home = ${user.home}/blimp
 install.lib = ${install.home}/lib
@@ -37,3 +39,5 @@ install.bin = ${install.home}/bin
 install.man = ${install.home}/man/man1
 blimp.home = ${install.home}
 dcraw.install.bin = ${install.bin}
+dcraw.defines.minimal = NO_JPEG,NO_LCMS
+dcraw.libs.minimal = m
