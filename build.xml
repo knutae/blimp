@@ -135,6 +135,17 @@
         </java>
     </target>
     
+    <target name="run-sleak" depends="compile">
+        <java fork="true"
+              classname="org.boblycat.blimp.gui.swt.Sleak">
+            <classpath refid="run.classpath"/>
+            <!-- <jvmarg value="-server"/> -->
+            <jvmarg value="-Xmx256M"/>
+            <sysproperty key="java.library.path" path="${swt.jni.dir}"/>
+            <sysproperty key="blimp.dcraw.path" path="${dcraw.exe.path}"/>
+        </java>
+    </target>
+
     <target name="tests" depends="compile-java">
         <!-- could not get the junit task to work, so use a java task instead
         <junit printsummary="yes" fork="yes">

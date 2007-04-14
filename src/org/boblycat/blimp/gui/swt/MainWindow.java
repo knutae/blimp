@@ -12,6 +12,7 @@ import org.eclipse.swt.custom.*;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.DeviceData;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -119,10 +120,14 @@ public class MainWindow {
         item.setMenu(subMenu);
         return subMenu;
     }
-
+    
     public MainWindow() {
+        this(null);
+    }
+
+    public MainWindow(DeviceData deviceData) {
         imageTabs = new Vector<ImageTab>();
-        display = new Display();
+        display = new Display(deviceData);
         shell = new Shell(display);
         shell.setText("Blimp");
         FormLayout layout = new FormLayout();

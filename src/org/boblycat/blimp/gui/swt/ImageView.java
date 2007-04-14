@@ -172,8 +172,7 @@ public class ImageView extends Composite {
                 // System.out.println("paint " + paintCounter);
                 paintCounter++;
                 if (currentImage == null) {
-                    e.gc.setBackground(new Color(e.gc.getDevice(), 0, 0, 0));
-                    e.gc.fillRectangle(canvas.getClientArea());
+                    SwtUtil.fillBlackRect(e.gc, canvas.getClientArea());
                     drawProgressMessage(e.gc);
                     asyncGenerateBitmap();
                     return;
@@ -183,8 +182,7 @@ public class ImageView extends Composite {
                 Image bufferImage = new Image(canvas.getDisplay(),
                         clientArea.width, clientArea.height);
                 GC imageGC = new GC(bufferImage);
-                imageGC.setBackground(new Color(imageGC.getDevice(), 0, 0, 0));
-                imageGC.fillRectangle(bufferImage.getBounds());
+                SwtUtil.fillBlackRect(imageGC, bufferImage.getBounds());
                 // System.out.println("canvas size: " + canvasSize.x + ","
                 // + canvasSize.y);
                 Rectangle imageBounds = currentImage.getBounds();
@@ -353,8 +351,10 @@ public class ImageView extends Composite {
     private void drawProgressMessage(GC gc) {
         if (currentProgressMessage == null)
             return;
-        gc.setForeground(new Color(gc.getDevice(), 255, 255, 255));
+        Color color = new Color(gc.getDevice(), 255, 255, 255);
+        gc.setForeground(color);
         gc.drawText("Processing: " + currentProgressMessage, 10, 10);
+        color.dispose();
     }
     
     private void asyncGenerateBitmap() {

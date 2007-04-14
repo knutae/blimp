@@ -2,6 +2,9 @@ package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.Util;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Resource;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -74,5 +77,21 @@ public class SwtUtil {
             return "";
         // strip first separator
         return builder.substring(1);
+    }
+    
+    public static void fillColorRect(GC gc, Rectangle rect,
+            int red, int green, int blue) {
+        Color color = new Color(gc.getDevice(), red, green, blue);
+        gc.setBackground(color);
+        gc.fillRectangle(rect);
+        color.dispose();
+    }
+    
+    public static void fillBlackRect(GC gc, Rectangle rect) {
+        fillColorRect(gc, rect, 0, 0, 0);
+    }
+    
+    public static void fillWhiteRect(GC gc, Rectangle rect) {
+        fillColorRect(gc, rect, 255, 255, 255);
     }
 }

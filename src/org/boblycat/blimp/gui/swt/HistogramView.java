@@ -35,9 +35,7 @@ public class HistogramView extends Composite {
             public void handleEvent(Event e) {
                 Rectangle rect = canvas.getClientArea();
                 if (currentBitmap == null) {
-                    e.gc.setBackground(new Color(e.gc.getDevice(),
-                            255, 255, 255));
-                    e.gc.fillRectangle(rect);
+                    SwtUtil.fillWhiteRect(e.gc, rect);
                     return;
                 }
                 // generate image, or get the cached version
@@ -79,20 +77,19 @@ public class HistogramView extends Composite {
             return histogramImage;
         histogramImage = new Image(getDisplay(), width, height);
         GC gc = new GC(histogramImage);
-        gc.setBackground(new Color(gc.getDevice(),
-                255, 255, 255));
-        gc.fillRectangle(0, 0, width, height);
-        gc.setForeground(new Color(gc.getDevice(),
-                0, 0, 0));
+        SwtUtil.fillWhiteRect(gc, new Rectangle(0, 0, width, height));
+        Color black = new Color(gc.getDevice(), 0, 0, 0);
+        gc.setForeground(black);
         Histogram1D histogram = getFullHistogram();
         if (histogram != null) {
             Path path = new Path(gc.getDevice());
             generateHistogramPath(histogram, path, width, height);
-            gc.setBackground(new Color(gc.getDevice(), 0, 0, 0));
+            gc.setBackground(black);
             gc.fillPath(path);
             path.dispose();
         }
         gc.dispose();
+        black.dispose();
         return histogramImage;
     }
     

@@ -49,20 +49,22 @@ public class CurvesEditor extends LayerEditor {
                         rect.height);
                 GC gc = new GC(tmpImage);
                 // fill background
-                gc.setBackground(new Color(gc.getDevice(), 255, 255, 255));
-                gc.fillRectangle(canvas.getBounds());
+                SwtUtil.fillWhiteRect(gc, canvas.getBounds());
                 // draw rulers
                 final int RULER_COUNT = 4;
                 Point size = canvas.getSize();
-                gc.setForeground(new Color(gc.getDevice(), 190, 190, 190));
+                Color color = new Color(gc.getDevice(), 190, 190, 190);
+                gc.setForeground(color);
                 for (int i = 1; i < RULER_COUNT; i++) {
                     int ypos = size.y * i / RULER_COUNT;
                     gc.drawLine(0, ypos, size.x, ypos);
                     int xpos = size.x * i / RULER_COUNT;
                     gc.drawLine(xpos, 0, xpos, size.y);
                 }
+                color.dispose();
                 // draw curves
-                gc.setForeground(new Color(gc.getDevice(), 100, 100, 100));
+                color = new Color(gc.getDevice(), 100, 100, 100);
+                gc.setForeground(color);
                 double prevY = 0;
                 PointDouble[] points = curvesLayer.getPoints();
                 NaturalCubicSpline spline = curvesLayer.getSpline();
@@ -81,8 +83,10 @@ public class CurvesEditor extends LayerEditor {
                     prevY = nextY;
                     iPrevY = iNextY;
                 }
+                color.dispose();
                 // draw points
-                gc.setBackground(new Color(gc.getDevice(), 0, 0, 0));
+                color = new Color(gc.getDevice(), 0, 0, 0);
+                gc.setBackground(color);
                 for (int i = 0; i < points.length; i++) {
                     double x = points[i].x;
                     double y = points[i].y;
@@ -90,6 +94,7 @@ public class CurvesEditor extends LayerEditor {
                     int ypos = size.y - (int) (y * size.y);
                     gc.fillRectangle(xpos - 1, ypos - 1, 3, 3);
                 }
+                color.dispose();
                 // copy image
                 e.gc.drawImage(tmpImage, 0, 0);
                 tmpImage.dispose();
