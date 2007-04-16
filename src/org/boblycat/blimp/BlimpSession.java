@@ -1,6 +1,7 @@
 package org.boblycat.blimp;
 
 import java.beans.PropertyDescriptor;
+import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -378,6 +379,9 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     }
 
     public String getDescription() {
+        String name = getName();
+        if (!name.isEmpty())
+            return name;
         if (layerList.isEmpty())
             return "Empty session";
         return layerList.get(0).getDescription();
@@ -456,5 +460,17 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         BlimpSession newSession = new BlimpSession();
         Serializer.copyBeanData(session, newSession);
         return newSession;
+    }
+    
+    /**
+     * Set the session's name from the given filename.
+     * Call this explicitly after loading a session from file. 
+     * @param filename The file name of an image or saved session, for instance.
+     */
+    public void setNameFromFilename(String filename) {
+        File file = new File(filename);
+        String shortName = Util.changeFileExtension(file.getName(), "");
+        if (!shortName.isEmpty())
+            setName(shortName);
     }
 }

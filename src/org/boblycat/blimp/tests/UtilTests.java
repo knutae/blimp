@@ -78,5 +78,9 @@ public class UtilTests {
         assertEquals("/some.path/foo.bar", changeFileExtension("/some.path/foo", "bar"));
         assertEquals("/some.path/foo.bar", changeFileExtension("/some.path/foo.bar", "bar"));
         assertEquals("/some.path/foo.bar", changeFileExtension("/some.path/foo.something", "bar"));
+        assertEquals("foo", changeFileExtension("foo", ""));
+        assertEquals("foo", changeFileExtension("foo.bar", ""));
+        assertEquals("", changeFileExtension(".bar", ""));
+        assertEquals("", changeFileExtension("", ""));
     }
 }

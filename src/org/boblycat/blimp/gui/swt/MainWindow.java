@@ -1,11 +1,7 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.*;
-import org.boblycat.blimp.layers.AdjustmentLayer;
-import org.boblycat.blimp.layers.GammaLayer;
-import org.boblycat.blimp.layers.InputLayer;
-import org.boblycat.blimp.layers.Layer;
-import org.boblycat.blimp.layers.RawFileInputLayer;
+import org.boblycat.blimp.layers.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;
@@ -35,7 +31,8 @@ public class MainWindow {
     Label statusLabel;
     Listener menuHideListener;
     Listener menuItemListener;
-    MenuItem menuFileOpen;
+    MenuItem menuFileOpenImage;
+    MenuItem menuFileOpenSession;
     MenuItem menuFileExit;
     MenuItem menuFileSaveSession;
     MenuItem menuFileExportImage;
@@ -64,8 +61,11 @@ public class MainWindow {
 
     class MenuItemListener implements Listener {
         public void handleEvent(Event event) {
-            if (event.widget == menuFileOpen) {
-                doMenuOpen();
+            if (event.widget == menuFileOpenImage) {
+                doMenuOpen(false);
+            }
+            else if (event.widget == menuFileOpenSession) {
+                doMenuOpen(true);
             }
             else if (event.widget == menuFileExit) {
                 doMenuExit();
@@ -145,8 +145,10 @@ public class MainWindow {
         menuItemListener = new MenuItemListener();
 
         Menu fileMenu = addMenu(bar, "&File");
-        menuFileOpen = addMenuItem(fileMenu, "&Open",
-                "Open an image or a project");
+        menuFileOpenImage = addMenuItem(fileMenu, "Open &Image",
+                "Open an image");
+        menuFileOpenSession = addMenuItem(fileMenu, "Open &Project",
+                "Open a blimp project");
         menuFileSaveSession = addMenuItem(fileMenu, "&Save Project",
                 "Save the current project");
         menuFileExportImage = addMenuItem(fileMenu, "&Export Image",
@@ -235,6 +237,8 @@ public class MainWindow {
                if (activeImageTab == null && imageTabs.size() == 0) {
                    updateCurrentImageTab(null);
                }
+               // Trigger a GC to shrink the memory usage
+               System.gc();
            }
         });
 
@@ -304,6 +308,7 @@ public class MainWindow {
         if (input instanceof RawFileInputLayer)
             input.setActive(false); // TODO: quick hack for raw input, improve
         HistoryBlimpSession session = new HistoryBlimpSession();
+        session.setNameFromFilename(imageFilename);
         session.setInput(input);
         return addImageViewWithSession(session);
     }
@@ -328,18 +333,38 @@ public class MainWindow {
                 + e.getMessage());
     }
 
-    void doMenuOpen() {
+    void doMenuOpen(boolean openSessionByDefault) {
         // status("File->Open");
         FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-        dialog.setFilterNames(new String[] {
-                "Images (jpeg, tiff, png, gif, bmp, raw, dng, crw, cr2)",
-                "Blimp projects (blimp)", "All Files" });
-        dialog.setFilterExtensions(new String[] {
-                SwtUtil.getFilterExtensionList(new String[] { "jpg", "jpeg", "tiff", "tif",
-                        "png", "gif", "bmp", "raw", "dng", "crw", "cr2" }),
-                SwtUtil.getFilterExtensionList(new String[] { "blimp" }),
-                SwtUtil.getFilterExtensionList(new String[] { "*" }),
-        });
+        String imageFilterNames =
+            "Images (jpeg, tiff, png, gif, bmp, raw, dng, crw, cr2)";
+        String imageExtensionList =
+            SwtUtil.getFilterExtensionList(new String[] {
+                    "jpg", "jpeg", "tiff", "tif", "png", "gif", "bmp",
+                    "raw", "dng", "crw", "cr2"});
+        String projectFilterNames =
+            "Blimp projects (blimp)";
+        String projectExtensionList =
+            SwtUtil.getFilterExtensionList(new String[] { "blimp" });
+        String allFilesFilterNames = "All Files";
+        String allFilesExtensionList =
+            SwtUtil.getFilterExtensionList(new String[] { "*" });
+        if (openSessionByDefault) {
+            dialog.setFilterNames(new String[] {
+                    projectFilterNames, imageFilterNames, allFilesFilterNames
+            });
+            dialog.setFilterExtensions(new String[] {
+                    projectExtensionList, imageExtensionList, allFilesExtensionList
+            });
+        }
+        else {
+            dialog.setFilterNames(new String[] {
+                    imageFilterNames, projectFilterNames, allFilesFilterNames
+            });
+            dialog.setFilterExtensions(new String[] {
+                    imageExtensionList, projectExtensionList, allFilesExtensionList
+            });
+        }
         String filename = dialog.open();
         if (filename != null)
             openProjectOrImageFile(filename);
@@ -353,6 +378,7 @@ public class MainWindow {
                         .loadBeanFromFile(filename);
                 HistoryBlimpSession historySession = new HistoryBlimpSession();
                 historySession.synchronizeSessionData(session);
+                historySession.setNameFromFilename(filename);
                 addImageViewWithSession(historySession);
                 layers.updateWithSession(historySession, null, null);
             }
@@ -408,31 +434,44 @@ public class MainWindow {
     void doMenuSaveSession() {
         if (currentImageTab == null)
             return;
+        BlimpSession session = currentImageTab.imageView.getSession();
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         dialog.setFilterNames(new String[] { "Blimp projects (*.blimp)" });
         dialog.setFilterExtensions(new String[] {
                 SwtUtil.getFilterExtensionList(new String[] { "blimp" }) });
+        dialog.setFileName(Util.changeFileExtension(session.getName(), "blimp"));
         String filename = dialog.open();
         if (filename == null)
             return;
-        BlimpSession session = currentImageTab.imageView.getSession();
+        filename = Util.changeFileExtension(filename, "blimp");
+        if (Util.fileExists(filename) &&
+                !SwtUtil.confirmOverwrite(shell, filename)) {
+            SwtUtil.messageDialog(shell, "Aborted",
+                    "The project was not saved.", SWT.ICON_WARNING);
+            return;
+        }
         try {
-            Serializer.saveBeanToFile(session, Util.changeFileExtension(filename, "blimp"));
+            Serializer.saveBeanToFile(session, filename);
+            SwtUtil.messageDialog(shell, "Project Saved",
+                    "The project was saved:\n" + filename, SWT.ICON_INFORMATION);
         }
         catch (IOException e) {
-            System.err.println("An I/O error occured: " + e.getMessage());
+            SwtUtil.errorDialog(shell, "Save Error",
+                    "An I/O error occured: " + e.getMessage());
         }
     }
 
     void doMenuExportImage() {
         if (currentImageTab == null)
             return;
+        BlimpSession session = currentImageTab.imageView.getSession();
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-        dialog
-                .setFilterNames(new String[] { "Exportable image formats (jpeg, png, bmp)" });
+        dialog.setFilterNames(
+                new String[] { "Exportable image formats (jpeg, png, bmp)" });
         dialog.setFilterExtensions(new String[] {
                 SwtUtil.getFilterExtensionList(new String[] {
                         "jpeg", "jpg",  "png", "bmp" }) });
+        dialog.setFileName(Util.changeFileExtension(session.getName(), "jpg"));
         String filename = dialog.open();
         if (filename == null)
             return;
@@ -442,9 +481,15 @@ public class MainWindow {
                     "Unsupported file type: " + ext);
             return;
         }
-        BlimpSession session = currentImageTab.imageView.getSession();
+        if (Util.fileExists(filename) && !SwtUtil.confirmOverwrite(shell, filename)) {
+            SwtUtil.messageDialog(shell, "Aborted Export",
+                    "No image was exported.", SWT.ICON_WARNING);
+            return;
+        }
         try {
             BitmapUtil.writeBitmap(session.getFullBitmap(), ext, filename, 0.9);
+            SwtUtil.messageDialog(shell, "Image Exported",
+                    "The image was exported to:\n" + filename, SWT.ICON_INFORMATION);
         }
         catch (IOException e) {
             SwtUtil.errorDialog(shell, "Image Export", "An I/O error occured: "
@@ -461,8 +506,7 @@ public class MainWindow {
         layout.verticalSpacing = 20;
         dialog.setLayout(layout);
         Link linkText = new Link(dialog, SWT.NONE);
-        linkText
-                .setText("Blimp, a layered photo editor.\n"
+        linkText.setText("Blimp, a layered photo editor.\n"
                         + "Copyright 2006-2007 Knut Arild Erstad\n"
                         + "\n"
                         + "Credits:\n"

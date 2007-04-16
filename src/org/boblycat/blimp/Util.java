@@ -157,9 +157,14 @@ public class Util {
             return filename;
         int lastDotPos = filename.lastIndexOf('.');
         int lastSlashPos = Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\'));
-        if (lastDotPos < 0 || lastSlashPos > lastDotPos)
-            return filename + '.' + ext;
+        String suffix;
+        if (ext.isEmpty())
+            suffix = "";
         else
-            return filename.substring(0, lastDotPos) + '.' + ext;
+            suffix = '.' + ext;
+        if (lastDotPos < 0 || lastSlashPos > lastDotPos)
+            return filename + suffix;
+        else
+            return filename.substring(0, lastDotPos) + suffix;
     }
 }

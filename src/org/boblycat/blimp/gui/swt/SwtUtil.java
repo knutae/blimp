@@ -18,7 +18,20 @@ import org.eclipse.swt.widgets.Widget;
 public class SwtUtil {
     public static void errorDialog(Shell parentShell, String title,
             String message) {
-        MessageBox box = new MessageBox(parentShell, SWT.OK | SWT.ICON_ERROR);
+        messageDialog(parentShell, title, message, SWT.ICON_ERROR);
+    }
+    
+    /**
+     * Show a message dialog with an OK button.
+     * @param parentShell The parent window.
+     * @param title The window title.
+     * @param message The message text.
+     * @param style The style, which should include one of the
+     *              <code>SWT.ICON_</code> constants.
+     */
+    public static void messageDialog(Shell parentShell, String title,
+            String message, int style) {
+        MessageBox box = new MessageBox(parentShell, SWT.OK | style);
         box.setText(title);
         box.setMessage(message);
         box.open();
@@ -93,5 +106,23 @@ public class SwtUtil {
     
     public static void fillWhiteRect(GC gc, Rectangle rect) {
         fillColorRect(gc, rect, 255, 255, 255);
+    }
+    
+    /**
+     * Show a confirmation dialog asking the if it is okay to overwrite
+     * the given file.
+     * @param parentShell The parent window.
+     * @param filename The file to be overwritten.
+     * @return <code>true</code> if the user confirmed the overwrite.
+     */
+    public static boolean confirmOverwrite(Shell parentShell,
+            String filename) {
+        MessageBox box = new MessageBox(parentShell,
+                SWT.YES | SWT.NO | SWT.ICON_QUESTION);
+        box.setText("Overwrite File");
+        box.setMessage("Do you want to overwrite the existing file?\n"
+                + filename);
+        int result = box.open();
+        return (result == SWT.YES);
     }
 }
