@@ -15,6 +15,7 @@ public class SessionHistory {
     BlimpSession session;
     Vector<HistoryEntry> historyList;
     int currentIndex;
+    HistoryEntry savedHistoryEntry;
     
     public SessionHistory(BlimpSession session) {
         this.session = session;
@@ -23,6 +24,7 @@ public class SessionHistory {
         HistoryEntry newEntry = new HistoryEntry(session);
         historyList.add(newEntry);
         currentIndex = 0;
+        savedHistoryEntry = new HistoryEntry(session);
     }
     
     public boolean canUndo() {
@@ -42,6 +44,20 @@ public class SessionHistory {
         HistoryEntry newEntry = new HistoryEntry(session);
         historyList.add(newEntry);
         currentIndex++;
+    }
+    
+    /**
+     * Record that the session has been saved in its current state.
+     * It should not be dirty after this.
+     */
+    public void recordSaved() {
+        savedHistoryEntry = new HistoryEntry(session);
+    }
+    
+    public boolean isDirty() {
+        HistoryEntry currentEntry = historyList.get(currentIndex);
+        return !savedHistoryEntry.sessionCopy.sessionDataEquals(
+                currentEntry.sessionCopy);
     }
     
     public void undo() {

@@ -11,6 +11,7 @@ public class HistoryBlimpSession extends BlimpSession {
     
     SessionHistory history;
     int autoRecordDisableLevel;
+    LayerEventSource historyEventSource;
     
     public HistoryBlimpSession() {
         autoRecordDisableLevel = 0;
@@ -21,6 +22,15 @@ public class HistoryBlimpSession extends BlimpSession {
                     record();
             }
         });
+        historyEventSource = new LayerEventSource();
+    }
+    
+    public void addHistoryListener(LayerChangeListener listener) {
+        historyEventSource.addListener(listener);
+    }
+    
+    public void removeHistoryListener(LayerChangeListener listener) {
+        historyEventSource.removeListener(listener);
     }
     
     private void debug(String message) {
@@ -33,8 +43,13 @@ public class HistoryBlimpSession extends BlimpSession {
             history = new SessionHistory(this);
         if (history == null)
             return;
-         history.record();
-         debug("recorded, history size is now " + history.size());
+        history.record();
+        debug("recorded, history size is now " + history.size());
+        triggerHistoryChange();
+    }
+    
+    private void triggerHistoryChange() {
+        historyEventSource.triggerChangeWithEvent(new LayerEvent(this));
     }
 
     public void undo() {
@@ -44,6 +59,7 @@ public class HistoryBlimpSession extends BlimpSession {
         try {
             history.undo();
             triggerChangeEvent();
+            triggerHistoryChange();
         }
         finally {
             internalEndDisableAutoRecord();
@@ -57,10 +73,24 @@ public class HistoryBlimpSession extends BlimpSession {
         try {
             history.redo();
             triggerChangeEvent();
+            triggerHistoryChange();
         }
         finally {
             internalEndDisableAutoRecord();
         }
+    }
+    
+    public boolean isDirty() {
+        if (history == null)
+            return false;
+        return history.isDirty();
+    }
+    
+    public void recordSaved() {
+        if (history == null)
+            return;
+        history.recordSaved();
+        historyEventSource.triggerChangeWithEvent(new LayerEvent(this));
     }
     
     /**

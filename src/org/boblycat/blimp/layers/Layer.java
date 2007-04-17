@@ -4,6 +4,7 @@ import org.boblycat.blimp.BlimpBean;
 import org.boblycat.blimp.EventSource;
 import org.boblycat.blimp.LayerChangeListener;
 import org.boblycat.blimp.LayerEvent;
+import org.boblycat.blimp.LayerEventSource;
 
 /**
  * Abstract base class for all layers in Blimp, which includes adjustment layers
@@ -83,12 +84,5 @@ public abstract class Layer extends BlimpBean {
     
     protected static String generateName(Layer layer, int suffixNumber) {
         return layer.getBaseName() + Integer.toString(suffixNumber);
-    }
-}
-
-class LayerEventSource extends EventSource<LayerChangeListener, LayerEvent> {
-    protected void triggerListenerEvent(LayerChangeListener listener,
-            LayerEvent event) {
-        listener.handleChange(event);
     }
 }

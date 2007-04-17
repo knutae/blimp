@@ -138,4 +138,49 @@ public class HistoryTests {
         session.undo();
         assertEquals("initial path", input.getPath());
     }
+    
+    @Test
+    public void testDirtyFlag() {
+        BlimpSession session = new BlimpSession();
+        TestInput input = new TestInput();
+        input.setPath("initial path");
+        session.setInput(input);
+        SessionHistory history = new SessionHistory(session);
+        assertFalse(history.isDirty());
+
+        input.setPath("new path");
+        history.record();
+        assertTrue(history.isDirty());
+        
+        history.undo();
+        assertFalse(history.isDirty());
+        
+        input.setPath("new path 2");
+        history.record();
+        assertTrue(history.isDirty());
+        
+        input.setPath("initial path");
+        history.record();
+        assertFalse(history.isDirty());
+        
+        input.setPath("save value");
+        history.record();
+        assertTrue(history.isDirty());
+        
+        history.recordSaved();
+        assertFalse(history.isDirty());
+        
+        input.setPath("another value");
+        history.record();
+        assertTrue(history.isDirty());
+        
+        history.undo();
+        assertFalse(history.isDirty());
+        
+        history.undo();
+        assertTrue(history.isDirty());
+        
+        history.redo();
+        assertFalse(history.isDirty());
+    }
 }

@@ -300,6 +300,18 @@ public class MainWindow {
                 histogramView.setBitmap(e.getBitmap());
             }
         });
+        session.recordSaved();
+        session.addHistoryListener(new LayerChangeListener() {
+            public void handleChange(LayerEvent e) {
+                if (currentImageTab == null)
+                    return;
+                HistoryBlimpSession session = currentImageTab.imageView.getSession();
+                String name = session.getName();
+                if (session.isDirty())
+                    name = name + "*";
+                currentImageTab.item.setText(name);
+            }
+        });
         return imageView;
     }
 
@@ -418,6 +430,7 @@ public class MainWindow {
                                 GammaLayer gamma = new GammaLayer();
                                 gamma.setGamma(2.2);
                                 tab.imageView.getSession().addLayer(gamma);
+                                tab.imageView.getSession().recordSaved();
                                 layers.refresh();
                             }
                         }
