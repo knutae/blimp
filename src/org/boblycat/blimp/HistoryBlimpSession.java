@@ -37,10 +37,14 @@ public class HistoryBlimpSession extends BlimpSession {
         if (DEBUG)
             System.out.println(message);
     }
-
-    private void record() {
+    
+    private void tryEnsureHistoryExists() {
         if (history == null && getInput() != null && getInput().isActive())
             history = new SessionHistory(this);
+    }
+
+    private void record() {
+        tryEnsureHistoryExists();
         if (history == null)
             return;
         history.record();
@@ -87,6 +91,7 @@ public class HistoryBlimpSession extends BlimpSession {
     }
     
     public void recordSaved() {
+        tryEnsureHistoryExists();
         if (history == null)
             return;
         history.recordSaved();

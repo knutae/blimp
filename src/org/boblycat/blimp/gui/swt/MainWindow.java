@@ -23,6 +23,19 @@ class ImageTab {
         this.item = item;
         this.imageView = imageView;
     }
+    
+    HistoryBlimpSession getSession() {
+        return imageView.getSession();
+    }
+    
+    int tryClose(Shell shell) {
+        if (!getSession().isDirty())
+            return SWT.YES;
+        return SwtUtil.confirmationDialog(shell, "Close Tab",
+                getSession().getName() + " has unsaved changes.\n" +
+                "Close it without saving?",
+                SWT.YES | SWT.NO | SWT.ICON_QUESTION);
+    }
 }
 
 public class MainWindow {
@@ -132,6 +145,22 @@ public class MainWindow {
         shell.setText("Blimp");
         FormLayout layout = new FormLayout();
         shell.setLayout(layout);
+        shell.addListener(SWT.Close, new Listener() {
+            public void handleEvent(Event e) {
+                for (ImageTab tab: imageTabs) {
+                    if (tab.getSession().isDirty()) {
+                        int ret = SwtUtil.confirmationDialog(shell,
+                                "Exit Blimp",
+                                "There are unsaved changes.\n" +
+                                "Quit without saving?",
+                                SWT.YES | SWT.NO | SWT.ICON_QUESTION);
+                        if (ret != SWT.YES)
+                            e.doit = false;
+                        break;
+                    }
+                }
+            }
+        });
 
         // Menus
         Menu bar = new Menu(shell, SWT.BAR);
@@ -227,6 +256,10 @@ public class MainWindow {
                ImageTab activeImageTab = currentImageTab;
                for (ImageTab tab: imageTabs) {
                    if (tab.item == e.item) {
+                       if (tab.tryClose(shell) != SWT.YES) {
+                           e.doit = false;
+                           return;
+                       }
                        imageTabs.remove(tab);
                        tab.imageView.dispose();
                        if (tab == activeImageTab)
@@ -300,18 +333,18 @@ public class MainWindow {
                 histogramView.setBitmap(e.getBitmap());
             }
         });
-        session.recordSaved();
         session.addHistoryListener(new LayerChangeListener() {
             public void handleChange(LayerEvent e) {
                 if (currentImageTab == null)
                     return;
-                HistoryBlimpSession session = currentImageTab.imageView.getSession();
+                HistoryBlimpSession session = currentImageTab.getSession();
                 String name = session.getName();
                 if (session.isDirty())
                     name = name + "*";
                 currentImageTab.item.setText(name);
             }
         });
+        session.recordSaved();
         return imageView;
     }
 
@@ -333,7 +366,7 @@ public class MainWindow {
         }
         else {
             layers.updateWithSession(
-                    currentImageTab.imageView.getSession(),
+                    currentImageTab.getSession(),
                     null, null);
             currentImageTab.imageView.triggerBitmapChange();
         }
@@ -429,8 +462,8 @@ public class MainWindow {
                                 // (linear color mapping).
                                 GammaLayer gamma = new GammaLayer();
                                 gamma.setGamma(2.2);
-                                tab.imageView.getSession().addLayer(gamma);
-                                tab.imageView.getSession().recordSaved();
+                                tab.getSession().addLayer(gamma);
+                                tab.getSession().recordSaved();
                                 layers.refresh();
                             }
                         }
@@ -447,7 +480,7 @@ public class MainWindow {
     void doMenuSaveSession() {
         if (currentImageTab == null)
             return;
-        BlimpSession session = currentImageTab.imageView.getSession();
+        HistoryBlimpSession session = currentImageTab.getSession();
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         dialog.setFilterNames(new String[] { "Blimp projects (*.blimp)" });
         dialog.setFilterExtensions(new String[] {
@@ -465,8 +498,10 @@ public class MainWindow {
         }
         try {
             Serializer.saveBeanToFile(session, filename);
-            SwtUtil.messageDialog(shell, "Project Saved",
-                    "The project was saved:\n" + filename, SWT.ICON_INFORMATION);
+            session.recordSaved();
+            status("Project saved to " + filename);
+            //SwtUtil.messageDialog(shell, "Project Saved",
+            //        "The project was saved:\n" + filename, SWT.ICON_INFORMATION);
         }
         catch (IOException e) {
             SwtUtil.errorDialog(shell, "Save Error",
@@ -477,7 +512,7 @@ public class MainWindow {
     void doMenuExportImage() {
         if (currentImageTab == null)
             return;
-        BlimpSession session = currentImageTab.imageView.getSession();
+        BlimpSession session = currentImageTab.getSession();
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         dialog.setFilterNames(
                 new String[] { "Exportable image formats (jpeg, png, bmp)" });
@@ -545,14 +580,14 @@ public class MainWindow {
     void doUndo() {
         if (currentImageTab == null)
             return;
-        currentImageTab.imageView.getSession().undo();
+        currentImageTab.getSession().undo();
         layers.refresh();
     }
     
     void doRedo() {
         if (currentImageTab == null)
             return;
-        currentImageTab.imageView.getSession().redo();
+        currentImageTab.getSession().redo();
         layers.refresh();
     }
 
@@ -565,7 +600,7 @@ public class MainWindow {
         ImageTab tab = currentImageTab;
         if (tab == null)
             return;
-        HistoryBlimpSession session = tab.imageView.getSession();
+        HistoryBlimpSession session = tab.getSession();
         session.beginDisableAutoRecord();
         try {
             session.addLayer(layer);

@@ -37,6 +37,14 @@ public class SwtUtil {
         box.open();
     }
     
+    public static int confirmationDialog(Shell parentShell, String title,
+            String message, int style) {
+        MessageBox box = new MessageBox(parentShell, style);
+        box.setText(title);
+        box.setMessage(message);
+        return box.open();
+    }
+    
     /**
      * Dispose the given widget if it is not <code>null</code>.
      * @param widget A widget, or <code>null</code>.
