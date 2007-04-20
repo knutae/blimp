@@ -10,7 +10,6 @@ public class RunTests {
                 "org.boblycat.blimp.tests.SplineTests",
                 "org.boblycat.blimp.tests.SerializationTests",
                 "org.boblycat.blimp.tests.ZoomTests",
-                "org.boblycat.blimp.tests.UtilTests",
-                "org.boblycat.blimp.tests.PriorityCacheMapTests");
+                "org.boblycat.blimp.tests.UtilTests");
     }
 }
