@@ -21,7 +21,18 @@ class SwtImageWorkerThread extends ImageWorkerThread {
     private SharedData sharedData;
     private boolean finished;
     ProgressEventSource guiProgressEventSource;
-    LinkedBlockingQueue<ProgressEvent> progressEventQueue;
+    
+    class ProgressGuiEventRunner implements Runnable {
+        ProgressEvent event;
+        
+        ProgressGuiEventRunner(ProgressEvent event) {
+            this.event = event;
+        }
+        
+        public void run() {
+            guiProgressEventSource.triggerChangeWithEvent(event);
+        }
+    }
     
     public SwtImageWorkerThread(Composite imageView) {
         this.display = imageView.getDisplay();
@@ -34,7 +45,6 @@ class SwtImageWorkerThread extends ImageWorkerThread {
         imageView.addListener(SWT.Dispose, disposeListener);
         sharedData = new SharedData();
         guiProgressEventSource = new ProgressEventSource();
-        progressEventQueue = new LinkedBlockingQueue<ProgressEvent>();
     }
     
     protected void bitmapGenerated(Runnable runnable, Bitmap bitmap) {
@@ -59,18 +69,9 @@ class SwtImageWorkerThread extends ImageWorkerThread {
     protected void progressReported(ProgressEvent event) {
         if (isFinished())
             return;
-        progressEventQueue.add(event);
-        display.asyncExec(new Runnable() {
-            public void run() {
-                try {
-                    guiProgressEventSource.triggerChangeWithEvent(
-                            progressEventQueue.take());
-                }
-                catch (InterruptedException e) {
-                    Util.err(e.getMessage());
-                }
-            }
-        });
+        display.asyncExec(new ProgressGuiEventRunner(event));
+        // Note: the event must not be used on the worker thread
+        // from here on.
     }
     
     protected void handleError(Runnable runnable, String errorMessage) {
@@ -128,6 +129,8 @@ public class ImageView extends Composite {
     Image currentImage;
     int paintCounter;
     CLabel zoomLabel;
+    ProgressBar progressBar;
+    boolean showProgressBar;
     SwtImageWorkerThread workerThread;
     int asyncRequestCount;
     boolean needNewRequest;
@@ -135,6 +138,16 @@ public class ImageView extends Composite {
     BitmapEventSource bitmapEventSource;
     String currentProgressMessage;
     boolean delayedRedrawInProgress;
+    ProgressBarTimer progressBarTimer;
+    
+    class ProgressBarTimer implements Runnable {
+        boolean cancelled;
+        
+        public void run() {
+            if (!cancelled)
+                showProgressBar = true;
+        }
+    }
 
     public ImageView(Composite parent, int style, HistoryBlimpSession aSession) {
         super(parent, style);
@@ -148,18 +161,7 @@ public class ImageView extends Composite {
         workerThread = new SwtImageWorkerThread(this);
         workerThread.addProgressListener(new ProgressListener() {
             public void reportProgress(ProgressEvent e) {
-                //System.out.println("Worker thread: " + e.message);
-                // TODO: show a nice progress bar instead of this?
-                if (e.progress < 1.0) {
-                    String message = e.message;
-                    int percentage = (int) (e.progress * 100);
-                    if (percentage > 0) {
-                        message += " " + Integer.toString(percentage) + "%";
-                    }
-                    setProgressMessage(message);
-                }
-                else
-                    setProgressMessage(null);
+                setProgress(e.message, e.progress);
             }
         });
         workerThread.start();
@@ -219,13 +221,17 @@ public class ImageView extends Composite {
         zoomLabel = new CLabel(this, SWT.NONE);
         zoomLabel.setText("100%");
         
+        progressBar = new ProgressBar(this, SWT.HORIZONTAL);
+        progressBar.setMinimum(0);
+        progressBar.setMaximum(100);
+        progressBar.setSelection(0);
+        
         ToolBar toolBar = new ToolBar(this, SWT.BORDER);
         ToolItem toolItem = new ToolItem(toolBar, SWT.NONE);
         toolItem.setText("Zoom In");
         toolItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
                 workerThread.zoomIn(bitmapGeneratedTask);
-                
             }
         });
         toolItem = new ToolItem(toolBar, SWT.NONE);
@@ -249,8 +255,15 @@ public class ImageView extends Composite {
         toolBar.setLayoutData(data);
 
         data = new FormData();
-        data.top = new FormAttachment(toolBar);
+        data.left = new FormAttachment(0);
+        data.right = new FormAttachment(100);
         data.bottom = new FormAttachment(100);
+        progressBar.setLayoutData(data);
+        
+        data = new FormData();
+        data.top = new FormAttachment(toolBar);
+        //data.bottom = new FormAttachment(100);
+        data.bottom = new FormAttachment(progressBar);
         data.left = new FormAttachment(0);
         data.right = new FormAttachment(100);
         canvas.setLayoutData(data);
@@ -336,11 +349,38 @@ public class ImageView extends Composite {
         dirty = false;
     }
     
-    private void setProgressMessage(String message) {
+    private void cancelProgressBarTimer() {
+        if (progressBarTimer != null)
+            progressBarTimer.cancelled = true;
+        progressBarTimer = null;
+    }
+    
+    private void setProgress(String message, double progress) {
         if (isDisposed())
             return;
-        currentProgressMessage = message;
-        //canvas.redraw();
+        // Progress bar
+        if (progress == 1.0) {
+            cancelProgressBarTimer();
+            showProgressBar = false;
+        }
+        else if (progress == 0.0) {
+            cancelProgressBarTimer();
+            showProgressBar = false;
+            progressBarTimer = new ProgressBarTimer();
+            getDisplay().timerExec(PROGRESS_REDRAW_DELAY, progressBarTimer);
+        }
+        if (showProgressBar) {
+            int percentage = (int) (progress * 100);
+            progressBar.setSelection(percentage);
+        }
+        else {
+            progressBar.setSelection(0);
+        }
+        // Progress message
+        if (progress == 1.0)
+            currentProgressMessage = null;
+        else
+            currentProgressMessage = message;
         if (delayedRedrawInProgress)
             return;
         delayedRedrawInProgress = true;
