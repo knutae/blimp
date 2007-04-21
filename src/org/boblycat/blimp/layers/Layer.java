@@ -4,6 +4,7 @@ import org.boblycat.blimp.BlimpBean;
 import org.boblycat.blimp.LayerChangeListener;
 import org.boblycat.blimp.LayerEvent;
 import org.boblycat.blimp.LayerEventSource;
+import org.boblycat.blimp.ProgressEvent;
 import org.boblycat.blimp.ProgressEventSource;
 import org.boblycat.blimp.ProgressListener;
 
@@ -22,6 +23,10 @@ public abstract class Layer extends BlimpBean {
     String name;
 
     public abstract String getDescription();
+    
+    public String getProgressDescription() {
+        return getDescription();
+    }
 
     public boolean isActive() {
         return active;
@@ -56,6 +61,15 @@ public abstract class Layer extends BlimpBean {
     
     public void removeProgressListener(ProgressListener listener) {
         progressEventSource.removeListener(listener);
+    }
+    
+    protected void triggerProgress(String message, double progress) {
+        progressEventSource.triggerChangeWithEvent(
+                new ProgressEvent(this, message, progress));
+    }
+    
+    protected void triggerProgress(double progress) {
+        triggerProgress(getProgressDescription(), progress);
     }
 
     public void invalidate() {

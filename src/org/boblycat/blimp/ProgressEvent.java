@@ -7,8 +7,14 @@ public class ProgressEvent extends LayerEvent {
     
     public double progress;
     public String message;
-    
-    public ProgressEvent(Layer layer) {
+
+    public ProgressEvent(Layer layer, String message, double progress) {
         super(layer);
+        this.message = message;
+        this.progress = progress;
+    }
+
+    public ProgressEvent(Layer layer) {
+        this(layer, null, 0.0);
     }
 }

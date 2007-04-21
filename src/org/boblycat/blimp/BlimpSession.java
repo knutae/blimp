@@ -82,8 +82,6 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
 
     ViewportInfo viewport;
     
-    ProgressEventSource progressEventSource;
-    
     class SessionProgressListener implements ProgressListener {
         BlimpSession session;
         Layer layer;
@@ -94,7 +92,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         }
         
         public void reportProgress(ProgressEvent e) {
-            session.reportProgress(layer, e.progress);
+            session.reportLayerProgress(layer, e.progress);
         }
     }
 
@@ -102,40 +100,35 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         layerList = new Vector<Layer>();
         currentBitmap = null;
         viewport = new ViewportInfo();
-        progressEventSource = new ProgressEventSource();
     }
     
-    private void reportProgress(Layer layer, double progress) {
-        //System.out.println("Progress: " + message);
+    private void reportLayerProgress(Layer layer, double progress) {
         if (layer instanceof ViewResizeLayer)
             return;
-        ProgressEvent event = new ProgressEvent(layer);
-        event.message = layer.getDescription();
-        event.progress = progress;
-        progressEventSource.triggerChangeWithEvent(event);
+        triggerProgress(layer.getProgressDescription(), progress);
     }
     
     protected Bitmap applyLayer(Bitmap source, AdjustmentLayer layer) {
-        reportProgress(layer, 0.0);
+        reportLayerProgress(layer, 0.0);
         ProgressListener listener = new SessionProgressListener(this, layer);
         layer.addProgressListener(listener);
         Bitmap result = layer.applyLayer(source);
         if (result != null && result.getPixelScaleFactor() <= 0)
             result.setPixelScaleFactor(source.getPixelScaleFactor());
         layer.removeProgressListener(listener);
-        reportProgress(layer, 1.0);
+        reportLayerProgress(layer, 1.0);
         return result;
     }
     
     protected Bitmap inputBitmap(InputLayer input) throws IOException {
-        reportProgress(input, 0.0);
+        reportLayerProgress(input, 0.0);
         ProgressListener listener = new SessionProgressListener(this, input);
         input.addProgressListener(listener);
         Bitmap result = input.getBitmap();
         if (result != null && result.getPixelScaleFactor() <= 0)
             result.setPixelScaleFactor(1);
         input.removeProgressListener(listener);
-        reportProgress(input, 1.0);
+        reportLayerProgress(input, 1.0);
         return result;
     }
 
@@ -441,14 +434,6 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         if (pd.getName().equals("input"))
             return false;
         return super.isSerializableProperty(pd);
-    }
-    
-    public void addProgressListener(ProgressListener li) {
-        progressEventSource.addListener(li);
-    }
-    
-    public void removeProgressListener(ProgressListener li) {
-        progressEventSource.removeListener(li);
     }
     
     /**

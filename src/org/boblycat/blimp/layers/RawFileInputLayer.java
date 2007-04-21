@@ -18,6 +18,7 @@ import org.boblycat.blimp.ColorSpace;
 import org.boblycat.blimp.Util;
 import org.boblycat.blimp.jiu.PNMCodec;
 import net.sourceforge.jiu.ops.OperationFailedException;
+import net.sourceforge.jiu.ops.ProgressListener;
 
 public class RawFileInputLayer extends InputLayer {
     public enum Quality {
@@ -230,6 +231,16 @@ public class RawFileInputLayer extends InputLayer {
             Process process = processBuilder.start();
             try {
                 PNMCodec codec = new PNMCodec();
+                ProgressListener codecListener = new ProgressListener() {
+                    public void setProgress(float progress) {
+                        triggerProgress(getDescription(), progress);
+                    }
+                    public void setProgress(int index, int size) {
+                        triggerProgress(getDescription(),
+                                (double) index / (double) size);
+                    }
+                };
+                codec.addProgressListener(codecListener);
                 codec.setInputStream(new BufferedInputStream(process
                         .getInputStream()));
                 codec.process();
@@ -261,6 +272,10 @@ public class RawFileInputLayer extends InputLayer {
 
     public String getDescription() {
         return Util.getFileNameFromPath(filePath);
+    }
+    
+    public String getProgressDescription() {
+        return Util.getFileNameFromPath(filePath) + " raw input";
     }
 
     public void setColorSpace(ColorSpace colorSpace) {
