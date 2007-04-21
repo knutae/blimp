@@ -1,7 +1,5 @@
 package org.boblycat.blimp.gui.swt;
 
-import java.util.concurrent.LinkedBlockingQueue;
-
 import org.boblycat.blimp.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
