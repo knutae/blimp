@@ -150,11 +150,16 @@ public class ImageView extends Composite {
             public void reportProgress(ProgressEvent e) {
                 //System.out.println("Worker thread: " + e.message);
                 // TODO: show a nice progress bar instead of this?
-                if (e.index < e.size)
-                    setProgressMessage(e.message);
+                if (e.progress < 1.0) {
+                    String message = e.message;
+                    int percentage = (int) (e.progress * 100);
+                    if (percentage > 0) {
+                        message += " " + Integer.toString(percentage) + "%";
+                    }
+                    setProgressMessage(message);
+                }
                 else
                     setProgressMessage(null);
-                layout();
             }
         });
         workerThread.start();

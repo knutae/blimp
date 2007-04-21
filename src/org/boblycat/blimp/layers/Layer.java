@@ -1,10 +1,11 @@
 package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.BlimpBean;
-import org.boblycat.blimp.EventSource;
 import org.boblycat.blimp.LayerChangeListener;
 import org.boblycat.blimp.LayerEvent;
 import org.boblycat.blimp.LayerEventSource;
+import org.boblycat.blimp.ProgressEventSource;
+import org.boblycat.blimp.ProgressListener;
 
 /**
  * Abstract base class for all layers in Blimp, which includes adjustment layers
@@ -15,6 +16,8 @@ public abstract class Layer extends BlimpBean {
     boolean active;
 
     LayerEventSource eventSource;
+    
+    ProgressEventSource progressEventSource;
     
     String name;
 
@@ -32,6 +35,7 @@ public abstract class Layer extends BlimpBean {
         active = true;
         eventSource = new LayerEventSource();
         name = null;
+        progressEventSource = new ProgressEventSource();
     }
 
     public void addChangeListener(LayerChangeListener listener) {
@@ -44,6 +48,14 @@ public abstract class Layer extends BlimpBean {
 
     public void triggerChangeEvent() {
         eventSource.triggerChangeWithEvent(new LayerEvent(this));
+    }
+    
+    public void addProgressListener(ProgressListener listener) {
+        progressEventSource.addListener(listener);
+    }
+    
+    public void removeProgressListener(ProgressListener listener) {
+        progressEventSource.removeListener(listener);
     }
 
     public void invalidate() {

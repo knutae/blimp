@@ -41,4 +41,8 @@ public abstract class EventSource<L, E> {
             triggerListenerEvent(listener, event);
         }
     }
+    
+    public int size() {
+        return listenerList.size();
+    }
 }

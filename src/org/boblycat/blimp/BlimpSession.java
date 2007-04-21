@@ -83,6 +83,20 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     ViewportInfo viewport;
     
     ProgressEventSource progressEventSource;
+    
+    class SessionProgressListener implements ProgressListener {
+        BlimpSession session;
+        Layer layer;
+        
+        SessionProgressListener(BlimpSession session, Layer layer) {
+            this.session = session;
+            this.layer = layer;
+        }
+        
+        public void reportProgress(ProgressEvent e) {
+            session.reportProgress(layer, e.progress);
+        }
+    }
 
     public BlimpSession() {
         layerList = new Vector<Layer>();
@@ -91,32 +105,37 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         progressEventSource = new ProgressEventSource();
     }
     
-    private void reportProgress(Layer layer, int index, int size) {
+    private void reportProgress(Layer layer, double progress) {
         //System.out.println("Progress: " + message);
         if (layer instanceof ViewResizeLayer)
             return;
         ProgressEvent event = new ProgressEvent(layer);
         event.message = layer.getDescription();
-        event.index = index;
-        event.size = size;
+        event.progress = progress;
         progressEventSource.triggerChangeWithEvent(event);
     }
     
     protected Bitmap applyLayer(Bitmap source, AdjustmentLayer layer) {
-        reportProgress(layer, 0, 1);
+        reportProgress(layer, 0.0);
+        ProgressListener listener = new SessionProgressListener(this, layer);
+        layer.addProgressListener(listener);
         Bitmap result = layer.applyLayer(source);
         if (result != null && result.getPixelScaleFactor() <= 0)
             result.setPixelScaleFactor(source.getPixelScaleFactor());
-        reportProgress(layer, 1, 1);
+        layer.removeProgressListener(listener);
+        reportProgress(layer, 1.0);
         return result;
     }
     
     protected Bitmap inputBitmap(InputLayer input) throws IOException {
-        reportProgress(input, 0, 1);
+        reportProgress(input, 0.0);
+        ProgressListener listener = new SessionProgressListener(this, input);
+        input.addProgressListener(listener);
         Bitmap result = input.getBitmap();
         if (result != null && result.getPixelScaleFactor() <= 0)
             result.setPixelScaleFactor(1);
-        reportProgress(input, 0, 1);
+        input.removeProgressListener(listener);
+        reportProgress(input, 1.0);
         return result;
     }
 
