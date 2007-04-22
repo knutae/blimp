@@ -159,8 +159,8 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         }
         return layers;
     }
-
-    Bitmap generateBitmap(boolean useViewport) throws IOException {
+    
+    private Bitmap getInputBitmap() throws IOException {
         InputLayer input = getInput();
         if (input == null) {
             System.err.println("No input!");
@@ -176,6 +176,15 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             System.err.println("Input failed!");
             return null;
         }
+        return bm;
+    }
+
+    Bitmap generateBitmap(boolean useViewport) throws IOException {
+        Bitmap bm = getInputBitmap();
+        if (bm == null)
+            return null;
+        InputLayer input = getInput();
+        assert(input != null);
 
         // TODO: let a view quality setting decide when/how to resize
         Vector<AdjustmentLayer> movableLayers = getMovableLayers();
@@ -194,7 +203,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             }
             else if (layer.isActive() && layer instanceof AdjustmentLayer) {
                 if (bm == null) {
-                    System.err.println("Warning: no input to apply "
+                    Util.err("Warning: no input to apply "
                             + layer.getDescription());
                     continue;
                 }
@@ -207,6 +216,53 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             bm = applyViewport(bm);
         
         return bm;
+    }
+    
+    /**
+     * Returns a histogram for the bitmap generated just before a specific
+     * adjustment layer is applied.
+     * 
+     * @param layerName
+     *      the name of a layer.
+     * @param useViewport
+     *      if <code>true</code>, resize the image to the viewport,
+     *      which is faster, but will create a less accurate histogram.
+     * @return
+     *      a histogram, or <code>null</code> if the layer did not exist.
+     * @throws IOException
+     *      if an I/O error occured when processing the input layer.
+     */
+    public Histogram getHistogramBeforeLayer(String layerName, boolean useViewport)
+    throws IOException {
+        Bitmap bm = getInputBitmap();
+        if (bm == null)
+            return null;
+        InputLayer input = getInput();
+        assert(input != null);
+
+        if (useViewport && !viewport.isZoomedIn())
+            bm = applyViewport(bm);
+        
+        for (Layer layer: layerList) {
+            if (layer == input)
+                continue;
+            if (layer instanceof AdjustmentLayer) {
+                if (bm == null) {
+                    Util.err("Warning: no input to apply "
+                            + layer.getDescription());
+                    continue;
+                }
+                if (layerName.equals(layer.getName())) {
+                    // TODO: figure out a more logical way to reduce the
+                    // color weight
+                    if (bm.getChannelBitDepth() != 8)
+                        bm = BitmapUtil.create8BitCopy(bm);
+                    return new Histogram(bm);
+                }
+                bm = applyLayer(bm, (AdjustmentLayer) layer);
+            }
+        }
+        return null;
     }
     
     /**

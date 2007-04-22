@@ -28,8 +28,9 @@ public class LayerEditorRegistry {
             editorConstructor = getConstructor(editorClass);
         }
 
-        void showDialog(Layer layer, LayerEditorCallback cb) {
-            callback = cb;
+        void showDialog(LayerEditorEnvironment env) {
+            callback = env.editorCallback;
+            Layer layer = env.layer;
             dialog = new Shell(parentShell, SWT.APPLICATION_MODAL
                     | SWT.DIALOG_TRIM);
             dialog.setLayout(new GridLayout());
@@ -46,6 +47,8 @@ public class LayerEditorRegistry {
             }
             editedLayer = layer;
             layerClone = (Layer) layer.clone();
+            editor.session = env.session;
+            editor.workerThread = env.workerThread;
             editor.setLayer(layer);
 
             Composite buttonRow = new Composite(dialog, SWT.NONE);
@@ -114,11 +117,12 @@ public class LayerEditorRegistry {
         registry.put(layerClass.getName(), new Entry(editorClass));
     }
 
-    public boolean showEditorDialog(Layer layer, LayerEditorCallback callback) {
-        Entry entry = registry.get(layer.getClass().getName());
+    public boolean showEditorDialog(LayerEditorEnvironment env) {
+        assert(env.layer != null);
+        Entry entry = registry.get(env.layer.getClass().getName());
         if (entry == null)
             return false;
-        entry.showDialog(layer, callback);
+        entry.showDialog(env);
         return true;
     }
 }

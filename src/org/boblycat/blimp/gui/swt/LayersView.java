@@ -6,6 +6,7 @@ import org.boblycat.blimp.layers.CurvesLayer;
 import org.boblycat.blimp.layers.GammaLayer;
 import org.boblycat.blimp.layers.GrayscaleMixerLayer;
 import org.boblycat.blimp.layers.Layer;
+import org.boblycat.blimp.layers.LevelsLayer;
 import org.boblycat.blimp.layers.LocalContrastLayer;
 import org.boblycat.blimp.layers.RawFileInputLayer;
 
@@ -16,31 +17,31 @@ import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.graphics.Point;
 
 public class LayersView extends SashForm {
-    class LayerEditorCallbackWrapper implements LayerEditorCallback {
-        LayerEditorCallback originalCallback;
-        HistoryBlimpSession session;
-        LayerEditorCallbackWrapper(LayerEditorCallback original,
-                HistoryBlimpSession session) {
-            originalCallback = original;
-            this.session = session;
-            session.beginDisableAutoRecord();
+    class LayerEditorEnvironmentWrapper implements LayerEditorCallback {
+        LayerEditorEnvironment original;
+        LayerEditorEnvironment copy;
+        LayerEditorEnvironmentWrapper(LayerEditorEnvironment env) {
+            original = env;
+            copy = env.clone();
+            copy.editorCallback = this;
+            copy.session.beginDisableAutoRecord();
         }
         
         public void editingFinished(Layer layer, boolean cancelled) {
-            session.endDisableAutoRecord();
-            if (originalCallback != null)
-                originalCallback.editingFinished(layer, cancelled);
+            copy.session.endDisableAutoRecord();
+            if (original.editorCallback != null)
+                original.editorCallback.editingFinished(layer, cancelled);
         }
         
-        void openLayerEditor(Layer layer) {
-            if (!editorRegistry.showEditorDialog(layer, this))
+        void openLayerEditor() {
+            if (!editorRegistry.showEditorDialog(copy)) {
                 // no editor shown: re-enable autoRecord at once
-                session.endDisableAutoRecord();
+                copy.session.endDisableAutoRecord();
+            }
         }
     }
 
     Table layerTable;
-    HistoryBlimpSession session;
     Menu contextMenu;
     MenuItem menuRemove;
     MenuItem menuEdit;
@@ -48,6 +49,7 @@ public class LayersView extends SashForm {
     LayerPropertyEditor propertyEditor;
     LayerEditorRegistry editorRegistry;
     int dragIndex;
+    LayerEditorEnvironment editorEnvironment;
 
     public LayersView(Composite parent) {
         super(parent, SWT.VERTICAL);
@@ -67,8 +69,8 @@ public class LayersView extends SashForm {
                 TableItem item = (TableItem) e.item;
                 selectedLayerIndex = layerIndexOfItem(item);
                 if (selectedLayerIndex >= 0) {
-                    session.activateLayer(selectedLayerIndex, item.getChecked());
-                    propertyEditor.setLayer(session.getLayer(
+                    getSession().activateLayer(selectedLayerIndex, item.getChecked());
+                    propertyEditor.setLayer(getSession().getLayer(
                             selectedLayerIndex));
                 }
                 else {
@@ -123,7 +125,7 @@ public class LayersView extends SashForm {
                     if (dropIndex <= 0 || dropIndex == dragIndex)
                         return;
                     e.detail = DND.DROP_MOVE;
-                    session.moveLayer(dragIndex, dropIndex);
+                    getSession().moveLayer(dragIndex, dropIndex);
                     refresh();
                 }
                 finally {
@@ -138,8 +140,8 @@ public class LayersView extends SashForm {
         menuRemove.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
                 if (selectedLayerIndex >= 0) {
-                    session.removeLayer(selectedLayerIndex);
-                    updateWithSession(session, null, null);
+                    getSession().removeLayer(selectedLayerIndex);
+                    refresh();
                 }
             }
         });
@@ -149,8 +151,8 @@ public class LayersView extends SashForm {
             public void handleEvent(Event e) {
                 if (selectedLayerIndex < 0)
                     return;
-                Layer layer = session.getLayer(selectedLayerIndex);
-                openLayerEditor(layer, new LayerEditorCallback() {
+                editorEnvironment.layer = getSession().getLayer(selectedLayerIndex);
+                openLayerEditor(editorEnvironment, new LayerEditorCallback() {
                     public void editingFinished(Layer layer, boolean cancelled) {
                         if (cancelled)
                             layer.triggerChangeEvent();
@@ -166,6 +168,12 @@ public class LayersView extends SashForm {
         createEditorRegistry();
     }
     
+    private HistoryBlimpSession getSession() {
+        if (editorEnvironment == null)
+            return null;
+        return editorEnvironment.session;
+    }
+    
     private void createEditorRegistry() {
         editorRegistry = new LayerEditorRegistry(getShell());
         editorRegistry.register(BrightnessContrastLayer.class,
@@ -176,6 +184,7 @@ public class LayersView extends SashForm {
         editorRegistry.register(GrayscaleMixerLayer.class,
                 GrayscaleMixerEditor.class);
         editorRegistry.register(LocalContrastLayer.class, LocalContrastEditor.class);
+        editorRegistry.register(LevelsLayer.class, LevelsEditor.class);
     }
     
     private int layerIndexOfItem(TableItem item) {
@@ -187,10 +196,10 @@ public class LayersView extends SashForm {
         return layerTable.getItemCount() - index - 1;
     }
 
-    public void updateWithSession(HistoryBlimpSession session, Layer currentLayer,
-            LayerEditorCallback callback) {
-        this.session = session;
+    public void updateWithEnvironment(LayerEditorEnvironment env) {
+        editorEnvironment = env;
         layerTable.removeAll();
+        HistoryBlimpSession session = getSession();
         if (session == null)
             return;
         for (int i = session.layerCount() - 1; i >= 0; i--) {
@@ -200,19 +209,26 @@ public class LayersView extends SashForm {
             item.setText(layer.getDescription());
         }
         propertyEditor.setLayer(null);
-        if (currentLayer != null) {
-            // TODO: also select the layer
-            openLayerEditor(currentLayer, callback);
-        }
+        openLayerEditor(env);
     }
 
     public void refresh() {
-        updateWithSession(session, null, null);
+        editorEnvironment.layer = null; // don't open editor
+        updateWithEnvironment(editorEnvironment);
+    }
+    
+    void openLayerEditor(LayerEditorEnvironment env,
+            LayerEditorCallback callback) {
+        LayerEditorEnvironment tmpEnv = env.clone();
+        tmpEnv.editorCallback = callback;
+        openLayerEditor(tmpEnv);
     }
 
-    void openLayerEditor(Layer layer, LayerEditorCallback callback) {
-        LayerEditorCallbackWrapper wrapper =
-            new LayerEditorCallbackWrapper(callback, session);
-        wrapper.openLayerEditor(layer);
+    void openLayerEditor(LayerEditorEnvironment env) {
+        if (env.layer == null)
+            return;
+        LayerEditorEnvironmentWrapper wrapper =
+            new LayerEditorEnvironmentWrapper(env);
+        wrapper.openLayerEditor();
     }
 }

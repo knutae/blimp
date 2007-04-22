@@ -174,6 +174,13 @@ public class ValueSlider extends Composite {
         this.digits = digits;
     }
     
+    public double getSelectionAsDouble() {
+        double result = getSelection();
+        for (int i=0; i<digits; i++)
+            result /= 10;
+        return result;
+    }
+    
     private void setAutoPageIncrement() {
         int range = maximum - minimum;
         int incr = 1;

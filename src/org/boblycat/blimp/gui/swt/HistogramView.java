@@ -1,19 +1,12 @@
 package org.boblycat.blimp.gui.swt;
 
 import net.sourceforge.jiu.color.analysis.Histogram1DCreator;
-import net.sourceforge.jiu.color.data.ArrayHistogram1D;
 import net.sourceforge.jiu.color.data.Histogram1D;
-import net.sourceforge.jiu.data.IntegerImage;
-import net.sourceforge.jiu.ops.OperationFailedException;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.Histogram;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Path;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -26,6 +19,8 @@ public class HistogramView extends Composite {
     Histogram1DCreator creator;
     Histogram1D allChannelsHistogram;
     Image histogramImage;
+    Double blackLevel;
+    Double whiteLevel;
     
     public HistogramView(Composite parent, int style) {
         super(parent, style);
@@ -34,7 +29,7 @@ public class HistogramView extends Composite {
         canvas.addListener(SWT.Paint, new Listener() {
             public void handleEvent(Event e) {
                 Rectangle rect = canvas.getClientArea();
-                if (currentBitmap == null) {
+                if (currentBitmap == null && allChannelsHistogram == null) {
                     SwtUtil.fillWhiteRect(e.gc, rect);
                     return;
                 }
@@ -60,9 +55,31 @@ public class HistogramView extends Composite {
         canvas.redraw();
     }
     
+    public void setAllchannelsHistogram(Histogram1D histogram) {
+        allChannelsHistogram = histogram;
+        invalidateHistogramImage();
+        canvas.redraw();
+    }
+    
+    public void setLevels(double black, double white) {
+        blackLevel = black;
+        whiteLevel = white;
+        invalidateHistogramImage();
+        canvas.redraw();
+    }
+    
     private void invalidateHistogramImage() {
         SwtUtil.dispose(histogramImage);
         histogramImage = null;
+    }
+    
+    private static void fillGrayRectange(GC gc, int width, int height,
+            double startPercentage, double endPercentage) {
+        int x1 = (int) (startPercentage * width);
+        int x2 = (int) (endPercentage * width);
+        int intensity = 128;
+        SwtUtil.fillColorRect(gc, new Rectangle(x1, 0, x2, height),
+                intensity, intensity, intensity);
     }
     
     private Image getHistogramImage(int width, int height) {
@@ -78,6 +95,10 @@ public class HistogramView extends Composite {
         histogramImage = new Image(getDisplay(), width, height);
         GC gc = new GC(histogramImage);
         SwtUtil.fillWhiteRect(gc, new Rectangle(0, 0, width, height));
+        if (blackLevel != null)
+            fillGrayRectange(gc, width, height, 0.0, blackLevel);
+        if (whiteLevel != null)
+            fillGrayRectange(gc, width, height, whiteLevel, 1.0);
         Color black = new Color(gc.getDevice(), 0, 0, 0);
         gc.setForeground(black);
         Histogram1D histogram = getFullHistogram();
@@ -96,28 +117,7 @@ public class HistogramView extends Composite {
     private Histogram1D getFullHistogram() {
         if (allChannelsHistogram != null)
             return allChannelsHistogram;
-        IntegerImage image = (IntegerImage) currentBitmap.getImage();
-        allChannelsHistogram = new ArrayHistogram1D(256);
-        for (int channel=0; channel<image.getNumChannels(); channel++) {
-            creator.setImage((IntegerImage) currentBitmap.getImage());
-            try {
-                creator.process();
-            }
-            catch (OperationFailedException e) {
-                Util.err("Failed to create histogram for channel" + channel);
-                return null;
-            }
-            Histogram1D channelHistogram = creator.getHistogram();
-            if (channelHistogram.getMaxValue() != allChannelsHistogram
-                    .getMaxValue()) {
-                Util.err("Size mismatch while creating histogram.");
-                return null;
-            }
-            for (int i=0; i<allChannelsHistogram.getMaxValue(); i++) {
-                allChannelsHistogram.setEntry(i, allChannelsHistogram.getEntry(i)
-                        + channelHistogram.getEntry(i));
-            }
-        }
+        allChannelsHistogram = new Histogram(currentBitmap);
         return allChannelsHistogram;
     }
     

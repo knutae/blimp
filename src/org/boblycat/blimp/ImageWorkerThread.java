@@ -14,6 +14,7 @@ public abstract class ImageWorkerThread extends Thread {
     
     enum RequestType {
         GENERATE_BITMAP,
+        GENERATE_HISTOGRAM,
         ZOOM_IN,
         ZOOM_OUT,
         QUIT,
@@ -23,6 +24,8 @@ public abstract class ImageWorkerThread extends Thread {
         RequestType type;
         Runnable runnable;
         BlimpSession sessionCopy;
+        String layerName;
+        HistogramGeneratedTask histogramTask;
         int viewWidth;
         int viewHeight;
 
@@ -68,6 +71,8 @@ public abstract class ImageWorkerThread extends Thread {
      */
     protected abstract void bitmapGenerated(Runnable runnable, Bitmap bitmap);
     
+    protected abstract void histogramGenerated(HistogramGeneratedTask task);
+    
     protected abstract void progressReported(ProgressEvent event);
     
     protected abstract boolean isFinished();
@@ -81,7 +86,8 @@ public abstract class ImageWorkerThread extends Thread {
             session.synchronizeSessionData(req.sessionCopy);
         }
         try {
-            if (req.type == RequestType.GENERATE_BITMAP) {
+            switch (req.type) {
+            case GENERATE_BITMAP:
                 assert(req.runnable != null);
                 // Generate the bitmap on this thread.  It should not be transferred
                 // to other threads.
@@ -93,14 +99,25 @@ public abstract class ImageWorkerThread extends Thread {
                     bitmap = session.getBitmap();
                 debugPrint("finished generating bitmap");
                 bitmapGenerated(req.runnable, bitmap);
-            }
-            else if (req.type == RequestType.ZOOM_IN) {
+                break;
+            case GENERATE_HISTOGRAM:
+                assert(req.histogramTask != null && req.layerName != null);
+                debugPrint("generating histogram for layer " + req.layerName);
+                Histogram histogram = session.getHistogramBeforeLayer(req.layerName, true);
+                debugPrint("finished generating histogram");
+                // Note: the following should work without synchronization problems,
+                // because the histogram task is only used by one thread at a time.
+                req.histogramTask.setHistogram(histogram);
+                histogramGenerated(req.histogramTask);
+                break;
+            case ZOOM_IN:
                 session.zoomIn();
                 bitmapGenerated(req.runnable, session.getBitmap());
-            }
-            else if (req.type == RequestType.ZOOM_OUT) {
+                break;
+            case ZOOM_OUT:
                 session.zoomOut();
                 bitmapGenerated(req.runnable, session.getBitmap());
+                break;
             }
         }
         catch (IOException e) {
@@ -161,6 +178,15 @@ public abstract class ImageWorkerThread extends Thread {
         req.sessionCopy = BlimpSession.createCopy(session);
         req.viewWidth = width;
         req.viewHeight = height;
+        putRequest(req);
+    }
+    
+    public void asyncGenerateHistogram(BlimpSession session, String layerName,
+            HistogramGeneratedTask task) {
+        Request req = new Request(RequestType.GENERATE_HISTOGRAM);
+        req.histogramTask = task;
+        req.layerName = layerName;
+        req.sessionCopy = BlimpSession.createCopy(session);
         putRequest(req);
     }
     

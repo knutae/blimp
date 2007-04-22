@@ -28,6 +28,13 @@ class ImageTab {
         return imageView.getSession();
     }
     
+    LayerEditorEnvironment getEditorEnv() {
+        LayerEditorEnvironment env = new LayerEditorEnvironment();
+        env.session = getSession();
+        env.workerThread = imageView.workerThread;
+        return env;
+    }
+    
     int tryClose(Shell shell) {
         if (!getSession().isDirty())
             return SWT.YES;
@@ -360,14 +367,11 @@ public class MainWindow {
     
     void updateCurrentImageTab(ImageTab newImageTab) {
         currentImageTab = newImageTab;
+        updateLayersView();
         if (currentImageTab == null) {
-            layers.updateWithSession(null, null, null);
             histogramView.setBitmap(null);
         }
         else {
-            layers.updateWithSession(
-                    currentImageTab.getSession(),
-                    null, null);
             currentImageTab.imageView.triggerBitmapChange();
         }
     }
@@ -414,6 +418,24 @@ public class MainWindow {
         if (filename != null)
             openProjectOrImageFile(filename);
     }
+    
+    private void updateLayersView() {
+        if (currentImageTab == null)
+            layers.updateWithEnvironment(null);
+        else
+            layers.updateWithEnvironment(currentImageTab.getEditorEnv());
+    }
+    
+    private void showLayerEditor(Layer layer, LayerEditorCallback callback) {
+        if (currentImageTab == null) {
+            Util.err("Attempted to show editor without an active image tab");
+            return;
+        }
+        LayerEditorEnvironment env = currentImageTab.getEditorEnv();
+        env.layer = layer;
+        env.editorCallback = callback;
+        layers.updateWithEnvironment(env);
+    }
 
     void openProjectOrImageFile(String filename) {
         if (filename.toLowerCase().endsWith(".blimp")) {
@@ -425,7 +447,7 @@ public class MainWindow {
                 historySession.synchronizeSessionData(session);
                 historySession.setNameFromFilename(filename);
                 addImageViewWithSession(historySession);
-                layers.updateWithSession(historySession, null, null);
+                updateLayersView();
             }
             catch (ClassCastException e) {
                 fileOpenError(filename, "Class cast", e);
@@ -445,31 +467,27 @@ public class MainWindow {
         // open an image
         ImageView imageView = addImageView(filename);
         HistoryBlimpSession session = imageView.getSession();
-        layers.updateWithSession(session, session.getInput(),
-                new LayerEditorCallback() {
-                    public void editingFinished(Layer layer, boolean cancelled) {
-                        ImageTab tab = currentImageTab;
-                        if (cancelled) {
-                            tab.item.dispose();
-                        }
-                        else if (layer instanceof RawFileInputLayer) {
-                            RawFileInputLayer rawInput = (RawFileInputLayer) layer;
-                            if (rawInput.getColorDepth() == ColorDepth.Depth16Bit) {
-                                // Automatically add a gamma layer for 16-bit
-                                // raw input,
-                                // because dcraw 16-bit output is not gamma
-                                // corrected
-                                // (linear color mapping).
-                                GammaLayer gamma = new GammaLayer();
-                                gamma.setGamma(2.2);
-                                tab.getSession().addLayer(gamma);
-                                tab.getSession().recordSaved();
-                                layers.refresh();
-                            }
-                        }
+        showLayerEditor(session.getInput(), new LayerEditorCallback() {
+            public void editingFinished(Layer layer, boolean cancelled) {
+                ImageTab tab = currentImageTab;
+                if (cancelled) {
+                    tab.item.dispose();
+                }
+                else if (layer instanceof RawFileInputLayer) {
+                    RawFileInputLayer rawInput = (RawFileInputLayer) layer;
+                    if (rawInput.getColorDepth() == ColorDepth.Depth16Bit) {
+                        // Automatically add a gamma layer for 16-bit raw input,
+                        // because dcraw 16-bit output is not gamma corrected
+                        // (linear color mapping).
+                        GammaLayer gamma = new GammaLayer();
+                        gamma.setGamma(2.2);
+                        tab.getSession().addLayer(gamma);
+                        tab.getSession().recordSaved();
+                        layers.refresh();
                     }
-                });
-        // layers.updateWithSession(session, null);
+                }
+            }
+        });
         imageView.invalidateImage();
     }
 
@@ -605,18 +623,17 @@ public class MainWindow {
         try {
             session.addLayer(layer);
             tab.imageView.invalidateImage();
-            layers.updateWithSession(session, layer,
-                new LayerEditorCallback() {
-                    public void editingFinished(Layer layer, boolean cancelled) {
-                        if (cancelled) {
-                            BlimpSession session = currentImageTab.imageView
-                                    .getSession();
-                            session.removeLayer(layer);
-                            layers.refresh();
-                        }
-    
+            showLayerEditor(layer, new LayerEditorCallback() {
+                public void editingFinished(Layer layer, boolean cancelled) {
+                    if (cancelled) {
+                        BlimpSession session = currentImageTab.imageView
+                                .getSession();
+                        session.removeLayer(layer);
+                        layers.refresh();
                     }
-                });
+
+                }
+            });
         }
         finally {
             session.endDisableAutoRecord();
