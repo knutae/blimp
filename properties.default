@@ -30,8 +30,6 @@ lcms.include = ${lcms.base}/include
 lcms.lib = ${build}/lcms
 
 c-compiler = gcc
-c-compiler-args =
-c-linker-args =
 
 install.home = ${user.home}/blimp
 install.lib = ${install.home}/lib

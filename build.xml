@@ -76,8 +76,8 @@
     
     <target name="dcraw-minimal" depends="init">
         <cc name="${c-compiler}" outfile="${dcraw.exe.path}" outtype="executable" optimize="extreme">
-            <compilerarg value="${c-compiler-args}"/>
-            <linkerarg value="${c-linker-args}"/>
+            <compilerarg if="c-compiler-args" value="${c-compiler-args}"/>
+            <linkerarg if="c-linker-args" value="${c-linker-args}"/>
             <defineset define="${dcraw.defines.minimal}"/>
             <fileset dir="dcraw" includes="dcraw.c"/>
             <libset libs="${dcraw.libs.minimal}"/>
