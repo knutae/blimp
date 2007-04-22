@@ -179,7 +179,8 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return bm;
     }
 
-    Bitmap generateBitmap(boolean useViewport) throws IOException {
+    private Bitmap internalGenerateBitmapBeforeLayer(String layerName,
+            boolean useViewport) throws IOException {
         Bitmap bm = getInputBitmap();
         if (bm == null)
             return null;
@@ -207,15 +208,25 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
                             + layer.getDescription());
                     continue;
                 }
+                if (layerName != null && layerName.equals(layer.getName()))
+                    return bm;
                 AdjustmentLayer adjust = (AdjustmentLayer) layer;
                 bm = applyLayer(bm, adjust);
             }
         }
         
+        if (layerName != null)
+            // specified layer not found
+            return null;
+        
         if (useViewport && viewport.isZoomedIn())
             bm = applyViewport(bm);
         
         return bm;
+    }
+
+    Bitmap generateBitmap(boolean useViewport) throws IOException {
+        return internalGenerateBitmapBeforeLayer(null, useViewport);
     }
     
     /**
@@ -234,35 +245,13 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
      */
     public Histogram getHistogramBeforeLayer(String layerName, boolean useViewport)
     throws IOException {
-        Bitmap bm = getInputBitmap();
+        Bitmap bm = internalGenerateBitmapBeforeLayer(layerName, useViewport);
         if (bm == null)
             return null;
-        InputLayer input = getInput();
-        assert(input != null);
-
-        if (useViewport && !viewport.isZoomedIn())
-            bm = applyViewport(bm);
-        
-        for (Layer layer: layerList) {
-            if (layer == input)
-                continue;
-            if (layer instanceof AdjustmentLayer) {
-                if (bm == null) {
-                    Util.err("Warning: no input to apply "
-                            + layer.getDescription());
-                    continue;
-                }
-                if (layerName.equals(layer.getName())) {
-                    // TODO: figure out a more logical way to reduce the
-                    // color weight
-                    if (bm.getChannelBitDepth() != 8)
-                        bm = BitmapUtil.create8BitCopy(bm);
-                    return new Histogram(bm);
-                }
-                bm = applyLayer(bm, (AdjustmentLayer) layer);
-            }
-        }
-        return null;
+        // TODO: figure out a more logical way to reduce the color weight
+        if (bm.getChannelBitDepth() != 8)
+            bm = BitmapUtil.create8BitCopy(bm);
+        return new Histogram(bm);
     }
     
     /**
