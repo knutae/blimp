@@ -4,6 +4,7 @@ import net.sourceforge.jiu.ops.LookupTableOperation;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.NaturalCubicSpline;
+import org.boblycat.blimp.Util;
 
 class LevelsOperation extends LookupTableOperation {
     void setValues(double blackLevel, double center, double whiteLevel,
@@ -13,13 +14,13 @@ class LevelsOperation extends LookupTableOperation {
         int[] table = new int[size];
 
         // point 1: (black, 0)
-        // point 2: (black + 0.5*(white-black)*(1 + center), 0.5)
+        // point 2: (center, 0.5)
         // point 3: (white, 1)
-        double midLevel = blackLevel + 0.5 * (whiteLevel - blackLevel) *
-            (1 + center);
         NaturalCubicSpline spline = new NaturalCubicSpline();
         spline.addPoint(blackLevel, 0);
-        spline.addPoint(midLevel, 0.5);
+        // ignore the center value if it is not between black and white
+        if (center > blackLevel && center < whiteLevel)
+            spline.addPoint(center, 0.5);
         spline.addPoint(whiteLevel, 1);
         
         for (int i = 0; i < size; i++) {
@@ -45,7 +46,7 @@ public class LevelsLayer extends AdjustmentLayer {
     
     public LevelsLayer() {
         blackLevel = 0;
-        center = 0;
+        center = 0.5;
         whiteLevel = 1;
     }
 
@@ -63,7 +64,7 @@ public class LevelsLayer extends AdjustmentLayer {
     }
 
     public void setBlackLevel(double blackLevel) {
-        this.blackLevel = blackLevel;
+        this.blackLevel = Util.constrainedValue(blackLevel, 0, 1);
     }
 
     public double getBlackLevel() {
@@ -71,6 +72,8 @@ public class LevelsLayer extends AdjustmentLayer {
     }
 
     public void setCenter(double center) {
+        if (center <= 0 || center >= 1)
+            return;
         this.center = center;
     }
 
@@ -79,7 +82,7 @@ public class LevelsLayer extends AdjustmentLayer {
     }
 
     public void setWhiteLevel(double whiteLevel) {
-        this.whiteLevel = whiteLevel;
+        this.whiteLevel = Util.constrainedValue(whiteLevel, 0, 1);
     }
 
     public double getWhiteLevel() {

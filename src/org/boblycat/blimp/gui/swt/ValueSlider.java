@@ -25,6 +25,7 @@ public class ValueSlider extends Composite {
     int maximum;
     int selection;
     int digits;
+    double digitsDivisor;
 
     public ValueSlider(Composite parent, int style) {
         this(parent, style, null, -100, 100, 0);
@@ -36,7 +37,9 @@ public class ValueSlider extends Composite {
         this.minimum = minValue;
         this.maximum = maxValue;
         this.selection = 0;
-        this.digits = numDigits;
+        this.digits = 0;
+        this.digitsDivisor = 1.0;
+        setDigits(numDigits);
 
         captionLabel = new Label(this, SWT.NONE);
         if (caption != null)
@@ -172,13 +175,17 @@ public class ValueSlider extends Composite {
         if (digits < 0)
             return;
         this.digits = digits;
+        digitsDivisor = 1.0;
+        for (int i=0; i<digits; i++)
+            digitsDivisor *= 10.0;
     }
     
     public double getSelectionAsDouble() {
-        double result = getSelection();
-        for (int i=0; i<digits; i++)
-            result /= 10;
-        return result;
+        return getSelection() / digitsDivisor;
+    }
+    
+    public void setSelectionAsDouble(double newValue) {
+        setSelection((int) (newValue * digitsDivisor));
     }
     
     private void setAutoPageIncrement() {

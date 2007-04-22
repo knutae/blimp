@@ -116,6 +116,14 @@ public class SwtUtil {
         fillColorRect(gc, rect, 255, 255, 255);
     }
     
+    public static void drawColorLine(GC gc, int x1, int y1, int x2, int y2,
+            int red, int green, int blue) {
+        Color color = new Color(gc.getDevice(), red, green, blue);
+        gc.setForeground(color);
+        gc.drawLine(x1, y1, x2, y2);
+        color.dispose();
+    }
+    
     /**
      * Show a confirmation dialog asking the if it is okay to overwrite
      * the given file.

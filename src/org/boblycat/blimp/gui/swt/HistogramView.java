@@ -20,6 +20,7 @@ public class HistogramView extends Composite {
     Histogram1D allChannelsHistogram;
     Image histogramImage;
     Double blackLevel;
+    Double centerLevel;
     Double whiteLevel;
     
     public HistogramView(Composite parent, int style) {
@@ -61,8 +62,9 @@ public class HistogramView extends Composite {
         canvas.redraw();
     }
     
-    public void setLevels(double black, double white) {
+    public void setLevels(double black, double center, double white) {
         blackLevel = black;
+        centerLevel = center;
         whiteLevel = white;
         invalidateHistogramImage();
         canvas.redraw();
@@ -108,6 +110,10 @@ public class HistogramView extends Composite {
             gc.setBackground(black);
             gc.fillPath(path);
             path.dispose();
+        }
+        if (centerLevel != null) {
+            int x = (int) (centerLevel * width);
+            SwtUtil.drawColorLine(gc, x, 0, x, height-1, 100, 100, 255);
         }
         gc.dispose();
         black.dispose();

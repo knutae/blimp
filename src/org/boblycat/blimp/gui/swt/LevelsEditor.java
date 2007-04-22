@@ -13,8 +13,8 @@ import org.eclipse.swt.widgets.Listener;
 public class LevelsEditor extends LayerEditor {
     LevelsLayer levels;
     HistogramView histogramView;
-    ValueSlider blackPointSlider;
-    ValueSlider whitePointSlider;
+    ValueSlider blackSlider;
+    ValueSlider whiteSlider;
     ValueSlider centerSlider;
     
     public LevelsEditor(Composite parent, int style) {
@@ -27,41 +27,71 @@ public class LevelsEditor extends LayerEditor {
         gdata.widthHint = 300;
         gdata.heightHint = 120;
         histogramView.setLayoutData(gdata);
-        blackPointSlider = createSlider("Black Level", 0, 100);
-        whitePointSlider = createSlider("White Level", 0, 100);
-        centerSlider = createSlider("Center", -90, 90);
-    }
-    
-    ValueSlider createSlider(String caption, int min, int max) {
-        ValueSlider slider = new ValueSlider(this, SWT.NONE,
-                caption, min, max, 2);
-        GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-        slider.setLayoutData(data);
-        slider.addListener(SWT.Selection, new Listener() {
+        blackSlider = createSlider("Black Level");
+        whiteSlider = createSlider("White Level");
+        centerSlider = createSlider("Center");
+        
+        Listener blackAndWhiteListener = new Listener() {
             public void handleEvent(Event e) {
-                updateLayer();
+                if (levels == null)
+                    return;
+                // Update the center when changing black and white levels.
+                // this is done by the GUI, not the model.
+                double oldBlack = levels.getBlackLevel();
+                double oldWhite = levels.getWhiteLevel();
+                double oldCenter = levels.getCenter();
+                double centerRatio = (oldCenter - oldBlack)
+                    / (oldWhite - oldBlack);
+                double newBlack = blackSlider.getSelectionAsDouble();
+                double newWhite = whiteSlider.getSelectionAsDouble();
+                double newCenter = newBlack
+                    + (newWhite - newBlack) * centerRatio;
+                updateLevels(newBlack, newCenter, newWhite);
+                centerSlider.setSelectionAsDouble(newCenter);
+            }
+        };
+        blackSlider.addListener(SWT.Selection, blackAndWhiteListener);
+        whiteSlider.addListener(SWT.Selection, blackAndWhiteListener);
+        centerSlider.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event e) {
+                if (centerSlider.getSelection() <= blackSlider.getSelection() ||
+                        centerSlider.getSelection() >= whiteSlider.getSelection()) {
+                    e.doit = false;
+                    return;
+                }
+                updateLevels(blackSlider.getSelectionAsDouble(),
+                        centerSlider.getSelectionAsDouble(),
+                        whiteSlider.getSelectionAsDouble());
             }
         });
+    }
+    
+    ValueSlider createSlider(String caption) {
+        ValueSlider slider = new ValueSlider(this, SWT.NONE,
+                caption, 0, 1000, 3);
+        GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+        slider.setLayoutData(data);
         return slider;
     }
     
-    void updateLayer() {
+    private void updateLevels(double black, double center, double white) {
         if (levels == null)
             return;
-        levels.setBlackLevel(blackPointSlider.getSelectionAsDouble());
-        levels.setWhiteLevel(whitePointSlider.getSelectionAsDouble());
-        levels.setCenter(centerSlider.getSelectionAsDouble());
+        levels.setBlackLevel(black);
+        levels.setCenter(center);
+        levels.setWhiteLevel(white);
         levels.invalidate();
-        histogramView.setLevels(levels.getBlackLevel(), levels.getWhiteLevel());
+        histogramView.setLevels(black, center, white);
     }
     
-    void updateGui() {
+    private void updateGui() {
         if (levels == null)
             return;
-        blackPointSlider.setSelection((int) (levels.getBlackLevel() * 100.0));
-        whitePointSlider.setSelection((int) (levels.getWhiteLevel() * 100.0));
-        centerSlider.setSelection((int) (levels.getCenter() * 100.0));
-        histogramView.setLevels(levels.getBlackLevel(), levels.getWhiteLevel());
+        blackSlider.setSelectionAsDouble(levels.getBlackLevel());
+        whiteSlider.setSelectionAsDouble(levels.getWhiteLevel());
+        centerSlider.setSelectionAsDouble(levels.getCenter());
+        histogramView.setLevels(levels.getBlackLevel(), levels.getCenter(),
+                levels.getWhiteLevel());
     }
 
     @Override
