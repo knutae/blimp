@@ -5,39 +5,9 @@ import java.util.TreeMap;
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.NaturalCubicSpline;
 import org.boblycat.blimp.PointDouble;
+import org.boblycat.blimp.SplineOperation;
 
 import net.sourceforge.jiu.data.PixelImage;
-import net.sourceforge.jiu.ops.LookupTableOperation;
-import net.sourceforge.jiu.ops.MissingParameterException;
-import net.sourceforge.jiu.ops.WrongParameterException;
-
-class CurvesOperation extends LookupTableOperation {
-    int[] table;
-
-    void setSpline(NaturalCubicSpline spline, int bitDepth) {
-        assert (bitDepth == 8 || bitDepth == 16);
-        int size = 1 << bitDepth;
-        table = new int[size];
-        for (int i = 0; i < size; i++) {
-            double x = i / (double) (size - 1);
-            double y = spline.getSplineValue(x);
-            int iy = (int) (y * (size - 1));
-            if (iy < 0)
-                iy = 0;
-            else if (iy >= size)
-                iy = size - 1;
-            assert (iy >= 0 && iy < size);
-            // System.out.println("" + i + " --> " + intY);
-            table[i] = iy;
-        }
-    }
-
-    public void process() throws MissingParameterException,
-            WrongParameterException {
-        setTables(table);
-        super.process();
-    }
-}
 
 public class CurvesLayer extends AdjustmentLayer {
     NaturalCubicSpline spline;
@@ -49,8 +19,8 @@ public class CurvesLayer extends AdjustmentLayer {
     }
 
     public Bitmap applyLayer(Bitmap source) {
-        CurvesOperation curvesOp = new CurvesOperation();
-        curvesOp.setSpline(spline, source.getChannelBitDepth());
+        SplineOperation curvesOp = new SplineOperation();
+        curvesOp.setTablesFromSpline(spline, source.getChannelBitDepth());
         PixelImage image = source.getImage();
         image = applyJiuOperation(image, curvesOp);
         return new Bitmap(image);
