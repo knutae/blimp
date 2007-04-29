@@ -27,10 +27,6 @@ public class ResizeLayer extends AdjustmentLayer {
     int maxSize;
 
     // double radius; // TODO: add this
-    Bitmap lastInput;
-
-    Bitmap lastOutput;
-
     public ResizeLayer() {
         resampleFilter = DEFAULT_FILTER;
         maxSize = DEFAULT_SIZE;
@@ -38,9 +34,6 @@ public class ResizeLayer extends AdjustmentLayer {
 
     @Override
     public Bitmap applyLayer(Bitmap source) {
-        if (lastInput == source)
-            // return cached value
-            return lastOutput;
         PixelImage input = source.getImage();
         Resample resampleOp = new Resample();
         resampleOp.setFilter(resampleFilter.getType());
@@ -54,17 +47,10 @@ public class ResizeLayer extends AdjustmentLayer {
             width = maxSize * input.getWidth() / input.getHeight();
         }
         resampleOp.setSize(width, height);
-        lastInput = source;
-        lastOutput = new Bitmap(applyJiuOperation(input, resampleOp));
+        Bitmap bitmap = new Bitmap(applyJiuOperation(input, resampleOp));
         double scaleFactor = source.getWidth() / (double) width;
-        lastOutput.setPixelScaleFactor(source.getPixelScaleFactor()
-                * scaleFactor);
-        return lastOutput;
-    }
-
-    void invalidateCache() {
-        lastInput = null;
-        lastOutput = null;
+        bitmap.setPixelScaleFactor(source.getPixelScaleFactor() * scaleFactor);
+        return bitmap;
     }
 
     @Override
@@ -75,10 +61,7 @@ public class ResizeLayer extends AdjustmentLayer {
     public void setResampleFilter(Filter resampleFilter) {
         if (resampleFilter == null)
             resampleFilter = DEFAULT_FILTER;
-        if (this.resampleFilter == resampleFilter)
-            return;
         this.resampleFilter = resampleFilter;
-        invalidateCache();
     }
 
     public Filter getResampleFilter() {
@@ -86,10 +69,7 @@ public class ResizeLayer extends AdjustmentLayer {
     }
 
     public void setMaxSize(int maxPixelSize) {
-        if (this.maxSize == maxPixelSize)
-            return;
         this.maxSize = maxPixelSize;
-        invalidateCache();
     }
 
     public int getMaxSize() {

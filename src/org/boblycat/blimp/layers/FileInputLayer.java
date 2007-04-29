@@ -1,41 +1,37 @@
 package org.boblycat.blimp.layers;
 
+import java.io.IOException;
+
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.Util;
 
+import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.gui.awt.ToolkitLoader;
 
 public class FileInputLayer extends InputLayer {
-    Bitmap bitmap;
     String filePath;
 
     public FileInputLayer() {
-        bitmap = null;
         filePath = null;
     }
 
     public FileInputLayer(String filePath) {
-        bitmap = null;
         setFilePath(filePath);
     }
 
     public void setFilePath(String path) {
-        if (filePath != null && filePath.equals(path))
-            return;
         filePath = path;
-        bitmap = null;
     }
 
     public String getFilePath() {
         return filePath;
     }
 
-    public Bitmap getBitmap() {
-        if (bitmap == null && filePath != null) {
-            bitmap = new Bitmap();
-            bitmap.setImage(ToolkitLoader.loadViaToolkitOrCodecs(filePath));
-        }
-        return bitmap;
+    public Bitmap getBitmap() throws IOException {
+        PixelImage image = ToolkitLoader.loadViaToolkitOrCodecs(filePath);
+        if (image == null)
+            throw new IOException("Failed to load image from " + filePath);
+        return new Bitmap(image);
     }
 
     public String getDescription() {

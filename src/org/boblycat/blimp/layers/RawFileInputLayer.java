@@ -40,7 +40,6 @@ public class RawFileInputLayer extends InputLayer {
     private static ColorDepth DEFAULT_COLOR_DEPTH = ColorDepth.Depth16Bit;
     private static String dcrawPath = null;
     
-    Bitmap bitmap;
     String filePath;
     ColorDepth colorDepth;
     ColorSpace colorSpace;
@@ -122,10 +121,7 @@ public class RawFileInputLayer extends InputLayer {
     }
 
     public void setFilePath(String filePath) {
-        if (filePath != null && filePath.equals(this.filePath))
-            return;
         this.filePath = filePath;
-        bitmap = null;
     }
 
     public String getFilePath() {
@@ -133,10 +129,7 @@ public class RawFileInputLayer extends InputLayer {
     }
 
     public void setColorDepth(ColorDepth depth) {
-        if (depth == colorDepth)
-            return;
         colorDepth = depth;
-        bitmap = null;
     }
 
     public ColorDepth getColorDepth() {
@@ -146,10 +139,7 @@ public class RawFileInputLayer extends InputLayer {
     }
     
     public void setQuality(Quality q) {
-        if (q == null || q == quality)
-            return;
         quality = q;
-        bitmap = null;
     }
     
     public Quality getQuality() {
@@ -176,9 +166,9 @@ public class RawFileInputLayer extends InputLayer {
         }
     }
 
-    public void load() throws IOException {
+    public Bitmap load() throws IOException {
         if (!isActive())
-            return;
+            return null;
         try {
             Vector<String> commandLine = new Vector<String>();
             commandLine.add(dcrawExecutable());
@@ -245,12 +235,12 @@ public class RawFileInputLayer extends InputLayer {
                         .getInputStream()));
                 codec.process();
                 // System.out.println(codec.getImage().getClass());
-                Bitmap tmpBitmap = new Bitmap();
-                tmpBitmap.setImage(codec.getImage());
+                Bitmap bitmap = new Bitmap();
+                bitmap.setImage(codec.getImage());
                 if (quality == Quality.HalfSize)
                     // compensate for half-size performed by dcraw 
-                    tmpBitmap.setPixelScaleFactor(2);
-                bitmap = tmpBitmap;
+                    bitmap.setPixelScaleFactor(2);
+                return bitmap;
             }
             finally {
                 process.destroy();
@@ -265,9 +255,7 @@ public class RawFileInputLayer extends InputLayer {
     }
 
     public Bitmap getBitmap() throws IOException {
-        if (bitmap == null)
-            load();
-        return bitmap;
+        return load();
     }
 
     public String getDescription() {
@@ -281,10 +269,7 @@ public class RawFileInputLayer extends InputLayer {
     public void setColorSpace(ColorSpace colorSpace) {
         if (colorSpace == null)
             colorSpace = ColorSpace.sRGB;
-        if (colorSpace == this.colorSpace)
-            return;
         this.colorSpace = colorSpace;
-        bitmap = null;
     }
 
     public ColorSpace getColorSpace() {
@@ -292,10 +277,7 @@ public class RawFileInputLayer extends InputLayer {
     }
 
     public void setWhiteBalance(WhiteBalance whiteBalance) {
-        if (whiteBalance == null || whiteBalance == this.whiteBalance)
-            return;
         this.whiteBalance = whiteBalance;
-        bitmap = null;
     }
 
     public WhiteBalance getWhiteBalance() {
@@ -316,7 +298,6 @@ public class RawFileInputLayer extends InputLayer {
                 || Arrays.equals(newWhiteBalance, rawWhiteBalance))
             return;
         rawWhiteBalance = newWhiteBalance;
-        bitmap = null;
     }
 
     public double[] getRawWhiteBalance() {
