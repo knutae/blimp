@@ -20,4 +20,13 @@ public abstract class LayerEditor extends Composite {
     }
     
     protected abstract void layerChanged();
+    
+    /**
+     * This function decides if the layer editor will enable previewing
+     * while editing by default.
+     * @return <code>true</code> by default, override to change the behaviour. 
+     */
+    public boolean previewByDefault() {
+        return true;
+    }
 }

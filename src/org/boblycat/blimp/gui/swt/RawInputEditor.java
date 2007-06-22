@@ -98,6 +98,7 @@ public class RawInputEditor extends LayerEditor {
         else
             Util.err("No white balance selected?");
         
+        input.invalidate();
     }
 
     protected void layerChanged() {
@@ -122,5 +123,10 @@ public class RawInputEditor extends LayerEditor {
             radioWBCamera.setSelection(true);
         else if (wb == WhiteBalance.Auto)
             radioWBAuto.setSelection(true);
+    }
+    
+    @Override
+    public boolean previewByDefault() {
+        return false;
     }
 }

@@ -10,6 +10,7 @@ import org.boblycat.blimp.layers.LevelsLayer;
 import org.boblycat.blimp.layers.LocalContrastLayer;
 import org.boblycat.blimp.layers.OrientationLayer;
 import org.boblycat.blimp.layers.RawFileInputLayer;
+import org.boblycat.blimp.layers.ResizeLayer;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -38,6 +39,7 @@ public class LayersView extends SashForm {
             if (!editorRegistry.showEditorDialog(copy)) {
                 // no editor shown: re-enable autoRecord at once
                 copy.session.endDisableAutoRecord();
+                refresh(); // setActive() may have been called 
             }
         }
     }
@@ -152,6 +154,7 @@ public class LayersView extends SashForm {
             public void handleEvent(Event e) {
                 if (selectedLayerIndex < 0)
                     return;
+                editorEnvironment.layerWasJustAdded = false;
                 editorEnvironment.layer = getSession().getLayer(selectedLayerIndex);
                 openLayerEditor(editorEnvironment, new LayerEditorCallback() {
                     public void editingFinished(Layer layer, boolean cancelled) {
@@ -187,6 +190,7 @@ public class LayersView extends SashForm {
         editorRegistry.register(LocalContrastLayer.class, LocalContrastEditor.class);
         editorRegistry.register(LevelsLayer.class, LevelsEditor.class);
         editorRegistry.register(OrientationLayer.class, OrientationEditor.class);
+        editorRegistry.register(ResizeLayer.class, ResizeEditor.class);
     }
     
     private int layerIndexOfItem(TableItem item) {

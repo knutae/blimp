@@ -18,25 +18,38 @@ public class LayerEditorRegistry {
     class Entry {
         Class<? extends LayerEditor> editorClass;
         Constructor<? extends LayerEditor> editorConstructor;
-        Layer editedLayer;
-        Layer layerClone;
+        Layer originalClone;
+        Layer workingClone;
+        Layer actualLayer;
         Shell dialog;
-        LayerEditorCallback callback;
+        LayerEditorEnvironment env;
+        Button previewCheckButton;
+        LayerEditor editor;
 
         Entry(Class<? extends LayerEditor> editorClass) {
             this.editorClass = editorClass;
             editorConstructor = getConstructor(editorClass);
         }
+        
+        Layer editedLayer() {
+            if (previewEnabled())
+                return actualLayer;
+            else
+                return workingClone;
+        }
+        
+        boolean previewEnabled() {
+            return previewCheckButton.getSelection();
+        }
 
-        void showDialog(LayerEditorEnvironment env) {
-            callback = env.editorCallback;
-            Layer layer = env.layer;
+        void showDialog(LayerEditorEnvironment environment) {
+            env = environment;
             dialog = new Shell(parentShell, SWT.APPLICATION_MODAL
                     | SWT.DIALOG_TRIM);
             dialog.setLayout(new GridLayout());
-            dialog.setText(layer.getDescription());
+            dialog.setText(env.layer.getDescription());
             Object args[] = { dialog, new Integer(SWT.NONE) };
-            LayerEditor editor = null;
+            editor = null;
             try {
                 editor = editorConstructor.newInstance(args);
             }
@@ -45,11 +58,40 @@ public class LayerEditorRegistry {
                         + e.getMessage());
                 return;
             }
-            editedLayer = layer;
-            layerClone = (Layer) layer.clone();
+            actualLayer = env.layer;
+            originalClone = (Layer) actualLayer.clone();
+            workingClone = (Layer) actualLayer.clone();
+            
+            previewCheckButton = new Button(dialog, SWT.CHECK);
+            previewCheckButton.setText("Preview");
+            previewCheckButton.setSelection(editor.previewByDefault());
+            previewCheckButton.addListener(SWT.Selection, new Listener() {
+                public void handleEvent(Event e) {
+                    if (previewEnabled()) {
+                        // apply working changes to actual layer
+                        Serializer.copyBeanData(workingClone, actualLayer);
+                        if (env.layerWasJustAdded)
+                            actualLayer.setActive(true);
+                    }
+                    else {
+                        // update the working clone and revert the actual layer
+                        Serializer.copyBeanData(actualLayer, workingClone);
+                        Serializer.copyBeanData(originalClone, actualLayer);
+                        if (env.layerWasJustAdded)
+                            actualLayer.setActive(false);
+                    }
+                    editor.setLayer(editedLayer());
+                    actualLayer.invalidate();
+                }
+            });
+
             editor.session = env.session;
             editor.workerThread = env.workerThread;
-            editor.setLayer(layer);
+            editor.setLayer(editedLayer());
+            if (env.layerWasJustAdded && previewEnabled()) {
+                actualLayer.setActive(true);
+                actualLayer.invalidate();
+            }
 
             Composite buttonRow = new Composite(dialog, SWT.NONE);
             buttonRow.setLayout(new FillLayout());
@@ -57,11 +99,12 @@ public class LayerEditorRegistry {
             button.setText("Ok");
             button.addListener(SWT.Selection, new Listener() {
                 public void handleEvent(Event e) {
-                    editedLayer.setActive(true); // quick hack for raw input
-                    editedLayer.triggerChangeEvent();
-                    closeDialog();
-                    if (callback != null)
-                        callback.editingFinished(editedLayer, false);
+                    if (editedLayer() != actualLayer)
+                        Serializer.copyBeanData(editedLayer(), actualLayer);
+                    if (env.layerWasJustAdded)
+                        actualLayer.setActive(true);
+                    actualLayer.invalidate();
+                    editingFinished(false);
                 }
             });
             button = new Button(buttonRow, SWT.NONE);
@@ -69,20 +112,21 @@ public class LayerEditorRegistry {
             button.addListener(SWT.Selection, new Listener() {
                 public void handleEvent(Event e) {
                     // revert layer changes
-                    Serializer.copyBeanData(layerClone, editedLayer);
-                    closeDialog();
-                    if (callback != null)
-                        callback.editingFinished(editedLayer, true);
+                    Serializer.copyBeanData(originalClone, actualLayer);
+                    editingFinished(true);
                 }
             });
 
             dialog.pack();
             dialog.open();
         }
-
-        void closeDialog() {
+        
+        void editingFinished(boolean cancelled) {
             dialog.close();
             dialog = null;
+            env.layerWasJustAdded = false;
+            if (env.editorCallback != null)
+                env.editorCallback.editingFinished(actualLayer, cancelled);
         }
     }
 
@@ -120,8 +164,13 @@ public class LayerEditorRegistry {
     public boolean showEditorDialog(LayerEditorEnvironment env) {
         assert(env.layer != null);
         Entry entry = registry.get(env.layer.getClass().getName());
-        if (entry == null)
+        if (entry == null) {
+            if (env.layerWasJustAdded) {
+                env.layer.setActive(true);
+                env.layer.invalidate();
+            }
             return false;
+        }
         entry.showDialog(env);
         return true;
     }

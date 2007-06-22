@@ -14,6 +14,7 @@ public class LayerEditorEnvironment {
     public ImageWorkerThread workerThread;
     public HistoryBlimpSession session;
     public Layer layer;
+    public boolean layerWasJustAdded;
     
     public LayerEditorEnvironment clone() {
         LayerEditorEnvironment env = new LayerEditorEnvironment();
@@ -21,6 +22,7 @@ public class LayerEditorEnvironment {
         env.workerThread = workerThread;
         env.session = session;
         env.layer = layer;
+        env.layerWasJustAdded = layerWasJustAdded;
         return env;
     }
 }

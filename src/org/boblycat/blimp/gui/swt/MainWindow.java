@@ -32,6 +32,7 @@ class ImageTab {
         LayerEditorEnvironment env = new LayerEditorEnvironment();
         env.session = getSession();
         env.workerThread = imageView.workerThread;
+        env.layerWasJustAdded = true;
         return env;
     }
     
@@ -488,7 +489,7 @@ public class MainWindow {
                 }
             }
         });
-        imageView.invalidateImage();
+        imageView.invalidateImage(); // TODO: is this needed at all?
     }
 
     void doMenuExit() {
@@ -621,6 +622,8 @@ public class MainWindow {
         HistoryBlimpSession session = tab.getSession();
         session.beginDisableAutoRecord();
         try {
+            // New layers are always inactive initially
+            layer.setActive(false);
             session.addLayer(layer);
             tab.imageView.invalidateImage();
             showLayerEditor(layer, new LayerEditorCallback() {
@@ -629,9 +632,8 @@ public class MainWindow {
                         BlimpSession session = currentImageTab.imageView
                                 .getSession();
                         session.removeLayer(layer);
-                        layers.refresh();
                     }
-
+                    layers.refresh();
                 }
             });
         }
