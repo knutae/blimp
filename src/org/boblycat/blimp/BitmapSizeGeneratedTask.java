@@ -9,19 +9,15 @@ package org.boblycat.blimp;
  * @author Knut Arild Erstad
  */
 public abstract class BitmapSizeGeneratedTask implements Runnable {
-    private int width;
-    private int height;
+    private BitmapSize size;
     
     public void setSize(BitmapSize size) {
-        if (size == null)
-            return;
-        width = size.width;
-        height = size.height;
+        this.size = size;
     }
     
     public void run() {
-        handleSize(width, height);
+        handleSize(size);
     }
 
-    protected abstract void handleSize(int width, int height);
+    protected abstract void handleSize(BitmapSize size);
 }

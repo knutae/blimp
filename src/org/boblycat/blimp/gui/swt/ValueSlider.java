@@ -126,8 +126,8 @@ public class ValueSlider extends Composite {
         captionLabel.setText(caption);
     }
 
-    public void setMinimum(int minumum) {
-        this.minimum = minumum;
+    public void setMinimum(int minimum) {
+        this.minimum = minimum;
     }
 
     public int getMinimum() {
@@ -140,6 +140,14 @@ public class ValueSlider extends Composite {
 
     public int getMaximum() {
         return maximum;
+    }
+    
+    public void updateMinMax(int minimum, int maximum) {
+        if (minimum > maximum)
+            throw new IllegalArgumentException("minimum > maximum");
+        setMinimum(minimum);
+        setMaximum(maximum);
+        updateRange();
     }
 
     void setSelectionNoUpdate(int selection, boolean sendSelectionEvent) {

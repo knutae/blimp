@@ -33,6 +33,10 @@ public class ViewResizeLayer extends DimensionAdjustmentLayer {
             else {
                 targetHeight = targetWidth * sourceHeight / sourceWidth;
             }
+            if (targetWidth <= 0)
+                targetWidth = 1;
+            if (targetHeight <= 0)
+                targetHeight = 1;
             resize.setSize(targetWidth, targetHeight);
             if (targetWidth == sourceWidth && targetHeight == sourceHeight)
                 // optimize by returning the source

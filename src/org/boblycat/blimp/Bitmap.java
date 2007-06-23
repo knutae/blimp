@@ -42,7 +42,8 @@ public class Bitmap {
     public BitmapSize getSize() {
         if (image == null)
             return null;
-        return new BitmapSize(image.getWidth(), image.getHeight());
+        return new BitmapSize(image.getWidth(), image.getHeight(),
+                pixelScaleFactor);
     }
 
     public int getChannelBitDepth() {

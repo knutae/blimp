@@ -1,16 +1,7 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.*;
-import org.boblycat.blimp.layers.BrightnessContrastLayer;
-import org.boblycat.blimp.layers.CurvesLayer;
-import org.boblycat.blimp.layers.GammaLayer;
-import org.boblycat.blimp.layers.GrayscaleMixerLayer;
 import org.boblycat.blimp.layers.Layer;
-import org.boblycat.blimp.layers.LevelsLayer;
-import org.boblycat.blimp.layers.LocalContrastLayer;
-import org.boblycat.blimp.layers.OrientationLayer;
-import org.boblycat.blimp.layers.RawFileInputLayer;
-import org.boblycat.blimp.layers.ResizeLayer;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -169,28 +160,13 @@ public class LayersView extends SashForm {
 
         propertyEditor = new LayerPropertyEditor(this);
 
-        createEditorRegistry();
+        editorRegistry = new DefaultEditorRegistry(getShell());
     }
     
     private HistoryBlimpSession getSession() {
         if (editorEnvironment == null)
             return null;
         return editorEnvironment.session;
-    }
-    
-    private void createEditorRegistry() {
-        editorRegistry = new LayerEditorRegistry(getShell());
-        editorRegistry.register(BrightnessContrastLayer.class,
-                BrightnessContrastEditor.class);
-        editorRegistry.register(CurvesLayer.class, CurvesEditor.class);
-        editorRegistry.register(RawFileInputLayer.class, RawInputEditor.class);
-        editorRegistry.register(GammaLayer.class, GammaEditor.class);
-        editorRegistry.register(GrayscaleMixerLayer.class,
-                GrayscaleMixerEditor.class);
-        editorRegistry.register(LocalContrastLayer.class, LocalContrastEditor.class);
-        editorRegistry.register(LevelsLayer.class, LevelsEditor.class);
-        editorRegistry.register(OrientationLayer.class, OrientationEditor.class);
-        editorRegistry.register(ResizeLayer.class, ResizeEditor.class);
     }
     
     private int layerIndexOfItem(TableItem item) {

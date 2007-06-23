@@ -112,8 +112,8 @@ public class ResizeEditor extends LayerEditor {
             setEnabled(false);
             workerThread.asyncGenerateBitmapSize(session, resizeLayer.getName(),
                     new BitmapSizeGeneratedTask() {
-                public void handleSize(int width, int height) {
-                    initLayerSize(width, height);
+                public void handleSize(BitmapSize size) {
+                    initLayerSize(size.width, size.height);
                 }
             });
         }
