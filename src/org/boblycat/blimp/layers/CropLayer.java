@@ -1,8 +1,8 @@
 package org.boblycat.blimp.layers;
 
 import net.sourceforge.jiu.geometry.Crop;
+
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.BitmapSize;
 import org.boblycat.blimp.Util;
 
 /**
