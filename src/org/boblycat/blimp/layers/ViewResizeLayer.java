@@ -9,7 +9,7 @@ import net.sourceforge.jiu.geometry.ScaleReplication;
  * 
  * @author Knut Arild Erstad
  */
-public class ViewResizeLayer extends AdjustmentLayer {
+public class ViewResizeLayer extends DimensionAdjustmentLayer {
     int width, height;
     boolean keepAspect;
 

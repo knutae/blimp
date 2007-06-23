@@ -38,6 +38,12 @@ public class Bitmap {
             return -1;
         return image.getHeight();
     }
+    
+    public BitmapSize getSize() {
+        if (image == null)
+            return null;
+        return new BitmapSize(image.getWidth(), image.getHeight());
+    }
 
     public int getChannelBitDepth() {
         if (image == null)

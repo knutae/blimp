@@ -64,10 +64,11 @@ class SwtImageWorkerThread extends ImageWorkerThread {
             display.asyncExec(runnable);
     }
     
-    protected void histogramGenerated(HistogramGeneratedTask task) {
+    @Override
+    protected void asyncExec(Runnable runnable) {
         if (isFinished() || display.isDisposed())
             return;
-        display.asyncExec(task);
+        display.asyncExec(runnable);
     }
     
     protected void progressReported(ProgressEvent event) {

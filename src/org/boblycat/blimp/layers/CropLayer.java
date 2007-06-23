@@ -2,6 +2,7 @@ package org.boblycat.blimp.layers;
 
 import net.sourceforge.jiu.geometry.Crop;
 import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.BitmapSize;
 import org.boblycat.blimp.Util;
 
 /**
@@ -13,7 +14,7 @@ import org.boblycat.blimp.Util;
  *
  * @author Knut Arild Erstad
  */
-public class CropLayer extends AdjustmentLayer {
+public class CropLayer extends DimensionAdjustmentLayer {
     int left, right, top, bottom;
 
     @Override

@@ -178,4 +178,24 @@ public class Util {
         else
             return filename.substring(0, lastDotPos) + suffix;
     }
+    
+    /**
+     * Perform an integer division which rounds the answer to the closest
+     * whole number.
+     * Note: currently only implemented propertly for positive integers.
+     * @param dividend
+     *      the number to divide, which must be larger or equal to zero.
+     * @param divisor
+     *      the divisor, which must be larger than zero.
+     * @return
+     *      the integer closest to the mathematical divison, rounded up
+     *      if the result is exactly between two integers.
+     */
+    public static int roundDiv(int dividend, int divisor) {
+        int div = dividend / divisor;
+        int mod = dividend % divisor;
+        if (mod * 2 >= divisor)
+            div++;
+        return div;
+    }
 }

@@ -15,6 +15,7 @@ public abstract class ImageWorkerThread extends Thread {
     enum RequestType {
         GENERATE_BITMAP,
         GENERATE_HISTOGRAM,
+        GENERATE_SIZE,
         ZOOM_IN,
         ZOOM_OUT,
         QUIT,
@@ -26,6 +27,7 @@ public abstract class ImageWorkerThread extends Thread {
         BlimpSession sessionCopy;
         String layerName;
         HistogramGeneratedTask histogramTask;
+        BitmapSizeGeneratedTask sizeTask;
         int viewWidth;
         int viewHeight;
 
@@ -61,7 +63,7 @@ public abstract class ImageWorkerThread extends Thread {
     }
     
     /**
-     * This function is called *on the worker thread* when a bitmap has been
+     * This function is called <i>on the worker thread</i> when a bitmap has been
      * generated.  It is up to subclasses how to handle this, but in general,
      * the bitmap should be converted (if needed), and then the runnable object
      * should be executed on the main/GUI thread.
@@ -71,7 +73,7 @@ public abstract class ImageWorkerThread extends Thread {
      */
     protected abstract void bitmapGenerated(Runnable runnable, Bitmap bitmap);
     
-    protected abstract void histogramGenerated(HistogramGeneratedTask task);
+    protected abstract void asyncExec(Runnable runnable);
     
     protected abstract void progressReported(ProgressEvent event);
     
@@ -108,7 +110,17 @@ public abstract class ImageWorkerThread extends Thread {
                 // Note: the following should work without synchronization problems,
                 // because the histogram task is only used by one thread at a time.
                 req.histogramTask.setHistogram(histogram);
-                histogramGenerated(req.histogramTask);
+                asyncExec(req.histogramTask);
+                break;
+            case GENERATE_SIZE:
+                assert(req.sizeTask != null && req.layerName != null);
+                debugPrint("generating size for layer " + req.layerName);
+                BitmapSize size = session.getBitmapSizeBeforeLayer(req.layerName);
+                debugPrint("finished generating size");
+                if (size == null)
+                    Util.err("Failed to get size for layer " + req.layerName);
+                req.sizeTask.setSize(size);
+                asyncExec(req.sizeTask);
                 break;
             case ZOOM_IN:
                 session.zoomIn();
@@ -185,6 +197,15 @@ public abstract class ImageWorkerThread extends Thread {
             HistogramGeneratedTask task) {
         Request req = new Request(RequestType.GENERATE_HISTOGRAM);
         req.histogramTask = task;
+        req.layerName = layerName;
+        req.sessionCopy = BlimpSession.createCopy(session);
+        putRequest(req);
+    }
+    
+    public void asyncGenerateBitmapSize(BlimpSession session, String layerName,
+            BitmapSizeGeneratedTask task) {
+        Request req = new Request(RequestType.GENERATE_SIZE);
+        req.sizeTask = task;
         req.layerName = layerName;
         req.sessionCopy = BlimpSession.createCopy(session);
         putRequest(req);

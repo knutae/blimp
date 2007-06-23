@@ -199,4 +199,12 @@ public class ValueSlider extends Composite {
     public int getDigits() {
         return digits;
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        captionLabel.setEnabled(enabled);
+        valueEdit.setEnabled(enabled);
+        scale.setEnabled(enabled);
+    }
 }

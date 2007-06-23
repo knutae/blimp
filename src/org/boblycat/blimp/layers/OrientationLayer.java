@@ -9,7 +9,7 @@ import net.sourceforge.jiu.geometry.Rotate90Right;
 
 import org.boblycat.blimp.Bitmap;
 
-public class OrientationLayer extends AdjustmentLayer {
+public class OrientationLayer extends DimensionAdjustmentLayer {
     public enum Rotation {
         None,
         Rotate90Left,

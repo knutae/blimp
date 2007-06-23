@@ -1,11 +1,13 @@
 package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.BitmapSize;
+import org.boblycat.blimp.Util;
 
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.geometry.Resample;
 
-public class ResizeLayer extends AdjustmentLayer {
+public class ResizeLayer extends DimensionAdjustmentLayer {
     public enum Filter {
         BSpline  { int getType() { return Resample.FILTER_TYPE_B_SPLINE; } },
         Bell     { int getType() { return Resample.FILTER_TYPE_BELL; } },
@@ -31,24 +33,29 @@ public class ResizeLayer extends AdjustmentLayer {
         resampleFilter = DEFAULT_FILTER;
         maxSize = DEFAULT_SIZE;
     }
+    
+    public BitmapSize calculateNewSize(int inputWidth, int inputHeight) {
+        int width, height;
+        if (inputWidth > inputHeight) {
+            width = maxSize;
+            height = Util.roundDiv(maxSize * inputHeight, inputWidth);
+        }
+        else {
+            height = maxSize;
+            width = Util.roundDiv(maxSize * inputWidth, inputHeight);
+        }
+        return new BitmapSize(width, height);
+    }
 
     @Override
     public Bitmap applyLayer(Bitmap source) {
         PixelImage input = source.getImage();
         Resample resampleOp = new Resample();
         resampleOp.setFilter(resampleFilter.getType());
-        int width, height;
-        if (input.getWidth() > input.getHeight()) {
-            width = maxSize;
-            height = maxSize * input.getHeight() / input.getWidth();
-        }
-        else {
-            height = maxSize;
-            width = maxSize * input.getWidth() / input.getHeight();
-        }
-        resampleOp.setSize(width, height);
+        BitmapSize newSize = calculateNewSize(input.getWidth(), input.getHeight());
+        resampleOp.setSize(newSize.width, newSize.height);
         Bitmap bitmap = new Bitmap(applyJiuOperation(input, resampleOp));
-        double scaleFactor = source.getWidth() / (double) width;
+        double scaleFactor = source.getWidth() / (double) newSize.width;
         bitmap.setPixelScaleFactor(source.getPixelScaleFactor() * scaleFactor);
         return bitmap;
     }

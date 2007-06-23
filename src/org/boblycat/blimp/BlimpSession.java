@@ -6,11 +6,9 @@ import java.io.IOException;
 import java.util.Vector;
 
 import org.boblycat.blimp.layers.AdjustmentLayer;
-import org.boblycat.blimp.layers.CropLayer;
+import org.boblycat.blimp.layers.DimensionAdjustmentLayer;
 import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.Layer;
-import org.boblycat.blimp.layers.OrientationLayer;
-import org.boblycat.blimp.layers.ResizeLayer;
 import org.boblycat.blimp.layers.ViewResizeLayer;
 
 class ViewportInfo {
@@ -153,8 +151,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     Vector<AdjustmentLayer> getMovableLayers() {
         Vector<AdjustmentLayer> layers = new Vector<AdjustmentLayer>();
         for (Layer layer: layerList) {
-            if (layer instanceof CropLayer || layer instanceof ResizeLayer
-                    || layer instanceof OrientationLayer)
+            if (layer instanceof DimensionAdjustmentLayer)
                 layers.add((AdjustmentLayer) layer);
         }
         return layers;
@@ -178,7 +175,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         }
         return bm;
     }
-
+    
     private Bitmap internalGenerateBitmapBeforeLayer(String layerName,
             boolean useViewport) throws IOException {
         Bitmap bm = getInputBitmap();
@@ -186,9 +183,17 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             return null;
         InputLayer input = getInput();
         assert(input != null);
+        
+        if (layerName != null && layerName.equals(input.getName()))
+            // impossible to get a bitmap before the input layer
+            return null;
 
         // TODO: let a view quality setting decide when/how to resize
         Vector<AdjustmentLayer> movableLayers = getMovableLayers();
+        if (layerName != null && findLayerInList(layerName, movableLayers) != null)
+            // cannot use movable layers in this case
+            movableLayers.clear();
+        
         for (AdjustmentLayer layer: movableLayers)
             if (layer.isActive())
                 bm = applyLayer(bm, layer);
@@ -197,6 +202,8 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             bm = applyViewport(bm);
 
         for (Layer layer : layerList) {
+            if (layerName != null && layerName.equals(layer.getName()))
+                return bm;
             if (layer == input || movableLayers.contains(layer))
                 continue;
             if (layer instanceof InputLayer) {
@@ -208,8 +215,6 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
                             + layer.getDescription());
                     continue;
                 }
-                if (layerName != null && layerName.equals(layer.getName()))
-                    return bm;
                 AdjustmentLayer adjust = (AdjustmentLayer) layer;
                 bm = applyLayer(bm, adjust);
             }
@@ -253,6 +258,41 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             bm = BitmapUtil.create8BitCopy(bm);
         return new Histogram(bm);
     }
+    
+    /**
+     * Returns the size of the bitmap before the specified adjustment layer.
+     * The viewport size will not be applied.
+     * 
+     * @param layerName
+     *      a layer name.
+     * @return
+     *      a bitmap size, or <code>null</code> if the layer did not exist.
+     * @throws IOException
+     *      if an I/O error occued when processing the input layer.
+     */
+    public BitmapSize getBitmapSizeBeforeLayer(String layerName)
+    throws IOException {
+        InputLayer input = getInput();
+        if (input == null || input.getName().equals(layerName))
+            return null;
+        Bitmap bm = inputBitmap(input);
+        if (bm == null)
+            return null;
+        for (Layer layer: layerList) {
+            if (layerName != null && layerName.equals(layer.getName()))
+                return bm.getSize();
+            if (layer instanceof DimensionAdjustmentLayer) {
+                bm = applyLayer(bm, (AdjustmentLayer) layer);
+                if (bm == null)
+                    return null;
+            }
+        }
+        if (layerName == null)
+            return bm.getSize();
+        else
+            return null;
+    }
+    
     
     /**
      * Copy session data from the other session.  The implementation will attempt
@@ -348,12 +388,17 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return layerList.size();
     }
     
-    public Layer findLayer(String name) {
-        for (Layer layer: layerList) {
+    private static Layer findLayerInList(String name,
+            Vector<? extends Layer> layers) {
+        for (Layer layer: layers) {
             if (layer.getName().equals(name))
                 return layer;
         }
         return null;
+    }
+    
+    public Layer findLayer(String name) {
+        return findLayerInList(name, layerList);
     }
     
     private void uniqifyLayerName(Layer layer) {
