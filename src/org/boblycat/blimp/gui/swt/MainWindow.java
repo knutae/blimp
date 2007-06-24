@@ -518,6 +518,8 @@ public class MainWindow {
         try {
             Serializer.saveBeanToFile(session, filename);
             session.recordSaved();
+            session.setNameFromFilename(filename);
+            currentImageTab.item.setText(session.getName());
             status("Project saved to " + filename);
             //SwtUtil.messageDialog(shell, "Project Saved",
             //        "The project was saved:\n" + filename, SWT.ICON_INFORMATION);
