@@ -22,10 +22,10 @@ public class CropEditor extends LayerEditor {
         super(parent, style);
         setLayout(new GridLayout());
         
-        leftSlider = createSlider("Left");
-        rightSlider = createSlider("Right");
-        topSlider = createSlider("Top");
-        bottomSlider = createSlider("Bottom");
+        leftSlider = createSlider("Left", false);
+        rightSlider = createSlider("Right", true);
+        topSlider = createSlider("Top", false);
+        bottomSlider = createSlider("Bottom", true);
 
         leftSlider.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
@@ -62,15 +62,9 @@ public class CropEditor extends LayerEditor {
         updateLayer();
     }
     
-    ValueSlider createSlider(String caption) {
+    ValueSlider createSlider(String caption, boolean flipDirection) {
         ValueSlider slider = new ValueSlider(this, SWT.NONE, caption,  0, 1000, 0);
-        /*
-        slider.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event e) {
-                updateLayer();
-            }
-        });
-        */
+        slider.setFlipDirection(flipDirection);
         slider.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         return slider;
     }

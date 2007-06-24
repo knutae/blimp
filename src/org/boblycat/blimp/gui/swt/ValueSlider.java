@@ -26,6 +26,7 @@ public class ValueSlider extends Composite {
     int selection;
     int digits;
     double digitsDivisor;
+    boolean flipDirection;
 
     public ValueSlider(Composite parent, int style) {
         this(parent, style, null, -100, 100, 0);
@@ -74,7 +75,12 @@ public class ValueSlider extends Composite {
         scale = new Scale(this, SWT.NONE);
         scale.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
-                setSelection(scale.getSelection() + minimum, true);
+                int newSelection;
+                if (flipDirection)
+                    newSelection = maximum - scale.getSelection();
+                else
+                    newSelection = minimum + scale.getSelection();
+                setSelection(newSelection, true);
             }
         });
 
@@ -112,7 +118,12 @@ public class ValueSlider extends Composite {
     }
 
     void updateSelection() {
-        scale.setSelection(selection - minimum);
+        int scaleSelection;
+        if (flipDirection)
+            scaleSelection = maximum - selection;
+        else
+            scaleSelection = selection - minimum;
+        scale.setSelection(scaleSelection);
         String strValue = Util.fixPointDecimalToString(selection, digits);
         valueEdit.setText(strValue);
     }
@@ -148,6 +159,7 @@ public class ValueSlider extends Composite {
         setMinimum(minimum);
         setMaximum(maximum);
         updateRange();
+        setAutoPageIncrement();
     }
 
     void setSelectionNoUpdate(int selection, boolean sendSelectionEvent) {
@@ -214,5 +226,13 @@ public class ValueSlider extends Composite {
         captionLabel.setEnabled(enabled);
         valueEdit.setEnabled(enabled);
         scale.setEnabled(enabled);
+    }
+
+    public void setFlipDirection(boolean flipDirection) {
+        this.flipDirection = flipDirection;
+    }
+
+    public boolean getFlipDirection() {
+        return flipDirection;
     }
 }
