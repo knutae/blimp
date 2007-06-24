@@ -263,7 +263,7 @@ public class LayerPropertyEditor extends Composite {
     }
 
     Object parsePropertyValue(Class propertyClass, String strValue)
-            throws NumberFormatException {
+            throws IllegalArgumentException {
         if (propertyClass == String.class)
             return strValue;
         else if (propertyClass == Integer.class
@@ -276,6 +276,8 @@ public class LayerPropertyEditor extends Composite {
             return Double.valueOf(strValue);
         else if (propertyClass == PointDouble.class)
             return PointDouble.valueOfCommaString(strValue);
+        else if (propertyClass == ColorRGB.class)
+            return ColorRGB.parseColor(strValue);
         else if (propertyClass.isEnum()) {
             for (Object enumConst : propertyClass.getEnumConstants()) {
                 if (enumConst.toString().equals(strValue))
@@ -296,7 +298,7 @@ public class LayerPropertyEditor extends Composite {
             prop.setValue(objValue);
             layer.invalidate();
         }
-        catch (NumberFormatException e) {
+        catch (IllegalArgumentException e) {
             return;
         }
     }
@@ -314,7 +316,7 @@ public class LayerPropertyEditor extends Composite {
             prop.setValue(objValues);
             layer.invalidate();
         }
-        catch (NumberFormatException e) {
+        catch (IllegalArgumentException e) {
             return;
         }
     }

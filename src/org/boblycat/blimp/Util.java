@@ -30,6 +30,12 @@ public class Util {
             return max;
         return value;
     }
+    
+    public static int constrainedLower(int value, int min) {
+        if (value < min)
+            return min;
+        return value;
+    }
 
     public static String getFileNameFromPath(String path) {
         if (path == null || path.length() == 0)

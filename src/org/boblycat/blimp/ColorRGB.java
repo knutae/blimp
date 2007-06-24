@@ -23,6 +23,12 @@ public class ColorRGB {
         }
     }
     
+    public static final int MAX = 255;
+    
+    public static final ColorRGB White = new ColorRGB(MAX, MAX, MAX);
+    
+    public static final ColorRGB Black = new ColorRGB(0, 0, 0);
+    
     private int red;
     private int green;
     private int blue;
@@ -34,7 +40,7 @@ public class ColorRGB {
     }
     
     private static int constrain(int value) {
-        return Util.constrainedValue(value, 0, 255);
+        return Util.constrainedValue(value, 0, MAX);
     }
     
     public void setRed(int red) {

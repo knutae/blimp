@@ -56,6 +56,8 @@ public class LayerRegistry implements Iterable<LayerRegistry.LayerInfo> {
         reg.registerLayer(LevelsLayer.class, "&Levels", "Levels");
         reg.registerLayer(OrientationLayer.class, "&Orientation",
                 "Change the Image Orientation");
+        reg.registerLayer(SolidColorBorderLayer.class, "Bor&der",
+                "Add a solid color border around the image.");
         return reg;
     }
 }
