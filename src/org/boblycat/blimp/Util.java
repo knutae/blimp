@@ -36,6 +36,48 @@ public class Util {
             return min;
         return value;
     }
+    
+    /**
+     * Returns the smallest of the given arguments.
+     * 
+     * @param <T>
+     *      a comparable type
+     * @param first
+     *      the first argument
+     * @param rest
+     *      the rest of the arguments
+     * @return
+     *      the smallest object in the objects' natural order.
+     */
+    public static <T extends Comparable<? super T>> T min(T first, T... rest) {
+        T ret = first;
+        for (int i = 0; i < rest.length; i++) {
+            if (ret.compareTo(rest[i]) > 0)
+                ret = rest[i];
+        }
+        return ret;
+    }
+
+    /**
+     * Returns the largest of the given arguments.
+     * 
+     * @param <T>
+     *      a comparable type
+     * @param first
+     *      the first argument
+     * @param rest
+     *      the rest of the arguments
+     * @return
+     *      the largest object in the objects' natural order.
+     */
+    public static <T extends Comparable<? super T>> T max(T first, T... rest) {
+        T ret = first;
+        for (int i = 0; i < rest.length; i++) {
+            if (ret.compareTo(rest[i]) < 0)
+                ret = rest[i];
+        }
+        return ret;
+    }
 
     public static String getFileNameFromPath(String path) {
         if (path == null || path.length() == 0)

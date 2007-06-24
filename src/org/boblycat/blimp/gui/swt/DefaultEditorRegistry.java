@@ -23,5 +23,6 @@ public class DefaultEditorRegistry extends LayerEditorRegistry {
         register(OrientationLayer.class, OrientationEditor.class);
         register(ResizeLayer.class, ResizeEditor.class);
         register(CropLayer.class, CropEditor.class);
+        register(SolidColorBorderLayer.class, SolidColorBorderEditor.class);
     }
 }
