@@ -164,7 +164,7 @@ public class Serializer {
     }
 
     public static Object parsePropertyValue(Class propertyClass, String strValue)
-            throws NumberFormatException {
+            throws NumberFormatException, ColorRGB.SyntaxException {
         if (propertyClass == String.class)
             return strValue;
         else if (propertyClass == Integer.class
@@ -189,6 +189,8 @@ public class Serializer {
         }
         else if (propertyClass == PointDouble.class)
             return PointDouble.valueOfCommaString(strValue);
+        else if (propertyClass == ColorRGB.class)
+            return ColorRGB.parseColor(strValue);
         layerParseWarning("Unsupported property type "
                 + propertyClass.getName());
         return null;

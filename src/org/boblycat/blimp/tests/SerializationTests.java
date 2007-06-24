@@ -77,6 +77,7 @@ public class SerializationTests {
         layer.setStringValue("abcDEF");
         layer.setEnumValue(TestLayer.Enum.TWO);
         layer.setDoubleArrayValue(new double[] { -0.123, 4.567 });
+        layer.setColorValue(new ColorRGB(0, 100, 255));
         String xml = Serializer.layerToXml(layer);
         // System.out.println(xml);
         assertTrue(xml.length() > 0);
@@ -93,6 +94,7 @@ public class SerializationTests {
         Element intValueElement = null;
         Element stringValueElement = null;
         Element doubleArrayValueElement = null;
+        Element colorValueElement = null;
         
         for (Node node: new DOMNodeIterator(root)) {
             assertTrue(node instanceof Element);
@@ -112,6 +114,8 @@ public class SerializationTests {
                 stringValueElement = child;
             else if (nameAttr.equals("doubleArrayValue"))
                 doubleArrayValueElement = child;
+            else if (nameAttr.equals("colorValue"))
+                colorValueElement = child;
         }
 
         assertChildValueEquals(activeElement, "true");
@@ -119,6 +123,7 @@ public class SerializationTests {
         assertChildValueEquals(enumValueElement, "TWO");
         assertChildValueEquals(intValueElement, "42");
         assertChildValueEquals(stringValueElement, "abcDEF");
+        assertChildValueEquals(colorValueElement, "#0064FF");
         
         // array value
         assertNotNull(doubleArrayValueElement);
@@ -144,6 +149,7 @@ public class SerializationTests {
             "    <value>43.2</value>" +
             "    <value>-23.4</value>" +
             "  </property>" +
+            "  <property name=\"colorValue\">#FF0580</property>" +
             "</layer>";
         Layer layer = Serializer.layerFromXml(xml);
         assertNotNull(layer);
@@ -159,8 +165,13 @@ public class SerializationTests {
         assertEquals(2, array.length);
         assertEquals(43.2, array[0]);
         assertEquals(-23.4, array[1]);
+        ColorRGB color = dummyLayer.getColorValue();
+        assertNotNull(color);
+        assertEquals(255, color.getRed());
+        assertEquals(5, color.getGreen());
+        assertEquals(128, color.getBlue());
     }
-
+    
     @Test
     public void testClone() {
         TestLayer layer = new TestLayer();
