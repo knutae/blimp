@@ -11,5 +11,10 @@ package org.boblycat.blimp.layers;
  */
 public abstract class DimensionAdjustmentLayer extends AdjustmentLayer {
     // TODO: add this later
-    //public abstract BitmapSize calculateSize(int inputWidth, int inputHeight);
+    //public abstract BitmapSize calculateSize(int inputWidth, int inputHeight);    
+
+    @Override
+    public boolean canChangeDimensions() {
+        return true;
+    }
 }

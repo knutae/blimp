@@ -1,6 +1,7 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.*;
+import org.boblycat.blimp.BlimpSession.PreviewQuality;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
@@ -134,6 +135,7 @@ public class ImageView extends Composite {
     Image currentImage;
     int paintCounter;
     CLabel zoomLabel;
+    Combo qualityCombo;
     ProgressBar progressBar;
     boolean showProgressBar;
     SwtImageWorkerThread workerThread;
@@ -226,6 +228,15 @@ public class ImageView extends Composite {
         zoomLabel = new CLabel(this, SWT.NONE);
         zoomLabel.setText("100%");
         
+        qualityCombo = new Combo(this, SWT.READ_ONLY);
+        qualityCombo.setItems(new String[] {"Fast", "Accurate"});
+        qualityCombo.select(0);
+        qualityCombo.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event e) {
+                asyncGenerateBitmap();
+            }
+        });
+        
         progressBar = new ProgressBar(this, SWT.HORIZONTAL);
         progressBar.setMinimum(0);
         progressBar.setMaximum(100);
@@ -255,8 +266,13 @@ public class ImageView extends Composite {
         
         data = new FormData();
         data.top = new FormAttachment(0);
-        data.left = new FormAttachment(0);
         data.right = new FormAttachment(zoomLabel);
+        qualityCombo.setLayoutData(data);
+        
+        data = new FormData();
+        data.top = new FormAttachment(0);
+        data.left = new FormAttachment(0);
+        data.right = new FormAttachment(qualityCombo);
         toolBar.setLayoutData(data);
 
         data = new FormData();
@@ -407,6 +423,13 @@ public class ImageView extends Composite {
         color.dispose();
     }
     
+    private BlimpSession.PreviewQuality getPreviewQuality() {
+        if (qualityCombo.getSelectionIndex() == 0)
+            return PreviewQuality.Fast;
+        else
+            return PreviewQuality.Accurate;
+    }
+    
     private void asyncGenerateBitmap() {
         if (asyncRequestCount > 0) {
             needNewRequest = true;
@@ -416,7 +439,8 @@ public class ImageView extends Composite {
         workerThread.cancelRequests();
         Rectangle destArea = canvas.getClientArea();
         workerThread.asyncGenerateSizedBitmap(session, bitmapGeneratedTask,
-                destArea.width, destArea.height);
+                destArea.width, destArea.height,
+                getPreviewQuality());
         asyncRequestCount++;
     }
 

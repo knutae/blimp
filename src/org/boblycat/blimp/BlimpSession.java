@@ -74,11 +74,18 @@ class ViewportInfo {
 }
 
 public class BlimpSession extends InputLayer implements LayerChangeListener {
+    public static enum PreviewQuality {
+        Fast,
+        Accurate
+    }
+    
     Vector<Layer> layerList;
 
     Bitmap currentBitmap;
 
     ViewportInfo viewport;
+    
+    PreviewQuality previewQuality;
     
     class SessionProgressListener implements ProgressListener {
         BlimpSession session;
@@ -98,6 +105,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         layerList = new Vector<Layer>();
         currentBitmap = null;
         viewport = new ViewportInfo();
+        previewQuality = PreviewQuality.Accurate;
     }
     
     private void reportLayerProgress(Layer layer, double progress) {
@@ -129,10 +137,10 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         reportLayerProgress(input, 1.0);
         return result;
     }
-
-    Bitmap applyViewport(Bitmap bm) {
+    
+    private Bitmap applyViewport(Bitmap bm) {
         if (bm == null)
-            return null;
+           return null;
         ViewResizeLayer resize = viewport.getResizeLayer(bm.getWidth(), bm
                 .getHeight());
         if (resize != null)
@@ -140,23 +148,11 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return bm;
     }
 
+
     public void applyLayers() throws IOException {
         currentBitmap = generateBitmap(true);
     }
 
-    /**
-     * Get a subset of layers that can be moved first in the process in order to
-     * optimize editing.
-     */ 
-    Vector<AdjustmentLayer> getMovableLayers() {
-        Vector<AdjustmentLayer> layers = new Vector<AdjustmentLayer>();
-        for (Layer layer: layerList) {
-            if (layer instanceof DimensionAdjustmentLayer)
-                layers.add((AdjustmentLayer) layer);
-        }
-        return layers;
-    }
-    
     private Bitmap getInputBitmap() throws IOException {
         InputLayer input = getInput();
         if (input == null) {
@@ -176,6 +172,24 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return bm;
     }
     
+    private Vector<AdjustmentLayer> tryRearrangeLayers(String layerName) {
+        Vector<AdjustmentLayer> list = new Vector<AdjustmentLayer>();
+        for (Layer layer: layerList)
+            if (layer instanceof AdjustmentLayer)
+                list.add((AdjustmentLayer) layer);
+        if (previewQuality == PreviewQuality.Accurate)
+            return list;
+        if (layerName != null) {
+            // test if layers can be rearranged
+            AdjustmentLayer layer = findLayerInList(layerName, list);
+            if (layer != null && layer.canChangeDimensions())
+                return list;
+        }
+        if (previewQuality == PreviewQuality.Fast)
+            list = LayerRearranger.optimizeLayerOrder(list);
+        return list;
+    }
+    
     private Bitmap internalGenerateBitmapBeforeLayer(String layerName,
             boolean useViewport) throws IOException {
         Bitmap bm = getInputBitmap();
@@ -188,43 +202,39 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             // impossible to get a bitmap before the input layer
             return null;
 
-        // TODO: let a view quality setting decide when/how to resize
-        Vector<AdjustmentLayer> movableLayers = getMovableLayers();
-        if (layerName != null && findLayerInList(layerName, movableLayers) != null)
-            // cannot use movable layers in this case
-            movableLayers.clear();
+        Debug.print(this, "preview quality " + previewQuality);
         
-        for (AdjustmentLayer layer: movableLayers)
-            if (layer.isActive())
-                bm = applyLayer(bm, layer);
-        
-        if (useViewport && !viewport.isZoomedIn())
-            bm = applyViewport(bm);
+        Vector<AdjustmentLayer> layers = tryRearrangeLayers(layerName);
 
-        for (Layer layer : layerList) {
+        // TODO: the following code causes zooming bugs, fix them
+        /*
+        if (useViewport) {
+            ViewResizeLayer viewResize = viewport.getResizeLayer(
+                    bm.getWidth(), bm.getHeight());
+            if (viewResize != null)
+                layers.add(viewResize);
+        }
+        */
+        
+        for (AdjustmentLayer layer : layers) {
             if (layerName != null && layerName.equals(layer.getName()))
                 return bm;
-            if (layer == input || movableLayers.contains(layer))
-                continue;
-            if (layer instanceof InputLayer) {
-                System.err.println("Warning: more than one input layer?");
-            }
-            else if (layer.isActive() && layer instanceof AdjustmentLayer) {
+            else if (layer.isActive()) {
                 if (bm == null) {
                     Util.err("Warning: no input to apply "
                             + layer.getDescription());
                     continue;
                 }
-                AdjustmentLayer adjust = (AdjustmentLayer) layer;
-                bm = applyLayer(bm, adjust);
+                bm = applyLayer(bm, layer);
             }
         }
         
         if (layerName != null)
             // specified layer not found
             return null;
-        
-        if (useViewport && viewport.isZoomedIn())
+
+        // TODO: remove this once the zooming bugs have been fixed
+        if (useViewport)
             bm = applyViewport(bm);
         
         return bm;
@@ -354,9 +364,11 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return currentBitmap;
     }
 
-    public Bitmap getSizedBitmap(int width, int height) throws IOException {
+    public Bitmap getSizedBitmap(int width, int height,
+            PreviewQuality quality) throws IOException {
         viewport.viewWidth = width;
         viewport.viewHeight = height;
+        previewQuality = quality;
         applyLayers();
         return currentBitmap;
     }
@@ -388,9 +400,11 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return layerList.size();
     }
     
-    private static Layer findLayerInList(String name,
-            Vector<? extends Layer> layers) {
-        for (Layer layer: layers) {
+    private static <T extends Layer> T findLayerInList(String name,
+            Vector<T> layers) {
+        if (name == null)
+            return null;
+        for (T layer: layers) {
             if (layer.getName().equals(name))
                 return layer;
         }
@@ -566,5 +580,13 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         String shortName = Util.changeFileExtension(file.getName(), "");
         if (!shortName.isEmpty())
             setName(shortName);
+    }
+
+    public void setPreviewQuality(PreviewQuality previewQuality) {
+        this.previewQuality = previewQuality;
+    }
+
+    public PreviewQuality getPreviewQuality() {
+        return previewQuality;
     }
 }

@@ -30,6 +30,7 @@ public abstract class ImageWorkerThread extends Thread {
         BitmapSizeGeneratedTask sizeTask;
         int viewWidth;
         int viewHeight;
+        BlimpSession.PreviewQuality previewQuality;
 
         Request(RequestType type) {
             this.type = type;
@@ -96,7 +97,8 @@ public abstract class ImageWorkerThread extends Thread {
                 debugPrint("generating bitmap");
                 Bitmap bitmap;
                 if (req.viewWidth > 0 && req.viewHeight > 0)
-                    bitmap = session.getSizedBitmap(req.viewWidth, req.viewHeight);
+                    bitmap = session.getSizedBitmap(req.viewWidth, req.viewHeight,
+                            req.previewQuality);
                 else
                     bitmap = session.getBitmap();
                 debugPrint("finished generating bitmap");
@@ -183,13 +185,14 @@ public abstract class ImageWorkerThread extends Thread {
     }
 
     public void asyncGenerateSizedBitmap(BlimpSession session, Runnable runnable,
-            int width, int height) {
+            int width, int height, BlimpSession.PreviewQuality quality) {
         // the following can happen on any thread
         Request req = new Request(RequestType.GENERATE_BITMAP);
         req.runnable = runnable;
         req.sessionCopy = BlimpSession.createCopy(session);
         req.viewWidth = width;
         req.viewHeight = height;
+        req.previewQuality = quality;
         putRequest(req);
     }
     

@@ -109,4 +109,8 @@ public class SolidColorBorderLayer extends DimensionAdjustmentLayer {
         return color;
     }
 
+    @Override
+    public boolean canChangeColors() {
+        return true;
+    }
 }
