@@ -235,8 +235,9 @@ public class SessionTests {
         output = session.getBitmap();
         assertEquals(1.0, output.getPixelScaleFactor());
         
-        ViewResizeLayer viewResize = new ViewResizeLayer(
-                origWidth / 2, origHeight / 2, true);
+        ViewResizeLayer viewResize = new ViewResizeLayer();
+        viewResize.setViewWidth(origWidth / 2);
+        viewResize.setViewHeight(origHeight / 2);
         session.addLayer(viewResize);
         output = session.getBitmap();
         assertEquals(2.0, output.getPixelScaleFactor());

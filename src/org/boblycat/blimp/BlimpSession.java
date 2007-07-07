@@ -11,68 +11,6 @@ import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.Layer;
 import org.boblycat.blimp.layers.ViewResizeLayer;
 
-class ViewportInfo {
-    int viewWidth;
-    int viewHeight;
-    int imageWidth;
-    int imageHeight;
-    ZoomFactor zoomFactor;
-    
-    public ViewportInfo() {
-        zoomFactor = new ZoomFactor();
-    }
-    
-    boolean isActive() {
-        return (viewWidth > 0 && viewHeight > 0);
-    }
-
-    ZoomFactor getAutoZoomFactor(int imageWidth, int imageHeight) {
-        ZoomFactor autoZoomFactor = new ZoomFactor();
-        while (autoZoomFactor.scale(imageWidth) > viewWidth
-                || autoZoomFactor.scale(imageHeight) > viewHeight)
-            autoZoomFactor.zoomOut();
-        return autoZoomFactor;
-    }
-
-    static ViewResizeLayer resizeLayerFromZoom(ZoomFactor zoom, int w, int h) {
-        return new ViewResizeLayer(zoom.scale(w), zoom.scale(h), true);
-    }
-    
-    void setImageSize(int w, int h) {
-        if (w != imageWidth || h != imageHeight)
-            // invalidate current zoom when size changes
-            zoomFactor = getAutoZoomFactor(w, h);
-        imageWidth = w;
-        imageHeight = h;
-    }
-    
-    ViewResizeLayer getResizeLayer(int imageWidth, int imageHeight) {
-        if (!isActive())
-            return null;
-        setImageSize(imageWidth, imageHeight);
-        return resizeLayerFromZoom(zoomFactor, imageWidth, imageHeight);
-    }
-
-    void zoomIn() {
-        zoomFactor.zoomIn();
-    }
-
-    void zoomOut() {
-        zoomFactor.zoomOut();
-    }
-
-    void copyDataFrom(ViewportInfo other) {
-        viewWidth = other.viewWidth;
-        viewHeight = other.viewHeight;
-        zoomFactor.multiplier = other.zoomFactor.multiplier;
-        zoomFactor.divisor = other.zoomFactor.divisor;
-    }
-    
-    boolean isZoomedIn() {
-        return zoomFactor.getMultiplier() > zoomFactor.getDivisor();
-    }
-}
-
 public class BlimpSession extends InputLayer implements LayerChangeListener {
     public static enum PreviewQuality {
         Fast,
@@ -83,7 +21,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
 
     Bitmap currentBitmap;
 
-    ViewportInfo viewport;
+    ViewResizeLayer viewLayer = new ViewResizeLayer();
     
     PreviewQuality previewQuality;
     
@@ -104,7 +42,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     public BlimpSession() {
         layerList = new Vector<Layer>();
         currentBitmap = null;
-        viewport = new ViewportInfo();
+        viewLayer = new ViewResizeLayer();
         previewQuality = PreviewQuality.Accurate;
     }
     
@@ -138,17 +76,6 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return result;
     }
     
-    private Bitmap applyViewport(Bitmap bm) {
-        if (bm == null)
-           return null;
-        ViewResizeLayer resize = viewport.getResizeLayer(bm.getWidth(), bm
-                .getHeight());
-        if (resize != null)
-            return applyLayer(bm, resize);
-        return bm;
-    }
-
-
     public void applyLayers() throws IOException {
         currentBitmap = generateBitmap(true);
     }
@@ -206,15 +133,8 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         
         Vector<AdjustmentLayer> layers = tryRearrangeLayers(layerName);
 
-        // TODO: the following code causes zooming bugs, fix them
-        /*
-        if (useViewport) {
-            ViewResizeLayer viewResize = viewport.getResizeLayer(
-                    bm.getWidth(), bm.getHeight());
-            if (viewResize != null)
-                layers.add(viewResize);
-        }
-        */
+        if (useViewport)
+            layers.add(viewLayer);
         
         for (AdjustmentLayer layer : layers) {
             if (layerName != null && layerName.equals(layer.getName()))
@@ -233,10 +153,6 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             // specified layer not found
             return null;
 
-        // TODO: remove this once the zooming bugs have been fixed
-        if (useViewport)
-            bm = applyViewport(bm);
-        
         return bm;
     }
 
@@ -366,8 +282,8 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
 
     public Bitmap getSizedBitmap(int width, int height,
             PreviewQuality quality) throws IOException {
-        viewport.viewWidth = width;
-        viewport.viewHeight = height;
+        viewLayer.setViewWidth(width);
+        viewLayer.setViewHeight(height);
         previewQuality = quality;
         applyLayers();
         return currentBitmap;
@@ -378,22 +294,23 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     }
 
     public void zoomIn() {
-        viewport.zoomIn();
+        viewLayer.zoom().zoomIn();
         invalidate();
         triggerChangeEvent();
     }
 
     public void zoomOut() {
-        viewport.zoomOut();
+        viewLayer.zoom().zoomOut();
         invalidate();
         triggerChangeEvent();
     }
 
     public double getCurrentZoom() {
-        if (viewport.zoomFactor == null)
+        ZoomFactor zoom = viewLayer.zoom();
+        if (zoom == null)
             return 1.0;
         else
-            return viewport.zoomFactor.toDouble();
+            return zoom.toDouble();
     }
 
     public int layerCount() {
