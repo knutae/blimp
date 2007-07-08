@@ -76,6 +76,10 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return result;
     }
     
+    protected BitmapSize inputSize(InputLayer input) throws IOException {
+        return input.getBitmapSize();
+    }
+    
     public void applyLayers() throws IOException {
         currentBitmap = generateBitmap(true);
     }
@@ -201,24 +205,33 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         InputLayer input = getInput();
         if (input == null || input.getName().equals(layerName))
             return null;
-        Bitmap bm = inputBitmap(input);
-        if (bm == null)
-            return null;
+        BitmapSize size = inputSize(input);
+        if (size.pixelScaleFactor <= 0)
+            size.pixelScaleFactor = 1.0;
+        Debug.print(this, "input size: " + size.width + "x" + size.height);
+        double lastFactor = size.pixelScaleFactor;
         for (Layer layer: layerList) {
             if (layerName != null && layerName.equals(layer.getName()))
-                return bm.getSize();
-            if (layer instanceof DimensionAdjustmentLayer) {
-                bm = applyLayer(bm, (AdjustmentLayer) layer);
-                if (bm == null)
-                    return null;
+                return size;
+            if (layer.isActive() && layer instanceof DimensionAdjustmentLayer) {
+                DimensionAdjustmentLayer dLayer = (DimensionAdjustmentLayer) layer;
+                size = dLayer.calculateSize(size);
+                if (size.pixelScaleFactor <= 0)
+                    size.pixelScaleFactor = lastFactor;
+                lastFactor = size.pixelScaleFactor;
+                Debug.print(this, dLayer.getDescription() + ": " + size.width + "x" + size.height);
             }
         }
         if (layerName == null)
-            return bm.getSize();
+            return size;
         else
             return null;
     }
     
+    @Override
+    public BitmapSize getBitmapSize() throws IOException {
+        return getBitmapSizeBeforeLayer(null);
+    }
     
     /**
      * Copy session data from the other session.  The implementation will attempt

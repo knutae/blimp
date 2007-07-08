@@ -4,6 +4,7 @@ import net.sourceforge.jiu.data.RGBIndex;
 import net.sourceforge.jiu.data.RGBIntegerImage;
 
 import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.BitmapSize;
 import org.boblycat.blimp.ColorRGB;
 import org.boblycat.blimp.Util;
 
@@ -112,5 +113,13 @@ public class SolidColorBorderLayer extends DimensionAdjustmentLayer {
     @Override
     public boolean canChangeColors() {
         return true;
+    }
+
+    @Override
+    public BitmapSize calculateSize(BitmapSize inputSize) {
+        return new BitmapSize(
+                inputSize.width + left + right,
+                inputSize.height + top + bottom,
+                inputSize.pixelScaleFactor);
     }
 }

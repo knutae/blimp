@@ -1,6 +1,7 @@
 package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.BitmapSize;
 import org.boblycat.blimp.ZoomFactor;
 
 import net.sourceforge.jiu.geometry.ScaleReplication;
@@ -98,5 +99,13 @@ public class ViewResizeLayer extends DimensionAdjustmentLayer {
 
     public int getViewHeight() {
         return viewHeight;
+    }
+
+    @Override
+    public BitmapSize calculateSize(BitmapSize inputSize) {
+        int w = zoomFactor.scale(inputSize.width);
+        int h = zoomFactor.scale(inputSize.height);
+        double scaleFactor = inputSize.width / (double) w;
+        return new BitmapSize(w, h, scaleFactor * inputSize.pixelScaleFactor);
     }
 }

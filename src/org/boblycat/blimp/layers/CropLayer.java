@@ -3,6 +3,7 @@ package org.boblycat.blimp.layers;
 import net.sourceforge.jiu.geometry.Crop;
 
 import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.BitmapSize;
 import org.boblycat.blimp.Util;
 
 /**
@@ -74,5 +75,18 @@ public class CropLayer extends DimensionAdjustmentLayer {
 
     public int getBottom() {
         return bottom;
+    }
+
+    @Override
+    public BitmapSize calculateSize(BitmapSize inputSize) {
+        double factor = inputSize.pixelScaleFactor;
+        int cleft = (int) (left / factor);
+        int cright = (int) (right / factor);
+        int ctop = (int) (top / factor);
+        int cbottom = (int) (bottom / factor);
+        return new BitmapSize(
+                Math.max(0, inputSize.width - cleft - cright),
+                Math.max(0, inputSize.height - ctop - cbottom),
+                factor);
     }
 }

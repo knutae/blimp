@@ -8,6 +8,7 @@ import net.sourceforge.jiu.geometry.Rotate90Left;
 import net.sourceforge.jiu.geometry.Rotate90Right;
 
 import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.BitmapSize;
 
 public class OrientationLayer extends DimensionAdjustmentLayer {
     public enum Rotation {
@@ -77,6 +78,17 @@ public class OrientationLayer extends DimensionAdjustmentLayer {
 
     public boolean getFlipHorizontal() {
         return flipHorizontal;
+    }
+
+    @Override
+    public BitmapSize calculateSize(BitmapSize inputSize) {
+        switch (rotation) {
+        case Rotate90Left:
+        case Rotate90Right:
+            return new BitmapSize(inputSize.height, inputSize.width,
+                    inputSize.pixelScaleFactor);
+        }
+        return inputSize;
     }
 
 }

@@ -83,4 +83,12 @@ public class ResizeLayer extends DimensionAdjustmentLayer {
         return maxSize;
     }
 
+    @Override
+    public BitmapSize calculateSize(BitmapSize inputSize) {
+        BitmapSize newSize = calculateNewSize(inputSize.width, inputSize.height);
+        double scaleFactor = inputSize.width / (double) newSize.width;
+        newSize.pixelScaleFactor = inputSize.pixelScaleFactor * scaleFactor;
+        return newSize;
+    }
+
 }

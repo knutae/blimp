@@ -44,4 +44,18 @@ public class CachedBlimpSession extends BlimpSession {
         }
         return bitmap;
     }
+
+    protected BitmapSize inputSize(InputLayer input) throws IOException {
+        Bitmap bitmap = cache.get(input);
+        if (bitmap == null) {
+            log("size miss: " + input.getClass());
+            // TODO: if we get here, the bitmap may be loaded without being
+            // inserted into the cache.  Should fix this somehow.
+            return input.getBitmapSize();
+        }
+        else {
+            log("size hit: " + input.getClass());
+        }
+        return bitmap.getSize();
+    }
 }
