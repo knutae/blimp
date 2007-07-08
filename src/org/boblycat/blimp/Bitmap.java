@@ -10,8 +10,6 @@ public class Bitmap {
     
     double pixelScaleFactor;
 
-    static final boolean debug = false;
-
     public PixelImage getImage() {
         return this.image;
     }
@@ -53,7 +51,7 @@ public class Bitmap {
     }
 
     public void printDebugInfo(String prefix) {
-        if (!debug)
+        if (!Debug.debugEnabled(this))
             return;
         System.out.print(prefix + " ");
         if (image == null) {

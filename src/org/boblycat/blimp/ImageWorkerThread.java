@@ -10,8 +10,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author Knut Arild Erstad
  */
 public abstract class ImageWorkerThread extends Thread {
-    static final boolean debug = false;
-    
     enum RequestType {
         GENERATE_BITMAP,
         GENERATE_HISTOGRAM,
@@ -58,11 +56,6 @@ public abstract class ImageWorkerThread extends Thread {
         });
     }
     
-    private static void debugPrint(String msg) {
-        if (debug)
-            System.out.println("worker: " + msg);
-    }
-    
     /**
      * This function is called <i>on the worker thread</i> when a bitmap has been
      * generated.  It is up to subclasses how to handle this, but in general,
@@ -94,21 +87,21 @@ public abstract class ImageWorkerThread extends Thread {
                 assert(req.runnable != null);
                 // Generate the bitmap on this thread.  It should not be transferred
                 // to other threads.
-                debugPrint("generating bitmap");
+                Debug.print(this, "generating bitmap");
                 Bitmap bitmap;
                 if (req.viewWidth > 0 && req.viewHeight > 0)
                     bitmap = session.getSizedBitmap(req.viewWidth, req.viewHeight,
                             req.previewQuality);
                 else
                     bitmap = session.getBitmap();
-                debugPrint("finished generating bitmap");
+                Debug.print(this, "finished generating bitmap");
                 bitmapGenerated(req.runnable, bitmap);
                 break;
             case GENERATE_HISTOGRAM:
                 assert(req.histogramTask != null && req.layerName != null);
-                debugPrint("generating histogram for layer " + req.layerName);
+                Debug.print(this, "generating histogram for layer " + req.layerName);
                 Histogram histogram = session.getHistogramBeforeLayer(req.layerName, true);
-                debugPrint("finished generating histogram");
+                Debug.print(this, "finished generating histogram");
                 // Note: the following should work without synchronization problems,
                 // because the histogram task is only used by one thread at a time.
                 req.histogramTask.setHistogram(histogram);
@@ -116,9 +109,9 @@ public abstract class ImageWorkerThread extends Thread {
                 break;
             case GENERATE_SIZE:
                 assert(req.sizeTask != null && req.layerName != null);
-                debugPrint("generating size for layer " + req.layerName);
+                Debug.print(this, "generating size for layer " + req.layerName);
                 BitmapSize size = session.getBitmapSizeBeforeLayer(req.layerName);
-                debugPrint("finished generating size");
+                Debug.print(this, "finished generating size");
                 if (size == null)
                     Util.err("Failed to get size for layer " + req.layerName);
                 req.sizeTask.setSize(size);
@@ -148,9 +141,9 @@ public abstract class ImageWorkerThread extends Thread {
     public void run() {
         while (!isFinished()) {
             try {
-                debugPrint("waiting for queue...");
+                Debug.print(this, "waiting for queue...");
                 Request req = requestQueue.take();
-                debugPrint("got request from queue: " + req.type.toString());
+                Debug.print(this, "got request from queue: " + req.type.toString());
                 if (req.type == RequestType.QUIT)
                     break;
                 processRequest(req);

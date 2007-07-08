@@ -7,8 +7,6 @@ package org.boblycat.blimp;
  * @author Knut Arild Erstad
  */
 public class HistoryBlimpSession extends BlimpSession {
-    private static final boolean DEBUG = false;
-    
     SessionHistory history;
     int autoRecordDisableLevel;
     LayerEventSource historyEventSource;
@@ -33,11 +31,6 @@ public class HistoryBlimpSession extends BlimpSession {
         historyEventSource.removeListener(listener);
     }
     
-    private void debug(String message) {
-        if (DEBUG)
-            System.out.println(message);
-    }
-    
     private void tryEnsureHistoryExists() {
         if (history == null && getInput() != null && getInput().isActive())
             history = new SessionHistory(this);
@@ -48,7 +41,7 @@ public class HistoryBlimpSession extends BlimpSession {
         if (history == null)
             return;
         history.record();
-        debug("recorded, history size is now " + history.size());
+        Debug.print(this, "recorded, history size is now " + history.size());
         triggerHistoryChange();
     }
     
@@ -107,12 +100,12 @@ public class HistoryBlimpSession extends BlimpSession {
      */
     public void beginDisableAutoRecord() {
         autoRecordDisableLevel++;
-        debug("beginDisableAutoRecord " + autoRecordDisableLevel);
+        Debug.print(this, "beginDisableAutoRecord " + autoRecordDisableLevel);
     }
     
     private void internalEndDisableAutoRecord() {
         autoRecordDisableLevel--;
-        debug("endDisableAutoRecord " + autoRecordDisableLevel);
+        Debug.print(this, "endDisableAutoRecord " + autoRecordDisableLevel);
         if (autoRecordDisableLevel < 0) {
             Util.err("internal error: autoRecordDisableLevel < 0");
             autoRecordDisableLevel = 0;

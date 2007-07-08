@@ -6,7 +6,6 @@ import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.InputLayer;
 
 public class CachedBlimpSession extends BlimpSession {
-    private static final boolean debug = false; 
     BitmapCache cache;
     
     public CachedBlimpSession() {
@@ -14,8 +13,8 @@ public class CachedBlimpSession extends BlimpSession {
     }
     
     private void log(String msg) {
-        if (debug) {
-            System.out.println("cache " + msg);
+        if (Debug.debugEnabled(this)) {
+            Debug.print(this, msg);
             cache.printSizes();
         }
     }
