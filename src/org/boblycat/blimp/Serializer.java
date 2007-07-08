@@ -38,9 +38,8 @@ public class Serializer {
             e.printStackTrace();
         }
         if (domImplLS == null) {
-            System.err
-                    .println("FATAL: Failed to get DOMImplementationLS instance.");
-            System.err.println("Registry property: "
+            Util.err("FATAL: Failed to get DOMImplementationLS instance.");
+            Util.err("Registry property: "
                     + DOMImplementationRegistry.PROPERTY);
             System.exit(1);
         }
@@ -53,8 +52,7 @@ public class Serializer {
             e.printStackTrace();
         }
         if (documentBuilder == null) {
-            System.err
-                    .println("FATAL: Failed to create DocumentBuilder instance.");
+            Util.err("FATAL: Failed to create DocumentBuilder instance.");
             System.exit(1);
         }
     }
@@ -144,7 +142,7 @@ public class Serializer {
     }
 
     private static void beanParseWarning(String message) {
-        System.err.println("Warning: " + message);
+        Util.warn(message);
     }
 
     private static void layerParseWarning(String message) {

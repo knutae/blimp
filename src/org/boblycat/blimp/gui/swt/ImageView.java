@@ -183,7 +183,6 @@ public class ImageView extends Composite {
 
         canvas.addListener(SWT.Paint, new Listener() {
             public void handleEvent(Event e) {
-                // System.out.println("paint " + paintCounter);
                 paintCounter++;
                 if (currentImage == null) {
                     SwtUtil.fillBlackRect(e.gc, canvas.getClientArea());
@@ -197,11 +196,7 @@ public class ImageView extends Composite {
                         clientArea.width, clientArea.height);
                 GC imageGC = new GC(bufferImage);
                 SwtUtil.fillBlackRect(imageGC, bufferImage.getBounds());
-                // System.out.println("canvas size: " + canvasSize.x + ","
-                // + canvasSize.y);
                 Rectangle imageBounds = currentImage.getBounds();
-                // System.out.println("image size: "
-                // + imageBounds.width + "," + imageBounds.height);
                 int x, y;
                 if (canvas.getHorizontalBar().isEnabled())
                     x = -canvas.getHorizontalBar().getSelection();

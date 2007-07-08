@@ -79,7 +79,7 @@ public class SerializationTests {
         layer.setDoubleArrayValue(new double[] { -0.123, 4.567 });
         layer.setColorValue(new ColorRGB(0, 100, 255));
         String xml = Serializer.layerToXml(layer);
-        // System.out.println(xml);
+        Debug.print(this, xml);
         assertTrue(xml.length() > 0);
 
         Element root = parseLayerXml(xml);
@@ -204,7 +204,7 @@ public class SerializationTests {
                 new PointDouble(0.2, 0.3), new PointDouble(1.0, 0.5), };
         layer.setPoints(points);
         String xml = Serializer.layerToXml(layer);
-        // System.out.println(xml);
+        Debug.print(this, xml);
         Element root = parseLayerXml(xml);
         assertEquals("org.boblycat.blimp.layers.CurvesLayer", root
                 .getAttribute("class"));
@@ -288,7 +288,7 @@ public class SerializationTests {
         layer.setIntValue(54);
         session.addLayer(layer);
         String xml = Serializer.layerToXml(session);
-        // System.out.println(xml);
+        Debug.print(this, xml);
         Element root = parseXml(xml);
         assertEquals("session", root.getNodeName());
 

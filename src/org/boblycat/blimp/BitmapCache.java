@@ -54,10 +54,12 @@ public class BitmapCache {
     }
     
     void printSizes() {
+        if (!Debug.debugEnabled(this))
+            return;
         int size = inputTable.size();
         for (BitmapTable atable: adjustmentTables.values()) {
             size += atable.size();
         }
-        System.out.println("Number of cached bitmaps: " + size);
+        Debug.print(this, "Number of cached bitmaps: " + size);
     }
 }

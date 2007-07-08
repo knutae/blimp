@@ -1,6 +1,7 @@
 package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.Util;
 
 import net.sourceforge.jiu.color.adjustment.GammaCorrection;
 
@@ -13,7 +14,7 @@ public class GammaLayer extends AdjustmentLayer {
 
     public void setGamma(double value) {
         if (value <= 0.0 || value > GammaCorrection.MAX_GAMMA) {
-            System.err.println("Ignored invalid gamma value " + value);
+            Util.err("Ignored invalid gamma value " + value);
             return;
         }
         gamma = value;

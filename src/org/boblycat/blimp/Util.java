@@ -201,7 +201,7 @@ public class Util {
             }
         }
         catch (Exception e) {
-            System.err.println("Failed to open link: " + link);
+            err("Failed to open link: " + link);
         }
     }
     

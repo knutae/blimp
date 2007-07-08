@@ -149,7 +149,7 @@ public abstract class ImageWorkerThread extends Thread {
                 processRequest(req);
             }
             catch (InterruptedException e) {
-                System.err.println("Image worker thread interrupted");
+                Util.err("Image worker thread interrupted");
                 e.printStackTrace();
                 break;
             }

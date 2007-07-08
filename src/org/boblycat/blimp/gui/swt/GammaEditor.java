@@ -1,5 +1,6 @@
 package org.boblycat.blimp.gui.swt;
 
+import org.boblycat.blimp.Util;
 import org.boblycat.blimp.layers.GammaLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -38,8 +39,7 @@ public class GammaEditor extends LayerEditor {
         double value = gamma.getGamma();
         long lvalue = Math.round(value * 100.0);
         if (Math.abs(lvalue) > Integer.MAX_VALUE) {
-            System.err
-                    .println("Integer overflow while converting gamma value.");
+            Util.err("Integer overflow while converting gamma value.");
             return;
         }
         gammaSlider.setSelection((int) lvalue);

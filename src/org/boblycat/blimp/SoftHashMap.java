@@ -19,18 +19,15 @@ import java.util.Vector;
  */
 public class SoftHashMap<K, V> implements Map<K, V> {
     public class Entry implements Map.Entry<K, V> {
-        //SoftReference<K> keyRef;
         K key;
         SoftReference<V> valueRef;
         
         Entry(K key, V value) {
-            //keyRef = new SoftReference<K>(key);
             this.key = key;
             valueRef = new SoftReference<V>(value);
         }
         
         public K getKey() {
-            //return keyRef.get();
             return key;
         }
         

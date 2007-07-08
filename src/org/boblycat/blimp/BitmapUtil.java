@@ -161,7 +161,7 @@ public class BitmapUtil {
             String fileName, double quality) throws IOException {
         ImageWriter writer = getImageWriter(formatName);
         if (writer == null) {
-            System.err.println("Failed to get image writer for format: "
+            Util.err("Failed to get image writer for format: "
                     + formatName);
             return;
         }

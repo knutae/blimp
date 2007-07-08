@@ -1,5 +1,6 @@
 package org.boblycat.blimp.gui.swt;
 
+import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.Util;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -163,7 +164,7 @@ public class ValueSlider extends Composite {
     }
 
     void setSelectionNoUpdate(int selection, boolean sendSelectionEvent) {
-        // System.out.println("setSelection: " + selection);
+        Debug.print(this, "setSelection: " + selection);
         if (selection < minimum)
             selection = minimum;
         else if (selection > maximum)

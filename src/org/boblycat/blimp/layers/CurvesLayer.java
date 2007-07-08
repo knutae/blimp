@@ -68,7 +68,6 @@ public class CurvesLayer extends AdjustmentLayer {
         for (PointDouble p : value) {
             if (!points.containsKey(p.x)) {
                 points.put(p.x, p.y);
-                // System.out.println("set point " + p.x + "," + p.y);
             }
         }
         normalizePoints();

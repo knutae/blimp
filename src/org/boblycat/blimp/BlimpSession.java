@@ -83,7 +83,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     private Bitmap getInputBitmap() throws IOException {
         InputLayer input = getInput();
         if (input == null) {
-            System.err.println("No input!");
+            Util.err("No input!");
             return null;
         }
         if (!input.isActive()) {
@@ -93,7 +93,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         Bitmap bm = null;
         bm = inputBitmap(input);
         if (bm == null) {
-            System.err.println("Input failed!");
+            Util.err("Input failed!");
             return null;
         }
         return bm;

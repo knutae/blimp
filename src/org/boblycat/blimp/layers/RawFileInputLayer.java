@@ -15,6 +15,7 @@ import javax.imageio.IIOException;
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.ColorDepth;
 import org.boblycat.blimp.ColorSpace;
+import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.Util;
 import org.boblycat.blimp.jiu.PNMCodec;
 import net.sourceforge.jiu.ops.OperationFailedException;
@@ -160,8 +161,7 @@ public class RawFileInputLayer extends InputLayer {
         else if (colorSpace == ColorSpace.XYZ)
             return "5";
         else {
-            System.err
-                    .println("Warning: unknown color space enum value, falling back to sRGB");
+            Util.err("Warning: unknown color space enum value, falling back to sRGB");
             return "1";
         }
     }
@@ -215,7 +215,7 @@ public class RawFileInputLayer extends InputLayer {
             commandLine.add("-c"); // write to stdout
             commandLine.add(filePath); // raw file
             
-            //System.out.println(commandLine.toString());
+            Debug.print(this, commandLine.toString());
             
             ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
             Process process = processBuilder.start();
@@ -234,7 +234,7 @@ public class RawFileInputLayer extends InputLayer {
                 codec.setInputStream(new BufferedInputStream(process
                         .getInputStream()));
                 codec.process();
-                // System.out.println(codec.getImage().getClass());
+                //Debug.print(this, codec.getImage().getClass().toString());
                 Bitmap bitmap = new Bitmap();
                 bitmap.setImage(codec.getImage());
                 if (quality == Quality.HalfSize)

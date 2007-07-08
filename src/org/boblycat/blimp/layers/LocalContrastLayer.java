@@ -10,6 +10,7 @@ import net.sourceforge.jiu.ops.MissingParameterException;
 import net.sourceforge.jiu.ops.WrongParameterException;
 
 import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.Util;
 
 class MultiLineData {
@@ -173,8 +174,8 @@ public class LocalContrastLayer extends AdjustmentLayer {
     public Bitmap applyLayer(Bitmap source) {
         LocalContrastOperation op = new LocalContrastOperation();
         op.radius = (int) (radius / source.getPixelScaleFactor());
-        //System.out.println("defined radius: " + radius);
-        //System.out.println("used radius: " + op.radius);
+        Debug.print(this, "defined radius: " + radius);
+        Debug.print(this, "used radius: " + op.radius);
         op.amount = amount;
         op.adaptive = adaptive;
         return new Bitmap(applyJiuOperation(source.getImage(), op));

@@ -3,6 +3,7 @@ package org.boblycat.blimp.layers;
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.LayerRearranger;
 import org.boblycat.blimp.ProgressEvent;
+import org.boblycat.blimp.Util;
 
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.ops.ImageToImageOperation;
@@ -49,7 +50,7 @@ public abstract class AdjustmentLayer extends Layer {
             image = op.getOutputImage();
         }
         catch (Exception e) {
-            System.err.println(op.getClass().getName() + ": " + e.getMessage());
+            Util.err(op.getClass().getName() + ": " + e.getMessage());
         }
         if (listener != null)
             op.removeProgressListener(listener);

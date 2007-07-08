@@ -40,8 +40,8 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
             catch (IllegalAccessException e) {
                 errorMessage = e.getMessage();
             }
-            System.err.println(errorMessage);
-            System.err.println("Failed to get value for property " + getName()
+            Util.err(errorMessage);
+            Util.err("Failed to get value for property " + getName()
                     + ", class " + bean.getClass().getName());
             return null;
         }
@@ -60,8 +60,8 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
             catch (IllegalAccessException e) {
                 errorMessage = e.getMessage();
             }
-            System.err.println(errorMessage);
-            System.err.println("Failed to set value for property " + getName()
+            Util.err(errorMessage);
+            Util.err("Failed to set value for property " + getName()
                     + ", class " + bean.getClass().getName());
         }
 
@@ -114,12 +114,12 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
                     continue;
                 if (!isSerializableProperty(pd))
                     continue;
-                // todo: skip unsupported types?
+                // TODO: skip unsupported types?
                 props.add(new Property(this, pd));
             }
         }
         catch (IntrospectionException e) {
-            System.err.println("Failed to get property descriptors for class "
+            Util.err("Failed to get property descriptors for class "
                     + this.getClass().getName());
             e.printStackTrace();
             return null;

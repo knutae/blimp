@@ -22,7 +22,6 @@ public class DOMNodeIterator implements Iterable<Node> {
      *         consisting solely of whitespace characters.
      */
     public static boolean isWhiteSpaceNode(Node node) {
-        // System.out.println("isWhiteSpaceNode |" + node.getNodeValue() + "|");
         if (!(node instanceof Text))
             return false;
         return (node.getNodeValue().trim().length() == 0);

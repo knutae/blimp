@@ -104,7 +104,7 @@ public class CurvesEditor extends LayerEditor {
 
         canvas.addListener(SWT.MouseDown, new Listener() {
             public void handleEvent(Event e) {
-                // System.out.println("mouse down " + e.x + " " + e.y);
+                //Debug.print(this, "mouse down " + e.x + " " + e.y);
                 if (curvesLayer == null)
                     return;
                 NaturalCubicSpline spline = curvesLayer.getSpline();
@@ -138,7 +138,7 @@ public class CurvesEditor extends LayerEditor {
             public void handleEvent(Event e) {
                 if (currentPointX == null || curvesLayer == null)
                     return;
-                // System.out.println("mouse move " + e.x + " " + e.y);
+                //Debug.print(this, "mouse move " + e.x + " " + e.y);
                 NaturalCubicSpline spline = curvesLayer.getSpline();
                 PointDouble p = canvasToSplinePos(e.x, e.y);
                 spline.movePoint(currentPointX, p.x, p.y);
@@ -150,7 +150,7 @@ public class CurvesEditor extends LayerEditor {
 
         canvas.addListener(SWT.MouseUp, new Listener() {
             public void handleEvent(Event e) {
-                // System.out.println("mouse up " + e.x + " " + e.y);
+                //Debug.print(this, "mouse up " + e.x + " " + e.y);
                 currentPointX = null;
             }
         });

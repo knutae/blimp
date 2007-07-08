@@ -54,7 +54,7 @@ public class LayerEditorRegistry {
                 editor = editorConstructor.newInstance(args);
             }
             catch (Exception e) {
-                System.err.println("Failed to construct editor: "
+                Util.err("Failed to construct editor: "
                         + e.getMessage());
                 return;
             }
@@ -153,9 +153,8 @@ public class LayerEditorRegistry {
     public void register(Class<? extends Layer> layerClass,
             Class<? extends LayerEditor> editorClass) {
         if (getConstructor(editorClass) == null) {
-            System.err
-                    .println("Editor class does not have the required constructor (Composite, int): "
-                            + editorClass.getName());
+            Util.err("Editor class does not have the required constructor (Composite, int): "
+                    + editorClass.getName());
             return;
         }
         registry.put(layerClass.getName(), new Entry(editorClass));

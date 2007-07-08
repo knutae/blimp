@@ -13,7 +13,7 @@ import java.lang.reflect.Array;
 import java.util.Vector;
 
 public class LayerPropertyEditor extends Composite {
-    final int VALUE_COLUMN = 1;
+    private static final int VALUE_COLUMN = 1;
 
     Layer layer;
     Tree propertyTree;
@@ -97,7 +97,7 @@ public class LayerPropertyEditor extends Composite {
     void disposeOldEditor() {
         Control oldEditor = treeEditor.getEditor();
         if (oldEditor != null) {
-            // System.out.println("disposing old editor");
+            Debug.print(this, "disposing old editor");
             oldEditor.dispose();
         }
     }
@@ -112,7 +112,7 @@ public class LayerPropertyEditor extends Composite {
 
         String[] enumValues = getEnumValuesForItem(editedItem);
         if (enumValues != null) {
-            // System.out.println("combo editor...");
+            Debug.print(this, "combo editor...");
             Combo comboEditor = new Combo(propertyTree, SWT.DROP_DOWN);
             Listener comboListener = new Listener() {
                 public void handleEvent(Event e) {
@@ -130,7 +130,7 @@ public class LayerPropertyEditor extends Composite {
             setTreeEditor(comboEditor);
         }
         else {
-            // System.out.println("text editor...");
+            Debug.print(this, "text editor...");
             Text textEditor = new Text(propertyTree, SWT.NONE);
             textEditor.addListener(SWT.DefaultSelection, new Listener() {
                 public void handleEvent(Event e) {
@@ -191,18 +191,15 @@ public class LayerPropertyEditor extends Composite {
             String name = prop.getName();
             Object value = prop.getValue();
             if (value == null) {
-                System.out.println("Error reading value for property " + name);
+                Util.err("Error reading value for property " + name);
                 continue;
             }
             TreeItem item = new TreeItem(propertyTree, SWT.NONE);
             item.setText(name);
             if (value.getClass().isArray()) {
-                // System.out.println("yep, array it is");
-                // item.setText(1, "...");
                 for (int i=0; i<Array.getLength(value); i++) {
                     Object sub = Array.get(value, i);
                     TreeItem subItem = new TreeItem(item, SWT.NONE);
-                    // subItem.setText("");
                     subItem.setText(1, propertyValueToString(sub));
                 }
                 item.setExpanded(true);
@@ -214,7 +211,7 @@ public class LayerPropertyEditor extends Composite {
     }
 
     void subTreeEdited(TreeItem parentItem, String newText) {
-        // System.out.println("subitem " + parentItem.indexOf(editedItem));
+        Debug.print(this, "subitem " + parentItem.indexOf(editedItem));
         int index = propertyTree.indexOf(parentItem);
         if ((index < 0) || (index >= layerProperties.size()))
             return;
@@ -245,7 +242,7 @@ public class LayerPropertyEditor extends Composite {
     }
 
     void cellEdited(String newText) {
-        // System.out.println("new text: " + newText);
+        Debug.print(this, "new text: " + newText);
         TreeItem parentItem = editedItem.getParentItem();
         if (parentItem != null) {
             subTreeEdited(parentItem, newText);
@@ -283,10 +280,10 @@ public class LayerPropertyEditor extends Composite {
                 if (enumConst.toString().equals(strValue))
                     return enumConst;
             }
-            System.err.println("Unknown enum value " + strValue);
+            Util.err("Unknown enum value " + strValue);
             return null;
         }
-        System.err.println("Unsupported property type "
+        Util.err("Unsupported property type "
                 + propertyClass.getName());
         return null;
     }
