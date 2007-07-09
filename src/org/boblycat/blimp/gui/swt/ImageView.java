@@ -242,14 +242,14 @@ public class ImageView extends Composite {
         toolItem.setText("Zoom In");
         toolItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
-                workerThread.zoomIn(bitmapGeneratedTask);
+                workerThread.zoomIn(null, bitmapGeneratedTask);
             }
         });
         toolItem = new ToolItem(toolBar, SWT.NONE);
         toolItem.setText("Zoom Out");
         toolItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
-                workerThread.zoomOut(bitmapGeneratedTask);
+                workerThread.zoomOut(null, bitmapGeneratedTask);
             }
         });
 
@@ -431,9 +431,9 @@ public class ImageView extends Composite {
             return;
         }
         needNewRequest = false;
-        workerThread.cancelRequests();
+        workerThread.cancelRequestsByOwner(this);
         Rectangle destArea = canvas.getClientArea();
-        workerThread.asyncGenerateSizedBitmap(session, bitmapGeneratedTask,
+        workerThread.asyncGenerateSizedBitmap(this, session, bitmapGeneratedTask,
                 destArea.width, destArea.height,
                 getPreviewQuality());
         asyncRequestCount++;

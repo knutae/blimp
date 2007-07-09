@@ -99,7 +99,7 @@ public class LevelsEditor extends LayerEditor {
         levels = (LevelsLayer) layer;
         if (levels == null)
             return;
-        workerThread.asyncGenerateHistogram(session, levels.getName(),
+        workerThread.asyncGenerateHistogram(this, session, levels.getName(),
                 new HistogramGeneratedTask() {
             public void handleHistogram(Histogram h) {
                 if (!histogramView.isDisposed())

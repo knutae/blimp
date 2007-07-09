@@ -1,6 +1,7 @@
 package org.boblycat.blimp;
 
 import java.io.IOException;
+import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -20,6 +21,7 @@ public abstract class ImageWorkerThread extends Thread {
     }
 
     class Request {
+        Object owner;
         RequestType type;
         Runnable runnable;
         BlimpSession sessionCopy;
@@ -30,11 +32,13 @@ public abstract class ImageWorkerThread extends Thread {
         int viewHeight;
         BlimpSession.PreviewQuality previewQuality;
 
-        Request(RequestType type) {
+        Request(Object owner, RequestType type) {
+            this.owner = owner;
             this.type = type;
         }
 
-        Request(RequestType type, Runnable runnable) {
+        Request(Object owner, RequestType type, Runnable runnable) {
+            this.owner = owner;
             this.type = type;
             this.runnable = runnable;
         }
@@ -156,14 +160,23 @@ public abstract class ImageWorkerThread extends Thread {
         }
     }
     
-    public void cancelRequests() {
+    private void cancelAllRequests() {
         requestQueue.clear();
         // TODO: cancel ongoing operation (if possible)
     }
     
+    public void cancelRequestsByOwner(Object owner) {
+        Vector<Request> tmp = new Vector<Request>();
+        requestQueue.drainTo(tmp);
+        for (Request req: tmp) {
+            if (req.owner != owner)
+                putRequest(req);
+        }
+    }
+    
     public void quit() {
-        cancelRequests();
-        putRequest(new Request(RequestType.QUIT));
+        cancelAllRequests();
+        putRequest(new Request(this, RequestType.QUIT));
     }
     
     protected void putRequest(Request req) {
@@ -177,10 +190,11 @@ public abstract class ImageWorkerThread extends Thread {
         }
     }
 
-    public void asyncGenerateSizedBitmap(BlimpSession session, Runnable runnable,
-            int width, int height, BlimpSession.PreviewQuality quality) {
+    public void asyncGenerateSizedBitmap(Object owner, BlimpSession session,
+            Runnable runnable, int width, int height,
+            BlimpSession.PreviewQuality quality) {
         // the following can happen on any thread
-        Request req = new Request(RequestType.GENERATE_BITMAP);
+        Request req = new Request(owner, RequestType.GENERATE_BITMAP);
         req.runnable = runnable;
         req.sessionCopy = BlimpSession.createCopy(session);
         req.viewWidth = width;
@@ -189,29 +203,29 @@ public abstract class ImageWorkerThread extends Thread {
         putRequest(req);
     }
     
-    public void asyncGenerateHistogram(BlimpSession session, String layerName,
-            HistogramGeneratedTask task) {
-        Request req = new Request(RequestType.GENERATE_HISTOGRAM);
+    public void asyncGenerateHistogram(Object owner, BlimpSession session,
+            String layerName, HistogramGeneratedTask task) {
+        Request req = new Request(owner, RequestType.GENERATE_HISTOGRAM);
         req.histogramTask = task;
         req.layerName = layerName;
         req.sessionCopy = BlimpSession.createCopy(session);
         putRequest(req);
     }
     
-    public void asyncGenerateBitmapSize(BlimpSession session, String layerName,
-            BitmapSizeGeneratedTask task) {
-        Request req = new Request(RequestType.GENERATE_SIZE);
+    public void asyncGenerateBitmapSize(Object owner, BlimpSession session,
+            String layerName, BitmapSizeGeneratedTask task) {
+        Request req = new Request(owner, RequestType.GENERATE_SIZE);
         req.sizeTask = task;
         req.layerName = layerName;
         req.sessionCopy = BlimpSession.createCopy(session);
         putRequest(req);
     }
     
-    public void zoomIn(Runnable runnable) {
-        putRequest(new Request(RequestType.ZOOM_IN, runnable));
+    public void zoomIn(Object owner, Runnable runnable) {
+        putRequest(new Request(owner, RequestType.ZOOM_IN, runnable));
     }
 
-    public void zoomOut(Runnable runnable) {
-        putRequest(new Request(RequestType.ZOOM_OUT, runnable));
+    public void zoomOut(Object owner, Runnable runnable) {
+        putRequest(new Request(owner, RequestType.ZOOM_OUT, runnable));
     }
 }

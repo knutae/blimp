@@ -111,7 +111,7 @@ public class CropEditor extends LayerEditor {
         crop = (CropLayer) layer;
         if (bitmapSize == null) {
             setEnabled(false);
-            workerThread.asyncGenerateBitmapSize(session, crop.getName(),
+            workerThread.asyncGenerateBitmapSize(this, session, crop.getName(),
                     new BitmapSizeGeneratedTask() {
                 public void handleSize(BitmapSize size) {
                     bitmapSize = size;
