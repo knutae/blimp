@@ -103,19 +103,19 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return bm;
     }
     
-    private Vector<AdjustmentLayer> tryRearrangeLayers(String layerName) {
+    private Vector<AdjustmentLayer> layersBefore(String layerName) {
         Vector<AdjustmentLayer> list = new Vector<AdjustmentLayer>();
-        for (Layer layer: layerList)
+        for (Layer layer: layerList) {
+            if (layerName != null && layerName.equals(layer.getName()))
+                break;
             if (layer instanceof AdjustmentLayer)
                 list.add((AdjustmentLayer) layer);
-        if (previewQuality == PreviewQuality.Accurate)
-            return list;
-        if (layerName != null) {
-            // test if layers can be rearranged
-            AdjustmentLayer layer = findLayerInList(layerName, list);
-            if (layer != null && layer.canChangeDimensions())
-                return list;
         }
+        return list;
+    }
+    
+    private Vector<AdjustmentLayer> tryRearrangeLayersBefore(String layerName) {
+        Vector<AdjustmentLayer> list = layersBefore(layerName);
         if (previewQuality == PreviewQuality.Fast)
             list = LayerRearranger.optimizeLayerOrder(list);
         return list;
@@ -123,39 +123,32 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     
     private Bitmap internalGenerateBitmapBeforeLayer(String layerName,
             boolean useViewport) throws IOException {
+        if (layerName != null) {
+            Layer test = findLayer(layerName);
+            if (test == null) {
+                Util.warn("Failed to find layer: " + layerName);
+                return null;
+            }
+            if (test == getInput()) {
+                Util.warn("Cannot get a bitmap before the input layer: "
+                        + layerName);
+                return null;
+            }
+        }
+
         Bitmap bm = getInputBitmap();
         if (bm == null)
             return null;
-        InputLayer input = getInput();
-        assert(input != null);
         
-        if (layerName != null && layerName.equals(input.getName()))
-            // impossible to get a bitmap before the input layer
-            return null;
-
         Debug.print(this, "preview quality " + previewQuality);
-        
-        Vector<AdjustmentLayer> layers = tryRearrangeLayers(layerName);
-
+        Vector<AdjustmentLayer> layers = tryRearrangeLayersBefore(layerName);
         if (useViewport)
             layers.add(viewLayer);
         
         for (AdjustmentLayer layer : layers) {
-            if (layerName != null && layerName.equals(layer.getName()))
-                return bm;
-            else if (layer.isActive()) {
-                if (bm == null) {
-                    Util.err("Warning: no input to apply "
-                            + layer.getDescription());
-                    continue;
-                }
+            if (layer.isActive())
                 bm = applyLayer(bm, layer);
-            }
         }
-        
-        if (layerName != null)
-            // specified layer not found
-            return null;
 
         return bm;
     }
@@ -205,15 +198,16 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         InputLayer input = getInput();
         if (input == null || input.getName().equals(layerName))
             return null;
+        if (layerName != null && findLayer(layerName) == null)
+            return null;
         BitmapSize size = inputSize(input);
         if (size.pixelScaleFactor <= 0)
             size.pixelScaleFactor = 1.0;
         Debug.print(this, "input size: " + size.width + "x" + size.height);
+        Vector<AdjustmentLayer> layers = layersBefore(layerName);
         double lastFactor = size.pixelScaleFactor;
-        for (Layer layer: layerList) {
-            if (layerName != null && layerName.equals(layer.getName()))
-                return size;
-            if (layer.isActive() && layer instanceof DimensionAdjustmentLayer) {
+        for (AdjustmentLayer layer: layers) {
+            if (layer.isActive() && (layer instanceof DimensionAdjustmentLayer)) {
                 DimensionAdjustmentLayer dLayer = (DimensionAdjustmentLayer) layer;
                 size = dLayer.calculateSize(size);
                 if (size.pixelScaleFactor <= 0)
@@ -222,10 +216,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
                 Debug.print(this, dLayer.getDescription() + ": " + size.width + "x" + size.height);
             }
         }
-        if (layerName == null)
-            return size;
-        else
-            return null;
+        return size;
     }
     
     @Override
