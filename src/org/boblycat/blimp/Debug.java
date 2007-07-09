@@ -45,6 +45,6 @@ public class Debug {
      */
     public static void print(Object obj, String str) {
         if (debugEnabled(obj))
-            System.out.println(className(obj) + ": " + str);
+            Util.info(className(obj) + ": " + str);
     }
 }

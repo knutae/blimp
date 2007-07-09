@@ -1,6 +1,7 @@
 package org.boblycat.blimp;
 
 import java.io.File;
+import java.util.logging.Logger;
 
 import org.boblycat.blimp.layers.FileInputLayer;
 import org.boblycat.blimp.layers.InputLayer;
@@ -85,13 +86,15 @@ public class Util {
         File file = new File(path);
         return file.getName();
     }
+    
+    public static Logger logger = Logger.getLogger("org.boblycat.blimp");
 
     /**
      * Print a warning message.
      * @param message a warning message.
      */
     public static void warn(String message) {
-        System.err.println("Warning: " + message);
+        logger.warning(message);
     }
     
     /**
@@ -99,7 +102,7 @@ public class Util {
      * @param message an error message.
      */
     public static void err(String message) {
-        System.err.println("Error: " + message);
+        logger.warning(message);
     }
     
     /**
@@ -107,7 +110,7 @@ public class Util {
      * @param message a message.
      */
     public static void info(String message) {
-        System.out.println("Info: " + message);
+        logger.info(message);
     }
     
     public static String getFileExtension(String filePath) {
