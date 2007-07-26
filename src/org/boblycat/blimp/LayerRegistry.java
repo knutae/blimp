@@ -42,8 +42,8 @@ public class LayerRegistry implements Iterable<LayerRegistry.LayerInfo> {
         reg.registerLayer(BrightnessContrastLayer.class,
                 "&Brightness/Contrast", "Brightness and Contrast");
         reg.registerLayer(CurvesLayer.class, "&Curves", "Curves");
-        reg.registerLayer(SaturationLayer.class, "&Saturation/Value",
-                "Saturation and Value");
+        reg.registerLayer(SaturationLayer.class, "&Saturation/Lightness",
+                "Saturation and Lightness");
         reg.registerLayer(Color16BitLayer.class, "&16-Bit",
                 "Convert image to 16-bit per color channel");
         reg.registerLayer(GammaLayer.class, "Ga&mma", "Adjust gamma");

@@ -14,7 +14,7 @@ import org.boblycat.blimp.Util;
 
 class SaturationOperation extends ImageToImageOperation {
     int saturation;
-    int value;
+    int lightness;
     
     private static final double MAX_8BIT = 255.0;
     private static final double MAX_16BIT = 65535.0;
@@ -23,8 +23,17 @@ class SaturationOperation extends ImageToImageOperation {
         return input * factor;
     }
     
-    public void process() throws MissingParameterException,
-    WrongParameterException {
+    private static void adjustColor(double r, double g, double b,
+            double saturationFactor, double lightnessFactor, double[] out) {
+        ColorUtil.rgbToHsl(r, g, b, out);
+        out[1] = adjust(out[1], saturationFactor);
+        out[2] = adjust(out[2], lightnessFactor);
+        ColorUtil.hslToRgb(out[0], out[1], out[2], out);
+    }
+    
+    public void process() throws
+            MissingParameterException,
+            WrongParameterException {
         PixelImage input = getInputImage();
         if (input == null)
             throw new MissingParameterException("missing input image");
@@ -32,7 +41,7 @@ class SaturationOperation extends ImageToImageOperation {
         int height = input.getHeight();
         PixelImage output = input.createCompatibleImage(width, height);
         double saturationFactor = saturation / 100.0;
-        double valueFactor = value / 100.0;
+        double lightnessFactor = lightness / 100.0;
         if (input instanceof RGB24Image) {
             RGB24Image input24 = (RGB24Image) input;
             RGB24Image output24 = (RGB24Image) output;
@@ -47,7 +56,6 @@ class SaturationOperation extends ImageToImageOperation {
                         greenLine, 0);
                 input24.getByteSamples(RGBIndex.INDEX_BLUE, 0, y, width, 1,
                         blueLine, 0);
-                double[] hsv = new double[3];
                 double[] rgb = new double[3];
 
                 for (int x = 0; x < width; x++) {
@@ -55,13 +63,7 @@ class SaturationOperation extends ImageToImageOperation {
                     r = (0xff & redLine[x]) / MAX_8BIT;
                     g = (0xff & greenLine[x]) / MAX_8BIT;
                     b = (0xff & blueLine[x]) / MAX_8BIT;
-                    assert (r >= 0 && r <= 1);
-                    assert (g >= 0 && g <= 1);
-                    assert (b >= 0 && b <= 1);
-                    ColorUtil.rgbToHsv(r, g, b, hsv);
-                    hsv[1] = adjust(hsv[1], saturationFactor);
-                    hsv[2] = adjust(hsv[2], valueFactor);
-                    ColorUtil.hsvToRgb(hsv[0], hsv[1], hsv[2], rgb);
+                    adjustColor(r, g, b, saturationFactor, lightnessFactor, rgb);
                     redLine[x] = Util.cropToUnsignedByte((int) (rgb[0] * MAX_8BIT));
                     greenLine[x] = Util.cropToUnsignedByte((int) (rgb[1] * MAX_8BIT));
                     blueLine[x] = Util.cropToUnsignedByte((int) (rgb[2] * MAX_8BIT));
@@ -91,7 +93,6 @@ class SaturationOperation extends ImageToImageOperation {
                         greenLine, 0);
                 input48.getShortSamples(RGBIndex.INDEX_BLUE, 0, y, width, 1,
                         blueLine, 0);
-                double[] hsv = new double[3];
                 double[] rgb = new double[3];
 
                 for (int x = 0; x < width; x++) {
@@ -99,13 +100,7 @@ class SaturationOperation extends ImageToImageOperation {
                     r = (0xffff & redLine[x]) / MAX_16BIT;
                     g = (0xffff & greenLine[x]) / MAX_16BIT;
                     b = (0xffff & blueLine[x]) / MAX_16BIT;
-                    assert (r >= 0 && r <= 1);
-                    assert (g >= 0 && g <= 1);
-                    assert (b >= 0 && b <= 1);
-                    ColorUtil.rgbToHsv(r, g, b, hsv);
-                    hsv[1] = adjust(hsv[1], saturationFactor);
-                    hsv[2] = adjust(hsv[2], valueFactor);
-                    ColorUtil.hsvToRgb(hsv[0], hsv[1], hsv[2], rgb);
+                    adjustColor(r, g, b, saturationFactor, lightnessFactor, rgb);
                     redLine[x] = Util.cropToUnsignedShort((int) (rgb[0] * MAX_16BIT));
                     greenLine[x] = Util.cropToUnsignedShort((int) (rgb[1] * MAX_16BIT));
                     blueLine[x] = Util.cropToUnsignedShort((int) (rgb[2] * MAX_16BIT));
@@ -137,18 +132,18 @@ class SaturationOperation extends ImageToImageOperation {
  */
 public class SaturationLayer extends AdjustmentLayer {
     private int saturation;
-    private int value;
+    private int lightness;
     
     public SaturationLayer() {
         saturation = 100;
-        value = 100;
+        lightness = 100;
     }
 
     @Override
     public Bitmap applyLayer(Bitmap source) {
         SaturationOperation op = new SaturationOperation();
         op.saturation = saturation;
-        op.value = value;
+        op.lightness = lightness;
         return new Bitmap(applyJiuOperation(source.getImage(), op));
     }
 
@@ -165,12 +160,12 @@ public class SaturationLayer extends AdjustmentLayer {
         return saturation;
     }
 
-    public void setValue(int value) {
-        this.value = Util.constrainedValue(value, 0, 400);
+    public void setLightness(int value) {
+        this.lightness = Util.constrainedValue(value, 0, 400);
     }
 
-    public int getValue() {
-        return value;
+    public int getLightness() {
+        return lightness;
     }
 
 }
