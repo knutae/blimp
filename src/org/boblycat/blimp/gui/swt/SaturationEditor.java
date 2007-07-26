@@ -11,10 +11,12 @@ public class SaturationEditor extends LayerEditor {
     SaturationLayer saturation;
     ValueSlider saturationSlider;
     ValueSlider lightnessSlider;
+    ValueSlider hueSlider;
 
     public SaturationEditor(Composite parent, int style) {
         super(parent, style);
         setLayout(new FillLayout(SWT.VERTICAL));
+        hueSlider = createSlider("Hue", -180, 180);
         saturationSlider = createSlider("Saturation", 0, 400);
         lightnessSlider = createSlider("Lightness", 0, 400);
     }
@@ -35,6 +37,7 @@ public class SaturationEditor extends LayerEditor {
             return;
         saturation.setSaturation(saturationSlider.getSelection());
         saturation.setLightness(lightnessSlider.getSelection());
+        saturation.setHue(hueSlider.getSelection());
         saturation.invalidate();
     }
     
@@ -43,6 +46,7 @@ public class SaturationEditor extends LayerEditor {
             return;
         saturationSlider.setSelection(saturation.getSaturation());
         lightnessSlider.setSelection(saturation.getLightness());
+        hueSlider.setSelection(saturation.getHue());
     }
 
     @Override
