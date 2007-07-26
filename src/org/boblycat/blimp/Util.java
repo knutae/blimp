@@ -102,7 +102,7 @@ public class Util {
      * @param message an error message.
      */
     public static void err(String message) {
-        logger.warning(message);
+        logger.severe(message);
     }
     
     /**

@@ -1,5 +1,7 @@
 package org.boblycat.blimp.layers;
 
+import java.util.logging.Level;
+
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.LayerRearranger;
 import org.boblycat.blimp.ProgressEvent;
@@ -50,7 +52,10 @@ public abstract class AdjustmentLayer extends Layer {
             image = op.getOutputImage();
         }
         catch (Exception e) {
-            Util.err(op.getClass().getName() + ": " + e.getMessage());
+            Util.logger.log(Level.SEVERE,
+                    op.getClass().getName() + " failed with a "
+                    + e.getClass().getName() + ": " + e.getMessage(),
+                    e);
         }
         if (listener != null)
             op.removeProgressListener(listener);
