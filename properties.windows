@@ -4,7 +4,8 @@ swt.dir = swt-M20060629-1905-win32-win32-x86
 swt.jni.dir = ${swt.dir}
 swt.libs.dynamic = swt*.dll
 
-install.home = blimp
+# install.home = blimp
+install.home = jsmooth
 
 dcraw.exe = blimp-dcraw.exe
 
@@ -13,3 +14,7 @@ c-compiler-args = -mno-cygwin
 c-linker-args = -mno-cygwin
 dcraw.defines.minimal = NO_JPEG,NO_LCMS,W32_GETC_UNLOCKED
 dcraw.libs.minimal = ws2_32
+
+# jsmooth java .exe wrapper
+jsmooth.dir = c:/Program Files/JSmooth 0.9.9-7
+jsmooth.compiler = ${jsmooth.dir}/jsmoothcmd.exe
