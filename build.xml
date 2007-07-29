@@ -224,11 +224,17 @@
             <arg value="${build}/Blimp.wixobj"/>
             <arg value="wix/Blimp.wxs"/>
         </exec>
+        <exec executable="${wix.candle}" failonerror="true">
+            <arg value="-out"/>
+            <arg value="${build}/WixUI_InstallDir_NoEula.wixobj"/>
+            <arg value="wix/WixUI_InstallDir_NoEula.wxs"/>
+        </exec>
         <exec executable="${wix.light}" failonerror="true">
             <arg value="-ext"/>
             <arg value="WixUIExtension"/>
             <arg value="-cultures:en-us"/>
             <arg value="${build}/Blimp.wixobj"/>
+            <arg value="${build}/WixUI_InstallDir_NoEula.wixobj"/>
             <arg value="-out"/>
             <arg value="${build}/Blimp.msi"/>
         </exec>
