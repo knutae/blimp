@@ -7,6 +7,8 @@
     <taskdef resource="cpptasks.tasks"/>
     <typedef resource="cpptasks.types"/>
 
+    <property environment="env"/>
+
     <!-- Most properties are loaded from properties.* files -->
     <condition property="os.property.file" value="properties.windows">
         <os family="windows"/>
@@ -20,8 +22,6 @@
     <property file="${os.property.file}"/>
     <property file="properties.default"/>
     
-    <property environment="env"/>
-
     <!-- Classpaths -->    
     <path id="build.classpath">
         <pathelement location="${swt.jar}"/>
@@ -202,6 +202,7 @@
 
     <target name="install" depends="install-blimp,install-dcraw"/>
     
+    <!-- Windows-specific targets -->
     <target name="install-windows" depends="copyjars,blimp-jar,install-dcraw">
         <copy todir="${install.lib}">
             <fileset dir="${build}" includes="*.jar"/>
@@ -212,10 +213,45 @@
     </target>
     
     <target name="blimp-exe" depends="install-windows">
-        <exec dir="jsmooth" executable="${jsmooth.compiler}">
+        <exec dir="jsmooth" executable="${jsmooth.compiler}" failonerror="true">
             <arg value="blimp.jsmooth"/>
         </exec>
     </target>
+    
+    <target name="bundle-msi" depends="install-windows,blimp-exe">
+        <exec executable="${wix.candle}" failonerror="true">
+            <arg value="-out"/>
+            <arg value="${build}/Blimp.wixobj"/>
+            <arg value="wix/Blimp.wxs"/>
+        </exec>
+        <exec executable="${wix.light}" failonerror="true">
+            <arg value="-ext"/>
+            <arg value="WixUIExtension"/>
+            <arg value="-cultures:en-us"/>
+            <arg value="${build}/Blimp.wixobj"/>
+            <arg value="-out"/>
+            <arg value="${build}/Blimp.msi"/>
+        </exec>
+    </target>
+    
+    <target name="install-msi" depends="bundle-msi">
+        <exec executable="msiexec" failonerror="true">
+            <arg value="/quiet"/>
+            <arg value="/i" />
+            <arg value="build\\Blimp.msi"/>
+        </exec>
+    </target>
+    
+    <target name="uninstall-msi">
+        <!-- Uninstall by Product Guid defined in Blimp.wxs -->
+        <exec executable="msiexec" failonerror="true">
+            <arg value="/quiet"/>
+            <arg value="/x"/>
+            <arg value="{AF3F7042-5089-4064-B4EB-C0AD8F2F6C6D}"/>
+        </exec>
+    </target>
+    
+    <!-- End of windows-specific targets -->
 
     <target name="uninstall">
         <!-- Wipes out all of ${install.home}, so make sure it is set correctly. -->

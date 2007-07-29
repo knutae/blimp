@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+    <Product Name='Blimp' Id='AF3F7042-5089-4064-B4EB-C0AD8F2F6C6D'
+             Language='1033' Codepage='1252' Version='0.9.0' Manufacturer='Boblycat'
+             UpgradeCode='733D3C3F-C40F-4ADD-AF62-8CD66DBE93AD'>
+        <Package Keywords='Installer'
+                 Description="Blimp Photo Editor Installer"
+                 Comments="Blimp is a layered photo editor" Manufacturer='Boblycat'
+                 InstallerVersion='150' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
+        <Media Id='1' Cabinet='Blimp.cab' EmbedCab='yes'/>
+        <Directory Id='TARGETDIR' Name='SourceDir'>
+            <Directory Id='ProgramFilesFolder' Name='PFiles'>
+                <Directory Id='BoblycatFolder' Name='Boblycat'>
+                    <Directory Id='INSTALLDIR' Name='Blimp'>
+                        <Component Id='GplLicense' Guid='DF8525D2-C828-4CBA-BA9E-32BDC752C052'>
+                            <File Id='Copying' Name='COPYING'
+                                  Source='COPYING' />
+                        </Component>
+                        <Directory Id='InstallBin' Name='bin'>
+                            <Component Id='BlimpExecutable'
+                                       Guid='2B083629-CEFD-454E-A0A6-ECAAE22C1C98'>
+                                <File Id='blimp.exe' Name='blimp.exe' DiskId='1'
+                                      Source='jsmooth\bin\blimp.exe'>
+                                    <Shortcut Id='BlimpShortcut'
+                                              Advertise='yes'
+                                              Directory='BoblycatMenuFolder' Name='Blimp'
+                                              Show='normal' WorkingDirectory='InstallBin'>
+                                    </Shortcut>
+                                </File>
+                                <RemoveFolder Id='RemoveBoblycatMenuFolder' On='uninstall'
+                                              Property='BoblycatMenuFolder'/>
+                            </Component>
+                            <Component Id='DcrawExecutable'
+                                       Guid='2AB516B9-9F0C-4A50-B8F4-A1BD4E7E2E8A'>
+                                <File Id='blimp_dcraw.exe' DiskId='1'
+                                      Name='blimp-dcraw.exe'
+                                      Source='jsmooth\bin\blimp-dcraw.exe' />
+                            </Component>
+                            <Component Id='SwtDll'
+                                       Guid='9602560D-C470-4520-8E07-9163C82FF8C8'>
+                                <File Id='swt.dll' DiskId='1'
+                                      Name='swt-win32-3232.dll'
+                                      Source='jsmooth\bin\swt-win32-3232.dll' />
+                            </Component>
+                            <Component Id='SwtGdipDll'
+                                       Guid='0A24F604-B499-4C06-AA95-8CE876A6E9F4'>
+                                <File Id='swt_gdip.dll' DiskId='1'
+                                      Name='swt-gdip-win32-3232.dll'
+                                      Source='jsmooth\bin\swt-gdip-win32-3232.dll' />
+                            </Component>
+                        </Directory>
+                        <Directory Id='InstallLib' Name='lib'>
+                            <Component Id='BlimpJar'
+                                       Guid='B837064F-D983-4B48-B00E-66A026CD57D6'>
+                                <File Id='blimp.jar' Name='blimp.jar' DiskId='1'
+                                      Source='jsmooth\lib\blimp.jar' />
+                            </Component>
+                            <Component Id='JiuJar'
+                                       Guid='BD91C35B-ACDA-49EF-83F6-4F99373595EF'>
+                                <File Id='jiu.jar' Name='jiu.jar' DiskId='1'
+                                      Source='jsmooth\lib\jiu.jar' />
+                            </Component>
+                            <Component Id='SwtJar'
+                                       Guid='F76EFBAE-C8CB-4003-9D04-DC3DDE113C8F'>
+                                <File Id='swt.jar' Name='swt.jar' DiskId='1'
+                                      Source='jsmooth\lib\swt.jar' />
+                            </Component>
+                            <Component Id='BrowserLauncherJar'
+                                       Guid='451D1E66-86DA-42FE-92DE-DAF4DABD1193'>
+                                <File Id='BrowserLauncher.jar' DiskId='1'
+                                      Name='BrowserLauncher2-10rc4.jar'
+                                      Source='jsmooth\lib\BrowserLauncher2-10rc4.jar' />
+                            </Component>
+                            <Component Id='XercesImplJar'
+                                       Guid='362B634C-B06C-4F4D-9919-4026EAAAD8DD'>
+                                <File Id='xercesImpl.jar' DiskId='1'
+                                      Name='xercesImpl.jar'
+                                      Source='jsmooth\lib\xercesImpl.jar' />
+                            </Component>
+                        </Directory>
+                    </Directory>
+                </Directory>
+            </Directory>
+            <Directory Id='ProgramMenuFolder' Name='PMFolder'>
+                <Directory Id='BoblycatMenuFolder' Name='Boblycat'>
+                </Directory>
+            </Directory>
+        </Directory>
+        <Feature Id='DefaultFeature' Level='1'
+                 Title='Blimp' Description='Blimp program and libraries'
+                 ConfigurableDirectory='INSTALLDIR'>
+            <ComponentRef Id='GplLicense'/>
+            <ComponentRef Id='BlimpExecutable'/>
+            <ComponentRef Id='DcrawExecutable'/>
+            <ComponentRef Id='SwtDll'/>
+            <ComponentRef Id='SwtGdipDll'/>
+            <ComponentRef Id='BlimpJar'/>
+            <ComponentRef Id='JiuJar'/>
+            <ComponentRef Id='SwtJar'/>
+            <ComponentRef Id='BrowserLauncherJar'/>
+            <ComponentRef Id='XercesImplJar'/>
+        </Feature>
+
+        <Property Id='WIXUI_INSTALLDIR' Value='INSTALLDIR'/>
+        <UIRef Id="WixUI_InstallDir" />
+        <UIRef Id="WixUI_ErrorProgressText" />
+    </Product>
+</Wix>
