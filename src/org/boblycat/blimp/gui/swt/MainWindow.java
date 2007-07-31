@@ -593,12 +593,19 @@ public class MainWindow {
         layout.verticalSpacing = 20;
         dialog.setLayout(layout);
         Link linkText = new Link(dialog, SWT.NONE);
-        linkText.setText("Blimp, a layered photo editor.\n"
-                        + "Copyright 2006-2007 Knut Arild Erstad\n"
-                        + "\n"
-                        + "Credits:\n"
-                        + "<a href=\"http://schmidt.devlib.org/jiu/\">Java Imaging Utilities</a> by Marco Schmidt and others\n"
-                        + "<a href=\"http://cybercom.net/~dcoffin/dcraw/\">dcraw</a> (Raw input) by Dave Coffin");
+        linkText.setText(
+                "Blimp, a layered photo editor.\n"
+                + "Copyright 2006-2007 Knut Arild Erstad\n"
+                + "\n"
+                + "Blimp is <a href=\"http://www.gnu.org/philosophy/free-sw.html\">free software</a>"
+                + " distributed under the <a href=\"http://www.gnu.org/licenses/info/GPLv2.html\">GNU General Public License, version 2</a>.\n"
+                + "\n"
+                + "Credits:\n"
+                + "<a href=\"http://schmidt.devlib.org/jiu/\">Java Imaging Utilities</a> by Marco Schmidt and others\n"
+                + "<a href=\"http://cybercom.net/~dcoffin/dcraw/\">dcraw</a> (Raw input) by Dave Coffin\n"
+                + "\n"
+                + "Please visit the <a href=\"http://projects.boblycat.org/blimp/\">Blimp project page</a>"
+                + " for more information and resources.\n");
         linkText.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
                 Util.openLinkInBrowser(e.text);
