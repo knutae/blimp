@@ -213,7 +213,9 @@
     </target>
     
     <target name="blimp-exe" depends="install-windows">
-        <exec dir="jsmooth" executable="${jsmooth.compiler}" failonerror="true">
+        <mkdir dir="${jsmooth.installdir}"/>
+        <copy file="tools/bundle-windows/blimp.jsmooth" todir="${jsmooth.installdir}"/>
+        <exec dir="${jsmooth.installdir}" executable="${jsmooth.compiler}" failonerror="true">
             <arg value="blimp.jsmooth"/>
         </exec>
     </target>
@@ -222,12 +224,12 @@
         <exec executable="${wix.candle}" failonerror="true">
             <arg value="-out"/>
             <arg value="${build}/Blimp.wixobj"/>
-            <arg value="wix/Blimp.wxs"/>
+            <arg value="${wix.sources}/Blimp.wxs"/>
         </exec>
         <exec executable="${wix.candle}" failonerror="true">
             <arg value="-out"/>
             <arg value="${build}/WixUI_InstallDir_NoEula.wixobj"/>
-            <arg value="wix/WixUI_InstallDir_NoEula.wxs"/>
+            <arg value="${wix.sources}/WixUI_InstallDir_NoEula.wxs"/>
         </exec>
         <exec executable="${wix.light}" failonerror="true">
             <arg value="-ext"/>
