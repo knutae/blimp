@@ -475,6 +475,8 @@ public class ImageView extends Composite {
     }
     
     public void triggerBitmapChange() {
+        if (threadData == null)
+            return;
         bitmapEventSource.triggerChangeWithEvent(
                 new BitmapEvent(this, threadData.viewBitmap));
     }

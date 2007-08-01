@@ -54,6 +54,11 @@ class ImageTab {
         return env;
     }
     
+    void dispose() {
+        item.dispose();
+        imageView.dispose();
+    }
+    
     int tryClose(Shell shell) {
         if (!getSession().isDirty())
             return SWT.YES;
@@ -392,8 +397,7 @@ public class MainWindow {
         // Disposing an image tab will automatically close it and
         // select a new one.  The only special case to consider
         // is when the last tab is closed.
-        tab.imageView.workerThread.quit();
-        tab.item.dispose();
+        tab.dispose();
         imageTabs.remove(tab);
         if (imageTabs.size() == 0)
             updateCurrentImageTab(null);
