@@ -40,9 +40,13 @@ public class CurvesEditor extends LayerEditor {
     CurvesLayer curvesLayer;
 
     Double currentPointX;
+    
+    Double selectedPointX;
+    
+    int mouseX, mouseY;
 
     private static boolean almostEqual(double d1, double d2) {
-        final double EPSILON = 0.01;
+        final double EPSILON = 0.03;
         return Math.abs(d1 - d2) < EPSILON;
     }
 
@@ -55,6 +59,8 @@ public class CurvesEditor extends LayerEditor {
     public CurvesEditor(Composite parent, int style) {
         super(parent, style);
         setLayout(new FillLayout());
+        mouseX = -1;
+        mouseY = -1;
         canvas = new Canvas(this, SWT.NO_BACKGROUND) {
             public Point computeSize(int wHint, int hHint, boolean changed) {
                 return new Point(200, 200);
@@ -113,6 +119,17 @@ public class CurvesEditor extends LayerEditor {
                     gc.fillRectangle(xpos - 1, ypos - 1, 3, 3);
                 }
                 color.dispose();
+                // mark the closest point
+                if (selectedPointX != null) {
+                    double x = selectedPointX;
+                    double y = spline.getSplineValue(x);
+                    int xpos = (int) (x * size.x);
+                    int ypos = size.y - (int) (y * size.y);
+                    color = new Color(gc.getDevice(), 200, 0, 0);
+                    gc.setBackground(color);
+                    gc.fillRectangle(xpos - 2, ypos - 2, 5, 5);
+                    color.dispose();
+                }
                 // copy image
                 e.gc.drawImage(tmpImage, 0, 0);
                 tmpImage.dispose();
@@ -140,11 +157,13 @@ public class CurvesEditor extends LayerEditor {
                         currentPointX = p.x;
                         spline.addPoint(p.x, p.y);
                     }
+                    selectedPointX = currentPointX;
                 }
                 else if (e.button == 3) {
                     // right mouse button: remove point
                     if (almostEqual(closest, p.x)) {
                         spline.removePoint(closest);
+                        selectedPointX = null;
                     }
                 }
                 layer.invalidate();
@@ -154,15 +173,31 @@ public class CurvesEditor extends LayerEditor {
 
         canvas.addListener(SWT.MouseMove, new Listener() {
             public void handleEvent(Event e) {
-                if (currentPointX == null || curvesLayer == null)
+                if (curvesLayer == null)
                     return;
-                //Debug.print(this, "mouse move " + e.x + " " + e.y);
+                mouseX = e.x;
+                mouseY = e.y;
+                //canvas.redraw();
                 NaturalCubicSpline spline = curvesLayer.getSpline();
                 PointDouble p = canvasToSplinePos(e.x, e.y);
-                spline.movePoint(currentPointX, p.x, p.y);
-                currentPointX = p.x;
-                layer.invalidate();
-                canvas.redraw();
+                if (currentPointX == null) {
+                    double closest = spline.findClosestPoint(p.x);
+                    Double oldSelected = selectedPointX;
+                    if (almostEqual(closest, p.x))
+                        selectedPointX = closest;
+                    else
+                        selectedPointX = null;
+                    if (selectedPointX != oldSelected)
+                        canvas.redraw();
+                }
+                else {
+                    //Debug.print(this, "mouse move " + e.x + " " + e.y);
+                    spline.movePoint(currentPointX, p.x, p.y);
+                    currentPointX = p.x;
+                    selectedPointX = currentPointX;
+                    layer.invalidate();
+                    canvas.redraw();
+                }
             }
         });
 
