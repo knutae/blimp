@@ -25,6 +25,9 @@ import org.boblycat.blimp.layers.*;
 
 /**
  * Registry for adjustment layers (not input layers).
+ * This is used for generating menus in the GUI.
+ * 
+ * @author Knut Arild Erstad
  */
 public class LayerRegistry implements Iterable<LayerRegistry.LayerInfo> {
     public class LayerInfo {

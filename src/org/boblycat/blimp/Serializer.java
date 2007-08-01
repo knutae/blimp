@@ -40,10 +40,11 @@ import org.xml.sax.SAXException;
  * Static serialization and parsing utilities for Blimp objects.
  */
 public class Serializer {
-    static private DOMImplementation domImpl;
-    static private DOMImplementationLS domImplLS;
-    static private Document document;
-    static private DocumentBuilder documentBuilder;
+    private static DOMImplementation domImpl;
+    private static DOMImplementationLS domImplLS;
+    private static Document document;
+    private static DocumentBuilder documentBuilder;
+    private static SerializationRegistry registry;
 
     static {
         try {
@@ -73,6 +74,7 @@ public class Serializer {
             Util.err("FATAL: Failed to create DocumentBuilder instance.");
             System.exit(1);
         }
+        registry = SerializationRegistry.createDefaultRegistry();
     }
 
     public static String propertyValueToString(Object value) {
@@ -83,7 +85,7 @@ public class Serializer {
             return ((PointDouble) value).toCommaString();
         return value.toString();
     }
-
+    
     private static void appendPropertyValue(Element property, Object value) {
         if (value == null)
             return;
@@ -107,7 +109,11 @@ public class Serializer {
 
     public static Element beanToDOM(BlimpBean bean) {
         Element element = document.createElement(bean.elementName());
-        element.setAttribute("class", bean.getClass().getName());
+        String typeId = registry.getTypeId(bean.getClass());
+        if (typeId != null)
+            element.setAttribute("type", typeId);
+        else
+            element.setAttribute("class", bean.getClass().getName());
         for (BlimpBean.Property p : bean) {
             String name = p.getName();
             Element property = document.createElement("property");
@@ -270,6 +276,16 @@ public class Serializer {
                     + prop.getName());
         }
     }
+    
+    static BlimpBean newBeanInstance(Class<? extends BlimpBean> beanClass) {
+        try {
+            return beanClass.newInstance();
+        }
+        catch (Exception e) {
+            beanParseFailure(e.getMessage());
+        }
+        return null;
+    }
 
     static BlimpBean newBeanInstance(String className,
             Class<? extends BlimpBean> baseClass) throws ClassNotFoundException {
@@ -341,10 +357,21 @@ public class Serializer {
 
     public static BlimpBean beanFromDOM(Element beanNode)
             throws ClassNotFoundException {
-        String className = beanNode.getAttribute("class");
-        BlimpBean bean = newBeanInstance(className, BlimpBean.class);
+        String typeId = beanNode.getAttribute("type");
+        BlimpBean bean = null;
+        if (typeId.length() > 0) {
+            Class<? extends BlimpBean> beanClass = registry.getBeanClass(typeId);
+            if (beanClass == null)
+                throw new ClassNotFoundException(
+                        "Bean class with type id " + typeId + " not found.");
+            bean = newBeanInstance(beanClass);
+        }
+        else {
+            String className = beanNode.getAttribute("class");
+            bean = newBeanInstance(className, BlimpBean.class);
+        }
         if (bean == null)
-            beanParseFailure("failed to instantiate bean of class " + className);
+            return null;
         if (!bean.elementName().equals(beanNode.getNodeName()))
             beanParseWarning("element name '" + beanNode.getNodeName()
                     + "' differs from expected bean element '"

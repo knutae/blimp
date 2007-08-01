@@ -25,8 +25,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.boblycat.blimp.*;
-import org.boblycat.blimp.layers.CurvesLayer;
-import org.boblycat.blimp.layers.Layer;
+import org.boblycat.blimp.layers.*;
 import org.junit.*;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
@@ -35,7 +34,7 @@ import org.xml.sax.SAXException;
 import static org.junit.Assert.*;
 
 public class SerializationTests {
-    private DocumentBuilder createDocBuilder() {
+    private static DocumentBuilder createDocBuilder() {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
         try {
@@ -48,7 +47,8 @@ public class SerializationTests {
         return builder;
     }
 
-    private Element parseXml(String xml) throws IOException, SAXException {
+    private static Element parseXml(String xml)
+    throws IOException, SAXException {
         DocumentBuilder builder = createDocBuilder();
         StringReader reader = new StringReader(xml);
         Document doc = builder.parse(new InputSource(reader));
@@ -57,7 +57,8 @@ public class SerializationTests {
         return (Element) doc.getFirstChild();
     }
 
-    private Element parseLayerXml(String xml) throws IOException, SAXException {
+    private static Element parseLayerXml(String xml)
+    throws IOException, SAXException {
         Element root = parseXml(xml);
         assertEquals("layer", root.getNodeName());
         return root;
@@ -224,8 +225,8 @@ public class SerializationTests {
         String xml = Serializer.layerToXml(layer);
         Debug.print(this, xml);
         Element root = parseLayerXml(xml);
-        assertEquals("org.boblycat.blimp.layers.CurvesLayer", root
-                .getAttribute("class"));
+        assertEquals("Curves", root.getAttribute("type"));
+        //assertEquals("", root.getAttribute("class"));
         Element property = findNamedChild(root, "property", "points");
         assertNotNull(property);
         int i = 0;
@@ -249,7 +250,7 @@ public class SerializationTests {
     @Test
     public void testCurvesFromXml() throws Exception {
         String xml =
-            "<layer class=\"org.boblycat.blimp.layers.CurvesLayer\">" +
+            "<layer type=\"Curves\">" +
             "  <property name=\"points\">" +
             "    <value>0.1,1.0</value>" +
             "    <value>0.5,0.98</value>" +
@@ -379,5 +380,38 @@ public class SerializationTests {
         assertNotNull(layerClone);
         assertTrue(layer != layerClone);
         assertEquals(3.45, layerClone.getDoubleValue());
+    }
+    
+    private static void checkTypeIdXml(Class <? extends Layer> layerClass,
+            String typeId) throws Exception {
+        // from xml
+        String xml = "<layer type=\"" + typeId + "\"/>";
+        Layer layer = Serializer.layerFromXml(xml);
+        assertNotNull(layer);
+        assertSame(layer.getClass(), layerClass);
+        // to xml
+        Element root = parseLayerXml(Serializer.layerToXml(layer));
+        assertEquals(typeId, root.getAttribute("type"));
+        assertEquals("", root.getAttribute("class"));
+    }
+    
+    @Test
+    public void testLayerTypeIds() throws Exception {
+        checkTypeIdXml(InvertLayer.class, "Invert");
+        checkTypeIdXml(BrightnessContrastLayer.class, "BrightnessContrast");
+        checkTypeIdXml(CurvesLayer.class, "Curves");
+        checkTypeIdXml(SaturationLayer.class, "HueSaturationLightness");
+        checkTypeIdXml(GammaLayer.class, "Gamma");
+        checkTypeIdXml(GrayscaleMixerLayer.class, "GrayscaleMixer");
+        checkTypeIdXml(ResizeLayer.class, "Resize");
+        checkTypeIdXml(UnsharpMaskLayer.class, "UnsharpMask");
+        checkTypeIdXml(LocalContrastLayer.class, "LocalContrast");
+        checkTypeIdXml(CropLayer.class, "Crop");
+        checkTypeIdXml(LevelsLayer.class, "Levels");
+        checkTypeIdXml(OrientationLayer.class, "Orientation");
+        checkTypeIdXml(SolidColorBorderLayer.class, "Border");
+        checkTypeIdXml(Color16BitLayer.class, "Promote16Bit");
+        checkTypeIdXml(RawFileInputLayer.class, "RawInput");
+        checkTypeIdXml(FileInputLayer.class, "FileInput");
     }
 }
