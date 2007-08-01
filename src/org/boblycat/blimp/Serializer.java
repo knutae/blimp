@@ -112,7 +112,7 @@ public class Serializer {
         String typeId = registry.getTypeId(bean.getClass());
         if (typeId != null)
             element.setAttribute("type", typeId);
-        else
+        else if (!(bean instanceof BlimpSession))
             element.setAttribute("class", bean.getClass().getName());
         for (BlimpBean.Property p : bean) {
             String name = p.getName();
@@ -358,6 +358,8 @@ public class Serializer {
     public static BlimpBean beanFromDOM(Element beanNode)
             throws ClassNotFoundException {
         String typeId = beanNode.getAttribute("type");
+        String className = beanNode.getAttribute("class");
+        String nodeName = beanNode.getNodeName();
         BlimpBean bean = null;
         if (typeId.length() > 0) {
             Class<? extends BlimpBean> beanClass = registry.getBeanClass(typeId);
@@ -366,13 +368,20 @@ public class Serializer {
                         "Bean class with type id " + typeId + " not found.");
             bean = newBeanInstance(beanClass);
         }
-        else {
-            String className = beanNode.getAttribute("class");
+        else if (className.length() > 0) {
             bean = newBeanInstance(className, BlimpBean.class);
+        }
+        else if (nodeName.equals("session")) {
+            // special case for <session>, could make this more generic
+            // in the future
+            bean = new BlimpSession();
+        }
+        else {
+            layerParseFailure("Failed to create bean " + nodeName);
         }
         if (bean == null)
             return null;
-        if (!bean.elementName().equals(beanNode.getNodeName()))
+        if (!bean.elementName().equals(nodeName))
             beanParseWarning("element name '" + beanNode.getNodeName()
                     + "' differs from expected bean element '"
                     + bean.elementName() + "'");

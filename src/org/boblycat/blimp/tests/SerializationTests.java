@@ -310,6 +310,7 @@ public class SerializationTests {
         Debug.print(this, xml);
         Element root = parseXml(xml);
         assertEquals("session", root.getNodeName());
+        assertEquals("", root.getAttribute("class"));
 
         Element child = (Element) root.getFirstChild();
 
@@ -334,7 +335,7 @@ public class SerializationTests {
     @Test
     public void testSessionFromXml() throws Exception {
         String xml =
-            "<session class=\"org.boblycat.blimp.BlimpSession\">" +
+            "<session>" +
             "  <layer class=\"org.boblycat.blimp.tests.TestInput\">" +
             "    <property name=\"path\">some.path</property>" +
             "  </layer>" +
