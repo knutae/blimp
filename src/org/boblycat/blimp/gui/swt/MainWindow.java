@@ -279,22 +279,15 @@ public class MainWindow {
         });
         mainTabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
            public void close(CTabFolderEvent e) {
-               ImageTab activeImageTab = currentImageTab;
                for (ImageTab tab: imageTabs) {
                    if (tab.item == e.item) {
                        if (tab.tryClose(shell) != SWT.YES) {
                            e.doit = false;
                            return;
                        }
-                       imageTabs.remove(tab);
-                       tab.imageView.dispose();
-                       if (tab == activeImageTab)
-                           activeImageTab = null;
+                       removeImageTab(tab);
                        break;
                    }
-               }
-               if (activeImageTab == null && imageTabs.size() == 0) {
-                   updateCurrentImageTab(null);
                }
                // Trigger a GC to shrink the memory usage
                System.gc();
@@ -394,6 +387,17 @@ public class MainWindow {
             currentImageTab.imageView.triggerBitmapChange();
         }
     }
+    
+    private void removeImageTab(ImageTab tab) {
+        // Disposing an image tab will automatically close it and
+        // select a new one.  The only special case to consider
+        // is when the last tab is closed.
+        tab.imageView.workerThread.quit();
+        tab.item.dispose();
+        imageTabs.remove(tab);
+        if (imageTabs.size() == 0)
+            updateCurrentImageTab(null);
+    }
 
     private void fileOpenError(String filename, String errorType, Exception e) {
         SwtUtil.errorDialog(shell, errorType + " error", errorType
@@ -490,7 +494,7 @@ public class MainWindow {
             public void editingFinished(Layer layer, boolean cancelled) {
                 ImageTab tab = currentImageTab;
                 if (cancelled) {
-                    tab.item.dispose();
+                    removeImageTab(tab);
                 }
                 else if (layer instanceof RawFileInputLayer) {
                     RawFileInputLayer rawInput = (RawFileInputLayer) layer;
