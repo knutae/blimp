@@ -41,16 +41,18 @@ class MultiLineData {
     Vector<int[]> activeLineData;
     int[] removedLine;
     int[] combined;
+    int channel;
     
-    MultiLineData(IntegerImage image) {
+    MultiLineData(IntegerImage image, int channel) {
         this.image = image;
+        this.channel = channel;
         width = image.getWidth();
         height = image.getHeight();
         activeLineData = new Vector<int[]>();
         combined = new int[width];
     }
     
-    void addLine(int channel, int y) {
+    void addLine(int y) {
         int[] lineData;
         if (removedLine != null) {
             lineData = removedLine;
@@ -80,7 +82,7 @@ class MultiLineData {
     }
 }
 
-class MultiLineHslData {
+class MultiLineHSLData {
     IntegerImage image;
 
     int width;
@@ -96,15 +98,15 @@ class MultiLineHslData {
     MultiLineData greenData;
     MultiLineData blueData;
     
-    MultiLineHslData(IntegerImage image, int radius, double maxSample) {
+    MultiLineHSLData(IntegerImage image, int radius, double maxSample) {
         this.image = image;
         this.radius = radius;
         this.maxSample = maxSample;
         width = image.getWidth();
         height = image.getHeight();
-        redData = new MultiLineData(image);
-        greenData = new MultiLineData(image);
-        blueData = new MultiLineData(image);
+        redData = new MultiLineData(image, RGBIndex.INDEX_RED);
+        greenData = new MultiLineData(image, RGBIndex.INDEX_GREEN);
+        blueData = new MultiLineData(image, RGBIndex.INDEX_BLUE);
         lightnessLineData = new double[width];
         redLineData = new double[width];
         greenLineData = new double[width];
@@ -112,9 +114,9 @@ class MultiLineHslData {
     }
     
     void addLine(int y) {
-        redData.addLine(RGBIndex.INDEX_RED, y);
-        greenData.addLine(RGBIndex.INDEX_GREEN, y);
-        blueData.addLine(RGBIndex.INDEX_BLUE, y);
+        redData.addLine(y);
+        greenData.addLine(y);
+        blueData.addLine(y);
     }
     
     void popLine() {
@@ -164,13 +166,6 @@ class MultiLineHslData {
     }
 }
 
-/**
- * Local contrast enhancement, implemented like an unsharp mask filter with a big radius,
- * but optimized by taking the average intensity of square areas around each sample instead
- * of using a convolution matrix.
- * 
- * @author Knut Arild Erstad
- */
 class LocalContrastOperation extends ImageToImageOperation {
     static final double AMOUNT_DIVISOR = 100.0;
     int radius;
@@ -198,7 +193,10 @@ class LocalContrastOperation extends ImageToImageOperation {
             maxSample = (1 << 8) - 1;
         double realAmount = amount / AMOUNT_DIVISOR;
         double adaptiveFactor = ((double) adaptive) / LocalContrastLayer.MAX_ADAPTIVE;
-        MultiLineHslData hslData = new MultiLineHslData(input, radius, maxSample);
+        // Transform adaptiveFactor through sine to get a better resolution
+        // in the high end of the [0.0 1.0] interval
+        adaptiveFactor = Math.sin(0.5 * Math.PI * adaptiveFactor);
+        MultiLineHSLData hslData = new MultiLineHSLData(input, radius, maxSample);
         double[] hslSample = new double[3];
         double[] rgbSample = new double[3];
         for (int y = 0; y < Math.min(height, radius); y++) {
@@ -215,27 +213,20 @@ class LocalContrastOperation extends ImageToImageOperation {
                 double origG = input.getSample(RGBIndex.INDEX_GREEN, x, y) / maxSample;
                 double origB = input.getSample(RGBIndex.INDEX_BLUE, x, y) / maxSample;
                 ColorUtil.rgbToHsl(origR, origG, origB, hslSample);
-                double origLightness = hslSample[2];
+                double originalLightness = hslSample[2];
                 double blurredLightness = hslData.lightnessLineData[x];
-                double lightnessDiff = Math.abs(origLightness - blurredLightness);
                 // rgbDiff is a measurement of how much local contrast there
                 // already is at this pixel.
-                double rgbDiff = (
-                        Math.abs(origR - hslData.redLineData[x]) +
-                        Math.abs(origG - hslData.greenLineData[x]) +
-                        Math.abs(origB - hslData.blueLineData[x])) / 3;
-                double adaptiveExponent = (1 - (1 - rgbDiff) * adaptiveFactor);
-                lightnessDiff = Math.pow(lightnessDiff, adaptiveExponent);
-                double newAmount = realAmount * (1 - lightnessDiff);
+                double rdiff = Math.abs(origR - hslData.redLineData[x]);
+                double gdiff = Math.abs(origG - hslData.greenLineData[x]);
+                double bdiff = Math.abs(origB - hslData.blueLineData[x]);
+                double rgbDiff = (rdiff + gdiff + bdiff) / 3;
+                double subtract = Math.pow(rgbDiff, 1 - adaptiveFactor);
+                double newAmount = Math.max(0.0, realAmount * (1 - subtract));
                 double originalMult = newAmount + 1;
                 double newMult = (1 - originalMult);
-                double newLightness = originalMult * origLightness +
+                double newLightness = originalMult * originalLightness +
                     newMult * blurredLightness;
-                if (x == 100 && y < 50)
-                    System.out.println("y " + y
-                            + " orig " + origLightness
-                            + " blurred " + blurredLightness
-                            + " new " + newLightness);
                 ColorUtil.hslToRgb(hslSample[0], hslSample[1], newLightness,
                         rgbSample);
                 if (is16Bit) {
@@ -262,16 +253,28 @@ class LocalContrastOperation extends ImageToImageOperation {
     
 }
 
+/**
+ * A layer for adding contrast in local areas within an image.
+ * 
+ * The local contrast enchancement is implemented like an unsharp mask filter
+ * with a big radius, but optimized by taking the average intensity of square
+ * areas around each pixel instead of using a convolution matrix.
+ * 
+ * The algorithm is adaptive, which means that is is able to add less contrast
+ * for areas that already have a high local contrast.
+ * 
+ * @author Knut Arild Erstad
+ */
 public class LocalContrastLayer extends AdjustmentLayer {
     public static final int MIN_AMOUNT = 1;
     public static final int MIN_RADIUS = 1;
     public static final int MIN_ADAPTIVE = 0;
-    public static final int MAX_AMOUNT = 400;
+    public static final int MAX_AMOUNT = 1000;
     public static final int MAX_RADIUS = 1000;
     public static final int MAX_ADAPTIVE = 100;
     private int radius = 100;
-    private int amount = 50;
-    private int adaptive = 0;
+    private int amount = 100;
+    private int adaptive = 70;
     
     @Override
     public Bitmap applyLayer(Bitmap source) {
