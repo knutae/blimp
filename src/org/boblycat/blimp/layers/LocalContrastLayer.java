@@ -22,12 +22,15 @@ import java.util.Vector;
 
 import net.sourceforge.jiu.data.IntegerImage;
 import net.sourceforge.jiu.data.PixelImage;
-import net.sourceforge.jiu.data.ShortChannelImage;
+import net.sourceforge.jiu.data.RGB24Image;
+import net.sourceforge.jiu.data.RGB48Image;
+import net.sourceforge.jiu.data.RGBIndex;
 import net.sourceforge.jiu.ops.ImageToImageOperation;
 import net.sourceforge.jiu.ops.MissingParameterException;
 import net.sourceforge.jiu.ops.WrongParameterException;
 
 import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.ColorUtil;
 import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.Util;
 
@@ -77,6 +80,90 @@ class MultiLineData {
     }
 }
 
+class MultiLineHslData {
+    IntegerImage image;
+
+    int width;
+    int height;
+    int radius;
+    double[] lightnessLineData;
+    double[] redLineData;
+    double[] greenLineData;
+    double[] blueLineData;
+    double maxSample;
+    
+    MultiLineData redData;
+    MultiLineData greenData;
+    MultiLineData blueData;
+    
+    MultiLineHslData(IntegerImage image, int radius, double maxSample) {
+        this.image = image;
+        this.radius = radius;
+        this.maxSample = maxSample;
+        width = image.getWidth();
+        height = image.getHeight();
+        redData = new MultiLineData(image);
+        greenData = new MultiLineData(image);
+        blueData = new MultiLineData(image);
+        lightnessLineData = new double[width];
+        redLineData = new double[width];
+        greenLineData = new double[width];
+        blueLineData = new double[width];
+    }
+    
+    void addLine(int y) {
+        redData.addLine(RGBIndex.INDEX_RED, y);
+        greenData.addLine(RGBIndex.INDEX_GREEN, y);
+        blueData.addLine(RGBIndex.INDEX_BLUE, y);
+    }
+    
+    void popLine() {
+        redData.popLine();
+        greenData.popLine();
+        blueData.popLine();
+    }
+    
+    void updateHslLineData() {
+        int[] combinedRed = redData.getCombinedData();
+        int[] combinedGreen = greenData.getCombinedData();
+        int[] combinedBlue = blueData.getCombinedData();
+        int numLines = redData.getNumLines();
+        long redValue = 0;
+        long greenValue = 0;
+        long blueValue = 0;
+        long divisor = 0;
+        double hsl[] = new double[3];
+        for (int x = 0; x < Math.min(width, radius); x++) {
+            redValue += combinedRed[x];
+            greenValue += combinedGreen[x];
+            blueValue += combinedBlue[x];
+            divisor += numLines;
+        }
+        for (int x = 0; x < width; x++) {
+            if (x > radius) {
+                redValue -= combinedRed[x-radius-1];
+                greenValue -= combinedGreen[x-radius-1];
+                blueValue -= combinedBlue[x-radius-1];
+                divisor -= numLines;
+            }
+            if (x + radius < width) {
+                redValue += combinedRed[x+radius];
+                greenValue += combinedGreen[x+radius];
+                blueValue += combinedBlue[x+radius];
+                divisor += numLines;
+            }
+            double r = redValue / (maxSample * divisor);
+            double g = greenValue / (maxSample * divisor);
+            double b = blueValue / (maxSample * divisor);
+            redLineData[x] = r;
+            greenLineData[x] = g;
+            blueLineData[x] = b;
+            ColorUtil.rgbToHsl(r, g, b, hsl);
+            lightnessLineData[x] = hsl[2];
+        }
+    }
+}
+
 /**
  * Local contrast enhancement, implemented like an unsharp mask filter with a big radius,
  * but optimized by taking the average intensity of square areas around each sample instead
@@ -86,7 +173,6 @@ class MultiLineData {
  */
 class LocalContrastOperation extends ImageToImageOperation {
     static final double AMOUNT_DIVISOR = 100.0;
-    static final double ADAPTIVE_MULTIPLIER = 10.0;
     int radius;
     int amount;
     int adaptive;
@@ -96,81 +182,80 @@ class LocalContrastOperation extends ImageToImageOperation {
         PixelImage pinput = getInputImage();
         if (pinput == null)
             throw new MissingParameterException("missing input image");
-        if (!(pinput instanceof IntegerImage))
+        if (!(pinput instanceof RGB24Image || pinput instanceof RGB48Image))
             throw new WrongParameterException(
-                "unsupported image type: must be IntegerImage");
+                "unsupported image type: must be RGB24Image or RGB48Image");
         int width = pinput.getWidth();
         int height = pinput.getHeight();
-        int channels = pinput.getNumChannels();
         PixelImage poutput = pinput.createCompatibleImage(width, height);
         IntegerImage input = (IntegerImage) pinput;
         IntegerImage output = (IntegerImage) poutput;
-        boolean is16Bit = (output instanceof ShortChannelImage);
-        int maxSample;
+        boolean is16Bit = (output instanceof RGB48Image);
+        double maxSample;
         if (is16Bit)
-            maxSample = 1 << 16;
+            maxSample = (1 << 16) - 1;
         else
-            maxSample = 1 << 8;
+            maxSample = (1 << 8) - 1;
         double realAmount = amount / AMOUNT_DIVISOR;
-        double adaptiveExponent = ADAPTIVE_MULTIPLIER / (adaptive + ADAPTIVE_MULTIPLIER);
-        assert(adaptiveExponent > 0 && adaptiveExponent <= 1);
-        
-        // Note: when increasing the adaptive parameter, also increase the amount,
-        // otherwise the overall effect will be reduced too much.
-        // TODO: figure out a way to do this that is mathematically sensible.
-        realAmount = realAmount + Math.pow(realAmount, adaptiveExponent);
-        
-        for (int channel = 0; channel<channels; channel++) {
-            MultiLineData activeLineData = new MultiLineData(input);
-            
-            for (int y = 0; y < Math.min(height, radius + 1); y++) {
-                activeLineData.addLine(channel, y);
-            }
-            
-            for (int y = 0; y < height; y++) {
-                if (y > radius)
-                    activeLineData.popLine();
-                if (y + radius < height)
-                    activeLineData.addLine(channel, y+radius);
-
-                int[] combinedLineData = activeLineData.getCombinedData();
-                int numLines = activeLineData.getNumLines();
-                // an int can be too small for 16-bit depths with a large radius
-                long value = 0;
-                long divisor = 0;
-                
-                for (int x = 0; x < Math.min(width, radius+1); x++) {
-                    value += combinedLineData[x];
-                    divisor += numLines;
+        double adaptiveFactor = ((double) adaptive) / LocalContrastLayer.MAX_ADAPTIVE;
+        MultiLineHslData hslData = new MultiLineHslData(input, radius, maxSample);
+        double[] hslSample = new double[3];
+        double[] rgbSample = new double[3];
+        for (int y = 0; y < Math.min(height, radius); y++) {
+            hslData.addLine(y);
+        }
+        for (int y = 0; y < height; y++) {
+            if (y > radius)
+                hslData.popLine();
+            if (y + radius < height)
+                hslData.addLine(y+radius);
+            hslData.updateHslLineData();
+            for (int x = 0; x < width; x++) {
+                double origR = input.getSample(RGBIndex.INDEX_RED, x, y) / maxSample;
+                double origG = input.getSample(RGBIndex.INDEX_GREEN, x, y) / maxSample;
+                double origB = input.getSample(RGBIndex.INDEX_BLUE, x, y) / maxSample;
+                ColorUtil.rgbToHsl(origR, origG, origB, hslSample);
+                double origLightness = hslSample[2];
+                double blurredLightness = hslData.lightnessLineData[x];
+                double lightnessDiff = Math.abs(origLightness - blurredLightness);
+                // rgbDiff is a measurement of how much local contrast there
+                // already is at this pixel.
+                double rgbDiff = (
+                        Math.abs(origR - hslData.redLineData[x]) +
+                        Math.abs(origG - hslData.greenLineData[x]) +
+                        Math.abs(origB - hslData.blueLineData[x])) / 3;
+                double adaptiveExponent = (1 - (1 - rgbDiff) * adaptiveFactor);
+                lightnessDiff = Math.pow(lightnessDiff, adaptiveExponent);
+                double newAmount = realAmount * (1 - lightnessDiff);
+                double originalMult = newAmount + 1;
+                double newMult = (1 - originalMult);
+                double newLightness = originalMult * origLightness +
+                    newMult * blurredLightness;
+                if (x == 100 && y < 50)
+                    System.out.println("y " + y
+                            + " orig " + origLightness
+                            + " blurred " + blurredLightness
+                            + " new " + newLightness);
+                ColorUtil.hslToRgb(hslSample[0], hslSample[1], newLightness,
+                        rgbSample);
+                if (is16Bit) {
+                    output.putSample(RGBIndex.INDEX_RED, x, y,
+                            Util.cropToUnsignedShort((int) (rgbSample[0] * maxSample)));
+                    output.putSample(RGBIndex.INDEX_GREEN, x, y,
+                            Util.cropToUnsignedShort((int) (rgbSample[1] * maxSample)));
+                    output.putSample(RGBIndex.INDEX_BLUE, x, y,
+                            Util.cropToUnsignedShort((int) (rgbSample[2] * maxSample)));
                 }
-                
-                for (int x = 0; x < width; x++) {
-                    if (x > radius) {
-                        value -= combinedLineData[x-radius-1];
-                        divisor -= numLines;
-                    }
-                    if (x + radius < width) {
-                        value += combinedLineData[x+radius];
-                        divisor += numLines;
-                    }
-                    assert(divisor > 0);
-                    int originalSample = input.getSample(channel, x, y);
-                    double blurredSample = ((double) value) / divisor;
-                    double sampleDiff = Math.abs(originalSample - blurredSample);
-                    double relativeDiff = ((double) sampleDiff) / maxSample; 
-                    relativeDiff = Math.pow(relativeDiff, adaptiveExponent);
-                    double newAmount = realAmount * (1 - relativeDiff);
-                    double originalMult = newAmount + 1;
-                    double newMult = (1 - originalMult);
-                    double newValue = originalMult * originalSample +
-                        newMult * blurredSample;
-                    int newSample = (int) newValue;
-                    if (is16Bit)
-                        output.putSample(channel, x, y, Util.cropToUnsignedShort(newSample));
-                    else
-                        output.putSample(channel, x, y, Util.cropToUnsignedByte(newSample));
+                else {
+                    output.putSample(RGBIndex.INDEX_RED, x, y,
+                            Util.cropToUnsignedByte((int) (rgbSample[0] * maxSample)));
+                    output.putSample(RGBIndex.INDEX_GREEN, x, y,
+                            Util.cropToUnsignedByte((int) (rgbSample[1] * maxSample)));
+                    output.putSample(RGBIndex.INDEX_BLUE, x, y,
+                            Util.cropToUnsignedByte((int) (rgbSample[2] * maxSample)));
                 }
             }
+            setProgress(y, height);
         }
         setOutputImage(output);
     }
@@ -181,11 +266,11 @@ public class LocalContrastLayer extends AdjustmentLayer {
     public static final int MIN_AMOUNT = 1;
     public static final int MIN_RADIUS = 1;
     public static final int MIN_ADAPTIVE = 0;
-    public static final int MAX_AMOUNT = 10000;
+    public static final int MAX_AMOUNT = 400;
     public static final int MAX_RADIUS = 1000;
-    public static final int MAX_ADAPTIVE = 1000;
-    private int radius = 50;
-    private int amount = 30;
+    public static final int MAX_ADAPTIVE = 100;
+    private int radius = 100;
+    private int amount = 50;
     private int adaptive = 0;
     
     @Override
