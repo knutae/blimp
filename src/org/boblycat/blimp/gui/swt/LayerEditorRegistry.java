@@ -19,6 +19,7 @@
 package org.boblycat.blimp.gui.swt;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 
 import org.boblycat.blimp.*;
@@ -190,5 +191,15 @@ public class LayerEditorRegistry {
         }
         entry.showDialog(env);
         return true;
+    }
+    
+    public LayerEditor createEdior(Layer layer, Composite parent, int flags)
+    throws InvocationTargetException, IllegalAccessException,
+    InstantiationException {
+        Entry entry = registry.get(layer.getClass().getName());
+        if (entry == null)
+            return null;
+        Object args[] = { parent, new Integer(flags) };
+        return entry.editorConstructor.newInstance(args);
     }
 }

@@ -18,6 +18,7 @@
  */
 package org.boblycat.blimp.gui.swt;
 
+import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.NaturalCubicSpline;
 import org.boblycat.blimp.PointDouble;
 import org.boblycat.blimp.Util;
@@ -54,6 +55,10 @@ public class CurvesEditor extends LayerEditor {
         Point size = canvas.getSize();
         return new PointDouble((double) x / (double) size.x,
                 (double) (size.y - y) / (double) size.y);
+    }
+    
+    private void debug(String msg) {
+        Debug.print(this, msg);
     }
 
     public CurvesEditor(Composite parent, int style) {
@@ -123,6 +128,7 @@ public class CurvesEditor extends LayerEditor {
                 if (selectedPointX != null) {
                     double x = selectedPointX;
                     double y = spline.getSplineValue(x);
+                    //debug("selected point at " + x + "," + y);
                     int xpos = (int) (x * size.x);
                     int ypos = size.y - (int) (y * size.y);
                     color = new Color(gc.getDevice(), 200, 0, 0);
@@ -139,7 +145,7 @@ public class CurvesEditor extends LayerEditor {
 
         canvas.addListener(SWT.MouseDown, new Listener() {
             public void handleEvent(Event e) {
-                //Debug.print(this, "mouse down " + e.x + " " + e.y);
+                //debug("mouse down " + e.x + " " + e.y);
                 if (curvesLayer == null)
                     return;
                 NaturalCubicSpline spline = curvesLayer.getSpline();
@@ -149,13 +155,15 @@ public class CurvesEditor extends LayerEditor {
                     // left mouse button: add or move point
                     if (almostEqual(closest, p.x)) {
                         // move existing point
-                        currentPointX = closest;
                         spline.movePoint(closest, p.x, p.y);
+                        currentPointX = p.x;
+                        debug("moved point " + closest + " -> " + p.x);
                     }
                     else {
                         // add new point
                         currentPointX = p.x;
                         spline.addPoint(p.x, p.y);
+                        debug("added point " + p.x);
                     }
                     selectedPointX = currentPointX;
                 }
@@ -180,30 +188,31 @@ public class CurvesEditor extends LayerEditor {
                 //canvas.redraw();
                 NaturalCubicSpline spline = curvesLayer.getSpline();
                 PointDouble p = canvasToSplinePos(e.x, e.y);
-                if (currentPointX == null) {
-                    double closest = spline.findClosestPoint(p.x);
-                    Double oldSelected = selectedPointX;
-                    if (almostEqual(closest, p.x))
-                        selectedPointX = closest;
-                    else
-                        selectedPointX = null;
-                    if (selectedPointX != oldSelected)
-                        canvas.redraw();
-                }
-                else {
-                    //Debug.print(this, "mouse move " + e.x + " " + e.y);
+                if (currentPointX != null) {
+                    //debug("mouse move " + e.x + " " + e.y);
                     spline.movePoint(currentPointX, p.x, p.y);
                     currentPointX = p.x;
                     selectedPointX = currentPointX;
                     layer.invalidate();
                     canvas.redraw();
                 }
+                else {
+                    double closest = spline.findClosestPoint(p.x);
+                    Double oldSelected = selectedPointX;
+                    if (almostEqual(closest, p.x))
+                        selectedPointX = closest;
+                    else
+                        selectedPointX = null;
+                    //debug("old " + oldSelected + " new " + selectedPointX);
+                    if (selectedPointX != oldSelected)
+                        canvas.redraw();
+                }
             }
         });
 
         canvas.addListener(SWT.MouseUp, new Listener() {
             public void handleEvent(Event e) {
-                //Debug.print(this, "mouse up " + e.x + " " + e.y);
+                //debug(this, "mouse up " + e.x + " " + e.y);
                 currentPointX = null;
             }
         });
