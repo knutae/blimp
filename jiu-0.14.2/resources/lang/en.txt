@@ -1,0 +1,233 @@
+Error loading image
+The format of the file is unknown.
+Load image file
+Screen resolution
+Could not create histogram.
+Number of used colors
+Count colors used...
+Close
+Help
+About...
+System
+System information...
+Color
+Invert
+Convert to grayscale
+File
+Open...
+Save as
+Exit
+Java Runtime Environment version
+Java Runtime Environment vendor
+Java vendor URL
+Java installation directory
+Java Virtual Machine specification version
+Java Virtual Machine specification vendor
+Java Virtual Machine specification name
+Java Virtual Machine implementation version
+Java Virtual Machine implementation vendor
+Java Virtual Machine implementation name
+Java Runtime Environment specification version
+Java Runtime Environment specification vendor
+Java Runtime Environment specification name
+Java class format version number
+Java class path
+Operating system name
+Operating system architecture
+Operating system version
+Homepage
+Feedback
+Median Cut...
+Error message
+The number of colors in the image is already small enough.
+CPU endianness
+CPU isalist
+Free memory
+Used memory
+Total memory
+Save as
+Geometry
+Flip
+Mirror
+Median Cut + contour removal
+Promote to RGB
+Reduce to bilevel (threshold)...
+Reduce to bilevel (Bayer dithering)...
+Rotate left (90)
+Rotate right (90)
+Rotate (180)
+Rotate (other)...
+Scale...
+Scale image
+New width
+New height
+Maintain aspect ratio
+OK
+Cancel
+Number of colors
+Median Cut color quantization
+Output color type
+Average 
+Weighted average
+Median
+Paletted
+RGB truecolor
+Representative color method
+Contour removal
+Method
+Filters
+Sharpen
+Blur
+Emboss
+Psychedelic Distillation
+Lithograph
+Save as
+Portable Bitmap (PBM)...
+Portable Graymap (PGM)... 
+Portable Pixmap (PPM)...
+Uniform palette...
+Number of bits, red
+Number of bits, green
+Number of bits, blue
+Ordered dithering
+None
+Dithering method
+Uniform palette color quantization
+Save image as...
+Error - too many bits.
+Total number of bits, colors
+Edge detection
+Reduce number of shades of gray
+Reduce number of shades of gray...
+Number of bits
+Number of shades of gray
+Sun Raster (RAS)...
+Adjust
+Contrast...
+Brightness...
+Gamma...
+Adjust contrast
+Please enter the change of contrast as a percentage value (-100 to 100):
+Adjust brightness
+Please enter the change of brightness as a percentage value (-100 to 100):
+Adjust gamma
+Please enter the gamma value (0.0 to 10.0):
+Crop image
+Left column
+Top row
+Right column
+Bottom row
+Crop...
+Convert to minimum color type
+Histogram
+Reduce to bilevel using a threshold value
+Please enter the threshold value:
+Floyd-Steinberg error diffusion
+Stucki error diffusion 
+Burkes error diffusion
+Sierra error diffusion 
+Jarvice, Judice and Ninke error diffusion
+Stevenson-Arce error diffusion
+Output quality improvement algorithm
+None
+Error diffusion
+Color image quantization
+Horizontal Sobel
+Vertical Sobel
+Horizontal Prewitt
+Vertical Prewitt
+Shear...
+Shear image
+Please enter the angle (> -90.0, < 90.0):
+Hue, saturation, value...
+Adjust hue, saturation and value
+Set hue
+Hue (0..359)
+Saturation (-100..100) 
+Value (-100..100)
+Mean...
+Median...
+Oil...
+Apply mean filter
+Apply median filter
+Apply oil filter
+Window width (odd number >= 1)
+Window height (odd number >= 1)
+Please enter the window size!
+Contour removal; number of passes
+Contour removal; tau distance
+Palette
+Save as...
+Map to arbitrary palette...
+Save palette
+Load palette
+Choose dithering method
+Websafe palette
+Palette from file
+Please choose the palette type!
+Map to arbitrary palette
+Equalize
+Normalize
+Octree...
+Octree color image quantization
+Save co-occurrence matrix
+Save co-occurrence matrix as... 
+Save co-occurrence frequency matrix
+Save co-occurrence frequency matrix as...
+Windows Bitmap (BMP)...
+Promote
+Promote to paletted
+Promote to grayscale (8 bits) 
+Promote to grayscale (16 bits) 
+Promote to RGB (24 bits) 
+Promote to RGB (48 bits)
+Reduce
+Save histogram as...
+Save histogram
+Edit
+Undo
+Redo
+Texture properties...
+Contrast
+Energy
+Entropy
+Homogeneity
+Texture properties
+Correlation
+Dissimilarity
+Minimum...
+Maximum...
+Apply minimum filter
+Apply maximum filter
+View
+Zoom in
+Zoom out
+Set original size
+Interpolation type
+Nearest neighbor (fast)
+Bilinear (slower)
+Bicubic (slowest)
+Palm...
+Palm OS system palette (256 colors)
+Palm OS system palette (16 colors) 
+Palm OS system palette (16 shades of gray)
+Palm OS system palette (4 shades of gray) 
+The image was changed. Do you want to quit without saving?
+Exit program
+Yes
+No
+Do you really want to close without saving?
+Close file
+Bits per pixel
+bilevel
+grayscale
+RGB truecolor
+unknown
+Image type
+paletted
+Pixels
+Portable Network Graphics (PNG)...
+Memory
+Disk space
+Graphics Interchange Format (GIF)...
+image1.jpg

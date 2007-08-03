@@ -12,7 +12,7 @@ swt.nativelib.jar = ${build}/swt-lib.jar
 junit.dir = junit4.1
 junit.jar = ${junit.dir}/junit-4.1.jar
 
-jiu.dir = jiu
+jiu.dir = jiu-0.14.2
 jiu.jar = ${jiu.dir}/jiu.jar
 
 xerces.jar = jars/xercesImpl.jar

@@ -1,0 +1,233 @@
+Fehler beim Laden eines Bildes
+Das Dateiformat ist unbekannt.
+Bilddatei laden
+Bildschirmauflösung
+Konnte Histogramm nicht erstellen.
+Anzahl benutzter Farben
+Anzahl benutzter Farben ermitteln...
+Schließen
+Hilfe
+Über dieses Programm...
+System
+Systeminformation...
+Farbe
+Invertieren
+In Graustufen umwandeln
+Datei
+Öffnen...
+Speichern unter
+Beenden
+Version der Java-Laufzeitumgebung
+Anbieter Java-Laufzeitumgebung
+URL des Javaanbieters
+Java-Installationsverzeichnis
+Version der Spezifikation der JVM
+Anbieter der Spezifikation der Java-Laufzeitumgebung
+Name der Spezifikation der Java-Laufzeitumgebung
+Implementationsversion der JVM
+Anbieter der JVM-Implementation 
+Name der JVM-Implementation
+Version der Spezifikation der Java-Laufzeitumgebung
+Anbieter der Spezifikation der Java-Laufzeitumgebung
+Name der Spezifikation der Java-Laufzeitumgebung
+Versionsnummer des Java-Class-Formats
+Java classpath
+Name des Betriebssystems
+Architektur des Betriebssystems
+Version des Betriebssystems
+Homepage
+Feedback
+Median Cut...
+Fehlermeldung
+Anzahl Farben ist bereits ausreichend klein.
+CPU endianness
+CPU isalist
+Freier Speicher
+Benutzter Speicher
+Speicher gesamt
+Speichern unter
+Geometrie
+Vertikal spiegeln
+Horizontal spiegeln
+Median Cut + Konturenentfernung
+Erweitern zu RGB
+Reduzieren zu Schwarz-Weiß (Schwellwert)...
+Reduzieren zu Schwarz-Weiß (Bayer-Dithering)
+Rotation (90 links)
+Rotation (90 rechts)
+Rotation (180)
+Rotation (frei)...
+Skalieren...
+Bild skalieren
+Neue Breite
+Neue Höhe
+Seitenverhältnis beibehalten
+OK
+Abbrechen
+Anzahl Farben
+Median Cut Farbquantisierung
+Ausgabefarbtyp
+Durchschnitt
+Gewichteter Durchschnitt
+Median
+Farbpalette
+RGB Echtfarbe
+Methode für repräsentative Farbe
+Konturenentfernung
+Verfahren
+Filter
+Schärfen
+Verwischen
+Relief
+Psychedelic Distillation
+Lithograph
+Speichern unter
+Portable Bitmap (PBM)...
+Portable Graymap (PGM)... 
+Portable Pixmap (PPM)...
+Einheitlich verteilte Palette...
+Anzahl Bit, rot
+Anzahl Bit, grün
+Anzahl Bit, blau
+Ordered Dithering
+Kein Dithering
+Ditheringverfahren
+Farbquantisierung (einheitliche Palette)
+Bild speichern als
+Fehler - Bitsumme zu groß.
+Bit gesamt, Anzahl Farben
+Kanten ermitteln
+Anzahl Graustufen verringern
+Anzahl Graustufen verringern...
+Anzahl Bit
+Anzahl Graustufen
+Sun Raster (RAS)...
+Anpassen
+Kontrast...
+Helligkeit...
+Gamma...
+Kontrast anpassen
+Bitte die Kontraständerung als Prozentwert eingeben (-100 bis 100):
+Helligkeit anpassen
+Bitte die Helligkeitsänderung als Prozentwert eingeben (-100 bis 100):
+Gammawert anpassen
+Bitte den Gammawert eingeben (0.0 bis 10.0):
+Bild ausschneiden
+Linke Spalte
+Oberste Zeile
+Rechte Spalte
+Unterste Zeile
+Ausschneiden...
+Umwandeln in minimalen Farbtyp
+Histogramm
+Zu Schwarz-Weiß reduzieren (Schwellwert)
+Bitte den Schwellwert eingeben:
+Floyd-Steinberg-Fehlerdiffusion
+Stucki-Fehlerdiffusion 
+Burkes-Fehlerdiffusion
+Sierra-Fehlerdiffusion 
+Jarvice-Judice-und-Ninke-Fehlerdiffusion
+Stevenson-Arce-Fehlerdiffusion
+Methode für Qualitätsverbesserung
+Keine
+Fehlerdiffusion
+Farbbildquantisierung
+Sobel (horizontal)
+Sobel (vertikal)
+Prewitt (horizontal)
+Prewitt (vertikal)
+Scheren...
+Bild scheren
+Bitte den Winkel eingeben (> -90.0, < 90.0):
+Farbton, Sättigung, Helligkeit...
+Farbton, Sättigung Helligkeit
+Farbton setzen
+Farbton (0..359)
+Sättigung (-100..100) 
+Helligkeit (-100..100)
+Mittelwert...
+Median...
+Öl...
+Mittelwertfilter
+Medianfilter
+Ölfilter
+Fensterbreite (ungerade Zahl >= 1)
+Fensterhöhe (ungerade Zahl >= 1)
+Bitte die Fenstergröße eingeben!
+Konturenentfernung; Anzahl Durchgänge
+Konturenentfernung; Abstand tau
+Palette
+Speichern unter...
+Auf beliebige Palette abbilden...
+Palette speichern
+Palette laden
+Ditheringverfahren auswählen
+Websafe-Palette
+Palette aus Datei
+Bitte den Palettentyp angeben!
+Auf beliebige Palette abbilden
+Ausgleichen
+Normalisieren
+Octree...
+Octree-Farbbildquantisierer
+Co-occurrence-Matrix speichern
+Co-occurrence-Matrix speichern unter... 
+Co-occurrence-Frequency-Matrix speichern
+Co-occurrence-Frequency-Matrix speichern unter...
+Windows Bitmap (BMP)...
+Farbtiefe erhöhen
+In Palettenbild umwandeln
+In Graustufen umwandeln (8 Bit) 
+In Graustufen umwandeln (16 Bit)
+In RGB umwandeln (24 Bit)
+In RGB umwandeln (48 Bit)
+Farbtiefe reduzieren
+Histogramm speichern unter...
+Histogramm speichern
+Bearbeiten
+Rückgängig
+Wiederherstellen
+Textureigenschaften...
+Kontrast
+Energie
+Entropie
+Homogenität
+Textureigenschaften
+Korrelation
+Verschiedenartigkeit
+Minimum...
+Maximum...
+Minimumfilter anwenden
+Maximumfilter anwenden
+Ansicht
+Vergrößern
+Verkleinern
+Originalgröße
+Interpolationstyp
+Pixelreplikation (schnell)
+Bilinear (langsamer)
+Bikubisch (am langsamsten)
+Palm...
+Palm OS Systempalette (256 Farben)
+Palm OS Systempalette (16 Farben) 
+Palm OS Systempalette (16 Graustufen)
+Palm OS Systempalette (4 Graustufen) 
+Das Bild wurde geändert. Wollen Sie das Programm beenden, ohne Änderungen zu speichern?
+Programm beenden
+Ja
+Nein
+Wollen Sie die Datei wirklich schließen ohne die Veränderungen zu speichern?
+Datei schließen
+Bits pro Pixel
+Schwarz-Weiß
+Graustufen
+RGB Echtfarbe
+unbekannt
+Bildtyp
+Palette
+Pixel
+Portable Network Graphics (PNG)...
+Arbeitsspeicher
+Festplatte
+Graphics Interchange Format (GIF)...
+image1.jpg

@@ -1,0 +1,233 @@
+Erreur lors du chargement de l'image
+Le format de ce fichier est inconnu.
+Chargement de l'image
+Résolution de l'écran
+Impossible de créer l'histogramme.
+Nombre de couleurs utilisées
+Comptage des couleurs utilisées...
+Fermer
+Aide
+A propos...
+Système
+Information système...
+Couleur
+Inversion de couleurs
+Convertir en niveaux de gris
+Fichier
+Ouvrir...
+Enregistrer sous...
+Quitter
+Version du JRE (Java Runtime Environment)
+Fournisseur du JRE
+URL du fournisseur de Java
+Répertoire d'installation de Java
+Version des spécifications de la JVM (machine virtuelle Java)
+Fournisseur des spécifications de la JVM
+Nom des spécifications de la JVM
+Version de l'implémentation de la JVM
+Fournisseur de l'implémentation de la JVM
+Nom de l'implémentation de la JVM
+Version des spécifications du JRE
+Fournisseur des spécifications du JRE
+Nom des spécifications du JRE
+Numéro de version du format des classes Java
+Class path Java
+Système d'exploitation
+Architecture du système d'exploitation
+Version du système d'exploitation
+Page d'accueil
+Retour d'expérience
+Median Cut...
+Message d'erreur
+Le nombre de couleurs dans l'image est déjà au minimum.
+CPU endianness (boutisme)
+CPU isalist (jeux d'instructions)
+Mémoire libre
+Mémoire utilisée
+Mémoire totale
+Enregistrer sous...
+Géométrie
+Renverser
+Miroir
+Median Cut + suppression du contour
+Convertir en RGB
+Reduire en monochrome (Seuil)...
+Reduire en monochrome (Diffusion Bayer)...
+Rotation à gauche (90°)
+Rotation à droite (90°)
+Rotation (180°)
+Rotation (personnalisée)...
+Echelle...
+Redimensionner l'image
+Nouvelle largeur
+Nouvelle hauteur
+Garder le ratio hauteur/largeur
+OK
+Annuler
+Nombre de couleurs
+Quantification de la couleur (Algorithme Median Cut)
+Type de couleur de sortie
+Moyenne 
+Moyenne pondérée
+Médiane
+Palette de couleurs
+RGB vraies couleurs
+Méthode pour la couleur représentative
+Suppression du contour
+Méthode
+Filtres
+Accentuer
+Flou
+Relief
+Distillation psychédélique
+Lithograph
+Enregistrer sous...
+Portable Bitmap (PBM)...
+Portable Graymap (PGM)... 
+Portable Pixmap (PPM)...
+Palette uniforme...
+Nombre de bits, rouge
+Nombre de bits, vert
+Nombre de bits, bleu
+Diffusion ordonnée
+Aucun
+Méthode de diffusion
+Quantification de la couleur de la palette uniforme
+Enregistrer l'image sous...
+Erreur - Trop de bits.
+Nombre total de bits, couleurs
+Détection des bordures
+Réduire le nombre de niveaux de gris
+Réduire le nombre de niveaux de gris
+Nombre de bits
+Nombre de niveaux de gris
+Sun Raster (RAS)...
+Ajuster
+Contraste...
+Luminosité...
+Gamma...
+Ajuster le contraste
+Veuillez saisir le pourcentage de changement de constraste (-100 à 100):
+Ajuster la luminosité
+Veuillez saisir le pourcentage de changement de luminosité (-100 à 100):
+Ajuster le gamma
+Veuillez saisir la valeur du gamma (0.0 à 10.0):
+Découper l'image
+Colonne de gauche
+Ligne du haut
+Colonne de droite
+Ligne du bas
+Découper...
+Convertir en monochrome
+Histogramme
+Réduire en monochrome en utilisant une valeur seuil
+Veuillez entrer la valeur seuil:
+Floyd-Steinberg error diffusion
+Stucki error diffusion 
+Burkes error diffusion
+Sierra error diffusion 
+Jarvice, Judice and Ninke error diffusion
+Stevenson-Arce error diffusion
+Algorithme d'amélioration de la qualité de sortie
+Aucun
+Error diffusion
+Quantification de la couleur de l'image
+Sobel (horizontal)
+Sobel (vertical)
+Prewitt (horizontal)
+Prewitt (vertical)
+Cisailler...
+Cisailler l'image
+Veuillez entrer l'angle (> -90.0, < 90.0):
+Tonalité, saturation, luminosité...
+Ajuster la tonalité, la saturation et la luminosité
+Fixer la tonalité
+Tonalité (0 à 359)
+Saturation (-100 à 100) 
+Luminosité (-100 à 100)
+Moyenne...
+Médiane...
+Huile...
+Appliquer le filtre moyen
+Appliquer le filtre médiane
+Appliquer le filtre huile
+Largeur de la fenêtre (Nombre impair >= 1)
+Hauteur de la fenêtre (Nombre impair >= 1)
+Veuillez entrer la taille de la fenêtre!
+Suppression du contour; nombre de passes
+Suppression du contour; distance tau
+Palette
+Enregistrer sous...
+Map to arbitrary palette... (???)
+Enregistrer une palette
+Charger une palette
+Choisir la méthode de diffusion
+Palette optimisée pour le web
+Palette depuis un fichier
+Veuillez choisir le type de palette!
+Map to arbitrary palette... (???)
+Egaliser
+Normaliser
+Octree...
+Quantification de la couleur de l'image (Algorithme Octree)
+Enregistrer la matrice de co-occurrence
+Enregistrer la matrice de co-occurrence sous...
+Enregistrer la matrice de fréquence de co-occurrence
+Enregistrer la matrice de fréquence de co-occurrence sous...
+Windows Bitmap (BMP)...
+Convertir
+Convertir en palette
+Convertir en niveaux de gris (8 bits) 
+Convertir en niveaux de gris (16 bits) 
+Convertir en RGB (24 bits) 
+Convertir en RGB (48 bits)
+Réduire
+Enregistrer l'histogramme sous...
+Enregistrer l'histogramme
+Edition
+Défaire
+Refaire
+Propriétés de la texture...
+Contraste
+Energie
+Entropie
+Homogénéité
+Propriétés de la texture
+Corrélation
+Dissimilitude
+Minimum...
+Maximum...
+Appliquer le filtre minimum
+Appliquer le filtre maximum
+Vue
+Zoom +
+Zoom -
+Revenir à la taille originale
+Type d'interpolation
+Voisin le plus proche (rapide)
+Bilinéaire (lent)
+Bi-cubique (plus lent)
+Palm...
+Palette système Palm OS (256 couleurs)
+Palette système Palm OS (16 couleurs) 
+Palette système Palm OS (16 niveaux de gris)
+Palette système Palm OS (4 niveaux de gris) 
+L'image a été modifiée. Voulez-vous quitter l'application sans enregistrer?
+Quitter l'application
+Oui
+Non
+Voulez-vous réellement quitter l'application sans enregistrer les modifications?
+Fermer le fichier
+Bits par pixel
+Monochrome
+Niveaux de gris
+RGB vraies couleurs
+Inconnu
+Type d'image
+Palette de couleurs
+Pixels
+Portable Network Graphics (PNG)...
+Mémoire
+Espace disque
+Graphics Interchange Format (GIF)...
+image1.jpg

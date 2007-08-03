@@ -1,0 +1,233 @@
+Error cargando imagen
+El formato del archivo es desconocido.
+Cargar archivo de imagen
+Resolución del monitor
+No se puede crear histograma.
+Número de colores usado
+Contar colores usados...
+Cerrar
+Ayuda
+Acerca de...
+Sistema
+Información del sistema...
+Color
+Invertir
+Convertir a escala de grises
+Archivo
+Abrir...
+Guardar como
+Salir
+Versión del Java Runtime Environment -JRE-
+Proveedor del Java Runtime Environment
+URL proveedor Java,
+Directorio de la instalación Java
+Especificación de máquina virtual Java (Virtual Machine -JVM-)
+Especificación del proveedor de Java Virtual Machine
+Especificación del nombre de Java Virtual Machine
+Versión de la implementación de Java Virtual Machine
+Proveedor de la implementación de Java Virtual Machine
+Nombre de la implementación de Java Virtual Machine
+Especificación de la Versión de Java Runtime Environment
+Especificación del vendedor de Java Runtime Environment
+Especificación del nombre de Java Runtime Environment
+Número de versión del formato de clases Java
+Java class path
+Nombre del Sistema Operativo
+Arquitectura del Systema Operativo
+Versión del Sistema Operativo
+Homepage
+Contactar
+Corte mediana...
+Mensaje de error
+El número de colores de la imagen ya es mínimo.
+CPU endianness
+CPU isalist
+Memoria libre
+Memoria usada
+Memoria total
+Guardar como
+Transformaciones
+Flip (espejo/horizontal)
+Espejo
+Median Corte + eliminación de contorno
+Promover a RGB
+Reducir a monocromo (umbral)...
+Reducir a monocromo (Bayer dithering)...
+Rotar a la izquierda (90)
+Rotar a la derecha (90)
+Rotar (180)
+Rotar (otras magnitudes)...
+Escala...
+Escala de imagen
+Nuevo ancho
+Nueva altura
+Mantener relación alto-ancho
+OK
+Cancelar
+Número de colores
+Cuantización de color a través de Corte mediana
+Tipo de color de la salida
+Media 
+Media ponderada
+Mediana
+Usando paleta
+RGB color verdadero
+Método de color representativo
+Eliminación de contorno
+Método
+Filtros
+Enfocar
+Desenfocar
+Bajo relieve
+Destilación psicodélica
+Litografía
+Guardar como
+Portable Bitmap (PBM)...
+Portable Graymap (PGM)... 
+Portable Pixmap (PPM)...
+Uniform palette...
+Número de bits, rojo
+Número de bits, verde
+Número de bits, azul
+Dithering ordenado
+Ningún
+Método Dithering
+Cuantización de color por paleta uniforme
+Guardar imagen como...
+Error - demasiados bits.
+Número total de bits, colores
+Detección de bordes
+Reducir número de tonos de gris
+Reducir número de tonos de gris...
+Número de bits
+Número de tonos de gris
+Sun Raster (RAS)...
+Ajustar
+Contraste...
+Brillo...
+Gamma...
+Ajustar contraste
+Por favor ingrese el cambio de contraste como un valor porcentual (-100 to 100):
+Ajustar brillo
+Por favor ingrese el cambio de brillo como un valor en porcentaje(-100 to 100):
+Ajustar gamma
+Por favor ingrese el valor gamma (0.0 to 10.0):
+Cortar imagen
+Columna izquierda
+Fila al tope
+Columna derecha
+Fila izquierda
+Cortar...
+Convertir al mínimo tipo de color
+Histograma
+Reducir a bilevel usando un valor umbral
+Por favor ingrese el valor umbral:
+Difusión de error Floyd-Steinberg
+Difusión de error Stucki 
+DIfusión de error Burkes
+Difusión de error Sierra 
+Difusión de error Jarvice, Judice and Ninke
+Difusion de error Stevenson-Arce
+Algoritmo de mejoramiento de calidad salida
+Ningún
+Difusión del error
+Cuantización de imagen color
+Sobel horizontal
+Sobel vertical
+Prewitt horizontal
+Prewitt vertical
+Sesgar...
+Sesgar imagen
+Por favor ingrese el ángulo (> -90.0, < 90.0):
+tono, saturación, valor...
+Ajustar tono, saturación y valor
+colocar tono
+Tono (0..359)
+Saturación (-100..100) 
+Valor (-100..100)
+Media...
+Mediana...
+Óleo...
+Aplicar filtro media
+Aplicar filtro mediana,
+Aplicar filtro aceite
+Ancho de ventana (número impar >= 1)
+Alto de ventana (número impar >= 1)
+Por favor ingrese tamaño de ventana!
+Eliminación de Contorno; número de pasadas
+Eliminación de contorno ; distancia tau,
+Paleta
+Guardar como...
+Mapa de paleta arbitraria...
+Salvar paleta
+Cargar paleta
+Escoger método de dithering
+Paleta Websafe (colores web)
+Paleta desde archivo
+Por favor, escoja el tipo de paleta
+Mapa de paleta arbitraria
+Ecualizar
+Normalizar
+Octree...
+Cuantización de imagen color por Octree
+Guardar matriz de coocurrencia 
+Guardar matriz de coocurrencia como... 
+Guardar matriz de frecuencia de coocurrencia
+Guardar matriz de frecuencia de coocurrencia como...
+Windows Bitmap (BMP)...
+Promover
+Promover a definido por paleta
+Promover a escala de grises (8 bits) 
+Promover a escala de grises (16 bits)
+Promover a RGB (24 bits) 
+Promover a RGB (48 bits)
+Reducir
+Guardar histograma como...
+Guardar histograma
+Modificar
+Deshacer
+Rehacer
+Propiedades de textura...
+Contraste
+Energía
+Entropía
+Homogeneidad
+Propiedades de textura
+Correlación
+Disimilaridad
+Mínimo...
+Máximo...
+Aplicar filtro mínimo
+Aplicar filtro máximo 
+Ver
+Ampliar
+Reducir
+Tamaño original
+Tipo de Interpolación
+Vecino mas cercano (rápido)
+Bilinear (lento)
+Bicúbico (mas lento)
+Palm...
+Paleta del sistema de Palm OS (256 colores)
+Paleta del sistema de Palm OS (16 colores) 
+Paleta del sistema de Palm OS (16 tonos de gris)
+Paleta del sistema de Palm OS (4 tonos de gris) 
+La imagen ha cambiado. ¿Desea salir sin Grabar?
+Salir del programa
+Si
+No
+¿Seguro que quiere cerrar sin grabar los cambios?
+Cerrar fichero
+bits por píxel
+monocroma
+tonos de gris
+Millones de colores (Rojo Verde Azul)
+desconocido
+Tipo
+con paleta
+Píxeles
+Portable Network Graphics (PNG)...
+memoria
+espacio en disco
+Graphics Interchange Format (GIF)...
+image1.jpg
