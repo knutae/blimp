@@ -24,15 +24,16 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import static org.boblycat.blimp.layers.BrightnessContrastLayer.*;
 
 public class BrightnessContrastEditor extends LayerEditor {
     ValueSlider brightnessSlider;
 
     ValueSlider contrastSlider;
 
-    ValueSlider createSlider(String caption) {
-        ValueSlider slider = new ValueSlider(this, SWT.NONE, caption, -100,
-                100, 0);
+    ValueSlider createSlider(String caption, int min, int max) {
+        ValueSlider slider = new ValueSlider(this, SWT.NONE, caption,
+                min, max, 0);
         slider.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
                 updateLayer();
@@ -57,7 +58,9 @@ public class BrightnessContrastEditor extends LayerEditor {
     public BrightnessContrastEditor(Composite parent, int style) {
         super(parent, style);
         setLayout(new FillLayout(SWT.VERTICAL));
-        brightnessSlider = createSlider("Brightness");
-        contrastSlider = createSlider("Contrast");
+        brightnessSlider = createSlider("Brightness",
+                MIN_BRIGHTNESS, MAX_BRIGHTNESS);
+        contrastSlider = createSlider("Contrast",
+                MIN_CONTRAST, MAX_CONTRAST);
     }
 }

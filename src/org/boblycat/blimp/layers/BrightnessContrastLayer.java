@@ -22,12 +22,37 @@ import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.Util;
 
 import net.sourceforge.jiu.data.PixelImage;
+import net.sourceforge.jiu.data.RGB48Image;
+import net.sourceforge.jiu.ops.LookupTableOperation;
 import net.sourceforge.jiu.color.adjustment.Brightness;
-import net.sourceforge.jiu.color.adjustment.Contrast;
+
+class MultiplicativeContrast extends LookupTableOperation {
+    static double transform(double x, double contrast) {
+        return Util.constrainedValue(x * contrast, -1, 1);
+    }
+    
+    void setTablesFromContrast(double contrast, int bitdepth) {
+        int size = 1 << bitdepth;
+        double factor = (size - 1);
+        int[] tableData = new int[size];
+        for (int i = 0; i < size; i++) {
+            double x = 2.0 * i / factor - 1.0;
+            double y = transform(x, contrast);
+            int iy = (int) ((0.5 * y + 0.5) * factor);
+            tableData[i] = iy;
+        }
+        setTables(tableData);
+    }
+}
 
 public class BrightnessContrastLayer extends AdjustmentLayer {
-    int brightness;
-    int contrast;
+    public static final int MIN_BRIGHTNESS = -100;
+    public static final int MAX_BRIGHTNESS = 100;
+    public static final int MIN_CONTRAST = 0;
+    public static final int MAX_CONTRAST = 400;
+    
+    int brightness = 0;
+    int contrast = 100;
 
     public BrightnessContrastLayer(int brightness, int contrast) {
         setBrightness(brightness);
@@ -35,7 +60,6 @@ public class BrightnessContrastLayer extends AdjustmentLayer {
     }
 
     public BrightnessContrastLayer() {
-        this(0, 0);
     }
 
     public int getBrightness() {
@@ -47,11 +71,13 @@ public class BrightnessContrastLayer extends AdjustmentLayer {
     }
 
     public void setBrightness(int brightness) {
-        this.brightness = Util.constrainedValue(brightness, -100, 100);
+        this.brightness = Util.constrainedValue(brightness,
+                MIN_BRIGHTNESS, MAX_BRIGHTNESS);
     }
 
     public void setContrast(int contrast) {
-        this.contrast = Util.constrainedValue(contrast, -100, 100);
+        this.contrast = Util.constrainedValue(contrast,
+                MIN_CONTRAST, MAX_CONTRAST);
     }
 
     public Bitmap applyLayer(Bitmap source) {
@@ -61,10 +87,15 @@ public class BrightnessContrastLayer extends AdjustmentLayer {
             bOp.setBrightness(brightness);
             image = applyJiuOperation(image, bOp);
         }
-        if (contrast != 0) {
-            Contrast cOp = new Contrast();
-            cOp.setContrast(contrast);
-            image = applyJiuOperation(image, cOp);
+        if (contrast != 100) {
+            MultiplicativeContrast op = new MultiplicativeContrast();
+            int bitDepth;
+            if (image instanceof RGB48Image)
+                bitDepth = 16;
+            else
+                bitDepth = 8;
+            op.setTablesFromContrast(contrast/100.0, bitDepth);
+            image = applyJiuOperation(image, op);
         }
         return new Bitmap(image);
     }
