@@ -36,18 +36,6 @@
                                       Name='blimp-dcraw.exe'
                                       Source='build\install\bin\blimp-dcraw.exe' />
                             </Component>
-                            <Component Id='SwtDll'
-                                       Guid='9602560D-C470-4520-8E07-9163C82FF8C8'>
-                                <File Id='swt.dll' DiskId='1'
-                                      Name='swt-win32-3232.dll'
-                                      Source='build\install\bin\swt-win32-3232.dll' />
-                            </Component>
-                            <Component Id='SwtGdipDll'
-                                       Guid='0A24F604-B499-4C06-AA95-8CE876A6E9F4'>
-                                <File Id='swt_gdip.dll' DiskId='1'
-                                      Name='swt-gdip-win32-3232.dll'
-                                      Source='build\install\bin\swt-gdip-win32-3232.dll' />
-                            </Component>
                         </Directory>
                         <Directory Id='InstallLib' Name='lib'>
                             <Component Id='BlimpJar'
@@ -92,8 +80,6 @@
             <ComponentRef Id='GplLicense'/>
             <ComponentRef Id='BlimpExecutable'/>
             <ComponentRef Id='DcrawExecutable'/>
-            <ComponentRef Id='SwtDll'/>
-            <ComponentRef Id='SwtGdipDll'/>
             <ComponentRef Id='BlimpJar'/>
             <ComponentRef Id='JiuJar'/>
             <ComponentRef Id='SwtJar'/>
