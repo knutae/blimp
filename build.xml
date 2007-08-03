@@ -56,24 +56,6 @@
 
     <target name="compile" depends="compile-java,dcraw"/>
     
-    <target name="lcms" depends="init">
-        <cc outfile="${lcms.lib}" outtype="static" optimize="speed">
-            <compiler name="${c-compiler}"/>
-            <includepath location="${lcms.include}"/>
-            <fileset dir="${lcms.dir}" includes="*.c"/>
-        </cc>
-    </target>
-    
-    <target name="dcraw-with-lcms" depends="lcms,init">
-        <cc outfile="${dcraw.exe.path}" outtype="executable" optimize="extreme">
-            <compiler name="${c-compiler}"/>
-            <includepath location="${lcms.include}"/>
-            <defineset define="NO_JPEG"/>
-            <fileset dir="dcraw" includes="dcraw.c"/>
-            <libset dir="build" libs="lcms,m"/>
-        </cc>
-    </target>
-    
     <target name="dcraw-minimal" depends="init">
         <cc name="${c-compiler}" outfile="${dcraw.exe.path}" outtype="executable" optimize="extreme">
             <compilerarg if="c-compiler-args" value="${c-compiler-args}"/>
