@@ -90,5 +90,20 @@
         <Property Id='WIXUI_INSTALLDIR' Value='INSTALLDIR'/>
         <UIRef Id="WixUI_InstallDir_NoEula" />
         <UIRef Id="WixUI_ErrorProgressText" />
+
+        <!-- Upgrade information below -->
+        <Upgrade Id='733D3C3F-C40F-4ADD-AF62-8CD66DBE93AD'>
+            <UpgradeVersion Property='NEWVERSION' OnlyDetect='yes' Minimum='0.9.1' />
+            <!-- Uncomment the following for post-0.9.0 versions -->
+            <!-- <UpgradeVersion Property='OLDVERSION' Maximum='0.9.1' /> -->
+        </Upgrade>
+        
+        <!-- Refuse to install over a newer version -->
+        <CustomAction Id='NewVersionFound'
+                      Error='A Blimp version newer than 0.9.0 is already installed.' />
+        <InstallExecuteSequence>
+            <Custom Action='NewVersionFound' After='FindRelatedProducts'>NEWVERSION</Custom>
+            <RemoveExistingProducts After='InstallFinalize'/>
+        </InstallExecuteSequence>
     </Product>
 </Wix>
