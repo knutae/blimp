@@ -74,9 +74,17 @@
         </jar>
     </target>
     
-    <target name="blimp-jar" depends="compile-java">
+    <target name="copy-resources" depends="init">
+        <copy todir="${build}/resources/images">
+            <!-- <fileset dir="icons" includes="blimp-icon-*.png"/> -->
+            <fileset dir="icons" includes="*.png" excludes="*wix*"/>
+        </copy>
+    </target>
+    
+    <target name="blimp-jar" depends="compile-java,copy-resources">
         <jar destfile="${blimp.jar}">
             <fileset dir="${build}" includes="**/*.class"/>
+            <fileset dir="${build}" includes="resources/**"/>
         </jar>
     </target>
     
@@ -106,7 +114,7 @@
         </signjar>
     </target>
     
-    <target name="run" depends="compile">
+    <target name="run" depends="compile,copy-resources">
         <java fork="true"
               classname="org.boblycat.blimp.gui.swt.MainWindow">
             <classpath refid="run.classpath"/>
@@ -197,6 +205,7 @@
     <target name="blimp-exe" depends="install-windows">
         <mkdir dir="${jsmooth.installdir}"/>
         <copy file="tools/bundle-windows/blimp.jsmooth" todir="${jsmooth.installdir}"/>
+        <copy file="icons/blimp.ico" todir="${jsmooth.installdir}"/>
         <exec dir="${jsmooth.installdir}" executable="${jsmooth.compiler}" failonerror="true">
             <arg value="blimp.jsmooth"/>
         </exec>

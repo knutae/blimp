@@ -18,10 +18,19 @@
  */
 package org.boblycat.blimp.gui.swt;
 
+import java.io.InputStream;
+import java.util.Vector;
+
 import org.boblycat.blimp.Util;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Resource;
 import org.eclipse.swt.widgets.MessageBox;
@@ -34,6 +43,8 @@ import org.eclipse.swt.widgets.Widget;
  * @author Knut Arild Erstad
  */
 public class SwtUtil {
+    private static ImageLoader imageLoaderInstance;
+    
     public static void errorDialog(Shell parentShell, String title,
             String message) {
         messageDialog(parentShell, title, message, SWT.ICON_ERROR);
@@ -158,5 +169,57 @@ public class SwtUtil {
                 + filename);
         int result = box.open();
         return (result == SWT.YES);
+    }
+    
+    private static ImageData[] loadResourceImageData(String filename) {
+        if (imageLoaderInstance == null)
+            imageLoaderInstance = new ImageLoader();
+        String path = "resources/images/" + filename;
+        InputStream stream = ClassLoader.getSystemResourceAsStream(path);
+        if (stream == null)
+            return null;
+        return imageLoaderInstance.load(stream);
+    }
+    
+    public static Image[] loadResourceImages(Device device, String filename) {
+        ImageData[] data = loadResourceImageData(filename);
+        if (data == null)
+            return null;
+        Image[] images = new Image[data.length];
+        for (int i = 0; i < data.length; i++)
+            images[i] = new Image(device, data[i]);
+        return images;
+    }
+    
+    public static Image loadResourceImage(Device device, String filename) {
+        Image[] images = loadResourceImages(device, filename);
+        if (images == null || images.length == 0)
+            return null;
+        return images[0];
+    }
+    
+    public static void addResourceImages(Device device, String filename,
+            Vector<Image> imageVector) {
+        Image[] loadedImages = loadResourceImages(device, filename);
+        if (loadedImages == null)
+            return;
+        for (Image image: loadedImages)
+            imageVector.add(image);
+    }
+    
+    public static void setImages(Shell shell, Vector<Image> images) {
+        if (images == null || images.size() == 0)
+            return;
+        Image[] imageArray = new Image[images.size()];
+        for (int i = 0; i < imageArray.length; i++)
+            imageArray[i] = images.get(i);
+        shell.setImages(imageArray);
+    }
+    
+    public static Font copyFontWithHeight(Font font, int newHeight) {
+        FontData[] fontDataArray = font.getFontData();
+        for (FontData data: fontDataArray)
+            data.setHeight(newHeight);
+        return new Font(font.getDevice(), fontDataArray);
     }
 }
