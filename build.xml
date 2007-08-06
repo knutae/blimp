@@ -169,7 +169,16 @@
         <copy todir="${install.lib}" file="${blimp.jar}"/>
     </target>
 
-    <target name="install-launcher" depends="install-jars">
+    <target name="install-jars-unix" depends="blimp-jar">
+        <!-- Copy all jars except those in other packages (xerces) -->
+        <copy todir="${install.lib}">
+            <fileset dir="jars" includes="*.jar" excludes="xerces*.jar"/>
+        </copy>
+        <copy todir="${install.lib}" file="${jiu.jar}"/>
+        <copy todir="${install.lib}" file="${blimp.jar}"/>
+    </target>
+
+    <target name="install-launcher" depends="install-jars-unix">
         <path id="install.jars">
             <fileset dir="${install.lib}" includes="*.jar"/>
             <pathelement location="${swt.jar}"/>
@@ -188,10 +197,8 @@
         <gzip src="${bundle.sources}/blimp.1" destfile="${install.man}/blimp.1.gz"/>
     </target>
 
-    <target name="install-blimp" depends="install-jars,install-launcher"/>
+    <target name="install-unix" depends="install-jars-unix,install-launcher"/>
 
-    <target name="install" depends="install-blimp,install-dcraw"/>
-    
     <!-- Windows-specific targets -->
     <target name="install-windows" depends="copyjars,blimp-jar,install-dcraw">
         <copy todir="${install.lib}">

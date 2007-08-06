@@ -3,7 +3,8 @@ JAVA=java
 BLIMP_HOME=${blimp.home}
 DCRAW=/usr/bin/dcraw
 LIB=$BLIMP_HOME/lib
-CLASSPATH=$LIB/blimp.jar:$LIB/jiu.jar:$LIB/xercesImpl.jar:$LIB/BrowserLauncher2-10rc4.jar:${swt.jar}
+XERCES_JAR=/usr/share/java/xercesImpl.jar
+CLASSPATH=$LIB/blimp.jar:$LIB/jiu.jar:$XERCES_JAR:$LIB/BrowserLauncher2-10rc4.jar:${swt.jar}
 LIBRARY_PATH=${swt.jni.dir}
 
 $JAVA -classpath $CLASSPATH -Dblimp.dcraw.path=$DCRAW -Djava.library.path=$LIBRARY_PATH -Xmx256M org.boblycat.blimp.gui.swt.MainWindow

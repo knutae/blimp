@@ -7,7 +7,7 @@ Standards-Version: 3.7.2
 
 Package: blimp
 Architecture: all
-Depends: dcraw, sun-java6-jre, libswt3.2-gtk-java
+Depends: dcraw, sun-java6-jre, libswt3.2-gtk-java, libxerces2-java
 Description: A layered photo editor
  Blimp is a layer-based photo editor.  It supports
  many raw formats (through dcraw), 8-bit or 16-bit
