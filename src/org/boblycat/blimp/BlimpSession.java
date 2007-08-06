@@ -132,8 +132,11 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return list;
     }
     
-    private Vector<AdjustmentLayer> tryRearrangeLayersBefore(String layerName) {
+    private Vector<AdjustmentLayer> tryRearrangeLayersBefore(String layerName,
+            boolean useViewport) {
         Vector<AdjustmentLayer> list = layersBefore(layerName);
+        if (useViewport)
+            list.add(viewLayer);
         if (previewQuality == PreviewQuality.Fast)
             list = LayerRearranger.optimizeLayerOrder(list);
         return list;
@@ -159,9 +162,8 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             return null;
         
         Debug.print(this, "preview quality " + previewQuality);
-        Vector<AdjustmentLayer> layers = tryRearrangeLayersBefore(layerName);
-        if (useViewport)
-            layers.add(viewLayer);
+        Vector<AdjustmentLayer> layers = tryRearrangeLayersBefore(layerName,
+                useViewport);
         
         for (AdjustmentLayer layer : layers) {
             if (layer.isActive())
