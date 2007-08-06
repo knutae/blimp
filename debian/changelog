@@ -1,3 +1,9 @@
+blimp (0.9.0) unstable; urgency=low
+
+  * This version is a pre-release of the upcoming 1.0 release.
+
+ -- Knut Arild Erstad <knute@gmail.com>  Sun,  5 Aug 2007 18:43:16 +0200
+
 blimp (0.5) unstable; urgency=low
 
   * Initial Debian beta version.

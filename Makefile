@@ -7,7 +7,7 @@ USR_BIN = $(DESTDIR)/usr/bin
 MAN_DIR = $(DESTDIR)/usr/share/man/man1
 ANT = ant -lib ant-jars
 ANT_INSTALL = $(ANT) -Dinstall.home=$(INSTALLDIR) -Dblimp.home=$(BASEDIR) -Ddcraw.install.bin=$(USR_BIN) -Dinstall.man=$(MAN_DIR)
-SOURCE_IGNORE = -I.svn -I*-stamp -I_* -Iswt*win32* -Ilcms-1.16 -Ijiu/net
+SOURCE_IGNORE = -I.svn -I*-stamp -I_* -Iswt*win32*
 
 default: all
 
