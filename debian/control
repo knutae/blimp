@@ -3,7 +3,8 @@ Section: graphics
 Priority: optional
 Maintainer: Knut Arild Erstad <knutae@gmail.com>
 Build-Depends: debhelper (>= 5), ant (>= 1.6.5),
- sun-java6-jdk, libswt3.2-gtk-java, imagemagick
+ sun-java6-jdk, libswt3.2-gtk-java, imagemagick,
+ fakeroot
 Standards-Version: 3.7.2
 
 Package: blimp
