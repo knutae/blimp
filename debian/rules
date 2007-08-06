@@ -10,6 +10,9 @@
 # Modified to make a template file for a multi-binary package with separated
 # build-arch and build-indep targets  by Bill Allombert 2001
 
+# Note: the arch part is no longer in use since the blimp-dcraw package
+# was removed from the Debian build.
+
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
@@ -35,7 +38,7 @@ configure-stamp:
 
 
 #Architecture 
-build: build-arch build-indep
+build: build-indep
 
 build-arch: build-arch-stamp
 build-arch-stamp: configure-stamp 
@@ -61,7 +64,7 @@ clean:
 
 	dh_clean 
 
-install: install-indep install-arch
+install: install-indep
 install-indep:
 	dh_testdir
 	dh_testroot
@@ -126,5 +129,5 @@ binary-indep: build-indep install-indep
 binary-arch: build-arch install-arch
 	$(MAKE) -f debian/rules DH_OPTIONS=-s binary-common
 
-binary: binary-arch binary-indep
+binary: binary-indep
 .PHONY: build clean binary-indep binary-arch binary install install-indep install-arch configure
