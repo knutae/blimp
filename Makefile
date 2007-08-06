@@ -5,6 +5,7 @@ BASEDIR = /usr/share/blimp
 INSTALLDIR = $(DESTDIR)$(BASEDIR)
 USR_BIN = $(DESTDIR)/usr/bin
 MAN_DIR = $(DESTDIR)/usr/share/man/man1
+ICONDIR = $(INSTALLDIR)/icons
 ANT = ant -lib ant-jars
 ANT_INSTALL = $(ANT) -Dinstall.home=$(INSTALLDIR) -Dblimp.home=$(BASEDIR) -Ddcraw.install.bin=$(USR_BIN) -Dinstall.man=$(MAN_DIR)
 SOURCE_IGNORE = -I.svn -I*-stamp -I_* -Iswt*win32*
@@ -31,6 +32,9 @@ install-blimp:
 	gzip -c -9 tools/bundle-unix/blimp.1 > $(MAN_DIR)/blimp.1.gz
 	mkdir -p $(USR_BIN)
 	cd $(USR_BIN) ; ln -sf ../share/blimp/bin/blimp
+	mkdir -p $(ICONDIR)
+	cp icons/blimp-logo-48.png $(ICONDIR)/blimp.png
+	convert icons/blimp-logo-32.png $(ICONDIR)/blimp.xpm
 
 compile-dcraw:
 	$(ANT) dcraw
