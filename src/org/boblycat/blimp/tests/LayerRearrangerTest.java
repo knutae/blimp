@@ -30,6 +30,7 @@ import org.boblycat.blimp.layers.GammaLayer;
 import org.boblycat.blimp.layers.GrayscaleMixerLayer;
 import org.boblycat.blimp.layers.ResizeLayer;
 import org.boblycat.blimp.layers.SolidColorBorderLayer;
+import org.boblycat.blimp.layers.ViewResizeLayer;
 import org.junit.Test;
 
 public class LayerRearrangerTest {
@@ -143,5 +144,16 @@ public class LayerRearrangerTest {
         assertSame(curves, newLayers.get(1));
         assertSame(border, newLayers.get(2));
         assertSame(resize, newLayers.get(3));
+    }
+    
+    @Test
+    public void testGammaAndViewResize() {
+        GammaLayer gamma = new GammaLayer();
+        ViewResizeLayer viewResize = new ViewResizeLayer();
+        layers.add(gamma);
+        layers.add(viewResize);
+        execute();
+        assertSame(viewResize, newLayers.get(0));
+        assertSame(gamma, newLayers.get(1));
     }
 }
