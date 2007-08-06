@@ -175,7 +175,7 @@
             <pathelement location="${swt.jar}"/>
         </path>
         <property name="install.classpath" refid="install.jars"/>
-        <copy file="blimp-launcher.template" tofile="${install.bin}/blimp">
+        <copy file="${bundle.sources}/blimp-launcher.template" tofile="${install.bin}/blimp">
             <filterchain>
               <expandproperties/>
             </filterchain>
@@ -185,7 +185,7 @@
 
     <target name="install-man">
         <mkdir dir="${install.man}"/>
-        <gzip src="blimp.1" destfile="${install.man}/blimp.1.gz"/>
+        <gzip src="${bundle.sources}/blimp.1" destfile="${install.man}/blimp.1.gz"/>
     </target>
 
     <target name="install-blimp" depends="install-jars,install-launcher"/>

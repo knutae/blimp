@@ -28,12 +28,12 @@ install:
 install-dcraw:
 	$(ANT_INSTALL) install-dcraw
 	mkdir -p $(MAN_DIR)
-	gzip -c -9 blimp-dcraw.1 > $(MAN_DIR)/blimp-dcraw.1.gz
+	gzip -c -9 tools/bundle-unix/blimp-dcraw.1 > $(MAN_DIR)/blimp-dcraw.1.gz
 
 install-blimp:
 	$(ANT_INSTALL) install-blimp
 	mkdir -p $(MAN_DIR)
-	gzip -c -9 blimp.1 > $(MAN_DIR)/blimp.1.gz
+	gzip -c -9 tools/bundle-unix/blimp.1 > $(MAN_DIR)/blimp.1.gz
 	mkdir -p $(USR_BIN)
 	cd $(USR_BIN) ; ln -sf ../share/blimp/bin/blimp
 
