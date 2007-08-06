@@ -1,5 +1,8 @@
 #!/bin/sh
 JAVA=java
+if [ -x "${java.path}" ]; then
+  JAVA="${java.path}"
+fi
 BLIMP_HOME=${blimp.home}
 DCRAW=/usr/bin/dcraw
 LIB=$BLIMP_HOME/lib
