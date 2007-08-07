@@ -25,8 +25,6 @@ import org.boblycat.blimp.layers.FileInputLayer;
 import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.RawFileInputLayer;
 
-import edu.stanford.ejalbert.BrowserLauncher;
-
 public class Util {
     public static int constrainedValue(int value, int min, int max) {
         if (max < min)
@@ -208,24 +206,6 @@ public class Util {
         return System.getProperty("os.name").toLowerCase().contains("windows");
     }
 
-    public static void openLinkInBrowser(String link) {
-        try {
-            // For some reason, BrowserLauncher can be really slow on windows,
-            // so avoid it if possible (sigh!)
-            if (isWindowsOS()) {
-                Runtime rt = Runtime.getRuntime();
-                rt.exec(new String[] { "cmd", "/c", "start " + link });
-            }
-            else {
-                BrowserLauncher launcher = new BrowserLauncher(null);
-                launcher.openURLinBrowser(link);
-            }
-        }
-        catch (Exception e) {
-            err("Failed to open link: " + link);
-        }
-    }
-    
     /**
      * Add or change a file name extension.
      * @param filename A file name or path, with or without an extension.

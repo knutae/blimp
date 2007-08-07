@@ -7,7 +7,6 @@
 <JVMSearchPath>exepath</JVMSearchPath>
 <JVMSearchPath>jview</JVMSearchPath>
 <classPath>lib\blimp.jar</classPath>
-<classPath>lib\BrowserLauncher2-10rc4.jar</classPath>
 <classPath>lib\swt.jar</classPath>
 <classPath>lib\xercesImpl.jar</classPath>
 <classPath>lib\jiu.jar</classPath>

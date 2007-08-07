@@ -17,8 +17,6 @@ jiu.jar = ${jiu.dir}/jiu.jar
 
 xerces.jar = jars/xercesImpl.jar
 
-browser.jar = jars/BrowserLauncher2-10rc4.jar
-
 dcraw.exe = blimp-dcraw
 dcraw.exe.path = ${build}/${dcraw.exe}
 

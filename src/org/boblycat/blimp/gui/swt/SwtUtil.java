@@ -33,6 +33,7 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Resource;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -229,5 +230,9 @@ public class SwtUtil {
         while (!window.isDisposed())
             if (!display.readAndDispatch())
                 display.sleep();
+    }
+    
+    public static void openLinkInBrowser(String link) {
+        Program.launch(link);
     }
 }

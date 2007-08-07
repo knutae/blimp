@@ -27,21 +27,18 @@
         <pathelement location="${swt.jar}"/>
         <pathelement location="${jiu.jar}"/>
         <pathelement location="${junit.jar}"/>
-        <pathelement location="${browser.jar}"/>
     </path>
     <path id="run.classpath">
         <pathelement location="${swt.jar}"/>
         <pathelement location="${jiu.jar}"/>
         <pathelement location="${build}"/>
         <pathelement location="${xerces.jar}"/>
-        <pathelement location="${browser.jar}"/>
     </path>
     <path id="test.classpath">
         <pathelement location="${junit.jar}"/>
         <pathelement location="${build}"/>
         <pathelement location="${xerces.jar}"/>
         <pathelement location="${jiu.jar}"/>
-        <pathelement location="${browser.jar}"/>
     </path>
     
     <target name="init">

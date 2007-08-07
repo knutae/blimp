@@ -645,7 +645,7 @@ public class MainWindow {
                 + " for more information and resources.\n");
         linkText.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
-                Util.openLinkInBrowser(e.text);
+                SwtUtil.openLinkInBrowser(e.text);
             }
         });
         Button button = new Button(dialog, SWT.PUSH);

@@ -53,12 +53,6 @@
                                 <File Id='swt.jar' Name='swt.jar' DiskId='1'
                                       Source='build\install\lib\swt.jar' />
                             </Component>
-                            <Component Id='BrowserLauncherJar'
-                                       Guid='451D1E66-86DA-42FE-92DE-DAF4DABD1193'>
-                                <File Id='BrowserLauncher.jar' DiskId='1'
-                                      Name='BrowserLauncher2-10rc4.jar'
-                                      Source='build\install\lib\BrowserLauncher2-10rc4.jar' />
-                            </Component>
                             <Component Id='XercesImplJar'
                                        Guid='362B634C-B06C-4F4D-9919-4026EAAAD8DD'>
                                 <File Id='xercesImpl.jar' DiskId='1'
@@ -83,7 +77,6 @@
             <ComponentRef Id='BlimpJar'/>
             <ComponentRef Id='JiuJar'/>
             <ComponentRef Id='SwtJar'/>
-            <ComponentRef Id='BrowserLauncherJar'/>
             <ComponentRef Id='XercesImplJar'/>
         </Feature>
 
