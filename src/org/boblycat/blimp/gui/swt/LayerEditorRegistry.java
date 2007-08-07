@@ -64,7 +64,7 @@ public class LayerEditorRegistry {
         void showDialog(LayerEditorEnvironment environment) {
             env = environment;
             dialog = new Shell(parentShell, SWT.APPLICATION_MODAL
-                    | SWT.DIALOG_TRIM);
+                    | SWT.TITLE | SWT.BORDER);
             dialog.setLayout(new GridLayout());
             dialog.setText(env.layer.getDescription());
             Object args[] = { dialog, new Integer(SWT.NONE) };
