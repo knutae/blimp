@@ -347,10 +347,7 @@ public class MainWindow {
     }
 
     public void mainLoop() {
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch())
-                display.sleep();
-        }
+        SwtUtil.modalLoop(shell);
         display.dispose();
     }
 
@@ -595,7 +592,10 @@ public class MainWindow {
             return;
         }
         try {
-            BitmapUtil.writeBitmap(session.getFullBitmap(), ext, filename, 0.9);
+            double quality = 0.9;
+            if (ext.equals("jpg") || ext.equals("jpeg"))
+                quality = JpegQualityDialog.queryJpegQuality(shell);
+            BitmapUtil.writeBitmap(session.getFullBitmap(), ext, filename, quality);
             SwtUtil.messageDialog(shell, "Image Exported",
                     "The image was exported to:\n" + filename, SWT.ICON_INFORMATION);
         }

@@ -33,6 +33,7 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Resource;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
@@ -221,5 +222,12 @@ public class SwtUtil {
         for (FontData data: fontDataArray)
             data.setHeight(newHeight);
         return new Font(font.getDevice(), fontDataArray);
+    }
+    
+    public static void modalLoop(Shell window) {
+        Display display = window.getDisplay();
+        while (!window.isDisposed())
+            if (!display.readAndDispatch())
+                display.sleep();
     }
 }
