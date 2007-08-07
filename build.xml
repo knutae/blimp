@@ -218,7 +218,7 @@
         <exec executable="msiexec" failonerror="true">
             <arg value="/quiet"/>
             <arg value="/x"/>
-            <arg value="{AF3F7042-5089-4064-B4EB-C0AD8F2F6C6D}"/>
+            <arg value="{1A61C3A2-DA8E-478E-A64D-D5B1394ADEC1}"/>
         </exec>
     </target>
     
