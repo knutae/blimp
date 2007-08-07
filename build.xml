@@ -65,12 +65,6 @@
 
     <target name="dcraw" depends="dcraw-minimal"/>
     
-    <target name="blimp-jar-webstart" depends="compile">
-        <jar destfile="${blimp.jar}">
-            <fileset dir="${build}" includes="**/*.class,${dcraw.exe}"/>
-        </jar>
-    </target>
-    
     <target name="copy-resources" depends="init">
         <copy todir="${build}/resources/images">
             <!-- <fileset dir="icons" includes="blimp-icon-*.png"/> -->
@@ -85,12 +79,6 @@
         </jar>
     </target>
     
-    <target name="swt-native-jar" depends="init">
-        <jar destfile="${swt.nativelib.jar}">
-            <fileset dir="${swt.jni.dir}" includes="${swt.libs.dynamic}"/>
-        </jar>
-    </target>
-    
     <!-- target for copying distribution jars (to be signed) -->
     <target name="copyjars">
         <copy todir="${build}">
@@ -102,13 +90,6 @@
     
     <target name="test-sign-environment">
         <fail unless="env.BLIMP_STOREPASS">BLIMP_STOREPASS environment variable not set.</fail>
-    </target>
-    
-    <target name="signjars" depends="test-sign-environment,blimp-jar-webstart,swt-native-jar,copyjars">
-        <!-- The store password must be set as an environment variable. -->
-        <signjar alias="blimp" storepass="${env.BLIMP_STOREPASS}">
-            <fileset dir="${build}" includes="*.jar"/>
-        </signjar>
     </target>
     
     <target name="run" depends="compile,copy-resources">
