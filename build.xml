@@ -79,19 +79,6 @@
         </jar>
     </target>
     
-    <!-- target for copying distribution jars (to be signed) -->
-    <target name="copyjars">
-        <copy todir="${build}">
-            <fileset dir="jars" includes="*.jar"/>
-        </copy>
-        <copy todir="${build}" file="${jiu.jar}"/>
-        <copy todir="${build}" file="${swt.jar}"/>
-    </target>
-    
-    <target name="test-sign-environment">
-        <fail unless="env.BLIMP_STOREPASS">BLIMP_STOREPASS environment variable not set.</fail>
-    </target>
-    
     <target name="run" depends="compile,copy-resources">
         <java fork="true"
               classname="org.boblycat.blimp.gui.swt.MainWindow">
@@ -178,13 +165,13 @@
     <target name="install-unix" depends="install-jars-unix,install-launcher"/>
 
     <!-- Windows-specific targets -->
-    <target name="install-windows" depends="copyjars,blimp-jar,install-dcraw">
+    <target name="install-windows" depends="blimp-jar,install-dcraw">
+        <copy todir="${install.lib}" file="${blimp.jar}"/>
         <copy todir="${install.lib}">
-            <fileset dir="${build}" includes="*.jar"/>
+            <fileset dir="jars" includes="*.jar"/>
         </copy>
-        <copy todir="${install.bin}">
-            <fileset dir="${swt.jni.dir}" includes="*.dll"/>
-        </copy>
+        <copy todir="${install.lib}" file="${jiu.jar}"/>
+        <copy todir="${install.lib}" file="${swt.jar}"/>
     </target>
     
     <target name="blimp-exe" depends="install-windows">
