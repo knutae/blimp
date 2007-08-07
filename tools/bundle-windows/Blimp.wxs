@@ -90,9 +90,6 @@
         <Property Id='WIXUI_INSTALLDIR' Value='INSTALLDIR'/>
         <UIRef Id="WixUI_InstallDir_NoEula" />
         <UIRef Id="WixUI_ErrorProgressText" />
-        
-        <WixVariable Id='WixUIDialogBmp' Value='icons\blimp-wix-dialog.jpg'/>
-        <WixVariable Id='WixUIBannerBmp' Value='icons\blimp-wix-banner.jpg'/>
 
         <!-- Upgrade information below -->
         <Upgrade Id='733D3C3F-C40F-4ADD-AF62-8CD66DBE93AD'>
