@@ -94,7 +94,7 @@ public class LayerPropertyEditor extends Composite {
         if (index < 0 || index >= layerProperties.size())
             return null;
         Layer.Property prop = layerProperties.get(index);
-        Class propClass = prop.getPropertyClass();
+        Class<?> propClass = prop.getPropertyClass();
         if (propClass == Boolean.class || propClass == Boolean.TYPE) {
             return new String[] { "true", "false" };
         }
@@ -277,7 +277,7 @@ public class LayerPropertyEditor extends Composite {
         }
     }
 
-    Object parsePropertyValue(Class propertyClass, String strValue)
+    Object parsePropertyValue(Class<?> propertyClass, String strValue)
             throws IllegalArgumentException {
         if (propertyClass == String.class)
             return strValue;
@@ -307,7 +307,7 @@ public class LayerPropertyEditor extends Composite {
     }
 
     void tryApplyTextValue(Layer.Property prop, String strValue) {
-        Class propertyClass = prop.getPropertyClass();
+        Class<?> propertyClass = prop.getPropertyClass();
         try {
             Object objValue = parsePropertyValue(propertyClass, strValue);
             prop.setValue(objValue);
@@ -319,8 +319,8 @@ public class LayerPropertyEditor extends Composite {
     }
 
     void tryApplyArrayValue(Layer.Property prop, String[] strValues) {
-        Class arrayClass = prop.getPropertyClass();
-        Class componentClass = arrayClass.getComponentType();
+        Class<?> arrayClass = prop.getPropertyClass();
+        Class<?> componentClass = arrayClass.getComponentType();
         try {
             Object objValues = Array.newInstance(componentClass,
                     strValues.length);

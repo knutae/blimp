@@ -51,7 +51,7 @@ public class EditorTestApplication {
         String layerClassName = args[0];
         if (!layerClassName.contains("."))
             layerClassName = "org.boblycat.blimp.layers." + layerClassName;
-        Class layerClass = Class.forName(layerClassName);
+        Class<?> layerClass = Class.forName(layerClassName);
         Debug.register(layerClass);
 
         Layer layer = (Layer) layerClass.newInstance();

@@ -80,7 +80,7 @@ public class Serializer {
     public static String propertyValueToString(Object value) {
         if (value == null)
             return "";
-        Class pClass = value.getClass();
+        Class<?> pClass = value.getClass();
         if (pClass == PointDouble.class)
             return ((PointDouble) value).toCommaString();
         return value.toString();
@@ -185,7 +185,7 @@ public class Serializer {
         return buf.toString();
     }
 
-    public static Object parsePropertyValue(Class propertyClass, String strValue)
+    public static Object parsePropertyValue(Class<?> propertyClass, String strValue)
             throws NumberFormatException, ColorRGB.SyntaxException {
         if (propertyClass == String.class)
             return strValue;
@@ -220,8 +220,8 @@ public class Serializer {
 
     private static Object parsePropertyArrayValues(Element parent,
             Layer.Property prop) {
-        Class arrayClass = prop.getPropertyClass();
-        Class componentClass = arrayClass.getComponentType();
+        Class<?> arrayClass = prop.getPropertyClass();
+        Class<?> componentClass = arrayClass.getComponentType();
         // Collect array values in a vector
         Vector<Object> values = new Vector<Object>();
         for (Node child : new DOMNodeIterator(parent, true)) {
@@ -289,7 +289,7 @@ public class Serializer {
 
     static BlimpBean newBeanInstance(String className,
             Class<? extends BlimpBean> baseClass) throws ClassNotFoundException {
-        Class beanClass = Class.forName(className);
+        Class<?> beanClass = Class.forName(className);
         if (!baseClass.isAssignableFrom(beanClass))
             beanParseFailure("class not a subclass of " + baseClass.getName()
                     + ": " + className);

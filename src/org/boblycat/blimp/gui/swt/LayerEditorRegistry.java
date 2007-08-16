@@ -155,7 +155,7 @@ public class LayerEditorRegistry {
 
     static Constructor<? extends LayerEditor> getConstructor(
             Class<? extends LayerEditor> editorClass) {
-        Class[] argTypes = { Composite.class, Integer.TYPE };
+        Class<?>[] argTypes = { Composite.class, Integer.TYPE };
         try {
             return editorClass.getConstructor(argTypes);
         }

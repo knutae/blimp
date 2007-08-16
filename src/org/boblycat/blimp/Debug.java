@@ -27,13 +27,13 @@ import java.util.Set;
  * @author Knut Arild Erstad
  */
 public class Debug {
-    private static Set<Class> classRegistry = new HashSet<Class>();
+    private static Set<Class<?>> classRegistry = new HashSet<Class<?>>();
     
     private static String className(Object obj) {
         return obj.getClass().getSimpleName();
     }
     
-    private static boolean isRegistered(Class c) {
+    private static boolean isRegistered(Class<?> c) {
         if (c == null)
             return false;
         else if (classRegistry.contains(c))
@@ -42,7 +42,7 @@ public class Debug {
             return isRegistered(c.getSuperclass());
     }
     
-    public static void register(Class c) {
+    public static void register(Class<?> c) {
         classRegistry.add(c);
     }
     

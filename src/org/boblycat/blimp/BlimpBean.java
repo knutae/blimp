@@ -83,7 +83,7 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
                     + ", class " + bean.getClass().getName());
         }
 
-        public Class getPropertyClass() {
+        public Class<?> getPropertyClass() {
             Method writer = descriptor.getWriteMethod();
             return writer.getParameterTypes()[0];
         }
