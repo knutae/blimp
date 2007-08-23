@@ -31,6 +31,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.xml.sax.SAXException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -351,7 +352,7 @@ public class MainWindow {
         display.dispose();
     }
 
-    ImageView addImageViewWithSession(HistoryBlimpSession session) {
+    ImageView addImageViewWithSession(HistoryBlimpSession session, boolean dirty) {
         ImageView imageView = new ImageView(mainTabFolder, SWT.NONE, session);
         CTabItem item = new CTabItem(mainTabFolder, SWT.CLOSE);
         item.setText(imageView.getSession().getDescription());
@@ -378,7 +379,8 @@ public class MainWindow {
                 currentImageTab.item.setText(name);
             }
         });
-        session.recordSaved();
+        if (!dirty)
+            session.recordSaved();
         return imageView;
     }
 
@@ -389,7 +391,7 @@ public class MainWindow {
         HistoryBlimpSession session = new HistoryBlimpSession();
         session.setNameFromFilename(imageFilename);
         session.setInput(input);
-        return addImageViewWithSession(session);
+        return addImageViewWithSession(session, false);
     }
     
     void updateCurrentImageTab(ImageTab newImageTab) {
@@ -473,17 +475,56 @@ public class MainWindow {
         env.editorCallback = callback;
         layers.updateWithEnvironment(env);
     }
-
+    
+    boolean tryEnsureInputFileExists(BlimpSession session) {
+        InputLayer input = session.getInput();
+        if (input == null)
+            return false;
+        BlimpBean.Property prop = input.findProperty("filePath");
+        if (prop == null)
+            return false;
+        Object value = prop.getValue();
+        if (value == null)
+            return false;
+        File filePath = null;
+        if (value instanceof String)
+            filePath = new File((String) value);
+        else {
+            Util.err("a filePath property exists, but it is not a String.");
+            return false;
+        }
+        if (filePath.exists())
+            return false;
+        // filePath is given, but does not exist
+        SwtUtil.messageDialog(shell,
+                String.format("%s not found", filePath.getName()),
+                String.format("The input file %s was not found\n" +
+                        "If it has been moved or renamed, please locate it now.",
+                        filePath.getAbsoluteFile()),
+                SWT.ICON_WARNING);
+        FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+        dialog.setText("Locate " + filePath.getName());
+        dialog.setFilterExtensions(new String[] {"*.*"});
+        dialog.setFilterNames(new String[] {"All Files"});
+        dialog.setFileName(filePath.getAbsolutePath());
+        String newPath = dialog.open();
+        if (newPath == null || newPath.equals(filePath.getAbsolutePath()))
+            return false;
+        prop.setValue(newPath);
+        return true;
+    }
+    
     void openProjectOrImageFile(String filename) {
         if (filename.toLowerCase().endsWith(".blimp")) {
             // open a saved session
             try {
-                BlimpSession session = (BlimpSession) Serializer
-                        .loadBeanFromFile(filename);
+                BlimpSession session = (BlimpSession)
+                    Serializer.loadBeanFromFile(filename);
                 HistoryBlimpSession historySession = new HistoryBlimpSession();
                 historySession.synchronizeSessionData(session);
                 historySession.setNameFromFilename(filename);
-                addImageViewWithSession(historySession);
+                boolean dirty = tryEnsureInputFileExists(historySession);
+                addImageViewWithSession(historySession, dirty);
                 updateLayersView();
             }
             catch (ClassCastException e) {
