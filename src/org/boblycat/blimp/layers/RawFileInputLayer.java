@@ -39,6 +39,12 @@ import org.boblycat.blimp.jiu.PNMCodec;
 import net.sourceforge.jiu.ops.OperationFailedException;
 import net.sourceforge.jiu.ops.ProgressListener;
 
+/**
+ * A file input layer which supports many camera raw formats.
+ * This is a wrapper for Dave Coffin's dcraw program.
+ * 
+ * @author Knut Arild Erstad
+ */
 public class RawFileInputLayer extends InputLayer {
     public enum Quality {
         HalfSize,
