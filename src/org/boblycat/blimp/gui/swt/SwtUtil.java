@@ -227,6 +227,7 @@ public class SwtUtil {
     
     public static void modalLoop(Shell window) {
         Display display = window.getDisplay();
+        window.open();
         while (!window.isDisposed())
             if (!display.readAndDispatch())
                 display.sleep();

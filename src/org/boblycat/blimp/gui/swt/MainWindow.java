@@ -32,6 +32,7 @@ import org.eclipse.swt.graphics.Image;
 import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -476,7 +477,8 @@ public class MainWindow {
         layers.updateWithEnvironment(env);
     }
     
-    boolean tryEnsureInputFileExists(BlimpSession session) {
+    boolean tryEnsureInputFileExists(BlimpSession session)
+    throws FileNotFoundException {
         InputLayer input = session.getInput();
         if (input == null)
             return false;
@@ -496,19 +498,12 @@ public class MainWindow {
         if (filePath.exists())
             return false;
         // filePath is given, but does not exist
-        SwtUtil.messageDialog(shell,
-                String.format("%s not found", filePath.getName()),
-                String.format("The input file %s was not found\n" +
-                        "If it has been moved or renamed, please locate it now.",
-                        filePath.getAbsoluteFile()),
-                SWT.ICON_WARNING);
-        FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-        dialog.setText("Locate " + filePath.getName());
-        dialog.setFilterExtensions(new String[] {"*.*"});
-        dialog.setFilterNames(new String[] {"All Files"});
-        dialog.setFileName(filePath.getAbsolutePath());
-        String newPath = dialog.open();
-        if (newPath == null || newPath.equals(filePath.getAbsolutePath()))
+        String newPath = FileSearchView.showDialog(shell, filePath.getName());
+        if (newPath == null)
+            throw new FileNotFoundException(String.format(
+                    "The input image %s was not found.",
+                    filePath.getAbsolutePath()));
+        if (newPath.equals(filePath.getAbsolutePath()))
             return false;
         prop.setValue(newPath);
         return true;
@@ -523,7 +518,15 @@ public class MainWindow {
                 HistoryBlimpSession historySession = new HistoryBlimpSession();
                 historySession.synchronizeSessionData(session);
                 historySession.setNameFromFilename(filename);
-                boolean dirty = tryEnsureInputFileExists(historySession);
+                boolean dirty = false;
+                try {
+                    dirty = tryEnsureInputFileExists(historySession);
+                }
+                catch (FileNotFoundException e) {
+                    SwtUtil.errorDialog(shell, "Input File Error",
+                            e.getMessage());
+                    return;
+                }
                 addImageViewWithSession(historySession, dirty);
                 updateLayersView();
             }
