@@ -6,6 +6,7 @@
 <JVMSearchPath>jdkpath</JVMSearchPath>
 <JVMSearchPath>exepath</JVMSearchPath>
 <JVMSearchPath>jview</JVMSearchPath>
+<arguments></arguments>
 <classPath>lib\blimp.jar</classPath>
 <classPath>lib\swt.jar</classPath>
 <classPath>lib\xercesImpl.jar</classPath>
@@ -16,7 +17,7 @@
 <initialMemoryHeap>268435456</initialMemoryHeap>
 <javaProperties>
 <name>blimp.dcraw.path</name>
-<value>blimp-dcraw.exe</value>
+<value>${EXECUTABLEPATH}\blimp-dcraw.exe</value>
 </javaProperties>
 <mainClassName>org.boblycat.blimp.gui.swt.MainWindow</mainClassName>
 <maximumMemoryHeap>1073741824</maximumMemoryHeap>
