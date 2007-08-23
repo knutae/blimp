@@ -760,6 +760,8 @@ public class MainWindow {
 
     public static void main(String[] args) {
         MainWindow window = new MainWindow();
+        for (String filename: args)
+            window.openProjectOrImageFile(filename);
         window.mainLoop();
     }
 }
