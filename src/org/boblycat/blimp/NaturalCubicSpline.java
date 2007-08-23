@@ -73,7 +73,7 @@ public class NaturalCubicSpline {
 
     static private double[] subArray(double[] array, int startIndex, int count) {
         assert (startIndex >= 0);
-        assert (startIndex < array.length);
+        assert (startIndex < array.length || count == 0);
         if (count < 0) {
             count = array.length - startIndex;
         }
