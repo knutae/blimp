@@ -25,7 +25,9 @@ import java.util.Hashtable;
 import org.boblycat.blimp.*;
 import org.boblycat.blimp.layers.Layer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -64,10 +66,13 @@ public class LayerEditorRegistry {
         void showDialog(LayerEditorEnvironment environment) {
             env = environment;
             dialog = new Shell(parentShell, SWT.APPLICATION_MODAL
-                    | SWT.TITLE | SWT.BORDER);
+                    | SWT.TITLE | SWT.BORDER | SWT.RESIZE);
             dialog.setLayout(new GridLayout());
             dialog.setText(env.layer.getDescription());
-            Object args[] = { dialog, new Integer(SWT.NONE) };
+            ScrolledComposite wrapper = new ScrolledComposite(dialog,
+                    SWT.V_SCROLL | SWT.H_SCROLL);
+            wrapper.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+            Object args[] = { wrapper, new Integer(SWT.NONE) };
             editor = null;
             try {
                 editor = editorConstructor.newInstance(args);
@@ -77,6 +82,10 @@ public class LayerEditorRegistry {
                         + e.getMessage());
                 return;
             }
+            wrapper.setContent(editor);
+            wrapper.setExpandHorizontal(true);
+            wrapper.setExpandVertical(true);
+            wrapper.setMinSize(editor.computeSize(SWT.DEFAULT, SWT.DEFAULT));
             actualLayer = env.layer;
             originalClone = (Layer) actualLayer.clone();
             workingClone = (Layer) actualLayer.clone();
