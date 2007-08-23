@@ -143,6 +143,29 @@ class BitmapEventSource extends EventSource<BitmapChangeListener, BitmapEvent> {
     }
 }
 
+/*
+ * This helper class is used to uniquely identify the currently displayed
+ * image in order to avoid multiple worker thread requests in a row for the
+ * same image. 
+ */
+class ImageInfo {
+    String sessionXml;
+    int zoomLevel;
+    
+    ImageInfo(String sessionXml, int zoomLevel) {
+        this.sessionXml = sessionXml;
+        this.zoomLevel = zoomLevel;
+    }
+    
+    boolean equals(String sessionXml, int zoomLevel) {
+        if (this.zoomLevel != zoomLevel)
+            return false;
+        if (sessionXml == null)
+            return this.sessionXml == null;
+        return sessionXml.equals(this.sessionXml);
+    }
+}
+
 public class ImageView extends Composite {
     static final int PROGRESS_REDRAW_DELAY = 500;
     
@@ -159,11 +182,14 @@ public class ImageView extends Composite {
     SwtImageWorkerThread workerThread;
     int asyncRequestCount;
     boolean needNewRequest;
+    ImageInfo lastRequestedImageInfo;
+    String cachedSessionXml;
     SharedData threadData;
     BitmapEventSource bitmapEventSource;
     String currentProgressMessage;
     boolean delayedRedrawInProgress;
     ProgressBarTimer progressBarTimer;
+    int zoomLevel;
     
     class ProgressBarTimer implements Runnable {
         boolean cancelled;
@@ -260,14 +286,18 @@ public class ImageView extends Composite {
         toolItem.setText("Zoom In");
         toolItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
+                zoomLevel++;
                 workerThread.zoomIn(null, bitmapGeneratedTask);
+                asyncImageRequestSent();
             }
         });
         toolItem = new ToolItem(toolBar, SWT.NONE);
         toolItem.setText("Zoom Out");
         toolItem.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
+                zoomLevel--;
                 workerThread.zoomOut(null, bitmapGeneratedTask);
+                asyncImageRequestSent();
             }
         });
 
@@ -311,6 +341,7 @@ public class ImageView extends Composite {
             session = new HistoryBlimpSession();
         session.addChangeListener(new LayerChangeListener() {
             public void handleChange(LayerEvent event) {
+                cachedSessionXml = null;
                 asyncGenerateBitmap();
             }
         });
@@ -320,11 +351,8 @@ public class ImageView extends Composite {
         // task that is run after the worker thread has generated a bitmap
         bitmapGeneratedTask = new Runnable() {
             public void run() {
+                assert(asyncRequestCount > 0);
                 asyncRequestCount--;
-                if (needNewRequest) {
-                    asyncGenerateBitmap();
-                    return;
-                }
                 threadData = workerThread.getSharedData();
                 ImageData data = threadData.imageData;
                 if (data == null) {
@@ -332,8 +360,7 @@ public class ImageView extends Composite {
                     PaletteData paletteData = new PaletteData(0xff, 0xff00, 0xff0000);
                     data = new ImageData(1, 1, 24, paletteData);
                 }
-                if (currentImage != null)
-                    currentImage.dispose();
+                SwtUtil.dispose(currentImage);
                 currentImage = new Image(getDisplay(), data);
                 invalidateImage();
                 triggerBitmapChange();
@@ -443,18 +470,38 @@ public class ImageView extends Composite {
             return PreviewQuality.Accurate;
     }
     
+    private void asyncImageRequestSent() {
+        if (cachedSessionXml == null)
+            cachedSessionXml = Serializer.beanToXml(session);
+        lastRequestedImageInfo = new ImageInfo(cachedSessionXml, zoomLevel);
+        asyncRequestCount++;
+    }
+    
+    private boolean lastRequestEqualsCurrent() {
+        return lastRequestedImageInfo != null
+            && lastRequestedImageInfo.equals(cachedSessionXml, zoomLevel);
+    }
+    
     private void asyncGenerateBitmap() {
+        if (isDisposed())
+            return;
+        assert(asyncRequestCount >= 0);
         if (asyncRequestCount > 0) {
             needNewRequest = true;
             return;
         }
+        
         needNewRequest = false;
-        workerThread.cancelRequestsByOwner(this);
+        
+        if (lastRequestEqualsCurrent())
+            return;
+
+        asyncRequestCount -= workerThread.cancelRequestsByOwner(this);
         Rectangle destArea = canvas.getClientArea();
         workerThread.asyncGenerateSizedBitmap(this, session, bitmapGeneratedTask,
                 destArea.width, destArea.height,
                 getPreviewQuality());
-        asyncRequestCount++;
+        asyncImageRequestSent();
     }
 
     public void invalidateImage() {

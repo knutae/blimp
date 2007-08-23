@@ -183,13 +183,22 @@ public abstract class ImageWorkerThread extends Thread {
         // TODO: cancel ongoing operation (if possible)
     }
     
-    public void cancelRequestsByOwner(Object owner) {
+    /**
+     * Cancel owned requests.
+     * @param owner an owner.
+     * @return The number of requests cancelled.
+     */
+    public int cancelRequestsByOwner(Object owner) {
         Vector<Request> tmp = new Vector<Request>();
         requestQueue.drainTo(tmp);
+        int count = 0;
         for (Request req: tmp) {
             if (req.owner != owner)
                 putRequest(req);
+            else
+                count++;
         }
+        return count;
     }
     
     public void quit() {
