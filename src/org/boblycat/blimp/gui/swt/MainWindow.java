@@ -337,7 +337,7 @@ public class MainWindow {
                 if (obj instanceof String[]) {
                     e.detail = DND.DROP_COPY;
                     for (String filename: (String[]) obj) {
-                        openProjectOrImageFile(filename);
+                        asyncOpenFile(filename);
                         // TODO: support more than one file
                         break;
                     }
@@ -571,6 +571,17 @@ public class MainWindow {
         });
         imageView.invalidateImage(); // TODO: is this needed at all?
     }
+    
+    void asyncOpenFile(String fileName) {
+        if (display.isDisposed())
+            return;
+        final String fname = fileName;
+        display.asyncExec(new Runnable() {
+            public void run() {
+                openProjectOrImageFile(fname);
+            }
+        });
+    }
 
     void doMenuExit() {
         shell.close();
@@ -759,9 +770,21 @@ public class MainWindow {
     }
 
     public static void main(String[] args) {
-        MainWindow window = new MainWindow();
-        for (String filename: args)
-            window.openProjectOrImageFile(filename);
-        window.mainLoop();
+        ArgumentSocketServer server = new ArgumentSocketServer();
+        try {
+            ArgumentSocketServer.startServerOrQuit(server, args);
+            final MainWindow window = new MainWindow();
+            server.addListener(new ArgumentSocketServer.Listener() {
+                public void handleArgument(String arg) {
+                    window.asyncOpenFile(arg);
+                }
+            });
+            for (String filename: args)
+                window.openProjectOrImageFile(filename);
+            window.mainLoop();
+        }
+        finally {
+            server.close();
+        }
     }
 }
