@@ -97,6 +97,8 @@ public class RawFileInputLayer extends InputLayer {
         String path = System.getProperty("blimp.dcraw.path");
         if (Util.fileExists(path))
             return path;
+        if (path != null)
+            Util.warn("blimp.dcraw.path is set, but was not found: " + path);
 
         // Embedded as a jar file resource (for Java Web Start).
         String dcrawExe;
