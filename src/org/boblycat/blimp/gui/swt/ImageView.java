@@ -151,14 +151,18 @@ class BitmapEventSource extends EventSource<BitmapChangeListener, BitmapEvent> {
 class ImageInfo {
     String sessionXml;
     int zoomLevel;
+    BlimpSession.PreviewQuality quality;
     
-    ImageInfo(String sessionXml, int zoomLevel) {
+    ImageInfo(String sessionXml, int zoomLevel,
+            BlimpSession.PreviewQuality quality) {
         this.sessionXml = sessionXml;
         this.zoomLevel = zoomLevel;
+        this.quality = quality;
     }
     
-    boolean equals(String sessionXml, int zoomLevel) {
-        if (this.zoomLevel != zoomLevel)
+    boolean equals(String sessionXml, int zoomLevel,
+            BlimpSession.PreviewQuality quality) {
+        if (this.zoomLevel != zoomLevel || this.quality != quality)
             return false;
         if (sessionXml == null)
             return this.sessionXml == null;
@@ -473,13 +477,15 @@ public class ImageView extends Composite {
     private void asyncImageRequestSent() {
         if (cachedSessionXml == null)
             cachedSessionXml = Serializer.beanToXml(session);
-        lastRequestedImageInfo = new ImageInfo(cachedSessionXml, zoomLevel);
+        lastRequestedImageInfo = new ImageInfo(cachedSessionXml, zoomLevel,
+                getPreviewQuality());
         asyncRequestCount++;
     }
     
     private boolean lastRequestEqualsCurrent() {
         return lastRequestedImageInfo != null
-            && lastRequestedImageInfo.equals(cachedSessionXml, zoomLevel);
+            && lastRequestedImageInfo.equals(cachedSessionXml, zoomLevel,
+                    getPreviewQuality());
     }
     
     private void asyncGenerateBitmap() {
