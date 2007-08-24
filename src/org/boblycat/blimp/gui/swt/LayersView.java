@@ -38,10 +38,11 @@ public class LayersView extends SashForm {
             copy.session.beginDisableAutoRecord();
         }
         
-        public void editingFinished(Layer layer, boolean cancelled) {
+        public void editingFinished(LayerEditorEnvironment env,
+                boolean cancelled) {
             copy.session.endDisableAutoRecord();
             if (original.editorCallback != null)
-                original.editorCallback.editingFinished(layer, cancelled);
+                original.editorCallback.editingFinished(env, cancelled);
         }
         
         void openLayerEditor() {
@@ -166,9 +167,10 @@ public class LayersView extends SashForm {
                 editorEnvironment.layerWasJustAdded = false;
                 editorEnvironment.layer = getSession().getLayer(selectedLayerIndex);
                 openLayerEditor(editorEnvironment, new LayerEditorCallback() {
-                    public void editingFinished(Layer layer, boolean cancelled) {
+                    public void editingFinished(LayerEditorEnvironment env,
+                            boolean cancelled) {
                         if (cancelled)
-                            layer.triggerChangeEvent();
+                            env.layer.triggerChangeEvent();
                     }
                 });
             }

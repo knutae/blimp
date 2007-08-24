@@ -18,13 +18,11 @@
  */
 package org.boblycat.blimp.gui.swt;
 
-import org.boblycat.blimp.layers.Layer;
-
 /**
  * A simple callback interface for layer editors.
  * 
  * @author Knut Arild Erstad
  */
 public interface LayerEditorCallback {
-    public void editingFinished(Layer layer, boolean cancelled);
+    public void editingFinished(LayerEditorEnvironment env, boolean cancelled);
 }

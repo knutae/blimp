@@ -39,6 +39,18 @@ public class LayerEditorRegistry {
     class Entry {
         Class<? extends LayerEditor> editorClass;
         Constructor<? extends LayerEditor> editorConstructor;
+
+        Entry(Class<? extends LayerEditor> editorClass) {
+            this.editorClass = editorClass;
+            editorConstructor = getConstructor(editorClass);
+        }
+        
+        void showDialog(LayerEditorEnvironment environment) {
+            new DialogWrapper().showDialog(this, environment); 
+        }
+    }
+    
+    class DialogWrapper {
         Layer originalClone;
         Layer workingClone;
         Layer actualLayer;
@@ -47,11 +59,6 @@ public class LayerEditorRegistry {
         Button previewCheckButton;
         LayerEditor editor;
 
-        Entry(Class<? extends LayerEditor> editorClass) {
-            this.editorClass = editorClass;
-            editorConstructor = getConstructor(editorClass);
-        }
-        
         Layer editedLayer() {
             if (previewEnabled())
                 return actualLayer;
@@ -63,7 +70,7 @@ public class LayerEditorRegistry {
             return previewCheckButton.getSelection();
         }
 
-        void showDialog(LayerEditorEnvironment environment) {
+        void showDialog(Entry entry, LayerEditorEnvironment environment) {
             env = environment;
             dialog = new Shell(parentShell, SWT.APPLICATION_MODAL
                     | SWT.TITLE | SWT.BORDER | SWT.RESIZE);
@@ -75,7 +82,7 @@ public class LayerEditorRegistry {
             Object args[] = { wrapper, new Integer(SWT.NONE) };
             editor = null;
             try {
-                editor = editorConstructor.newInstance(args);
+                editor = entry.editorConstructor.newInstance(args);
             }
             catch (Exception e) {
                 Util.err("Failed to construct editor: "
@@ -154,7 +161,7 @@ public class LayerEditorRegistry {
             dialog = null;
             env.layerWasJustAdded = false;
             if (env.editorCallback != null)
-                env.editorCallback.editingFinished(actualLayer, cancelled);
+                env.editorCallback.editingFinished(env, cancelled);
         }
     }
 
