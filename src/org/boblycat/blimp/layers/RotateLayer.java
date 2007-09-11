@@ -26,39 +26,34 @@ import net.sourceforge.jiu.ops.WrongParameterException;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapSize;
+import org.boblycat.blimp.Util;
 
 
 class RotateOperation extends ImageToImageOperation {
     double angle;
     int outputWidth;
     int outputHeight;
+    boolean useAntiAliasing;
     
-    private static void incrSampleValue(IntegerImage output,
-            int channel, int x, int y, int sample, double fraction) {
-        if (x < 0 || y < 0 || x >= output.getWidth() || y >= output.getHeight())
-            return;
-        int oldSample = output.getSample(channel, x, y);
-        int increment = (int) (fraction * sample);
-        int newSample = oldSample + increment;
-        if (newSample > output.getMaxSample(channel))
-            newSample = output.getMaxSample(channel);
-        output.putSample(channel, x, y, newSample);
+    private static int getSampleOrZero(IntegerImage input,
+            int channel, int x, int y) {
+        if (x < 0 || y < 0 || x >= input.getWidth() || y >= input.getHeight())
+            return 0;
+        return input.getSample(channel, x, y);
     }
     
-    private static void incrSamples(IntegerImage output,
-            int channel, double x, double y, int sample) {
+    private static int getAntiAliasedSample(IntegerImage input,
+            int channel, double x, double y) {
         int floorx = (int) Math.floor(x);
         int floory = (int) Math.floor(y);
         double dx = x - floorx;
         double dy = y - floory;
-        incrSampleValue(output, channel, floorx, floory, sample,
-                (1 - dx) * (1 - dy));
-        incrSampleValue(output, channel, floorx+1, floory, sample,
-                dx * (1 - dy));
-        incrSampleValue(output, channel, floorx, floory+1, sample,
-                (1 - dx) * dy);
-        incrSampleValue(output, channel, floorx+1, floory+1, sample,
-                dx * dy);
+        double sample =
+            getSampleOrZero(input, channel, floorx, floory) * (1-dx) * (1-dy) +
+            getSampleOrZero(input, channel, floorx+1, floory) * dx * (1-dy) +
+            getSampleOrZero(input, channel, floorx, floory+1) * (1-dx) * dy +
+            getSampleOrZero(input, channel, floorx+1, floory+1) * dx * dy;
+        return Util.constrainedValue((int) sample, 0, input.getMaxSample(channel));
     }
     
     public void process() throws MissingParameterException,
@@ -85,28 +80,27 @@ class RotateOperation extends ImageToImageOperation {
         double yCenterOutput = 0.5 * outputHeight;
         double xCenterInput = 0.5 * input.getWidth();
         double yCenterInput = 0.5 * input.getHeight();
+        int maxProgress = outputHeight * input.getNumChannels();
         
         for (int channel = 0; channel < input.getNumChannels(); channel++) {
             for (int y = 0; y < outputHeight; y++) {
                 double yoff = y - yCenterOutput;
                 for (int x = 0; x < outputWidth; x++) {
                     double xoff = x - xCenterOutput;
-                    double tmpx = xoff * cosa - yoff * sina;
-                    double srcx = tmpx + xCenterInput;
-                    int floorx = (int) Math.floor(srcx);
-                    if (floorx < 0 || floorx >= input.getWidth())
-                        continue;
+                    double srcx = xoff * cosa - yoff * sina + xCenterInput;
+                    double srcy = yoff * cosa + xoff * sina + yCenterInput;
                     
-                    double tmpy = yoff * cosa + xoff * sina;
-                    double srcy = tmpy + yCenterInput;
-                    int floory = (int) Math.floor(srcy);
-                    if (floory < 0 || floory >= input.getHeight())
-                        continue;
-                    
-                    // TODO: add some sort of interpolation
-                    int sample = input.getSample(channel, floorx, floory);
+                    int sample;
+                    if (useAntiAliasing)
+                        sample = getAntiAliasedSample(input, channel, srcx, srcy);
+                    else {
+                        int floorx = (int) Math.floor(srcx);
+                        int floory = (int) Math.floor(srcy);
+                        sample = getSampleOrZero(input, channel, floorx, floory);
+                    }
                     output.putSample(channel, x, y, sample);
                 }
+                setProgress(channel * outputHeight + y, maxProgress);
             }
         }
         setOutputImage(output);
@@ -119,14 +113,31 @@ class RotateOperation extends ImageToImageOperation {
  * @author Knut Arild Erstad
  */
 public class RotateLayer extends DimensionAdjustmentLayer {
+    public enum Quality {
+        Fast,
+        AntiAliased,
+    }
+    
     private double angle;
+    
+    private Quality quality;
+    
+    public RotateLayer() {
+        quality = Quality.AntiAliased;
+    }
 
     /* (non-Javadoc)
      * @see org.boblycat.blimp.layers.DimensionAdjustmentLayer#calculateSize(org.boblycat.blimp.BitmapSize)
      */
     @Override
     public BitmapSize calculateSize(BitmapSize inputSize) {
-        return inputSize;
+        //return inputSize;
+        double a = Math.toRadians(angle);
+        double cosa = Math.cos(a);
+        double sina = Math.sin(a);
+        double w = inputSize.width * cosa + inputSize.height * sina;
+        double h = inputSize.width * sina + inputSize.height * cosa;
+        return new BitmapSize((int) w, (int) h, inputSize.pixelScaleFactor);
     }
 
     /* (non-Javadoc)
@@ -134,10 +145,12 @@ public class RotateLayer extends DimensionAdjustmentLayer {
      */
     @Override
     public Bitmap applyLayer(Bitmap source) {
+        BitmapSize outputSize = calculateSize(source.getSize());
         RotateOperation op = new RotateOperation();
         op.angle = Math.toRadians(angle);
-        op.outputWidth = source.getWidth();
-        op.outputHeight = source.getHeight();
+        op.outputWidth = outputSize.width;
+        op.outputHeight = outputSize.height;
+        op.useAntiAliasing = (quality == Quality.AntiAliased);
         PixelImage image = applyJiuOperation(source.getImage(), op);
         return new Bitmap(image);
     }
@@ -162,6 +175,22 @@ public class RotateLayer extends DimensionAdjustmentLayer {
      */
     public double getAngle() {
         return angle;
+    }
+
+    /**
+     * @param quality the quality to set
+     */
+    public void setQuality(Quality quality) {
+        if (quality == null)
+            return;
+        this.quality = quality;
+    }
+
+    /**
+     * @return the quality
+     */
+    public Quality getQuality() {
+        return quality;
     }
 
     
