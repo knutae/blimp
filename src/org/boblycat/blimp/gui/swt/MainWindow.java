@@ -535,6 +535,7 @@ public class MainWindow {
                 }
                 addImageViewWithSession(historySession, dirty);
                 updateLayersView();
+                historySession.triggerChangeEvent();
             }
             catch (ClassCastException e) {
                 fileOpenError(filename, "Class cast", e);
