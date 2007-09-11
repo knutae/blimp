@@ -33,109 +33,6 @@ class SharedData {
     String errorMessage;
 }
 
-class SwtImageWorkerThread extends ImageWorkerThread {
-    Display display;
-    private SharedData sharedData;
-    private boolean finished;
-    ProgressEventSource guiProgressEventSource;
-    
-    class ProgressGuiEventRunner implements Runnable {
-        ProgressEvent event;
-        
-        ProgressGuiEventRunner(ProgressEvent event) {
-            this.event = event;
-        }
-        
-        public void run() {
-            guiProgressEventSource.triggerChangeWithEvent(event);
-        }
-    }
-    
-    public SwtImageWorkerThread(Composite imageView) {
-        this.display = imageView.getDisplay();
-        Listener disposeListener = new Listener() {
-            public void handleEvent(Event e) {
-                setFinished(true);
-            }
-        };
-        display.addListener(SWT.Dispose, disposeListener);
-        imageView.addListener(SWT.Dispose, disposeListener);
-        sharedData = new SharedData();
-        guiProgressEventSource = new ProgressEventSource();
-    }
-    
-    protected void bitmapGenerated(Runnable runnable, Bitmap bitmap) {
-        if (isFinished())
-            return;
-        // convert to SWT image data on the worker thread
-        if (bitmap != null) {
-            Bitmap tmpBitmap = BitmapUtil.create8BitCopy(bitmap);
-            ImageData data = ImageConverter.jiuToSwtImageData(tmpBitmap.getImage());
-            double currentZoom = session.getCurrentZoom();
-            synchronized (sharedData) {
-                sharedData.viewBitmap = tmpBitmap;
-                sharedData.imageData = data;
-                sharedData.zoom = currentZoom;
-                sharedData.errorMessage = null;
-            }
-        }
-        if (!display.isDisposed())
-            display.asyncExec(runnable);
-    }
-    
-    @Override
-    protected void asyncExec(Runnable runnable) {
-        if (isFinished() || display.isDisposed())
-            return;
-        display.asyncExec(runnable);
-    }
-    
-    protected void progressReported(ProgressEvent event) {
-        if (isFinished())
-            return;
-        display.asyncExec(new ProgressGuiEventRunner(event));
-        // Note: the event must not be used on the worker thread
-        // from here on.
-    }
-    
-    protected void handleError(Runnable runnable, String errorMessage) {
-        if (isFinished())
-            return;
-        synchronized (sharedData) {
-            sharedData.errorMessage = errorMessage;
-        }
-        if (!display.isDisposed())
-            display.asyncExec(runnable);
-    }
-    
-    protected synchronized boolean isFinished() {
-        return finished;
-    }
-    
-    private synchronized void setFinished(boolean finished) {
-        this.finished = finished;
-    }
-    
-    public SharedData getSharedData() {
-        SharedData returnData = new SharedData();
-        synchronized (sharedData) {
-            returnData.imageData = sharedData.imageData;
-            returnData.viewBitmap = sharedData.viewBitmap;
-            returnData.zoom = sharedData.zoom;
-            returnData.errorMessage = sharedData.errorMessage;
-        }
-        return returnData;
-    }
-    
-    public void addProgressListener(ProgressListener listener) {
-        guiProgressEventSource.addListener(listener);
-    }
-    
-    public void removeProgressListener(ProgressListener listener) {
-        guiProgressEventSource.removeListener(listener);
-    }
-}
-
 class BitmapEventSource extends EventSource<BitmapChangeListener, BitmapEvent> {
     protected void triggerListenerEvent(BitmapChangeListener listener,
             BitmapEvent event) {
@@ -213,7 +110,7 @@ public class ImageView extends Composite {
             }
         };
         
-        workerThread = new SwtImageWorkerThread(this);
+        workerThread = new SwtImageWorkerThread(getDisplay());
         workerThread.addProgressListener(new ProgressListener() {
             public void reportProgress(ProgressEvent e) {
                 setProgress(e.message, e.progress);
