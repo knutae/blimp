@@ -108,8 +108,14 @@ public class LayerPropertyEditor extends Composite {
         return null;
     }
 
-    void setTreeEditor(Control editor) {
+    private void setTreeEditor(Control editor) {
         treeEditor.setEditor(editor, editedItem, VALUE_COLUMN);
+    }
+    
+    private void refreshCurrentTreeEditor() {
+        Control currentEditor = treeEditor.getEditor();
+        if (currentEditor != null)
+            setTreeEditor(currentEditor);
     }
 
     void disposeOldEditor() {
@@ -193,6 +199,68 @@ public class LayerPropertyEditor extends Composite {
         editedItem = parentItem;
         subTreeEdited(parentItem, null);
     }
+    
+    private void refreshVisibleProperties() {
+        // Refresh the property tree without destroying the existing tree
+        // items if possible.
+        layerProperties.clear();
+        if (layer == null)
+            return;
+        int treeIndex = 0;
+        for (Layer.Property prop: layer) {
+            if (prop.getName().equals("active"))
+                // skip standard properties
+                continue;
+            assert(treeIndex <= propertyTree.getItemCount());
+            boolean existsInTree;
+            TreeItem item = null;
+            if (treeIndex >= propertyTree.getItemCount())
+                existsInTree = false;
+            else {
+                item = propertyTree.getItem(treeIndex);
+                if (prop.getName().equals(item.getText()))
+                    existsInTree = true;
+                else
+                    existsInTree = false;
+            }
+            if (layer.isVisibleProperty(prop.getDescriptor())) {
+                if (prop.getValue() == null) {
+                    Util.warn("Failed to read value for property "
+                            + prop.getName());
+                    continue;
+                }
+                layerProperties.add(prop);
+                if (!existsInTree) {
+                    // add to tree
+                    item = new TreeItem(propertyTree, SWT.NONE, treeIndex);
+                    configureTreeItem(item, prop.getName(), prop.getValue());
+                }
+                treeIndex++;
+            }
+            else {
+                if (existsInTree) {
+                    // remove from tree
+                    assert(item != null);
+                    item.dispose();
+                }
+            }
+        }
+    }
+    
+    private void configureTreeItem(TreeItem item, String name, Object value) {
+        item.setText(name);
+        if (value.getClass().isArray()) {
+            for (int i=0; i<Array.getLength(value); i++) {
+                Object sub = Array.get(value, i);
+                TreeItem subItem = new TreeItem(item, SWT.NONE);
+                subItem.setText(1, propertyValueToString(sub));
+            }
+            item.setExpanded(true);
+        }
+        else {
+            item.setText(1, propertyValueToString(value));
+        }
+    }
 
     public void setLayer(Layer layer) {
         this.layer = layer;
@@ -201,31 +269,7 @@ public class LayerPropertyEditor extends Composite {
         layerProperties.clear();
         if (layer == null)
             return;
-        for (Layer.Property prop : layer) {
-            if (prop.getName().equals("active"))
-                // skip standard properties
-                continue;
-            layerProperties.add(prop);
-            String name = prop.getName();
-            Object value = prop.getValue();
-            if (value == null) {
-                Util.err("Error reading value for property " + name);
-                continue;
-            }
-            TreeItem item = new TreeItem(propertyTree, SWT.NONE);
-            item.setText(name);
-            if (value.getClass().isArray()) {
-                for (int i=0; i<Array.getLength(value); i++) {
-                    Object sub = Array.get(value, i);
-                    TreeItem subItem = new TreeItem(item, SWT.NONE);
-                    subItem.setText(1, propertyValueToString(sub));
-                }
-                item.setExpanded(true);
-            }
-            else {
-                item.setText(1, propertyValueToString(value));
-            }
-        }
+        refreshVisibleProperties();
     }
 
     void subTreeEdited(TreeItem parentItem, String newText) {
@@ -275,6 +319,8 @@ public class LayerPropertyEditor extends Composite {
             if (val != null)
                 editedItem.setText(1, propertyValueToString(val));
         }
+        refreshVisibleProperties();
+        refreshCurrentTreeEditor();
     }
 
     Object parsePropertyValue(Class<?> propertyClass, String strValue)
