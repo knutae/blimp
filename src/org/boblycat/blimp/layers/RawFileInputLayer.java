@@ -18,6 +18,7 @@
  */
 package org.boblycat.blimp.layers;
 
+import java.beans.PropertyDescriptor;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -328,5 +329,17 @@ public class RawFileInputLayer extends InputLayer {
 
     public double[] getRawWhiteBalance() {
         return rawWhiteBalance;
+    }
+
+    /**
+     * Overridden to hide the raw color weights unless the white balance is
+     * set to CustomRaw.
+     */
+    @Override
+    public boolean isVisibleProperty(PropertyDescriptor pd) {
+        if (whiteBalance != WhiteBalance.CustomRaw &&
+                pd.getName().equals("rawWhiteBalance"))
+            return false;
+        return super.isVisibleProperty(pd);
     }
 }

@@ -115,6 +115,8 @@ public class Serializer {
         else if (!(bean instanceof BlimpSession))
             element.setAttribute("class", bean.getClass().getName());
         for (BlimpBean.Property p : bean) {
+            if (!bean.isVisibleProperty(p.descriptor))
+                continue;
             String name = p.getName();
             Element property = document.createElement("property");
             property.setAttribute("name", name);

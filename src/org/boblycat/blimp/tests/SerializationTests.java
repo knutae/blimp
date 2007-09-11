@@ -20,12 +20,14 @@ package org.boblycat.blimp.tests;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.boblycat.blimp.*;
 import org.boblycat.blimp.layers.*;
+import org.boblycat.blimp.layers.RawFileInputLayer.WhiteBalance;
 import org.junit.*;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
@@ -79,13 +81,17 @@ public class SerializationTests {
         return null;
     }
     
-    private static void assertChildValueEquals(Element element, String expected) {
+    private static String getChildValue(Element element) {
         assertNotNull(element);
         assertNotNull(element.getFirstChild());
         assertTrue(element.getFirstChild() instanceof Text);
         Text textNode = (Text) element.getFirstChild();
-        assertEquals(expected, textNode.getNodeValue());
         assertNull(textNode.getNextSibling());
+        return textNode.getNodeValue();
+    }
+    
+    private static void assertChildValueEquals(Element element, String expected) {
+        assertEquals(expected, getChildValue(element));
     }
 
     @Test
@@ -414,5 +420,78 @@ public class SerializationTests {
         checkTypeIdXml(Color16BitLayer.class, "Promote16Bit");
         checkTypeIdXml(RawFileInputLayer.class, "RawInput");
         checkTypeIdXml(FileInputLayer.class, "FileInput");
+    }
+    
+    private static Element findPropertyElement(Element root,
+            String propertyName) {
+        Element foundChild = null;
+        int foundCount = 0;
+        for (Node node: new DOMNodeIterator(root)) {
+            assertTrue(node instanceof Element);
+            Element child = (Element) node;
+            assertEquals("property", child.getNodeName());
+            String nameAttr = child.getAttribute("name");
+            if (nameAttr.equals(propertyName)) {
+                foundChild = child;
+                foundCount++;
+            }
+        }
+        assertTrue(foundCount <= 1);
+        return foundChild;
+    }
+    
+    private static void checkSinglePropertyElement(Element root,
+            String propertyName, String expectedValue) {
+        Element propertyChild = findPropertyElement(root, propertyName);
+        assertChildValueEquals(propertyChild, expectedValue);
+    }
+    
+    @Test
+    public void testRawFileInputLayerToXmlWithCustomWB() throws Exception {
+        RawFileInputLayer layer = new RawFileInputLayer();
+        layer.setFilePath("/foo/bar.raw");
+        layer.setColorDepth(ColorDepth.Depth16Bit);
+        layer.setWhiteBalance(WhiteBalance.CustomRaw);
+        layer.setRawWhiteBalance(new double[] {1.23, 0.5, 0.78, 0.0});
+        
+        String xml = Serializer.layerToXml(layer);
+        Element root = parseLayerXml(xml);
+        checkSinglePropertyElement(root, "filePath", "/foo/bar.raw");
+        checkSinglePropertyElement(root, "colorDepth", "Depth16Bit");
+        checkSinglePropertyElement(root, "whiteBalance", "CustomRaw");
+
+        Element rawWhiteBalanceElement = findPropertyElement(
+                root, "rawWhiteBalance");
+        assertNotNull(rawWhiteBalanceElement);
+        Vector<String> childValues = new Vector<String>();
+        for (Node node: new DOMNodeIterator(rawWhiteBalanceElement)) {
+            assertTrue(node instanceof Element);
+            Element child = (Element) node;
+            assertEquals("value", child.getNodeName());
+            childValues.add(getChildValue(child));
+        }
+        assertEquals(4, childValues.size());
+        assertEquals("1.23", childValues.get(0));
+        assertEquals("0.5", childValues.get(1));
+        assertEquals("0.78", childValues.get(2));
+        assertEquals("0.0", childValues.get(3));
+    }
+
+    @Test
+    public void testRawFileInputLayerToXmlWithCameraWB() throws Exception {
+        RawFileInputLayer layer = new RawFileInputLayer();
+        layer.setFilePath("c:\\photos\\img_1234.raw");
+        layer.setColorDepth(ColorDepth.Depth8Bit);
+        layer.setWhiteBalance(WhiteBalance.Camera);
+        
+        String xml = Serializer.layerToXml(layer);
+        Element root = parseLayerXml(xml);
+        checkSinglePropertyElement(root, "filePath", "c:\\photos\\img_1234.raw");
+        checkSinglePropertyElement(root, "colorDepth", "Depth8Bit");
+        checkSinglePropertyElement(root, "whiteBalance", "Camera");
+
+        Element rawWhiteBalanceElement = findPropertyElement(
+                root, "rawWhiteBalance");
+        assertNull(rawWhiteBalanceElement);
     }
 }

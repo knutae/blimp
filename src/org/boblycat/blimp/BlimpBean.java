@@ -92,6 +92,10 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
             this.bean = bean;
             this.descriptor = descriptor;
         }
+        
+        public PropertyDescriptor getDescriptor() {
+            return descriptor;
+        }
     }
 
     @SuppressWarnings("serial")
@@ -100,15 +104,36 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
 
     /**
      * This function can be overridden to filter out properties that should not
-     * be included when serializing the bean. By default all read-write
+     * be included when serializing the bean.  By default all read-write
      * properties are included, so the default implementation always returns
      * <code>true</code>.
      * 
-     * @param A
-     *            property descriptor.
+     * This function must always return the same result for the same property,
+     * regardless of any internal state.  To filter out properties dynamically,
+     * use <code>isVisibleProperty</code> instead.
+     * 
+     * @param pd
+     *            A property descriptor.
      * @return <code>true</code> by default.
      */
     protected boolean isSerializableProperty(PropertyDescriptor pd) {
+        return true;
+    }
+    
+    /**
+     * This function can be overridden to dynamically hide some properties
+     * for property editors or in the XML representation.  For instance,
+     * setting a certain boolean property could cause another property to
+     * become hidden.
+     * 
+     * The default implementation always returns <code>true</code>, which
+     * means that no properties are hidden.
+     * 
+     * @param pd
+     *            A property descriptor.
+     * @return <code>true</code> by default.
+     */
+    public boolean isVisibleProperty(PropertyDescriptor pd) {
         return true;
     }
 
