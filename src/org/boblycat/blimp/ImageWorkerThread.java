@@ -198,6 +198,7 @@ public abstract class ImageWorkerThread extends Thread {
             else
                 count++;
         }
+        Debug.print(this, "cancelled " + count + " request(s)");
         return count;
     }
     
@@ -248,11 +249,15 @@ public abstract class ImageWorkerThread extends Thread {
         putRequest(req);
     }
     
-    public void zoomIn(Object owner, Runnable runnable) {
-        putRequest(new Request(owner, RequestType.ZOOM_IN, runnable));
+    public void zoomIn(Object owner, BlimpSession session, Runnable runnable) {
+        Request req = new Request(owner, RequestType.ZOOM_IN, runnable);
+        req.sessionCopy = BlimpSession.createCopy(session);
+        putRequest(req);
     }
 
-    public void zoomOut(Object owner, Runnable runnable) {
-        putRequest(new Request(owner, RequestType.ZOOM_OUT, runnable));
+    public void zoomOut(Object owner, BlimpSession session, Runnable runnable) {
+        Request req = new Request(owner, RequestType.ZOOM_OUT, runnable);
+        req.sessionCopy = BlimpSession.createCopy(session);
+        putRequest(req);
     }
 }

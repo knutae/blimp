@@ -579,7 +579,6 @@ public class MainWindow {
                 }
             }
         });
-        imageView.invalidateImage(); // TODO: is this needed at all?
     }
     
     void asyncOpenFile(String fileName) {
@@ -762,7 +761,6 @@ public class MainWindow {
             // New layers are always inactive initially
             layer.setActive(false);
             session.addLayer(layer);
-            tab.imageView.invalidateImage();
             showLayerEditor(layer, new LayerEditorCallback() {
                 public void editingFinished(LayerEditorEnvironment env,
                         boolean cancelled) {
