@@ -26,13 +26,6 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.*;
 
-class SharedData {
-    ImageData imageData;
-    double zoom;
-    Bitmap viewBitmap;
-    String errorMessage;
-}
-
 class BitmapEventSource extends EventSource<BitmapChangeListener, BitmapEvent> {
     protected void triggerListenerEvent(BitmapChangeListener listener,
             BitmapEvent event) {
@@ -82,7 +75,7 @@ public class ImageView extends Composite {
     boolean needNewRequest;
     ImageInfo lastRequestedImageInfo;
     String cachedSessionXml;
-    SharedData threadData;
+    SwtImageWorkerThread.SharedData threadData;
     BitmapEventSource bitmapEventSource;
     ProgressBarTimer progressBarTimer;
     int zoomLevel;

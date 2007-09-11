@@ -36,6 +36,13 @@ import org.eclipse.swt.widgets.Listener;
  * @author Knut Arild Erstad
  */
 public class SwtImageWorkerThread extends ImageWorkerThread {
+    public class SharedData {
+        ImageData imageData;
+        double zoom;
+        Bitmap viewBitmap;
+        String errorMessage;
+    }
+
     private Display display;
     private SharedData sharedData;
     private boolean finished;
