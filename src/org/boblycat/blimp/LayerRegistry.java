@@ -81,6 +81,8 @@ public class LayerRegistry implements Iterable<LayerRegistry.LayerInfo> {
                 "Change the Image Orientation");
         reg.registerLayer(SolidColorBorderLayer.class, "Bor&der",
                 "Add a solid color border around the image.");
+        reg.registerLayer(RotateLayer.class, "Ro&tate (EXPERIMENTAL)",
+                "Rotate the image by an arbitrary angle.");
         return reg;
     }
 }
