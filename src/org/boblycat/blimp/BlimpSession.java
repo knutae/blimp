@@ -248,6 +248,8 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
      * Copy session data from the other session.  The implementation will attempt
      * to reuse existing layer object, if possible.
      * 
+     * The data copied includes the layers and the name of the other session. 
+     * 
      * @param other The session to copy layers from. 
      */
     public void synchronizeSessionData(BlimpSession other) {
@@ -255,6 +257,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         for (Layer otherLayer: other.layerList)
             newList.add(findOrCloneLayer(otherLayer));
         layerList = newList;
+        setName(other.getName());
         //viewport.copyDataFrom(other.viewport);
     }
     

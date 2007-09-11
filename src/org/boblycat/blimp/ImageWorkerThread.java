@@ -103,6 +103,10 @@ public abstract class ImageWorkerThread extends Thread {
         if (req.sessionCopy != null) {
             session.synchronizeSessionData(req.sessionCopy);
         }
+        String outOfMemoryMessage = String.format(
+                "An out of memory error occured while processing %s.\n" +
+                "Please close some open images to free more space.",
+                session.getName());
         try {
             switch (req.type) {
             case GENERATE_BITMAP:
@@ -152,6 +156,13 @@ public abstract class ImageWorkerThread extends Thread {
         catch (IOException e) {
             handleError(req.runnable, e.getMessage());
         }
+        catch (OutOfMemoryError e) {
+            // While there is no guarantee that recovering from an out-of-memory
+            // error will succeed, but the following attempt does no harm,
+            // at least.
+            handleError(req.runnable, outOfMemoryMessage);
+            quit();
+        }
         catch (Exception e) {
             // should never happen?
             e.printStackTrace(System.err);
@@ -176,6 +187,8 @@ public abstract class ImageWorkerThread extends Thread {
                 break;
             }
         }
+        session = null;
+        System.gc();
     }
     
     private void cancelAllRequests() {
