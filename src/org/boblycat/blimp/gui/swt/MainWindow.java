@@ -338,8 +338,6 @@ public class MainWindow {
                     e.detail = DND.DROP_COPY;
                     for (String filename: (String[]) obj) {
                         asyncOpenFile(filename);
-                        // TODO: support more than one file
-                        break;
                     }
                 }
             }
