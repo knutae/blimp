@@ -22,9 +22,14 @@ import java.io.IOException;
 
 import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.InputLayer;
+import org.boblycat.blimp.layers.Layer;
+import org.boblycat.blimp.layers.ResizeLayer;
 
 public class CachedBlimpSession extends BlimpSession {
     BitmapCache cache;
+    // some bitmaps are kept alive for speed purposes:
+    Bitmap activeInputBitmap;
+    Bitmap activeResizedBitmap;
     
     public CachedBlimpSession() {
         cache = new BitmapCache();
@@ -47,10 +52,13 @@ public class CachedBlimpSession extends BlimpSession {
         else {
             log("hit: " + layer.getClass());
         }
+        if (layer instanceof ResizeLayer)
+            activeResizedBitmap = bitmap;
         return bitmap;
     }
     
     protected Bitmap inputBitmap(InputLayer input) throws IOException {
+        activeInputBitmap = null; // allow last input to be garbage collected
         Bitmap bitmap = cache.get(input);
         if (bitmap == null) {
             log("miss: " + input.getClass());
@@ -58,8 +66,10 @@ public class CachedBlimpSession extends BlimpSession {
             cache.put(input, bitmap);
         }
         else {
-            log("hit: " + input.getClass());            
+            log("hit: " + input.getClass());
+            
         }
+        activeInputBitmap = bitmap;
         return bitmap;
     }
 
@@ -75,5 +85,18 @@ public class CachedBlimpSession extends BlimpSession {
             log("size hit: " + input.getClass());
         }
         return bitmap.getSize();
+    }
+    
+    private boolean hasActiveResizeLayer() {
+        for (Layer layer: layerList)
+            if (layer.isActive() && (layer instanceof ResizeLayer))
+                return true;
+        return false;
+    }
+
+    protected Bitmap generateBitmap(boolean useViewport) throws IOException {
+        if (!hasActiveResizeLayer())
+            activeResizedBitmap = null; // allow it to be garbage collected
+        return super.generateBitmap(useViewport);
     }
 }

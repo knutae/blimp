@@ -173,7 +173,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return bm;
     }
 
-    Bitmap generateBitmap(boolean useViewport) throws IOException {
+    protected Bitmap generateBitmap(boolean useViewport) throws IOException {
         return internalGenerateBitmapBeforeLayer(null, useViewport);
     }
     
