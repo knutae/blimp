@@ -36,35 +36,58 @@ import org.eclipse.swt.widgets.Listener;
  * @author Knut Arild Erstad
  */
 public abstract class GridBasedLayerEditor extends LayerEditor {
-    Listener updateLayerListener;
+    protected Listener updateLayerListener;
 
     public GridBasedLayerEditor(Composite parent, int style) {
         super(parent, style);
         setLayout(new GridLayout());
         updateLayerListener = new Listener() {
             public void handleEvent(Event e) {
-                triggerLayerChange();
+                updateLayerFromGui();
             }
         };
     }
     
+    /**
+     * Update the layer based on the current GUI state.
+     * This function must be implemented by subclasses.
+     * 
+     * This function will not be called if the layer is null or
+     * the editor is disposed.
+     * 
+     * Note: do not invalidate the layer from this function, since
+     * it will be done automatically after the function has returned.
+     */
     protected abstract void updateLayer();
     
-    private void triggerLayerChange() {
+    /**
+     * Update the layer with the current GUI values, then invalidate the
+     * layer.  This function cannot be overridden, implement updateLayer()
+     * instead.
+     */
+    protected final void updateLayerFromGui() {
         if (layer == null || isDisposed())
             return;
         updateLayer();
         layer.invalidate();
     }
-
-    protected Button createRadioButton(Group group, String caption) {
-        Button button = new Button(group, SWT.RADIO);
+    
+    private Button createGroupButton(Group group, String caption, int style) {
+        Button button = new Button(group, style);
         button.setText(caption);
         button.addListener(SWT.Selection, updateLayerListener);
         return button;
     }
+
+    protected Button createRadioButton(Group group, String caption) {
+        return createGroupButton(group, caption, SWT.RADIO);
+    }
     
-    protected Group createRadioGroup(String caption) {
+    protected Button createCheckButton(Group group, String caption) {
+        return createGroupButton(group, caption, SWT.CHECK);
+    }
+    
+    protected Group createGroup(String caption) {
         Group group = new Group(this, SWT.NONE);
         group.setText(caption);
         group.setLayout(new FillLayout(SWT.VERTICAL));
@@ -72,10 +95,16 @@ public abstract class GridBasedLayerEditor extends LayerEditor {
         return group;
     }
     
-    protected ValueSlider createSlider(String caption, int min, int max, int digits) {
+    protected ValueSlider createSliderWithoutListener(String caption,
+            int min, int max, int digits) {
         ValueSlider slider = new ValueSlider(this, SWT.NONE,
                 caption, min, max, digits);
         slider.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        return slider;
+    }
+    
+    protected ValueSlider createSlider(String caption, int min, int max, int digits) {
+        ValueSlider slider = createSliderWithoutListener(caption, min, max, digits);
         slider.addListener(SWT.Selection, updateLayerListener);
         return slider;
     }

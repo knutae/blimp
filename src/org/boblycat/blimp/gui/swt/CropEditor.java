@@ -22,13 +22,11 @@ import org.boblycat.blimp.BitmapSize;
 import org.boblycat.blimp.BitmapSizeGeneratedTask;
 import org.boblycat.blimp.layers.CropLayer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-public class CropEditor extends LayerEditor {
+public class CropEditor extends GridBasedLayerEditor {
     CropLayer crop;
     BitmapSize bitmapSize;
     ValueSlider leftSlider;
@@ -38,7 +36,6 @@ public class CropEditor extends LayerEditor {
     
     public CropEditor(Composite parent, int style) {
         super(parent, style);
-        setLayout(new GridLayout());
         
         leftSlider = createSlider("Left", false);
         rightSlider = createSlider("Right", true);
@@ -77,13 +74,12 @@ public class CropEditor extends LayerEditor {
         int size2 = slave.getSelection();
         if (size1 + size2 >= totalAvailableSize)
             slave.setSelection(totalAvailableSize - size1 - 1);
-        updateLayer();
+        updateLayerFromGui();
     }
     
     ValueSlider createSlider(String caption, boolean flipDirection) {
-        ValueSlider slider = new ValueSlider(this, SWT.NONE, caption,  0, 1000, 0);
+        ValueSlider slider = createSliderWithoutListener(caption, 0, 1000, 0);
         slider.setFlipDirection(flipDirection);
-        slider.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         return slider;
     }
     
@@ -106,13 +102,13 @@ public class CropEditor extends LayerEditor {
             bottomSlider.setSelection(crop.getBottom());
         }
     }
-    
-    void updateLayer() {
+
+    @Override
+    protected void updateLayer() {
         crop.setLeft(leftSlider.getSelection());
         crop.setRight(rightSlider.getSelection());
         crop.setTop(topSlider.getSelection());
         crop.setBottom(bottomSlider.getSelection());
-        crop.invalidate();
     }
     
     @Override

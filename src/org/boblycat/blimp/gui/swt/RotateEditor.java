@@ -37,7 +37,7 @@ public class RotateEditor extends GridBasedLayerEditor {
     public RotateEditor(Composite parent, int style) {
         super(parent, style);
         angleSlider = createSlider("Angle", -1800, 1800, 1);
-        Group group = createRadioGroup("Quality");
+        Group group = createGroup("Quality");
         fastRadioButton = createRadioButton(group, "Fast");
         antiAliasedRadioButton = createRadioButton(group, "Anti-Aliased");
     }

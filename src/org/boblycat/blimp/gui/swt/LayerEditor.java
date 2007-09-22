@@ -34,9 +34,18 @@ public abstract class LayerEditor extends Composite {
 
     public void setLayer(Layer layer) {
         this.layer = layer;
+        if (layer == null || isDisposed())
+            return;
         layerChanged();
     }
     
+    /**
+     * Called after the layer has been changed.
+     * Implement this in subclasses to update the GUI.
+     * 
+     * This function will not be called if the layer is null or the editor is
+     * disposed.
+     */
     protected abstract void layerChanged();
     
     /**

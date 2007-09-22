@@ -24,73 +24,46 @@ import org.boblycat.blimp.layers.RawFileInputLayer;
 import org.boblycat.blimp.layers.RawFileInputLayer.Quality;
 import org.boblycat.blimp.layers.RawFileInputLayer.WhiteBalance;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 
-public class RawInputEditor extends LayerEditor {
-    RawFileInputLayer input;
-    Label filePathLabel;
-    Button radio8Bit;
-    Button radio16Bit;
-    Button radioQualityHalfSize;
-    Button radioQualityLow;
-    Button radioQualityNormal;
-    Button radioQualityHigh;
-    Button radioWBCamera;
-    Button radioWBAuto;
-    Listener buttonListener;
+public class RawInputEditor extends GridBasedLayerEditor {
+    private RawFileInputLayer input;
+    private Label filePathLabel;
+    private Button radio8Bit;
+    private Button radio16Bit;
+    private Button radioQualityHalfSize;
+    private Button radioQualityLow;
+    private Button radioQualityNormal;
+    private Button radioQualityHigh;
+    private Button radioWBCamera;
+    private Button radioWBAuto;
 
     public RawInputEditor(Composite parent, int style) {
         super(parent, style);
         setLayout(new GridLayout());
         filePathLabel = new Label(this, SWT.NONE);
-        buttonListener = new Listener() {
-            public void handleEvent(Event e) {
-                updateLayer();
-            }
-        };
         
-        Group group = createRadioGroup("Color Depth per Channel");
+        Group group = createGroup("Color Depth per Channel");
         radio8Bit = createRadioButton(group, "8-bit");
         radio16Bit = createRadioButton(group, "16-bit");
 
-        group = createRadioGroup("Interpolation Quality");
+        group = createGroup("Interpolation Quality");
         radioQualityHalfSize = createRadioButton(group, "Half-size (fastest)");
         radioQualityLow = createRadioButton(group, "Low (bilinear)");
         radioQualityNormal = createRadioButton(group, "Normal (Variable Number of Gradients)");
         radioQualityHigh = createRadioButton(group, "High (Adaptive Homogeneity-Directed)");
         
-        group = createRadioGroup("White Balance");
+        group = createGroup("White Balance");
         radioWBCamera = createRadioButton(group, "Camera Settings");
         radioWBAuto = createRadioButton(group, "Auto");
     }
     
-    private Button createRadioButton(Group group, String caption) {
-        Button button = new Button(group, SWT.RADIO);
-        button.setText(caption);
-        button.addListener(SWT.Selection, buttonListener);
-        return button;
-    }
-    
-    private Group createRadioGroup(String caption) {
-        Group group = new Group(this, SWT.NONE);
-        group.setText(caption);
-        group.setLayout(new FillLayout(SWT.VERTICAL));
-        group.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
-        return group;
-    }
-    
-    private void updateLayer() {
-        if (input == null)
-            return;
-        
+    @Override
+    protected void updateLayer() {
         if (radio8Bit.getSelection())
             input.setColorDepth(ColorDepth.Depth8Bit);
         else if (radio16Bit.getSelection())
@@ -115,8 +88,6 @@ public class RawInputEditor extends LayerEditor {
             input.setWhiteBalance(WhiteBalance.Auto);
         else
             Util.err("No white balance selected?");
-        
-        input.invalidate();
     }
 
     protected void layerChanged() {
