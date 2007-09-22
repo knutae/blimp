@@ -70,6 +70,9 @@ public class ViewResizeLayer extends DimensionAdjustmentLayer {
             // Optimize by returning the source.
             // Some unit tests also depends on this behaviour
             return source;
+
+        width = Math.max(width, 1);
+        height = Math.max(height, 1);
         
         resize.setSize(width, height);
         try {
