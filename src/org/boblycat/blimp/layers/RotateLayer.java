@@ -131,13 +131,15 @@ public class RotateLayer extends DimensionAdjustmentLayer {
      */
     @Override
     public BitmapSize calculateSize(BitmapSize inputSize) {
-        //return inputSize;
         double a = Math.toRadians(angle);
         double cosa = Math.cos(a);
         double sina = Math.sin(a);
-        double w = inputSize.width * cosa + inputSize.height * sina;
-        double h = inputSize.width * sina + inputSize.height * cosa;
-        return new BitmapSize((int) w, (int) h, inputSize.pixelScaleFactor);
+        double w = Math.abs(inputSize.width * cosa) +
+            Math.abs(inputSize.height * sina);
+        double h = Math.abs(inputSize.width * sina) +
+            Math.abs(inputSize.height * cosa);
+        return new BitmapSize((int) Math.ceil(w),
+                (int) Math.ceil(h), inputSize.pixelScaleFactor);
     }
 
     /* (non-Javadoc)
@@ -167,7 +169,7 @@ public class RotateLayer extends DimensionAdjustmentLayer {
      * @param angle the angle to set
      */
     public void setAngle(double angle) {
-        this.angle = angle;
+        this.angle = Util.constrainedValue(angle, -180, 180);
     }
 
     /**
@@ -191,7 +193,5 @@ public class RotateLayer extends DimensionAdjustmentLayer {
      */
     public Quality getQuality() {
         return quality;
-    }
-
-    
+    }    
 }
