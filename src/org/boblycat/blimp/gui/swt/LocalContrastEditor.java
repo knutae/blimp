@@ -21,8 +21,6 @@ package org.boblycat.blimp.gui.swt;
 import static org.boblycat.blimp.layers.LocalContrastLayer.*;
 
 import org.boblycat.blimp.layers.LocalContrastLayer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 
 public class LocalContrastEditor extends GridBasedLayerEditor {
@@ -36,7 +34,6 @@ public class LocalContrastEditor extends GridBasedLayerEditor {
         radiusSlider = createSlider("Radius", MIN_RADIUS, MAX_RADIUS, 0);
         amountSlider = createSlider("Amount", MIN_AMOUNT, MAX_AMOUNT, 0);
         adaptiveSlider = createSlider("Adaptive", MIN_ADAPTIVE, MAX_ADAPTIVE, 0);
-        setLayout(new FillLayout(SWT.VERTICAL));
     }
 
     @Override
