@@ -46,6 +46,7 @@ public class ValueSlider extends Composite {
     int digits;
     double digitsDivisor;
     boolean flipDirection;
+    boolean inSetValueNoEvent;
 
     public ValueSlider(Composite parent, int style) {
         this(parent, style, null, -100, 100, 0);
@@ -76,20 +77,49 @@ public class ValueSlider extends Composite {
                 e.text = buf.toString();
             }
         });
-        Listener applyTextValueListener = new Listener() {
+        
+        /*
+         * The text editing behavior should be as follows:
+         * 
+         * Update the value immediately while typing, if possible.
+         * 
+         * If an illegal numeric value (such as an empty string) is entered,
+         * it is ignored, and the last legal value is restored when the text
+         * field loses focus.
+         * 
+         * If an out-of-bounds value is entered, it is immediately converted
+         * to the closest in-bounds value, but the caret (cursor) position
+         * should not change.
+         */ 
+        valueEdit.addListener(SWT.Modify, new Listener() {
             public void handleEvent(Event e) {
+                if (inSetValueNoEvent)
+                    return;
                 try {
                     int value = Util.valueOfFixPointDecimal(
                             valueEdit.getText(), digits);
                     setSelectionNoUpdate(value, true);
+                    updateSelection(true);
+                    if (value != selection) {
+                        // this only happens for out-of-bounds values
+                        int caret = valueEdit.getCaretPosition();
+                        setValueNoEvent(Util.fixPointDecimalToString(
+                                selection, digits));
+                        valueEdit.setSelection(caret, caret);
+                    }
                 }
                 catch (NumberFormatException ex) {
-                    // value will be reverted in updateSelection()
+                    // safely ignored
                 }
-                updateSelection();
             }
-        };
-        valueEdit.addListener(SWT.DefaultSelection, applyTextValueListener);
+        });
+        valueEdit.addListener(SWT.FocusOut, new Listener() {
+            public void handleEvent(Event e) {
+                String strValue = Util.fixPointDecimalToString(
+                        selection, digits);
+                setValueNoEvent(strValue);
+            }
+        });
 
         scale = new Scale(this, SWT.NONE);
         scale.addListener(SWT.Selection, new Listener() {
@@ -136,7 +166,7 @@ public class ValueSlider extends Composite {
         scale.setMaximum(range);
     }
 
-    void updateSelection() {
+    void updateSelection(boolean fromTextEditor) {
         int scaleSelection;
         if (flipDirection)
             scaleSelection = maximum - selection;
@@ -144,12 +174,23 @@ public class ValueSlider extends Composite {
             scaleSelection = selection - minimum;
         scale.setSelection(scaleSelection);
         String strValue = Util.fixPointDecimalToString(selection, digits);
-        valueEdit.setText(strValue);
+        if (!fromTextEditor)
+            setValueNoEvent(strValue);
+    }
+    
+    void setValueNoEvent(String newText) {
+        inSetValueNoEvent = true;
+        try {
+            valueEdit.setText(newText);
+        }
+        finally {
+            inSetValueNoEvent = false;
+        }
     }
 
     void updateGuiValues() {
         updateRange();
-        updateSelection();
+        updateSelection(false);
     }
 
     public void setCaption(String caption) {
@@ -199,7 +240,7 @@ public class ValueSlider extends Composite {
 
     public void setSelection(int selection, boolean sendSelectionEvent) {
         setSelectionNoUpdate(selection, sendSelectionEvent);
-        updateSelection();
+        updateSelection(false);
     }
 
     public void setSelection(int selection) {
