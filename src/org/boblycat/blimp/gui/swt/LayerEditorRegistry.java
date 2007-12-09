@@ -85,8 +85,7 @@ public class LayerEditorRegistry {
                 editor = entry.editorConstructor.newInstance(args);
             }
             catch (Exception e) {
-                Util.err("Failed to construct editor: "
-                        + e.getMessage());
+                Util.err("Failed to construct editor", e);
                 return;
             }
             wrapper.setContent(editor);

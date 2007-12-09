@@ -19,6 +19,8 @@
 package org.boblycat.blimp;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.logging.Logger;
 
 import org.boblycat.blimp.layers.FileInputLayer;
@@ -119,6 +121,20 @@ public class Util {
      */
     public static void err(String message) {
         logger.severe(message);
+    }
+
+    /**
+     * Print a non-fatal error message with an exception.
+     * The exception stack trace will be logged. 
+     * @param message an error message
+     * @param ex an exception
+     */
+    public static void err(String message, Exception ex) {
+        StringWriter sw = new StringWriter();
+        sw.write(message + '\n');
+        sw.write("Caused by an exception:\n");
+        ex.printStackTrace(new PrintWriter(sw));
+        logger.severe(sw.toString());
     }
     
     /**
