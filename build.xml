@@ -163,6 +163,12 @@
     </target>
 
     <target name="install-unix" depends="install-jars-unix,install-launcher"/>
+    
+    <target name="doc">
+        <javadoc destdir="${javadoc.dst}">
+            <packageset dir="${javadoc.src}"/>
+        </javadoc>
+    </target>
 
     <!-- Windows-specific targets -->
     <target name="install-windows" depends="blimp-jar,install-dcraw">

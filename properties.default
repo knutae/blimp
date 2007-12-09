@@ -22,6 +22,9 @@ dcraw.exe.path = ${build}/${dcraw.exe}
 
 blimp.jar = ${build}/blimp.jar
 
+javadoc.src = ${src}
+javadoc.dst = ${build}/javadoc
+
 c-compiler = gcc
 
 install.home = ${user.home}/blimp
