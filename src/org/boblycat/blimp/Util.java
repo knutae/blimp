@@ -165,7 +165,7 @@ public class Util {
             return ivalue;
         int len = ivalue.length();
         if (len <= digits) {
-            StringBuffer buf = new StringBuffer("0.");
+            StringBuilder buf = new StringBuilder("0.");
             for (int i = len; i < digits; i++)
                 buf.append('0');
             buf.append(ivalue);

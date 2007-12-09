@@ -176,7 +176,7 @@ public class Serializer {
     }
 
     private static String getChildText(Element parent) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (Node child : new DOMNodeIterator(parent)) {
             if (child instanceof Text) {
                 buf.append(child.getNodeValue());

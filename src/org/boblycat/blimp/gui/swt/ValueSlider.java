@@ -68,7 +68,7 @@ public class ValueSlider extends Composite {
         valueEdit.addListener(SWT.Verify, new Listener() {
             public void handleEvent(Event e) {
                 // strip illegal characters from e
-                StringBuffer buf = new StringBuffer(e.text.length());
+                StringBuilder buf = new StringBuilder(e.text.length());
                 for (char c : e.text.toCharArray()) {
                     if (isLegalValueChar(c))
                         buf.append(c);
