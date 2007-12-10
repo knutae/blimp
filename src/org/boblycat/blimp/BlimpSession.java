@@ -43,6 +43,8 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     
     PreviewQuality previewQuality;
     
+    private String projectFilePath;
+    
     class SessionProgressListener implements ProgressListener {
         BlimpSession session;
         Layer layer;
@@ -258,6 +260,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             newList.add(findOrCloneLayer(otherLayer));
         layerList = newList;
         setName(other.getName());
+        setProjectFilePath(other.getProjectFilePath());
         //viewport.copyDataFrom(other.viewport);
     }
     
@@ -479,7 +482,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
      * Overridden so that the input property is not serialized directly.
      */
     protected boolean isSerializableProperty(PropertyDescriptor pd) {
-        if (pd.getName().equals("input"))
+        if (pd.getName().equals("input") || pd.getName().equals("projectFilePath"))
             return false;
         return super.isSerializableProperty(pd);
     }
@@ -525,12 +528,45 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         if (!shortName.isEmpty())
             setName(shortName);
     }
-
+    
     public void setPreviewQuality(PreviewQuality previewQuality) {
         this.previewQuality = previewQuality;
     }
 
     public PreviewQuality getPreviewQuality() {
         return previewQuality;
+    }
+
+    /**
+     * Set the project file path, which should either be an absolute file path
+     * or <code>null</code>.
+     * @param projectFilePath the project file path to set.
+     */
+    public void setProjectFilePath(String projectFilePath) {
+        this.projectFilePath = projectFilePath;
+        // maybe call setNameFromFilename() here...
+    }
+
+    /**
+     * Get the project file path, which is either an absolute file path to a
+     * project (.blimp) file, or <code>null</code>.
+     * @return the project file path.
+     */
+    public String getProjectFilePath() {
+        return projectFilePath;
+    }
+    
+    /**
+     * Overridden to automatically set the project file path.
+     */
+    protected void beanLoaded(String filename) {
+        setProjectFilePath(filename);
+    }
+    
+    /**
+     * Overridden to automatically set the project file path.
+     */
+    protected void beanSaved(String filename) {
+        setProjectFilePath(filename);
     }
 }

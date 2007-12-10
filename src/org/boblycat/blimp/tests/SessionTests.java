@@ -218,6 +218,7 @@ public class SessionTests {
         layer1.setStringValue("layer1 value");
         layer1.setName("layer1 name");
         session1.addLayer(layer1);
+        session1.setProjectFilePath("/path/to/session1.blimp");
         
         session2.synchronizeSessionData(session1);
         TestInput input2 = (TestInput) session2.getInput();
@@ -230,6 +231,7 @@ public class SessionTests {
         assertTrue(layer1 != layer2);
         assertEquals("layer1 value", layer2.getStringValue());
         assertEquals("layer1 name", layer2.getName());
+        assertEquals("/path/to/session1.blimp", session2.getProjectFilePath());
         
         input2.setPath("input2 path");
         layer2.setStringValue("layer2 value");

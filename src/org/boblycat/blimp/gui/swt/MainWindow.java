@@ -83,6 +83,7 @@ public class MainWindow {
     MenuItem menuFileOpenSession;
     MenuItem menuFileExit;
     MenuItem menuFileSaveSession;
+    MenuItem menuFileSaveSessionAs;
     MenuItem menuFileExportImage;
     MenuItem menuHelpAbout;
     MenuItem menuUndo;
@@ -120,7 +121,10 @@ public class MainWindow {
                 doMenuExit();
             }
             else if (event.widget == menuFileSaveSession) {
-                doMenuSaveSession();
+                doMenuSaveSessionDirect();
+            }
+            else if (event.widget == menuFileSaveSessionAs) {
+                doMenuSaveSessionAs();
             }
             else if (event.widget == menuFileExportImage) {
                 doMenuExportImage();
@@ -218,14 +222,29 @@ public class MainWindow {
             }
         };
         menuItemListener = new MenuItemListener();
+        
+        // Listener used to enable all menu items, which is used
+        // as a simple way to ensure that accelerators are enabled.
+        Listener enableAllMenuItems = new Listener() {
+            public void handleEvent(Event e) {
+                if (!(e.widget instanceof Menu))
+                    return;
+                Menu menu = (Menu) e.widget;
+                for (MenuItem item: menu.getItems())
+                    item.setEnabled(true);
+            }
+        };
 
         Menu fileMenu = addMenu(bar, "&File");
         menuFileOpenImage = addMenuItem(fileMenu, "Open &Image",
                 "Open an image");
         menuFileOpenSession = addMenuItem(fileMenu, "Open &Project",
                 "Open a blimp project");
-        menuFileSaveSession = addMenuItem(fileMenu, "&Save Project",
+        menuFileSaveSession = addMenuItem(fileMenu, "&Save Project\tCtrl+S",
                 "Save the current project");
+        menuFileSaveSession.setAccelerator(SWT.CONTROL | 'S');
+        menuFileSaveSessionAs = addMenuItem(fileMenu, "Save Project &As",
+                "Save the current project in a new file");
         menuFileExportImage = addMenuItem(fileMenu, "&Export Image",
                 "Export the current image");
         menuFileExit = addMenuItem(fileMenu, "E&xit", "Exit the program");
@@ -233,15 +252,28 @@ public class MainWindow {
             public void handleEvent(Event e) {
                 boolean canSave = (currentImageTab != null);
                 menuFileSaveSession.setEnabled(canSave);
+                menuFileSaveSessionAs.setEnabled(canSave);
                 menuFileExportImage.setEnabled(canSave);
             }
         });
+        fileMenu.addListener(SWT.Hide, enableAllMenuItems);
         
         Menu editMenu = addMenu(bar, "&Edit");
-        menuUndo = addMenuItem(editMenu, "&Undo", "Undo a change");
+        menuUndo = addMenuItem(editMenu, "&Undo\tCtrl+Z", "Undo a change");
         menuUndo.setAccelerator(SWT.CONTROL | 'Z');
-        menuRedo = addMenuItem(editMenu, "&Redo", "Redo a change");
+        menuRedo = addMenuItem(editMenu, "&Redo\tCtrl+Y", "Redo a change");
         menuRedo.setAccelerator(SWT.CONTROL | 'Y');
+        editMenu.addListener(SWT.Show, new Listener() {
+            public void handleEvent(Event e) {
+                SessionHistory history = null;
+                if (currentImageTab != null) {
+                    history = currentImageTab.getSession().getHistory();
+                }
+                menuUndo.setEnabled(history != null && history.canUndo());
+                menuRedo.setEnabled(history != null && history.canRedo());
+            }
+        });
+        editMenu.addListener(SWT.Hide, enableAllMenuItems);
 
         Menu layerMenu = addMenu(bar, "Add &Layer");
         layerRegistry = LayerRegistry.createDefaultRegister();
@@ -594,8 +626,45 @@ public class MainWindow {
     void doMenuExit() {
         shell.close();
     }
+    
+    void saveCurrentSession(String filename) {
+        if (currentImageTab == null)
+            return;
+        HistoryBlimpSession session = currentImageTab.getSession();
+        try {
+            Serializer.saveBeanToFile(session, filename);
+            session.recordSaved();
+            session.setNameFromFilename(filename);
+            currentImageTab.item.setText(session.getName());
+            status("Project saved to " + filename);
+            //SwtUtil.messageDialog(shell, "Project Saved",
+            //        "The project was saved:\n" + filename, SWT.ICON_INFORMATION);
+        }
+        catch (IOException e) {
+            SwtUtil.errorDialog(shell, "Save Error",
+                    "An I/O error occured: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Save -- overwrite an existing project without confirmation.
+     * If the session has not previously been saved, trigger a "Save As".
+     */
+    void doMenuSaveSessionDirect() {
+        if (currentImageTab == null)
+            return;
+        HistoryBlimpSession session = currentImageTab.getSession();
+        if (session.getProjectFilePath() == null)
+            doMenuSaveSessionAs();
+        else
+            saveCurrentSession(session.getProjectFilePath());
+    }
 
-    void doMenuSaveSession() {
+    /**
+     * Save As -- show a save dialog, ask for overwrite confirmation if an
+     * existing file is selected, then save.
+     */
+    void doMenuSaveSessionAs() {
         if (currentImageTab == null)
             return;
         HistoryBlimpSession session = currentImageTab.getSession();
@@ -614,19 +683,7 @@ public class MainWindow {
                     "The project was not saved.", SWT.ICON_WARNING);
             return;
         }
-        try {
-            Serializer.saveBeanToFile(session, filename);
-            session.recordSaved();
-            session.setNameFromFilename(filename);
-            currentImageTab.item.setText(session.getName());
-            status("Project saved to " + filename);
-            //SwtUtil.messageDialog(shell, "Project Saved",
-            //        "The project was saved:\n" + filename, SWT.ICON_INFORMATION);
-        }
-        catch (IOException e) {
-            SwtUtil.errorDialog(shell, "Save Error",
-                    "An I/O error occured: " + e.getMessage());
-        }
+        saveCurrentSession(filename);
     }
 
     void doMenuExportImage() {

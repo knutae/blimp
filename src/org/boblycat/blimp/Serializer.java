@@ -417,6 +417,7 @@ public class Serializer {
             output.setCharacterStream(writer);
             LSSerializer serializer = domImplLS.createLSSerializer();
             serializer.write(beanToDOM(bean), output);
+            bean.beanSaved(filename);
         }
         finally {
             writer.close();
@@ -446,6 +447,9 @@ public class Serializer {
         Node root = doc.getFirstChild();
         if ((root == null) || !(root instanceof Element))
             layerParseFailure("unknown XML parse error");
-        return layerFromDOM((Element) root);
+        BlimpBean bean = beanFromDOM((Element) root);
+        if (bean != null)
+            bean.beanLoaded(filename);
+        return bean;
     }
 }

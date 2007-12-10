@@ -257,4 +257,21 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
         return Serializer.beanToXml(bean).equals(Serializer.beanToXml(this));
     }
     
+    /**
+     * Called after this bean has been loaded from a file.
+     * The default implementation does nothing, but can be overridden.
+     * @param filename The filename the bean was loaded from.
+     */
+    protected void beanLoaded(String filename) {
+        
+    }
+    
+    /**
+     * Called after this bean has been saved to a file.
+     * The default implementation does nothing, but can be overridden.
+     * @param filename The filename the bean was saved to.
+     */
+    protected void beanSaved(String filename) {
+        
+    }
 }

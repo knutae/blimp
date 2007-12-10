@@ -18,6 +18,8 @@
  */
 package org.boblycat.blimp.tests;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Vector;
@@ -493,5 +495,30 @@ public class SerializationTests {
         Element rawWhiteBalanceElement = findPropertyElement(
                 root, "rawWhiteBalance");
         assertNull(rawWhiteBalanceElement);
+    }
+    
+    @Test
+    public void testProjectFilePathAfterLoadFromFile() throws Exception {
+        File temp = File.createTempFile("projectTest", ".blimp");
+        temp.deleteOnExit();
+        FileWriter out = new FileWriter(temp);
+        out.write("<session/>");
+        out.close();
+        BlimpSession session =
+            (BlimpSession) Serializer.loadBeanFromFile(temp.getAbsolutePath());
+        assertNotNull(session);
+        assertNotNull(session.getProjectFilePath());
+        assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
+    }
+    
+    @Test
+    public void testProjectFilePathAfterSaveToFile() throws Exception {
+        File temp = File.createTempFile("projectTest", ".blimp");
+        temp.deleteOnExit();
+        BlimpSession session = new BlimpSession();
+        assertNull(session.getProjectFilePath());
+        Serializer.saveBeanToFile(session, temp.getAbsolutePath());
+        assertNotNull(session.getProjectFilePath());
+        assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
     }
 }

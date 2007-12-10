@@ -95,6 +95,15 @@ public class HistoryBlimpSession extends BlimpSession {
         }
     }
     
+    /**
+     * Returns the internal session history object.
+     * This can return <code>null</code> if it has not yet been created.
+     * @return a SessionHistory object, or <code>null</code>.
+     */
+    public SessionHistory getHistory() {
+        return history;
+    }
+    
     public boolean isDirty() {
         if (history == null)
             return false;
