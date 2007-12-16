@@ -764,7 +764,7 @@ public class MainWindow {
                 + "<a href=\"http://schmidt.devlib.org/jiu/\">Java Imaging Utilities</a> by Marco Schmidt and others\n"
                 + "<a href=\"http://cybercom.net/~dcoffin/dcraw/\">dcraw</a> (Raw input) by Dave Coffin\n"
                 + "\n"
-                + "Please visit the <a href=\"http://projects.boblycat.org/blimp/\">Blimp project page</a>"
+                + "Please visit the <a href=\"https://projects.boblycat.org/blimp/\">Blimp project page</a>"
                 + " for more information and resources.\n");
         linkText.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
