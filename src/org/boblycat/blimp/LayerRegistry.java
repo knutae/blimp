@@ -95,13 +95,15 @@ public class LayerRegistry implements Iterable<LayerRegistry.Category> {
         cat.registerLayer(LevelsLayer.class, "&Levels",
                 "Adjust brightness levels");
         cat.registerLayer(CurvesLayer.class, "&Curves",
-                "Curves, precise tonality adjustment");
+                "Precise tonality adjustment");
         cat.registerLayer(SaturationLayer.class, "&Hue/Saturation/Lightness",
                 "Adjust hue, saturation and lightness");
         cat.registerLayer(GrayscaleMixerLayer.class, "&Grayscale Mixer",
                 "Convert to grayscale using an RGB mixer");
         cat.registerLayer(GammaLayer.class, "Ga&mma",
                 "Gamma correction (lightness)");
+        cat.registerLayer(InvertLayer.class, "&Invert",
+                "Invert all colors, resulting in a negative image");
         cat.registerLayer(Color16BitLayer.class, "Promote to &16-Bit",
                 "Promote the image from 8-bit to 16-bit per color channel");
         
