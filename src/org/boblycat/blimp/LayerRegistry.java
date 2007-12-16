@@ -29,60 +29,87 @@ import org.boblycat.blimp.layers.*;
  * 
  * @author Knut Arild Erstad
  */
-public class LayerRegistry implements Iterable<LayerRegistry.LayerInfo> {
+public class LayerRegistry implements Iterable<LayerRegistry.Category> {
     public class LayerInfo {
         public Class<? extends AdjustmentLayer> layerClass;
         public String label;
         public String description;
-        // String category;
     }
 
-    private Vector<LayerInfo> layerInfoList;
+    public class Category implements Iterable<LayerInfo> {
+        public String label;
+        private Vector<LayerInfo> layers;
+        private Category() {
+            layers = new Vector<LayerInfo>();
+        }
+        public Iterator<LayerInfo> iterator() {
+            return layers.iterator();
+        }
+        private void registerLayer(Class<? extends AdjustmentLayer> layerClass,
+                String label, String description) {
+            LayerInfo info = new LayerInfo();
+            info.layerClass = layerClass;
+            info.label = label;
+            info.description = description;
+            layers.add(info);
+        }
+    }
+    
+    private Vector<Category> categoryList;
 
     public LayerRegistry() {
-        layerInfoList = new Vector<LayerInfo>();
+        categoryList = new Vector<Category>();
     }
-
-    public void registerLayer(Class<? extends AdjustmentLayer> layerClass,
-            String label, String description) {
-        LayerInfo info = new LayerInfo();
-        info.layerClass = layerClass;
-        info.label = label;
-        info.description = description;
-        layerInfoList.add(info);
+    
+    public Category addCategory(String label) {
+        Category cat = new Category();
+        cat.label = label;
+        categoryList.add(cat);
+        return cat;
     }
-
-    public Iterator<LayerInfo> iterator() {
-        return layerInfoList.iterator();
+    
+    public Iterator<Category> iterator() {
+        return categoryList.iterator();
     }
 
     /** Returns a layer register with the built-in layers. */
-    public static LayerRegistry createDefaultRegister() {
+    public static LayerRegistry createDefaultRegistry() {
         LayerRegistry reg = new LayerRegistry();
-        reg.registerLayer(InvertLayer.class, "&Invert", "Invert (negative)");
-        reg.registerLayer(BrightnessContrastLayer.class,
-                "&Brightness/Contrast", "Brightness and Contrast");
-        reg.registerLayer(CurvesLayer.class, "&Curves", "Curves");
-        reg.registerLayer(SaturationLayer.class, "&Hue/Saturation/Lightness",
-                "Adjust Hue, Saturation and Lightness");
-        reg.registerLayer(Color16BitLayer.class, "Promote to &16-Bit",
-                "Promote the image to 16-bit per color channel");
-        reg.registerLayer(GammaLayer.class, "Ga&mma", "Adjust gamma");
-        reg.registerLayer(GrayscaleMixerLayer.class, "&Grayscale Mixer",
-                "Convert to grayscale using an RGB mixer");
-        reg.registerLayer(ResizeLayer.class, "&Resize", "Resize Image");
-        reg.registerLayer(UnsharpMaskLayer.class, "&Unsharp Mask",
-                "Image sharpening");
-        reg.registerLayer(LocalContrastLayer.class, "Local Contrast &Enhancement",
-                "Increase contrast locally in adjacent areas of the image");
-        reg.registerLayer(CropLayer.class, "Cro&p", "Crop Image");
-        reg.registerLayer(LevelsLayer.class, "&Levels", "Levels");
-        reg.registerLayer(OrientationLayer.class, "&Orientation",
-                "Change the Image Orientation");
-        reg.registerLayer(SolidColorBorderLayer.class, "Bor&der",
-                "Add a solid color border around the image.");
-        reg.registerLayer(RotateLayer.class, "Ro&tate",
+        Category cat;
+        
+        cat = reg.addCategory("&Image");
+        cat.registerLayer(OrientationLayer.class, "&Orientation",
+                "Flip or rotate the image in 90 degree increments.");
+        cat.registerLayer(CropLayer.class, "&Crop",
+                "Crop the image.");
+        cat.registerLayer(RotateLayer.class, "&Rotate",
                 "Rotate the image by an arbitrary angle.");
+        cat.registerLayer(ResizeLayer.class, "Re&size",
+                "Resize the image.");
+        cat.registerLayer(SolidColorBorderLayer.class, "&Border",
+                "Add a solid color border around the image.");
+        
+        cat = reg.addCategory("&Color");
+        cat.registerLayer(BrightnessContrastLayer.class, "&Brightness/Contrast",
+                "Brightness and contrast");
+        cat.registerLayer(LevelsLayer.class, "&Levels",
+                "Adjust brightness levels");
+        cat.registerLayer(CurvesLayer.class, "&Curves",
+                "Curves, precise tonality adjustment");
+        cat.registerLayer(SaturationLayer.class, "&Hue/Saturation/Lightness",
+                "Adjust hue, saturation and lightness");
+        cat.registerLayer(GrayscaleMixerLayer.class, "&Grayscale Mixer",
+                "Convert to grayscale using an RGB mixer");
+        cat.registerLayer(GammaLayer.class, "Ga&mma",
+                "Gamma correction (lightness)");
+        cat.registerLayer(Color16BitLayer.class, "Promote to &16-Bit",
+                "Promote the image from 8-bit to 16-bit per color channel");
+        
+        cat = reg.addCategory("&Enhance");
+        cat.registerLayer(LocalContrastLayer.class, "&Local Contrast Enhancement",
+                "Increase contrast locally in adjacent areas of the image");
+        cat.registerLayer(UnsharpMaskLayer.class, "&Unsharp Mask",
+                "Sharpen the image");
         return reg;
     }
 }

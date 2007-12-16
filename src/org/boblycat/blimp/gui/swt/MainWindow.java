@@ -276,10 +276,13 @@ public class MainWindow {
         editMenu.addListener(SWT.Hide, enableAllMenuItems);
 
         Menu layerMenu = addMenu(bar, "Add &Layer");
-        layerRegistry = LayerRegistry.createDefaultRegister();
-        for (LayerRegistry.LayerInfo info : layerRegistry) {
-            MenuItem item = addMenuItem(layerMenu, info.label, info.description);
-            item.setData(info);
+        layerRegistry = LayerRegistry.createDefaultRegistry();
+        for (LayerRegistry.Category category : layerRegistry) {
+            Menu catMenu = addMenu(layerMenu, category.label);
+            for (LayerRegistry.LayerInfo info : category) {
+                MenuItem item = addMenuItem(catMenu, info.label, info.description);
+                item.setData(info);
+            }
         }
 
         Menu helpMenu = addMenu(bar, "&Help");
