@@ -38,6 +38,8 @@ import org.xml.sax.SAXException;
 import static org.junit.Assert.*;
 
 public class SerializationTests {
+    int eventCount;
+    
     private static DocumentBuilder createDocBuilder() {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
@@ -512,6 +514,21 @@ public class SerializationTests {
     }
     
     @Test
+    public void testProjectFilePathAfterLoadHistorySessionFromFile()
+    throws Exception {
+        File temp = File.createTempFile("projectTest", ".blimp");
+        temp.deleteOnExit();
+        FileWriter out = new FileWriter(temp);
+        out.write("<session/>");
+        out.close();
+        HistoryBlimpSession session =
+            Serializer.loadHistorySessionFromFile(temp.getAbsolutePath());
+        assertNotNull(session);
+        assertNotNull(session.getProjectFilePath());
+        assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
+    }
+    
+    @Test
     public void testProjectFilePathAfterSaveToFile() throws Exception {
         File temp = File.createTempFile("projectTest", ".blimp");
         temp.deleteOnExit();
@@ -519,6 +536,78 @@ public class SerializationTests {
         assertNull(session.getProjectFilePath());
         Serializer.saveBeanToFile(session, temp.getAbsolutePath());
         assertNotNull(session.getProjectFilePath());
+        assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
+    }
+    
+    @Test
+    public void testLoadHistorySessionFromFile() throws Exception {
+        File temp = File.createTempFile("projectTest", ".blimp");
+        temp.deleteOnExit();
+        String xml =
+            "<session>" +
+            "  <layer class=\"org.boblycat.blimp.tests.TestInput\">" +
+            "    <property name=\"path\">initial path</property>" +
+            "  </layer>" +
+            "</session>";
+        FileWriter out = new FileWriter(temp);
+        out.write(xml);
+        out.close();
+        
+        HistoryBlimpSession session = Serializer.loadHistorySessionFromFile(
+                temp.getAbsolutePath());
+        assertFalse(session.isDirty());
+        assertNotNull(session);
+        TestInput input = (TestInput) session.getInput();
+        assertNotNull(input);
+        assertEquals("initial path", input.getPath());
+        
+        eventCount = 0;
+        session.addChangeListener(new LayerChangeListener () {
+            public void handleChange(LayerEvent e) {
+                eventCount++;
+            }
+        });
+        
+        input.setPath("new path");
+        input.invalidate();
+        assertEquals(1, eventCount);
+        assertNotNull(session.getHistory());
+        assertTrue(session.getHistory().canUndo());
+        
+        session.undo();
+        assertEquals("initial path", input.getPath());
+        assertFalse(session.getHistory().canUndo());
+    }
+
+    @Test
+    public void testProjectFilePathAfterLoadFromFileAndUndo() throws Exception {
+        File temp = File.createTempFile("projectTest", ".blimp");
+        temp.deleteOnExit();
+        String xml =
+            "<session>" +
+            "  <layer class=\"org.boblycat.blimp.tests.TestInput\">" +
+            "    <property name=\"path\">initial path</property>" +
+            "  </layer>" +
+            "</session>";
+        FileWriter out = new FileWriter(temp);
+        out.write(xml);
+        out.close();
+        
+        HistoryBlimpSession session = Serializer.loadHistorySessionFromFile(
+                temp.getAbsolutePath());
+        assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
+        
+        // change a value and record history
+        TestInput input = (TestInput) session.getInput();
+        input.invalidate();
+        assertEquals("initial path", input.getPath());
+        input.setPath("new path");
+        input.invalidate();
+        assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
+        
+        // undo
+        session.undo();
+        assertEquals("initial path", input.getPath());
         assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
     }
 }

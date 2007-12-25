@@ -435,7 +435,7 @@ public class Serializer {
      * @throws SAXException
      *             If the XML parsing fails.
      * @throws IOException
-     *             If a file expection occurs.
+     *             If a file exception occurs.
      * @throws ClassNotFoundException
      *             If the bean class is not known.
      */
@@ -451,5 +451,45 @@ public class Serializer {
         if (bean != null)
             bean.beanLoaded(filename);
         return bean;
+    }
+    
+    private static BlimpSession loadSessionFromFile(String filename,
+            Class<? extends BlimpSession> sessionClass)
+            throws FileNotFoundException, SAXException, IOException,
+            ClassNotFoundException {
+        BlimpSession session = (BlimpSession) newBeanInstance(sessionClass);
+        if (session == null)
+            return null;
+        BlimpBean bean = loadBeanFromFile(filename);
+        if (bean == null || !(bean instanceof BlimpSession))
+            return null;
+        copyBeanData(bean, session);
+        return session;
+    }
+    
+    /**
+     * Load a history-enabled session from file.
+     * @param filename
+     *  File to load.
+     * @return
+     *  A new history session object.
+     * @throws FileNotFoundException
+     *  If the file does not exist.
+     * @throws SAXException
+     *  If the XML parsing fails.
+     * @throws IOException
+     *  If a file exception occurs.
+     * @throws ClassNotFoundException
+     *  If the file references an unknown class.
+     */
+    public static HistoryBlimpSession loadHistorySessionFromFile(String filename)
+            throws FileNotFoundException, SAXException, IOException,
+            ClassNotFoundException {
+        HistoryBlimpSession session = (HistoryBlimpSession)
+            loadSessionFromFile(filename, HistoryBlimpSession.class);
+        if (session != null) {
+            session.beanLoaded(filename);
+        }
+        return session;
     }
 }

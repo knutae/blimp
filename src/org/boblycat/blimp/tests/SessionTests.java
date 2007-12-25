@@ -182,6 +182,28 @@ public class SessionTests {
     }
 
     @Test
+    public void testChangeEventsOnInvalidate() {
+        eventCount = 0;
+        BlimpSession session = createTestSession();
+        session.addChangeListener(new LayerChangeListener() {
+            public void handleChange(LayerEvent e) {
+                eventCount++;
+            }
+        });
+        
+        TestInput input = (TestInput) session.getInput();
+        TestLayer layer = new TestLayer("a");
+        assertEquals(0, eventCount);
+        session.addLayer(layer);
+        assertEquals(1, eventCount);
+        
+        input.invalidate();
+        assertEquals(2, eventCount);
+        layer.invalidate();
+        assertEquals(3, eventCount);
+    }
+    
+    @Test
     public void testLayerChangeEvent() {
         eventCount = 0;
         lastLayerEvent = null;

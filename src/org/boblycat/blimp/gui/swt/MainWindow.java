@@ -553,11 +553,8 @@ public class MainWindow {
         if (filename.toLowerCase().endsWith(".blimp")) {
             // open a saved session
             try {
-                BlimpSession session = (BlimpSession)
-                    Serializer.loadBeanFromFile(filename);
-                HistoryBlimpSession historySession = new HistoryBlimpSession();
-                historySession.synchronizeSessionData(session);
-                historySession.setNameFromFilename(filename);
+                HistoryBlimpSession historySession =
+                    Serializer.loadHistorySessionFromFile(filename);
                 boolean dirty = false;
                 try {
                     dirty = tryEnsureInputFileExists(historySession);

@@ -150,4 +150,12 @@ public class HistoryBlimpSession extends BlimpSession {
         if (autoRecordDisableLevel == 0)
             record();
     }
+
+    /**
+     * Overridden to initialize the history after loading from file.
+     */
+    protected void beanLoaded(String filename) {
+        super.beanLoaded(filename);
+        recordSaved();
+    }
 }

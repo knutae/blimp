@@ -260,7 +260,9 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             newList.add(findOrCloneLayer(otherLayer));
         layerList = newList;
         setName(other.getName());
-        setProjectFilePath(other.getProjectFilePath());
+        // Don't overwrite projectFilePath during e.g. undo()
+        if (other.getProjectFilePath() != null)
+            setProjectFilePath(other.getProjectFilePath());
         //viewport.copyDataFrom(other.viewport);
     }
     
