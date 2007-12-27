@@ -96,6 +96,8 @@ public class LayerRegistry implements Iterable<LayerRegistry.Category> {
                 "Adjust brightness levels");
         cat.registerLayer(CurvesLayer.class, "&Curves",
                 "Precise tonality adjustment");
+        cat.registerLayer(ColorBalanceLayer.class, "Color &Balance",
+                "Adjust the color tones");
         cat.registerLayer(SaturationLayer.class, "&Hue/Saturation/Lightness",
                 "Adjust hue, saturation and lightness");
         cat.registerLayer(GrayscaleMixerLayer.class, "&Grayscale Mixer",

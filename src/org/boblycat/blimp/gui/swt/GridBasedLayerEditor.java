@@ -72,19 +72,19 @@ public abstract class GridBasedLayerEditor extends LayerEditor {
         layer.invalidate();
     }
     
-    private Button createGroupButton(Group group, String caption, int style) {
-        Button button = new Button(group, style);
+    private Button createButton(Composite parent, String caption, int style) {
+        Button button = new Button(parent, style);
         button.setText(caption);
         button.addListener(SWT.Selection, updateLayerListener);
         return button;
     }
 
-    protected Button createRadioButton(Group group, String caption) {
-        return createGroupButton(group, caption, SWT.RADIO);
+    protected Button createRadioButton(Composite parent, String caption) {
+        return createButton(parent, caption, SWT.RADIO);
     }
     
-    protected Button createCheckButton(Group group, String caption) {
-        return createGroupButton(group, caption, SWT.CHECK);
+    protected Button createCheckButton(Composite parent, String caption) {
+        return createButton(parent, caption, SWT.CHECK);
     }
     
     protected Group createGroup(String caption) {
