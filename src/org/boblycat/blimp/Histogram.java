@@ -58,7 +58,7 @@ public class Histogram extends ArrayHistogram1D {
         IntegerImage image = (IntegerImage) bitmap.getImage();
         clear();
         for (int channel=0; channel<image.getNumChannels(); channel++) {
-            creator.setImage((IntegerImage) bitmap.getImage());
+            creator.setImage((IntegerImage) bitmap.getImage(), channel);
             try {
                 creator.process();
             }
