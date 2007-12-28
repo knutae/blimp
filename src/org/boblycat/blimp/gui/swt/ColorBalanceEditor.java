@@ -40,8 +40,8 @@ public class ColorBalanceEditor extends GridBasedLayerEditor {
     public ColorBalanceEditor(Composite parent, int style) {
         super(parent, style);
         redSlider = createSlider("Cyan / Red", MIN_VALUE, MAX_VALUE, 0);
-        greenSlider = createSlider("Magenta / Green", -MIN_VALUE, MAX_VALUE, 0);
-        blueSlider = createSlider("Yellow / Blue", -MIN_VALUE, MAX_VALUE, 0);
+        greenSlider = createSlider("Magenta / Green", MIN_VALUE, MAX_VALUE, 0);
+        blueSlider = createSlider("Yellow / Blue", MIN_VALUE, MAX_VALUE, 0);
         lightnessButton = createCheckButton(this, "Preserve Lightness");
     }
 
