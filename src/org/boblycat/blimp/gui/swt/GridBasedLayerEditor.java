@@ -23,9 +23,11 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
 /**
@@ -93,6 +95,21 @@ public abstract class GridBasedLayerEditor extends LayerEditor {
         group.setLayout(new FillLayout(SWT.VERTICAL));
         group.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
         return group;
+    }
+
+    protected Combo createEnumCombo(String caption, Class<? extends Enum<?>> enumClass) {
+        Label label = new Label(this, SWT.NONE);
+        label.setText(caption);
+        Combo combo = new Combo(this, SWT.READ_ONLY);
+        for (Object enumObj: enumClass.getEnumConstants())
+            combo.add(enumObj.toString());
+        combo.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
+        combo.addListener(SWT.Selection, updateLayerListener);
+        return combo;
+    }
+
+    protected void setEnumComboValue(Combo combo, Enum<?> enumValue) {
+        combo.setText(enumValue.toString());
     }
 
     protected ValueSlider createSliderWithoutListener(String caption,

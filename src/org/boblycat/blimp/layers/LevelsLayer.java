@@ -20,6 +20,7 @@ package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.NaturalCubicSpline;
+import org.boblycat.blimp.RGBChannel;
 import org.boblycat.blimp.SplineOperation;
 import org.boblycat.blimp.Util;
 
@@ -35,7 +36,7 @@ class LevelsOperation extends SplineOperation {
         if (center > blackLevel && center < whiteLevel)
             spline.addPoint(center, 0.5);
         spline.addPoint(whiteLevel, 1);
-        setTablesFromSpline(spline, bitDepth);
+        setTablesFromSpline(spline, bitDepth, RGBChannel.All);
     }
 }
 

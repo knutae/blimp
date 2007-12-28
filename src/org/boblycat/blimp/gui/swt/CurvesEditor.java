@@ -21,29 +21,24 @@ package org.boblycat.blimp.gui.swt;
 import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.NaturalCubicSpline;
 import org.boblycat.blimp.PointDouble;
+import org.boblycat.blimp.RGBChannel;
 import org.boblycat.blimp.Util;
 import org.boblycat.blimp.layers.CurvesLayer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-public class CurvesEditor extends LayerEditor {
+public class CurvesEditor extends GridBasedLayerEditor {
     Canvas canvas;
-
+    Combo channelCombo;
     CurvesLayer curvesLayer;
-
     Double currentPointX;
-
     Double selectedPointX;
-
     int mouseX, mouseY;
 
     private static boolean almostEqual(double d1, double d2) {
@@ -63,14 +58,15 @@ public class CurvesEditor extends LayerEditor {
 
     public CurvesEditor(Composite parent, int style) {
         super(parent, style);
-        setLayout(new FillLayout());
         mouseX = -1;
         mouseY = -1;
+        channelCombo = createEnumCombo("RGB Channel(s):", RGBChannel.class);
         canvas = new Canvas(this, SWT.NO_BACKGROUND) {
             public Point computeSize(int wHint, int hHint, boolean changed) {
                 return new Point(200, 200);
             }
         };
+        canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         canvas.addListener(SWT.Paint, new Listener() {
             public void handleEvent(Event e) {
                 Rectangle rect = canvas.getClientArea();
@@ -218,7 +214,17 @@ public class CurvesEditor extends LayerEditor {
         });
     }
 
+    protected void updateLayer() {
+        for (RGBChannel channel: RGBChannel.values()) {
+            if (channel.toString().equals(channelCombo.getText())) {
+                curvesLayer.setChannel(channel);
+                break;
+            }
+        }
+    }
+
     protected void layerChanged() {
         curvesLayer = (CurvesLayer) layer;
+        setEnumComboValue(channelCombo, curvesLayer.getChannel());
     }
 }

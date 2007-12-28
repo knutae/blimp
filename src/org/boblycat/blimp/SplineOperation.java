@@ -32,7 +32,8 @@ public class SplineOperation extends LookupTableOperation {
      * @param spline a spline.
      * @param bitDepth the bit depth per color channel, must be 8 or 16.
      */
-    public void setTablesFromSpline(NaturalCubicSpline spline, int bitDepth) {
+    public void setTablesFromSpline(NaturalCubicSpline spline, int bitDepth,
+            RGBChannel channel) {
         assert (bitDepth == 8 || bitDepth == 16);
         int size = 1 << bitDepth;
         int[] table = new int[size];
@@ -42,6 +43,20 @@ public class SplineOperation extends LookupTableOperation {
             int y = (int) (splineValues[i] * (size-1));
             table[i] = Util.constrainedValue(y, 0, size-1);
         }
-        setTables(table);
+        if (channel == null || channel.toJiuIndex() < 0) {
+            setTables(table);
+            return;
+        }
+        setNumTables(3);
+        int[] identityTable = new int[size];
+        for (int i=0; i<size; i++)
+            identityTable[i] = i;
+        int rgbIndex = channel.toJiuIndex();
+        for (int i=0; i<3; i++) {
+            if (i == rgbIndex)
+                setTable(i, table);
+            else
+                setTable(i, identityTable);
+        }
     }
 }

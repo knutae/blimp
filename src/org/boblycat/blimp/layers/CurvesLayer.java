@@ -23,22 +23,25 @@ import java.util.TreeMap;
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.NaturalCubicSpline;
 import org.boblycat.blimp.PointDouble;
+import org.boblycat.blimp.RGBChannel;
 import org.boblycat.blimp.SplineOperation;
 
 import net.sourceforge.jiu.data.PixelImage;
 
 public class CurvesLayer extends AdjustmentLayer {
     NaturalCubicSpline spline;
+    RGBChannel channel;
 
     public CurvesLayer() {
         spline = new NaturalCubicSpline();
         spline.addPoint(0.0, 0.0);
         spline.addPoint(1.0, 1.0);
+        channel = RGBChannel.All;
     }
 
     public Bitmap applyLayer(Bitmap source) {
         SplineOperation curvesOp = new SplineOperation();
-        curvesOp.setTablesFromSpline(spline, source.getChannelBitDepth());
+        curvesOp.setTablesFromSpline(spline, source.getChannelBitDepth(), channel);
         PixelImage image = source.getImage();
         image = applyJiuOperation(image, curvesOp);
         return new Bitmap(image);
@@ -104,5 +107,20 @@ public class CurvesLayer extends AdjustmentLayer {
 
     public NaturalCubicSpline getSpline() {
         return spline;
+    }
+
+    /**
+     * @param channel the color channel to set
+     */
+    public void setChannel(RGBChannel channel) {
+        if (channel != null)
+            this.channel = channel;
+    }
+
+    /**
+     * @return the color channel
+     */
+    public RGBChannel getChannel() {
+        return channel;
     }
 }
