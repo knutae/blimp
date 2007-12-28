@@ -100,6 +100,8 @@ public class LayerRegistry implements Iterable<LayerRegistry.Category> {
                 "Adjust the color tones");
         cat.registerLayer(SaturationLayer.class, "&Hue/Saturation/Lightness",
                 "Adjust hue, saturation and lightness");
+        cat.registerLayer(ColorizeLayer.class, "Colori&ze",
+                "Colorize the image using a single hue");
         cat.registerLayer(GrayscaleMixerLayer.class, "&Grayscale Mixer",
                 "Convert to grayscale using an RGB mixer");
         cat.registerLayer(GammaLayer.class, "Ga&mma",
