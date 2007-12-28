@@ -202,6 +202,7 @@ public class LayersView extends SashForm {
     public void updateWithEnvironment(LayerEditorEnvironment env) {
         editorEnvironment = env;
         layerTable.removeAll();
+        propertyEditor.setLayer(null);
         HistoryBlimpSession session = getSession();
         if (session == null)
             return;
@@ -211,7 +212,6 @@ public class LayersView extends SashForm {
             item.setChecked(layer.isActive());
             item.setText(layer.getDescription());
         }
-        propertyEditor.setLayer(null);
         openLayerEditor(env);
     }
 
