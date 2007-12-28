@@ -21,6 +21,8 @@ package org.boblycat.blimp.gui.swt;
 import org.boblycat.blimp.layers.ColorBalanceLayer;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import static org.boblycat.blimp.layers.ColorBalanceLayer.MIN_VALUE;
+import static org.boblycat.blimp.layers.ColorBalanceLayer.MAX_VALUE;
 
 /**
  * Editor for {@link ColorBalanceLayer}.
@@ -37,9 +39,9 @@ public class ColorBalanceEditor extends GridBasedLayerEditor {
     
     public ColorBalanceEditor(Composite parent, int style) {
         super(parent, style);
-        redSlider = createSlider("Cyan / Red", -100, 100, 0);
-        greenSlider = createSlider("Magenta / Green", -100, 100, 0);
-        blueSlider = createSlider("Yellow / Blue", -100, 100, 0);
+        redSlider = createSlider("Cyan / Red", MIN_VALUE, MAX_VALUE, 0);
+        greenSlider = createSlider("Magenta / Green", -MIN_VALUE, MAX_VALUE, 0);
+        blueSlider = createSlider("Yellow / Blue", -MIN_VALUE, MAX_VALUE, 0);
         lightnessButton = createCheckButton(this, "Preserve Lightness");
     }
 
