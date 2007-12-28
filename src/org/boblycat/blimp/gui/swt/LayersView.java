@@ -43,6 +43,7 @@ public class LayersView extends SashForm {
             copy.session.endDisableAutoRecord();
             if (original.editorCallback != null)
                 original.editorCallback.editingFinished(env, cancelled);
+            refresh();
         }
 
         void openLayerEditor() {

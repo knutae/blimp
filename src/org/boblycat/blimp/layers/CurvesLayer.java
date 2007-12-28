@@ -48,7 +48,12 @@ public class CurvesLayer extends AdjustmentLayer {
     }
 
     public String getDescription() {
-        return "Curves";
+        switch (channel) {
+        case All:
+            return "Curves";
+        default:
+            return "Curves (" + channel + ")";
+        }
     }
 
     void normalizePoints() {

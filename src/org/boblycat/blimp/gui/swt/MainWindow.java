@@ -604,7 +604,6 @@ public class MainWindow {
                         gamma.setGamma(2.2);
                         env.session.addLayer(gamma);
                         env.session.recordSaved();
-                        layers.refresh();
                     }
                 }
             }
@@ -763,7 +762,6 @@ public class MainWindow {
                     if (cancelled) {
                         env.session.removeLayer(env.layer);
                     }
-                    layers.refresh();
                 }
             });
         }
