@@ -41,8 +41,10 @@ class ColorMixerOperation extends ImageToImageOperation {
     private static final double MAX_16BIT = 65535.0;
     
     private static double adjust(double input, double factor) {
-        //return input * factor;
-        return Util.constrainedValue(input * factor, 0.0, 1.0);
+        if (factor <= 0.0)
+            return input * (1.0 + factor);
+        else
+            return input + (1.0 - input) * factor;
     }
     
     private static void adjustColor(
@@ -65,6 +67,10 @@ class ColorMixerOperation extends ImageToImageOperation {
         }
     }
     
+    private static double toFactor(int ivalue) {
+        return ivalue / 100.0;
+    }
+    
     public void process() throws
             MissingParameterException,
             WrongParameterException {
@@ -74,9 +80,9 @@ class ColorMixerOperation extends ImageToImageOperation {
         int width = input.getWidth();
         int height = input.getHeight();
         PixelImage output = input.createCompatibleImage(width, height);
-        double cyanRedFactor = (100 + cyanRed) / 100.0;
-        double magentaGreenFactor = (100 + magentaGreen) / 100.0;
-        double yellowBlueFactor = (100 + yellowBlue) / 100.0;
+        double cyanRedFactor = toFactor(cyanRed);
+        double magentaGreenFactor = toFactor(magentaGreen);
+        double yellowBlueFactor = toFactor(yellowBlue);
         if (input instanceof RGB24Image) {
             RGB24Image input24 = (RGB24Image) input;
             RGB24Image output24 = (RGB24Image) output;
