@@ -18,18 +18,20 @@
  */
 package org.boblycat.blimp;
 
+import net.sourceforge.jiu.color.quantization.RGBColor;
+
 /**
  * A representation of a 24-bit RGB color triplet.
- * 
+ *
  * It can be used for specifying and serializing user-defined colors by
  * some layers.  The serialized format is compatible with HTML color codes.
- *   
+ *
  * Note that this class deliberately has limited scope.  It is <i>not</i>
  * meant to be used for individual pixels in a bitmap.  For that, use
  * JIU's RGBColor instead.
- * 
- * @see net.sourceforge.jiu.color.quantization.RGBColor
- * 
+ *
+ * @see RGBColor
+ *
  * @author Knut Arild Erstad
  */
 public class ColorRGB {
@@ -40,51 +42,51 @@ public class ColorRGB {
             super(s);
         }
     }
-    
+
     public static final int MAX = 255;
-    
+
     public static final ColorRGB White = new ColorRGB(MAX, MAX, MAX);
-    
+
     public static final ColorRGB Black = new ColorRGB(0, 0, 0);
-    
+
     private int red;
     private int green;
     private int blue;
-    
+
     public ColorRGB(int red, int green, int blue) {
         setRed(red);
         setGreen(green);
         setBlue(blue);
     }
-    
+
     private static int constrain(int value) {
         return Util.constrainedValue(value, 0, MAX);
     }
-    
+
     public void setRed(int red) {
         this.red = constrain(red);
     }
-    
+
     public int getRed() {
         return red;
     }
-    
+
     public void setGreen(int green) {
         this.green = constrain(green);
     }
-    
+
     public int getGreen() {
         return green;
     }
-    
+
     public void setBlue(int blue) {
         this.blue = constrain(blue);
     }
-    
+
     public int getBlue() {
         return blue;
     }
-    
+
     /**
      * Returns the color in an HTML-compatible hexadecimal color code format.
      * E.g. #0040FF.
@@ -93,11 +95,11 @@ public class ColorRGB {
     public String toString() {
         return String.format("#%02X%02X%02X", red, green, blue);
     }
-    
+
     private static void throwSyntaxException(String input) {
         throw new SyntaxException("not a valid RGB color: " + input);
     }
-    
+
     /**
      * Attempt to parse the string and return a new color.
      * The string must start with a hash character (#) followed by exactly

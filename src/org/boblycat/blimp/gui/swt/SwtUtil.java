@@ -41,17 +41,17 @@ import org.eclipse.swt.widgets.Widget;
 
 /**
  * SWT-related utility functions.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class SwtUtil {
     private static ImageLoader imageLoaderInstance;
-    
+
     public static void errorDialog(Shell parentShell, String title,
             String message) {
         messageDialog(parentShell, title, message, SWT.ICON_ERROR);
     }
-    
+
     /**
      * Show a message dialog with an OK button.
      * @param parentShell The parent window.
@@ -67,7 +67,7 @@ public class SwtUtil {
         box.setMessage(message);
         box.open();
     }
-    
+
     public static int confirmationDialog(Shell parentShell, String title,
             String message, int style) {
         MessageBox box = new MessageBox(parentShell, style);
@@ -75,7 +75,7 @@ public class SwtUtil {
         box.setMessage(message);
         return box.open();
     }
-    
+
     /**
      * Dispose the given widget if it is not <code>null</code>.
      * @param widget A widget, or <code>null</code>.
@@ -95,15 +95,17 @@ public class SwtUtil {
             return;
         resource.dispose();
     }
-    
+
     /**
      * Get a platform-dependent list of extensions useful for SWT file dialogs.
-     * @param names An array of extension names not including the dot, or "*" for all files.
+     * @param extensions
+     *      an array of extension names not including the dot,
+     *      or "*" for all files.
      * @return A platform-dependent string of wildcards, separated by semicolons.
      */
     public static String getFilterExtensionList(String[] extensions) {
         StringBuilder builder = new StringBuilder();
-    	if (Util.isWindowsOS()) {
+        if (Util.isWindowsOS()) {
             for (String ext : extensions) {
                 builder.append(";*." + ext);
             }
@@ -130,7 +132,7 @@ public class SwtUtil {
         // strip first separator
         return builder.substring(1);
     }
-    
+
     public static void fillColorRect(GC gc, Rectangle rect,
             int red, int green, int blue) {
         Color color = new Color(gc.getDevice(), red, green, blue);
@@ -138,15 +140,15 @@ public class SwtUtil {
         gc.fillRectangle(rect);
         color.dispose();
     }
-    
+
     public static void fillBlackRect(GC gc, Rectangle rect) {
         fillColorRect(gc, rect, 0, 0, 0);
     }
-    
+
     public static void fillWhiteRect(GC gc, Rectangle rect) {
         fillColorRect(gc, rect, 255, 255, 255);
     }
-    
+
     public static void drawColorLine(GC gc, int x1, int y1, int x2, int y2,
             int red, int green, int blue) {
         Color color = new Color(gc.getDevice(), red, green, blue);
@@ -154,7 +156,7 @@ public class SwtUtil {
         gc.drawLine(x1, y1, x2, y2);
         color.dispose();
     }
-    
+
     /**
      * Show a confirmation dialog asking the if it is okay to overwrite
      * the given file.
@@ -172,7 +174,7 @@ public class SwtUtil {
         int result = box.open();
         return (result == SWT.YES);
     }
-    
+
     private static ImageData[] loadResourceImageData(String filename) {
         if (imageLoaderInstance == null)
             imageLoaderInstance = new ImageLoader();
@@ -182,7 +184,7 @@ public class SwtUtil {
             return null;
         return imageLoaderInstance.load(stream);
     }
-    
+
     public static Image[] loadResourceImages(Device device, String filename) {
         ImageData[] data = loadResourceImageData(filename);
         if (data == null)
@@ -192,14 +194,14 @@ public class SwtUtil {
             images[i] = new Image(device, data[i]);
         return images;
     }
-    
+
     public static Image loadResourceImage(Device device, String filename) {
         Image[] images = loadResourceImages(device, filename);
         if (images == null || images.length == 0)
             return null;
         return images[0];
     }
-    
+
     public static void addResourceImages(Device device, String filename,
             Vector<Image> imageVector) {
         Image[] loadedImages = loadResourceImages(device, filename);
@@ -208,7 +210,7 @@ public class SwtUtil {
         for (Image image: loadedImages)
             imageVector.add(image);
     }
-    
+
     public static void setImages(Shell shell, Vector<Image> images) {
         if (images == null || images.size() == 0)
             return;
@@ -217,14 +219,14 @@ public class SwtUtil {
             imageArray[i] = images.get(i);
         shell.setImages(imageArray);
     }
-    
+
     public static Font copyFontWithHeight(Font font, int newHeight) {
         FontData[] fontDataArray = font.getFontData();
         for (FontData data: fontDataArray)
             data.setHeight(newHeight);
         return new Font(font.getDevice(), fontDataArray);
     }
-    
+
     public static void modalLoop(Shell window) {
         Display display = window.getDisplay();
         window.open();
@@ -232,7 +234,7 @@ public class SwtUtil {
             if (!display.readAndDispatch())
                 display.sleep();
     }
-    
+
     public static void openLinkInBrowser(String link) {
         Program.launch(link);
     }

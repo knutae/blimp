@@ -24,11 +24,12 @@ import java.util.HashMap;
  * An enumeration of Exif 2.2 tags.
  * This class provides a list tags and a lookup table based upon tag ID,
  * but no interpretation of what the tags means.
- * 
+ *
+ * See the <a href="http://www.exif.org/specifications.html">
+ * Exif specifications</a> for the meaning of the different tags.
+ *
  * TODO: type info should probably be added.
- * 
- * {@link http://www.exif.org/specifications.html}
- * 
+ *
  * @author Knut Arild Erstad
  */
 public enum ExifTag {
@@ -36,7 +37,7 @@ public enum ExifTag {
     Exif_IFD_Pointer (34665),
     GPS_IFD_Pointer (34853),
     Interoperability_IFD_Pointer (40965),
-    
+
     // 4.6.4 TIFF Rev. 6.0 Attribute Information
     // A. Tags relating to image data structure
     ImageWidth (256),
@@ -72,7 +73,7 @@ public enum ExifTag {
     Software (305),
     Artist (315),
     Copyright (33432),
-    
+
     // 4.6.5 Exif IFD Attribute Information
     // A. Tags relating to version
     ExifVersion (36864),
@@ -138,29 +139,29 @@ public enum ExifTag {
     SubjectDistanceRange (41996),
     // H. Other tags
     ImageUniqueID (42016),
-    
+
     // 4.6.6 GPS Attribute Information: not yet
     ;
-    
+
     private int tag;
-    
+
     private ExifTag(int tag) {
         this.tag = tag;
     }
-    
+
     public int getTag() {
         return tag;
     }
-    
+
     private static HashMap<Integer, ExifTag> map;
-    
+
     static {
         map = new HashMap<Integer, ExifTag>();
         for (ExifTag enumElement: ExifTag.values()) {
             map.put(enumElement.tag, enumElement);
         }
     }
-    
+
     public static ExifTag fromTag(int tag) {
         return map.get(tag);
     }

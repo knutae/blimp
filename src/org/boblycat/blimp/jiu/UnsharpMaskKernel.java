@@ -1,6 +1,7 @@
 package org.boblycat.blimp.jiu;
 
 import net.sourceforge.jiu.filters.ConvolutionKernelData;
+import net.sourceforge.jiu.filters.ConvolutionKernelFilter;
 
 /**
  * This is a modified version of UnsharpMaskKernel which doesn't crash in the
@@ -10,7 +11,7 @@ import net.sourceforge.jiu.filters.ConvolutionKernelData;
 
 /*
  * UnsharpMaskKernel
- * 
+ *
  * Copyright (c) 2002, 2003 Marco Schmidt.
  * All rights reserved.
  */
@@ -37,7 +38,7 @@ public class UnsharpMaskKernel extends ConvolutionKernelData
         }
         level = ((51 - level) * 4 ) + 20;
         setDiv(level);
-        int[] data = 
+        int[] data =
         {
              0,   0,          -1,   0,  0,
              0,  -8,         -21,  -8,  0,
