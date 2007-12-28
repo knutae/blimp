@@ -33,10 +33,10 @@ public class CropEditor extends GridBasedLayerEditor {
     ValueSlider rightSlider;
     ValueSlider topSlider;
     ValueSlider bottomSlider;
-    
+
     public CropEditor(Composite parent, int style) {
         super(parent, style);
-        
+
         leftSlider = createSlider("Left", false);
         rightSlider = createSlider("Right", true);
         topSlider = createSlider("Top", false);
@@ -67,7 +67,7 @@ public class CropEditor extends GridBasedLayerEditor {
             }
         });
     }
-    
+
     private void resolveAndUpdate(ValueSlider master, ValueSlider slave,
             int totalAvailableSize) {
         int size1 = master.getSelection();
@@ -76,13 +76,13 @@ public class CropEditor extends GridBasedLayerEditor {
             slave.setSelection(totalAvailableSize - size1 - 1);
         updateLayerFromGui();
     }
-    
+
     ValueSlider createSlider(String caption, boolean flipDirection) {
         ValueSlider slider = createSliderWithoutListener(caption, 0, 1000, 0);
         slider.setFlipDirection(flipDirection);
         return slider;
     }
-    
+
     void updateGui() {
         if (isDisposed())
             return;
@@ -110,7 +110,7 @@ public class CropEditor extends GridBasedLayerEditor {
         crop.setTop(topSlider.getSelection());
         crop.setBottom(bottomSlider.getSelection());
     }
-    
+
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
@@ -119,7 +119,7 @@ public class CropEditor extends GridBasedLayerEditor {
         topSlider.setEnabled(enabled);
         bottomSlider.setEnabled(enabled);
     }
-    
+
     @Override
     protected void layerChanged() {
         crop = (CropLayer) layer;

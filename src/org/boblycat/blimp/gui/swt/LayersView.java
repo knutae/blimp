@@ -37,19 +37,19 @@ public class LayersView extends SashForm {
             copy.editorCallback = this;
             copy.session.beginDisableAutoRecord();
         }
-        
+
         public void editingFinished(LayerEditorEnvironment env,
                 boolean cancelled) {
             copy.session.endDisableAutoRecord();
             if (original.editorCallback != null)
                 original.editorCallback.editingFinished(env, cancelled);
         }
-        
+
         void openLayerEditor() {
             if (!editorRegistry.showEditorDialog(copy)) {
                 // no editor shown: re-enable autoRecord at once
                 copy.session.endDisableAutoRecord();
-                refresh(); // setActive() may have been called 
+                refresh(); // setActive() may have been called
             }
         }
     }
@@ -91,7 +91,7 @@ public class LayersView extends SashForm {
                 }
             }
         });
-        
+
         DragSource dragSource = new DragSource(layerTable, DND.DROP_MOVE);
         dragSource.setTransfer(new Transfer[] {TextTransfer.getInstance()});
         dragSource.addDragListener(new DragSourceListener() {
@@ -103,12 +103,12 @@ public class LayersView extends SashForm {
                     dragIndex = -1;
                 }
             }
-            
+
             public void dragSetData(DragSourceEvent e) {
                 // not used for anything, but looks like it needs to be there...?
                 e.data = Integer.toString(dragIndex);
             }
-            
+
             public void dragFinished(DragSourceEvent e) {
                 dragIndex = -1;
             }
@@ -126,7 +126,7 @@ public class LayersView extends SashForm {
                 }
                 e.detail = DND.DROP_MOVE;
             }
-            
+
             public void drop(DropTargetEvent e) {
                 e.detail = DND.DROP_NONE;
                 try {
@@ -182,13 +182,13 @@ public class LayersView extends SashForm {
 
         editorRegistry = new DefaultEditorRegistry(getShell());
     }
-    
+
     private HistoryBlimpSession getSession() {
         if (editorEnvironment == null)
             return null;
         return editorEnvironment.session;
     }
-    
+
     private int layerIndexOfItem(TableItem item) {
         if (item == null)
             return -1;
@@ -218,7 +218,7 @@ public class LayersView extends SashForm {
         editorEnvironment.layer = null; // don't open editor
         updateWithEnvironment(editorEnvironment);
     }
-    
+
     void openLayerEditor(LayerEditorEnvironment env,
             LayerEditorCallback callback) {
         LayerEditorEnvironment tmpEnv = env.clone();

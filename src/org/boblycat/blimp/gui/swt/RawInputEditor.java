@@ -46,7 +46,7 @@ public class RawInputEditor extends GridBasedLayerEditor {
         super(parent, style);
         setLayout(new GridLayout());
         filePathLabel = new Label(this, SWT.NONE);
-        
+
         Group group = createGroup("Color Depth per Channel");
         radio8Bit = createRadioButton(group, "8-bit");
         radio16Bit = createRadioButton(group, "16-bit");
@@ -56,12 +56,12 @@ public class RawInputEditor extends GridBasedLayerEditor {
         radioQualityLow = createRadioButton(group, "Low (bilinear)");
         radioQualityNormal = createRadioButton(group, "Normal (Variable Number of Gradients)");
         radioQualityHigh = createRadioButton(group, "High (Adaptive Homogeneity-Directed)");
-        
+
         group = createGroup("White Balance");
         radioWBCamera = createRadioButton(group, "Camera Settings");
         radioWBAuto = createRadioButton(group, "Auto");
     }
-    
+
     @Override
     protected void updateLayer() {
         if (radio8Bit.getSelection())
@@ -70,7 +70,7 @@ public class RawInputEditor extends GridBasedLayerEditor {
             input.setColorDepth(ColorDepth.Depth16Bit);
         else
             Util.err("No color depth selected?");
-        
+
         if (radioQualityHalfSize.getSelection())
             input.setQuality(Quality.HalfSize);
         else if (radioQualityLow.getSelection())
@@ -81,7 +81,7 @@ public class RawInputEditor extends GridBasedLayerEditor {
             input.setQuality(Quality.High);
         else
             Util.err("No quality selected?");
-        
+
         if (radioWBCamera.getSelection())
             input.setWhiteBalance(WhiteBalance.Camera);
         else if (radioWBAuto.getSelection())
@@ -96,7 +96,7 @@ public class RawInputEditor extends GridBasedLayerEditor {
         boolean use16BitColor = input.getColorDepth() == ColorDepth.Depth16Bit;
         radio16Bit.setSelection(use16BitColor);
         radio8Bit.setSelection(!use16BitColor);
-        
+
         RawFileInputLayer.Quality quality = input.getQuality();
         if (quality == Quality.HalfSize)
             radioQualityHalfSize.setSelection(true);
@@ -106,14 +106,14 @@ public class RawInputEditor extends GridBasedLayerEditor {
             radioQualityNormal.setSelection(true);
         else if (quality == Quality.High)
             radioQualityHigh.setSelection(true);
-        
+
         WhiteBalance wb = input.getWhiteBalance();
         if (wb == WhiteBalance.Camera)
             radioWBCamera.setSelection(true);
         else if (wb == WhiteBalance.Auto)
             radioWBAuto.setSelection(true);
     }
-    
+
     @Override
     public boolean previewByDefault() {
         return false;

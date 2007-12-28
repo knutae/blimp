@@ -39,7 +39,7 @@ public class HistoryTests {
         history.undo();
         assertFalse(history.canUndo());
     }
-    
+
     @Test
     public void testCanRedo() {
         BlimpSession session = new BlimpSession();
@@ -55,7 +55,7 @@ public class HistoryTests {
         history.redo();
         assertFalse(history.canRedo());
     }
-    
+
     @Test
     public void testUndo() {
         BlimpSession session = new BlimpSession();
@@ -67,7 +67,7 @@ public class HistoryTests {
         history.record();
         input.setPath("new value 2");
         history.record();
-        
+
         assertEquals("new value 2", input.getPath());
         history.undo();
         assertEquals("new value 1", input.getPath());
@@ -90,7 +90,7 @@ public class HistoryTests {
         history.record();
         history.undo();
         history.undo();
-        
+
         assertEquals("initial value", input.getPath());
         history.redo();
         assertEquals("new value 1", input.getPath());
@@ -99,7 +99,7 @@ public class HistoryTests {
         history.redo();
         assertEquals("new value 2", input.getPath());
     }
-    
+
     @Test
     public void testUndoAndRedoAddLayer() {
         BlimpSession session = new BlimpSession();
@@ -110,7 +110,7 @@ public class HistoryTests {
         layer.setStringValue("some value");
         session.addLayer(layer);
         history.record();
-        
+
         assertEquals(2, session.layerCount());
         history.undo();
         assertEquals(1, session.layerCount());
@@ -119,7 +119,7 @@ public class HistoryTests {
         layer = (TestLayer) session.getLayer(1);
         assertEquals("some value", layer.getStringValue());
     }
-    
+
     @Test
     public void testRecordNoChanges() {
         BlimpSession session = new BlimpSession();
@@ -127,7 +127,7 @@ public class HistoryTests {
         input.setPath("initial value");
         session.setInput(input);
         SessionHistory history = new SessionHistory(session);
-        
+
         assertEquals(1, history.size());
         input.setPath("new value");
         history.record();
@@ -135,7 +135,7 @@ public class HistoryTests {
         history.record(); // should be rejected
         assertEquals(2, history.size());
     }
-    
+
     @Test
     public void testAutoRecordSession() {
         HistoryBlimpSession session = new HistoryBlimpSession();
@@ -145,18 +145,18 @@ public class HistoryTests {
         input.invalidate();
         input.setPath("new path");
         input.invalidate();
-        
+
         assertEquals("new path", input.getPath());
         session.undo();
         assertEquals("initial path", input.getPath());
         session.redo();
         assertEquals("new path", input.getPath());
-        
+
         input.invalidate();
         session.undo();
         assertEquals("initial path", input.getPath());
     }
-    
+
     @Test
     public void testDirtyFlag() {
         BlimpSession session = new BlimpSession();
@@ -169,35 +169,35 @@ public class HistoryTests {
         input.setPath("new path");
         history.record();
         assertTrue(history.isDirty());
-        
+
         history.undo();
         assertFalse(history.isDirty());
-        
+
         input.setPath("new path 2");
         history.record();
         assertTrue(history.isDirty());
-        
+
         input.setPath("initial path");
         history.record();
         assertFalse(history.isDirty());
-        
+
         input.setPath("save value");
         history.record();
         assertTrue(history.isDirty());
-        
+
         history.recordSaved();
         assertFalse(history.isDirty());
-        
+
         input.setPath("another value");
         history.record();
         assertTrue(history.isDirty());
-        
+
         history.undo();
         assertFalse(history.isDirty());
-        
+
         history.undo();
         assertTrue(history.isDirty());
-        
+
         history.redo();
         assertFalse(history.isDirty());
     }

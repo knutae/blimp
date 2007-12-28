@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Shell;
 /**
  * A subclass of LayerEditorRegistry which automatically registers all
  * the built-in editors.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class DefaultEditorRegistry extends LayerEditorRegistry {

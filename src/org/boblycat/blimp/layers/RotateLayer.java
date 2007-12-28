@@ -34,14 +34,14 @@ class RotateOperation extends ImageToImageOperation {
     int outputWidth;
     int outputHeight;
     boolean useAntiAliasing;
-    
+
     private static int getSampleOrZero(IntegerImage input,
             int channel, int x, int y) {
         if (x < 0 || y < 0 || x >= input.getWidth() || y >= input.getHeight())
             return 0;
         return input.getSample(channel, x, y);
     }
-    
+
     private static int getAntiAliasedSample(IntegerImage input,
             int channel, double x, double y) {
         int floorx = (int) Math.floor(x);
@@ -55,7 +55,7 @@ class RotateOperation extends ImageToImageOperation {
             getSampleOrZero(input, channel, floorx+1, floory+1) * dx * dy;
         return Util.constrainedValue((int) sample, 0, input.getMaxSample(channel));
     }
-    
+
     public void process() throws MissingParameterException,
     WrongParameterException {
         PixelImage pinput = getInputImage();
@@ -70,7 +70,7 @@ class RotateOperation extends ImageToImageOperation {
         if (outputHeight <= 0)
             throw new WrongParameterException(
                     "the output height must be larger than zero");
-        
+
         IntegerImage input = (IntegerImage) pinput;
         IntegerImage output = (IntegerImage) input.createCompatibleImage(
                 outputWidth, outputHeight);
@@ -81,7 +81,7 @@ class RotateOperation extends ImageToImageOperation {
         double xCenterInput = 0.5 * input.getWidth();
         double yCenterInput = 0.5 * input.getHeight();
         int maxProgress = outputHeight * input.getNumChannels();
-        
+
         for (int channel = 0; channel < input.getNumChannels(); channel++) {
             for (int y = 0; y < outputHeight; y++) {
                 double yoff = y - yCenterOutput;
@@ -89,7 +89,7 @@ class RotateOperation extends ImageToImageOperation {
                     double xoff = x - xCenterOutput;
                     double srcx = xoff * cosa - yoff * sina + xCenterInput;
                     double srcy = yoff * cosa + xoff * sina + yCenterInput;
-                    
+
                     int sample;
                     if (useAntiAliasing)
                         sample = getAntiAliasedSample(input, channel, srcx, srcy);
@@ -109,7 +109,7 @@ class RotateOperation extends ImageToImageOperation {
 
 /**
  * A layer for rotating given an arbitrary angle.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class RotateLayer extends DimensionAdjustmentLayer {
@@ -117,11 +117,11 @@ public class RotateLayer extends DimensionAdjustmentLayer {
         Fast,
         AntiAliased,
     }
-    
+
     private double angle;
-    
+
     private Quality quality;
-    
+
     public RotateLayer() {
         quality = Quality.AntiAliased;
     }
@@ -193,5 +193,5 @@ public class RotateLayer extends DimensionAdjustmentLayer {
      */
     public Quality getQuality() {
         return quality;
-    }    
+    }
 }

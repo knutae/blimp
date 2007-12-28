@@ -24,13 +24,13 @@ import org.boblycat.blimp.layers.AdjustmentLayer;
 
 /**
  * This helper class for rearranging layers for optimization purposes.
- * 
+ *
  * This is used by <code>BlimpSession</code> when previewing images.
  * The idea is to put layers that downscale the image data earlier in the
  * layer order so that other layers operate on smaller amounts of image
  * data, while still maintaining the most important dependencies between
  * layers.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class LayerRearranger {

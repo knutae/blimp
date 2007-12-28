@@ -26,17 +26,17 @@ import static org.boblycat.blimp.layers.ColorBalanceLayer.MAX_VALUE;
 
 /**
  * Editor for {@link ColorBalanceLayer}.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class ColorBalanceEditor extends GridBasedLayerEditor {
     ColorBalanceLayer colorBalance;
-    
+
     ValueSlider redSlider;
     ValueSlider greenSlider;
     ValueSlider blueSlider;
     Button lightnessButton;
-    
+
     public ColorBalanceEditor(Composite parent, int style) {
         super(parent, style);
         redSlider = createSlider("Cyan / Red", MIN_VALUE, MAX_VALUE, 0);

@@ -30,12 +30,12 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * A small test application for a single layer editor.
- * 
+ *
  * Currently does not work for editors that requires access to the image worker
- * thread, for instance the levels editor. 
- * 
+ * thread, for instance the levels editor.
+ *
  * Usage: EditorTestApplication <LayerClass>
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class EditorTestApplication {
@@ -45,7 +45,7 @@ public class EditorTestApplication {
             System.out.println("Please supply a layer class name.");
             return;
         }
-        
+
         Util.logger.setLevel(Level.ALL);
 
         String layerClassName = args[0];
@@ -55,15 +55,15 @@ public class EditorTestApplication {
         Debug.register(layerClass);
 
         Layer layer = (Layer) layerClass.newInstance();
-        
-        
+
+
         Display display = new Display();
         Shell shell = new Shell(display);
         shell.setSize(500, 500);
         shell.setLayout(new FillLayout());
 
         LayerEditorRegistry registry = new DefaultEditorRegistry(shell);
-        
+
         LayerEditor editor = registry.createEdior(layer, shell, SWT.NONE);
         if (editor == null) {
             System.err.println("No editor registered for layer "
@@ -75,7 +75,7 @@ public class EditorTestApplication {
         shell.setText(editor.getClass().getSimpleName());
         shell.open();
 
-        
+
         while (!shell.isDisposed()) {
             if (!display.readAndDispatch())
                 display.sleep();

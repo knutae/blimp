@@ -23,7 +23,7 @@ import java.util.Vector;
 /**
  * A generic event source implementation.  Mostly meant for change events
  * with only one handler function.
- * 
+ *
  * @author Knut Arild Erstad
  *
  * @param <L> A listener interface.
@@ -35,7 +35,7 @@ public abstract class EventSource<L, E> {
     public EventSource() {
         listenerList = new Vector<L>();
     }
-    
+
     public void addListener(L listener) {
         int index = listenerList.indexOf(null);
         if (index >= 0)
@@ -43,15 +43,15 @@ public abstract class EventSource<L, E> {
         else
             listenerList.add(listener);
     }
-    
+
     public void removeListener(L listener) {
         int index = listenerList.indexOf(listener);
         if (index >= 0)
             listenerList.setElementAt(null, index);
     }
-    
+
     protected abstract void triggerListenerEvent(L listener, E event);
-    
+
     public void triggerChangeWithEvent(E event) {
         for (L listener: listenerList) {
             if (listener == null)
@@ -59,7 +59,7 @@ public abstract class EventSource<L, E> {
             triggerListenerEvent(listener, event);
         }
     }
-    
+
     public int size() {
         return listenerList.size();
     }

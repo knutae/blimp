@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * A simple utility class for showing a JPEG quality dialog.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class JpegQualityDialog {

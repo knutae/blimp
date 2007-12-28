@@ -33,15 +33,15 @@ public enum ExifDataType {
     UNDEFINED (7, 1),
     SLONG     (9, 4),
     SRATIONAL (10, 8);
-    
+
     private int type;
     private int byteCount;
-    
+
     private ExifDataType(int type, int byteCount) {
         this.type = type;
         this.byteCount = byteCount;
     }
-    
+
     /**
      * An integer identifying this type in Exif.
      * @return The Exif type tag.
@@ -49,7 +49,7 @@ public enum ExifDataType {
     public int getTypeTag() {
         return type;
     }
-    
+
     /**
      * The number of bytes used to represent a single element of this data type.
      * @return A byte count, one of 1, 2, 4 or 8.
@@ -57,7 +57,7 @@ public enum ExifDataType {
     public int getByteCount() {
         return byteCount;
     }
-    
+
     /**
      * Get a type object from the given type tag.
      * @param type An Exif type tag.

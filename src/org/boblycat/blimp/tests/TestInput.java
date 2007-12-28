@@ -28,7 +28,7 @@ public class TestInput extends InputLayer {
     String path;
     int width;
     int height;
-    
+
     public TestInput() {
         width = 100;
         height = 100;
@@ -41,7 +41,7 @@ public class TestInput extends InputLayer {
     public String getPath() {
         return path;
     }
-    
+
     public void setInputSize(int w, int h) {
         width = w;
         height = h;

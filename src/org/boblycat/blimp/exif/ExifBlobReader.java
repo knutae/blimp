@@ -32,13 +32,13 @@ public class ExifBlobReader {
     int currentOffset;
     int exifPointer;
     boolean bigEndian;
-    
+
     public ExifBlobReader(byte[] data, int baseOffset) throws ReaderError {
         this.data = data;
         this.baseOffset = baseOffset;
         detectEndianness();
     }
-    
+
     public ExifBlobReader(byte[] data) throws ReaderError {
         //System.out.println("ExifBlobReader... ");
         //String str = new String(data, 0, 100);
@@ -59,7 +59,7 @@ public class ExifBlobReader {
             throw new ReaderError("Premature end of data", e);
         }
     }
-    
+
     protected long extractLong(int offset, int byteCount) throws ReaderError {
         assert(byteCount <= 8);
         try {
@@ -85,13 +85,13 @@ public class ExifBlobReader {
             throw new ReaderError("Premature end of data", e);
         }
     }
-    
+
     protected int extractInt(int offset, int byteCount) throws ReaderError {
         assert(byteCount <= 4);
         long result = extractLong(offset, byteCount);
         return (int) (result & 0xffffffff);
     }
-    
+
     protected void detectEndianness() throws ReaderError {
         String byteOrderIndicator = extractAscii(0, 2);
         if (byteOrderIndicator.equals("MM"))
@@ -104,7 +104,7 @@ public class ExifBlobReader {
         if (answer != 42)
             throw new ReaderError("Error in Exif header, expected 42 but got " + answer);
     }
-    
+
     protected void detectBaseOffset() throws ReaderError {
         String tmp = extractAscii(0, 2);
         if (tmp.equals("MM") || tmp.equals("II")) {
@@ -118,7 +118,7 @@ public class ExifBlobReader {
         }
         throw new ReaderError("Failed to detect a valid Exif header.");
     }
-    
+
     protected ImageFileDirectory extractIFD() throws ReaderError {
         ImageFileDirectory ifd = new ImageFileDirectory();
         int fieldCount = extractInt(currentOffset, 2);
@@ -166,12 +166,12 @@ public class ExifBlobReader {
             }
             ifd.addField(field);
             if (field.getTag() == ExifTag.Exif_IFD_Pointer.getTag())
-                exifPointer = (Integer) field.getValue(); 
+                exifPointer = (Integer) field.getValue();
             currentOffset += 12;
         }
         return ifd;
     }
-    
+
     public Vector<ImageFileDirectory> extractIFDs() throws ReaderError {
         Vector<ImageFileDirectory> directories = new Vector<ImageFileDirectory>();
         currentOffset = extractInt(4, 4);

@@ -41,9 +41,9 @@ public class CurvesEditor extends LayerEditor {
     CurvesLayer curvesLayer;
 
     Double currentPointX;
-    
+
     Double selectedPointX;
-    
+
     int mouseX, mouseY;
 
     private static boolean almostEqual(double d1, double d2) {
@@ -56,7 +56,7 @@ public class CurvesEditor extends LayerEditor {
         return new PointDouble((double) x / (double) size.x,
                 (double) (size.y - y) / (double) size.y);
     }
-    
+
     private void debug(String msg) {
         Debug.print(this, msg);
     }

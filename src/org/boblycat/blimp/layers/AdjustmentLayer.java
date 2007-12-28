@@ -34,22 +34,22 @@ import net.sourceforge.jiu.ops.ProgressListener;
  */
 public abstract class AdjustmentLayer extends Layer {
     public abstract Bitmap applyLayer(Bitmap source);
-    
+
     class JiuProgressListener implements ProgressListener {
         AdjustmentLayer layer;
         ProgressEvent event;
-        
+
         JiuProgressListener(AdjustmentLayer layer) {
             this.layer = layer;
             event = new ProgressEvent(layer);
         }
-        
+
         public void setProgress(float progress) {
-            //ProgressEvent event = new ProgressEvent(layer); 
+            //ProgressEvent event = new ProgressEvent(layer);
             event.progress = progress;
             layer.progressEventSource.triggerChangeWithEvent(event);
         }
-        
+
         public void setProgress(int index, int size) {
             setProgress((float) index / (float) size);
         }
@@ -79,27 +79,27 @@ public abstract class AdjustmentLayer extends Layer {
             op.removeProgressListener(listener);
         return image;
     }
-    
+
     /**
      * All layers that change the dimensions of an image must override this
      * function and return <code>true</code>.  This is used when deciding the
      * layer reordering for optimization purpuses when previewing,
      * see {@link LayerRearranger} for details.
-     * 
+     *
      * @return
      *  <code>true</code> if the layer can change the dimensions,
-     *  <code>false</code> otherwise. 
+     *  <code>false</code> otherwise.
      */
     public boolean canChangeDimensions() {
         return false;
     }
-    
+
     /**
      * All layers that change the color or color intensity of an image must
      * return <code>true</code>.  The default implementation returns the
      * oppsosite of <code>canChangeDimensions()</code>, since most layers
      * will only change either change one or the other.
-     * 
+     *
      * @return
      *  <code>true</code> if the layer can change the colors of the input image
      *  in some way, <code>false</code> otherwise.

@@ -28,7 +28,7 @@ import net.sourceforge.jiu.gui.awt.ToolkitLoader;
 
 /**
  * A file input layer which does not support camera raw formats.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class FileInputLayer extends InputLayer {

@@ -44,11 +44,11 @@ class ImageTab {
         this.item = item;
         this.imageView = imageView;
     }
-    
+
     HistoryBlimpSession getSession() {
         return imageView.getSession();
     }
-    
+
     LayerEditorEnvironment getEditorEnv() {
         LayerEditorEnvironment env = new LayerEditorEnvironment();
         env.session = getSession();
@@ -56,12 +56,12 @@ class ImageTab {
         env.layerWasJustAdded = true;
         return env;
     }
-    
+
     void dispose() {
         item.dispose();
         imageView.dispose();
     }
-    
+
     int tryClose(Shell shell) {
         if (!getSession().isDirty())
             return SWT.YES;
@@ -172,7 +172,7 @@ public class MainWindow {
         item.setMenu(subMenu);
         return subMenu;
     }
-    
+
     public MainWindow() {
         this(null);
     }
@@ -200,7 +200,7 @@ public class MainWindow {
                 }
             }
         });
-        
+
         // Application images
         appImages = new Vector<Image>();
         SwtUtil.addResourceImages(display, "blimp-logo-16.png", appImages);
@@ -210,7 +210,7 @@ public class MainWindow {
             Util.warn("Failed to load any icon resources");
         else
             SwtUtil.setImages(shell, appImages);
-        
+
         // Menus
         Menu bar = new Menu(shell, SWT.BAR);
         shell.setMenuBar(bar);
@@ -221,7 +221,7 @@ public class MainWindow {
             }
         };
         menuItemListener = new MenuItemListener();
-        
+
         // Listener used to enable all menu items, which is used
         // as a simple way to ensure that accelerators are enabled.
         Listener enableAllMenuItems = new Listener() {
@@ -256,7 +256,7 @@ public class MainWindow {
             }
         });
         fileMenu.addListener(SWT.Hide, enableAllMenuItems);
-        
+
         Menu editMenu = addMenu(bar, "&Edit");
         menuUndo = addMenuItem(editMenu, "&Undo\tCtrl+Z", "Undo a change");
         menuUndo.setAccelerator(SWT.CONTROL | 'Z');
@@ -318,7 +318,7 @@ public class MainWindow {
         histogramTabItem.setText("Histogram");
         histogramTabItem.setControl(histogramView);
         histogramTabFolder.setSelection(histogramTabItem);
-        
+
         rightTabFolder = new CTabFolder(rightSash, SWT.TOP | SWT.BORDER);
         sashForm.setWeights(new int[] { 4, 1 });
         rightSash.setWeights(new int[] { 1, 4 });
@@ -355,7 +355,7 @@ public class MainWindow {
         tmpItem.setText("Layers");
         tmpItem.setControl(layers);
         rightTabFolder.setSelection(0);
-        
+
         // Drag and drop from external programs
         DropTarget target = new DropTarget(shell, DND.DROP_COPY);
         target.setTransfer(new Transfer[] {FileTransfer.getInstance()});
@@ -426,7 +426,7 @@ public class MainWindow {
         session.setInput(input);
         return addImageViewWithSession(session, false);
     }
-    
+
     void updateCurrentImageTab(ImageTab newImageTab) {
         currentImageTab = newImageTab;
         updateLayersView();
@@ -437,7 +437,7 @@ public class MainWindow {
             currentImageTab.imageView.triggerBitmapChange();
         }
     }
-    
+
     ImageTab findImageTab(BlimpSession session) {
         for (ImageTab tab: imageTabs) {
             if (tab.getSession() == session)
@@ -445,7 +445,7 @@ public class MainWindow {
         }
         return null;
     }
-    
+
     private void removeImageTab(ImageTab tab) {
         // Disposing an image tab will automatically close it and
         // select a new one.  The only special case to consider
@@ -498,14 +498,14 @@ public class MainWindow {
         if (filename != null)
             openProjectOrImageFile(filename);
     }
-    
+
     private void updateLayersView() {
         if (currentImageTab == null)
             layers.updateWithEnvironment(null);
         else
             layers.updateWithEnvironment(currentImageTab.getEditorEnv());
     }
-    
+
     private void showLayerEditor(Layer layer, LayerEditorCallback callback) {
         if (currentImageTab == null) {
             Util.err("Attempted to show editor without an active image tab");
@@ -516,7 +516,7 @@ public class MainWindow {
         env.editorCallback = callback;
         layers.updateWithEnvironment(env);
     }
-    
+
     boolean tryEnsureInputFileExists(BlimpSession session)
     throws FileNotFoundException {
         InputLayer input = session.getInput();
@@ -548,7 +548,7 @@ public class MainWindow {
         prop.setValue(newPath);
         return true;
     }
-    
+
     void openProjectOrImageFile(String filename) {
         if (filename.toLowerCase().endsWith(".blimp")) {
             // open a saved session
@@ -610,7 +610,7 @@ public class MainWindow {
             }
         });
     }
-    
+
     void asyncOpenFile(String fileName) {
         if (display.isDisposed())
             return;
@@ -625,7 +625,7 @@ public class MainWindow {
     void doMenuExit() {
         shell.close();
     }
-    
+
     void saveCurrentSession(String filename) {
         if (currentImageTab == null)
             return;
@@ -644,7 +644,7 @@ public class MainWindow {
                     "An I/O error occured: " + e.getMessage());
         }
     }
-    
+
     /**
      * Save -- overwrite an existing project without confirmation.
      * If the session has not previously been saved, trigger a "Save As".
@@ -727,14 +727,14 @@ public class MainWindow {
     void doMenuAbout() {
         AboutDialog.show(shell, appImages);
     }
-    
+
     void doUndo() {
         if (currentImageTab == null)
             return;
         currentImageTab.getSession().undo();
         layers.refresh();
     }
-    
+
     void doRedo() {
         if (currentImageTab == null)
             return;

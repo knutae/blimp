@@ -25,7 +25,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * A worker thread for doing image (layer) processing.
- * Useful for GUI applications. 
+ * Useful for GUI applications.
  * @author Knut Arild Erstad
  */
 public abstract class ImageWorkerThread extends Thread {
@@ -61,11 +61,11 @@ public abstract class ImageWorkerThread extends Thread {
             this.runnable = runnable;
         }
     }
-    
+
     BlockingQueue<Request> requestQueue;
-    
+
     protected BlimpSession session;
-    
+
     public ImageWorkerThread() {
         super("Blimp Image Worker");
         requestQueue = new LinkedBlockingQueue<Request>();
@@ -77,26 +77,26 @@ public abstract class ImageWorkerThread extends Thread {
             }
         });
     }
-    
+
     /**
      * This function is called <i>on the worker thread</i> when a bitmap has been
      * generated.  It is up to subclasses how to handle this, but in general,
      * the bitmap should be converted (if needed), and then the runnable object
      * should be executed on the main/GUI thread.
-     * 
+     *
      * @param runnable A runnable object.
      * @param bitmap A generated bitmap, which could be <code>null</code>.
      */
     protected abstract void bitmapGenerated(Runnable runnable, Bitmap bitmap);
-    
+
     protected abstract void asyncExec(Runnable runnable);
-    
+
     protected abstract void progressReported(ProgressEvent event);
-    
+
     protected abstract boolean isFinished();
-    
+
     protected abstract void handleError(Runnable runnable, String errorMessage);
-    
+
     private void processRequest(Request req) {
         assert(Thread.currentThread() == this);
 
@@ -170,7 +170,7 @@ public abstract class ImageWorkerThread extends Thread {
                     + e.getMessage());
         }
     }
-    
+
     public void run() {
         while (!isFinished()) {
             try {
@@ -190,12 +190,12 @@ public abstract class ImageWorkerThread extends Thread {
         session = null;
         System.gc();
     }
-    
+
     private void cancelAllRequests() {
         requestQueue.clear();
         // TODO: cancel ongoing operation (if possible)
     }
-    
+
     /**
      * Cancel owned requests.
      * @param owner an owner.
@@ -214,12 +214,12 @@ public abstract class ImageWorkerThread extends Thread {
         Debug.print(this, "cancelled " + count + " request(s)");
         return count;
     }
-    
+
     public void quit() {
         cancelAllRequests();
         putRequest(new Request(this, RequestType.QUIT));
     }
-    
+
     protected void putRequest(Request req) {
         try {
             requestQueue.put(req);
@@ -227,7 +227,7 @@ public abstract class ImageWorkerThread extends Thread {
         catch (InterruptedException e) {
             // should never happen since the capacity is large ...?
             e.printStackTrace();
-            assert(false);            
+            assert(false);
         }
     }
 
@@ -243,7 +243,7 @@ public abstract class ImageWorkerThread extends Thread {
         req.previewQuality = quality;
         putRequest(req);
     }
-    
+
     public void asyncGenerateHistogram(Object owner, BlimpSession session,
             String layerName, HistogramGeneratedTask task) {
         Request req = new Request(owner, RequestType.GENERATE_HISTOGRAM);
@@ -252,7 +252,7 @@ public abstract class ImageWorkerThread extends Thread {
         req.sessionCopy = BlimpSession.createCopy(session);
         putRequest(req);
     }
-    
+
     public void asyncGenerateBitmapSize(Object owner, BlimpSession session,
             String layerName, BitmapSizeGeneratedTask task) {
         Request req = new Request(owner, RequestType.GENERATE_SIZE);
@@ -261,7 +261,7 @@ public abstract class ImageWorkerThread extends Thread {
         req.sessionCopy = BlimpSession.createCopy(session);
         putRequest(req);
     }
-    
+
     public void zoomIn(Object owner, BlimpSession session, Runnable runnable) {
         Request req = new Request(owner, RequestType.ZOOM_IN, runnable);
         req.sessionCopy = BlimpSession.createCopy(session);

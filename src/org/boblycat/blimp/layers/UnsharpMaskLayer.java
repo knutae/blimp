@@ -26,7 +26,7 @@ import org.boblycat.blimp.jiu.UnsharpMaskKernel;
 
 public class UnsharpMaskLayer extends AdjustmentLayer {
     int level;
-    
+
     public UnsharpMaskLayer() {
         level = 1;
     }

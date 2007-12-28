@@ -51,7 +51,7 @@ public class ResizeLayer extends DimensionAdjustmentLayer {
         resampleFilter = DEFAULT_FILTER;
         maxSize = DEFAULT_SIZE;
     }
-    
+
     public BitmapSize calculateNewSize(int inputWidth, int inputHeight) {
         int width, height;
         if (inputWidth > inputHeight) {

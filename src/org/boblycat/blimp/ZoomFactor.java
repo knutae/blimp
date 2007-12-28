@@ -21,7 +21,7 @@ package org.boblycat.blimp;
 /**
  * A helper class for scaling using a fractional number and zooming in and out
  * in predefined steps.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class ZoomFactor {

@@ -35,32 +35,32 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 public class SolidColorBorderEditor extends LayerEditor {
-    
+
     SolidColorBorderLayer border;
-    
+
     ValueSlider leftSlider;
     ValueSlider rightSlider;
     ValueSlider topSlider;
     ValueSlider bottomSlider;
     ValueSlider allValuesSlider;
-    
+
     Canvas colorCanvas;
-    
+
     public SolidColorBorderEditor(Composite parent, int style) {
         super(parent, style);
         setLayout(new GridLayout());
-        
+
         Listener sliderListener = new Listener() {
             public void handleEvent(Event e) {
                 updateLayer();
             }
         };
-        
+
         leftSlider = createSlider("Left", sliderListener);
         rightSlider = createSlider("Right", sliderListener);
         topSlider = createSlider("Top", sliderListener);
         bottomSlider = createSlider("Bottom", sliderListener);
-        
+
         allValuesSlider = createSlider("All Borders", new Listener() {
             public void handleEvent(Event e) {
                 int selection = allValuesSlider.getSelection();
@@ -71,7 +71,7 @@ public class SolidColorBorderEditor extends LayerEditor {
                 updateLayer();
             }
         });
-        
+
         Composite c = new Composite(this, SWT.NONE);
         c.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
         RowLayout rowLayout = new RowLayout(SWT.HORIZONTAL);
@@ -90,7 +90,7 @@ public class SolidColorBorderEditor extends LayerEditor {
                 colorCanvas.redraw();
             }
         };
-        
+
         colorCanvas = new Canvas(c, SWT.BORDER);
         colorCanvas.setLayoutData(new RowData(20, 20));
         colorCanvas.addListener(SWT.Paint, new Listener() {
@@ -109,7 +109,7 @@ public class SolidColorBorderEditor extends LayerEditor {
         b.setText("&Change Color");
         b.addListener(SWT.Selection, colorChangeListener);
     }
-    
+
     ValueSlider createSlider(String caption, Listener selectionListener) {
         ValueSlider slider = new ValueSlider(this, SWT.NONE, caption,
                 0, 500, 0);
@@ -117,7 +117,7 @@ public class SolidColorBorderEditor extends LayerEditor {
         slider.addListener(SWT.Selection, selectionListener);
         return slider;
     }
-    
+
     void updateLayer() {
         border.setLeft(leftSlider.getSelection());
         border.setRight(rightSlider.getSelection());
@@ -125,7 +125,7 @@ public class SolidColorBorderEditor extends LayerEditor {
         border.setBottom(bottomSlider.getSelection());
         border.invalidate();
     }
-    
+
     void updateGui() {
         leftSlider.setSelection(border.getLeft());
         rightSlider.setSelection(border.getRight());

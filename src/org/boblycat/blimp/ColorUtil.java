@@ -20,11 +20,11 @@ package org.boblycat.blimp;
 
 public class ColorUtil {
     public static final double UNDEFINED_HUE = -1;
-    
+
     private static final double ONE_THIRD = 1.0/3.0;
     private static final double ONE_SIXTH = 1.0/6.0;
     private static final double TWO_THIRDS = 2.0/3.0;
-    
+
     /**
      * Optimized min function for three doubles.
      * @param x a number
@@ -42,9 +42,9 @@ public class ColorUtil {
         if (y < z)
             return y;
         else
-            return z; 
+            return z;
     }
-    
+
     /**
      * Optimized max function for three doubles.
      * @param x a number
@@ -62,9 +62,9 @@ public class ColorUtil {
         if (y > z)
             return y;
         else
-            return z; 
+            return z;
     }
-    
+
     public static double[] rgbToHsv(double r, double g, double b,
             double hsv[]) {
         double h, s, v;
@@ -82,7 +82,7 @@ public class ColorUtil {
         else {
             assert(delta > 0);
             if (r == max)
-                h = (g - b) / delta; 
+                h = (g - b) / delta;
             else if (g == max)
                 h = 2 + (b - r) / delta; // cyan to yellow
             else
@@ -101,7 +101,7 @@ public class ColorUtil {
         }
         return new double[] {h, s, v};
     }
-    
+
     public static double[] hsvToRgb(double h, double s, double v,
             double[] rgb) {
         double r, g, b;
@@ -174,14 +174,14 @@ public class ColorUtil {
             S = 0.5 * delta / L;
         else
             S = 0.5 * delta / (1 - L);
-        
+
         if (S == 0) {
             H = UNDEFINED_HUE;
         }
         else {
             assert(delta > 0);
             if (r == max)
-                H = (g - b) / delta; 
+                H = (g - b) / delta;
             else if (g == max)
                 H = 2 + (b - r) / delta; // cyan to yellow
             else
@@ -200,7 +200,7 @@ public class ColorUtil {
         }
         return new double[] {H, S, L};
     }
-    
+
     private static double tcolor(double Tc, double Q, double P) {
         if (Tc < ONE_SIXTH)
             return P + 6 * (Q - P) * Tc;

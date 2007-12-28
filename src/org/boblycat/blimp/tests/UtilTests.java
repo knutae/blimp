@@ -85,7 +85,7 @@ public class UtilTests {
         assertEquals(-1260, valueOfFixPointDecimal("-12.6", 2));
         assertEquals(103, valueOfFixPointDecimal("1.025", 2));
     }
-    
+
     @Test
     public void testChangeFileExtension() {
         assertEquals("foo.bar", changeFileExtension("foo", "bar"));

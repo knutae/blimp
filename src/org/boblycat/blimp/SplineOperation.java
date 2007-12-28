@@ -23,7 +23,7 @@ import net.sourceforge.jiu.ops.LookupTableOperation;
 /**
  * Operation that uses a {@link NaturalCubicSpline} to create its
  * lookup tables.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class SplineOperation extends LookupTableOperation {

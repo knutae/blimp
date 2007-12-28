@@ -36,20 +36,20 @@ class BitmapEventSource extends EventSource<BitmapChangeListener, BitmapEvent> {
 /*
  * This helper class is used to uniquely identify the currently displayed
  * image in order to avoid multiple worker thread requests in a row for the
- * same image. 
+ * same image.
  */
 class ImageInfo {
     String sessionXml;
     int zoomLevel;
     BlimpSession.PreviewQuality quality;
-    
+
     ImageInfo(String sessionXml, int zoomLevel,
             BlimpSession.PreviewQuality quality) {
         this.sessionXml = sessionXml;
         this.zoomLevel = zoomLevel;
         this.quality = quality;
     }
-    
+
     boolean equals(String sessionXml, int zoomLevel,
             BlimpSession.PreviewQuality quality) {
         if (this.zoomLevel != zoomLevel || this.quality != quality)
@@ -62,7 +62,7 @@ class ImageInfo {
 
 public class ImageView extends Composite {
     static final int PROGRESS_REDRAW_DELAY = 500;
-    
+
     HistoryBlimpSession session;
     Runnable bitmapGeneratedTask;
     ImageCanvas imageCanvas;
@@ -79,10 +79,10 @@ public class ImageView extends Composite {
     BitmapEventSource bitmapEventSource;
     ProgressBarTimer progressBarTimer;
     int zoomLevel;
-    
+
     class ProgressBarTimer implements Runnable {
         boolean cancelled;
-        
+
         public void run() {
             if (!cancelled)
                 showProgressBar = true;
@@ -105,7 +105,7 @@ public class ImageView extends Composite {
 
         zoomLabel = new CLabel(this, SWT.NONE);
         zoomLabel.setText("100%");
-        
+
         qualityCombo = new Combo(this, SWT.READ_ONLY);
         qualityCombo.setItems(new String[] {"Fast", "Accurate"});
         qualityCombo.select(0);
@@ -114,12 +114,12 @@ public class ImageView extends Composite {
                 asyncGenerateBitmap();
             }
         });
-        
+
         progressBar = new ProgressBar(this, SWT.HORIZONTAL);
         progressBar.setMinimum(0);
         progressBar.setMaximum(100);
         progressBar.setSelection(0);
-        
+
         ToolBar toolBar = new ToolBar(this, SWT.BORDER);
         ToolItem toolItem = new ToolItem(toolBar, SWT.NONE);
         toolItem.setText("Zoom In");
@@ -145,12 +145,12 @@ public class ImageView extends Composite {
         data.top = new FormAttachment(0);
         data.right = new FormAttachment(100);
         zoomLabel.setLayoutData(data);
-        
+
         data = new FormData();
         data.top = new FormAttachment(0);
         data.right = new FormAttachment(zoomLabel);
         qualityCombo.setLayoutData(data);
-        
+
         data = new FormData();
         data.top = new FormAttachment(0);
         data.left = new FormAttachment(0);
@@ -162,7 +162,7 @@ public class ImageView extends Composite {
         data.right = new FormAttachment(100);
         data.bottom = new FormAttachment(100);
         progressBar.setLayoutData(data);
-        
+
         data = new FormData();
         data.top = new FormAttachment(toolBar);
         //data.bottom = new FormAttachment(100);
@@ -184,7 +184,7 @@ public class ImageView extends Composite {
                 asyncGenerateBitmap();
             }
         });
-        
+
         bitmapEventSource = new BitmapEventSource();
 
         // task that is run after the worker thread has generated a bitmap
@@ -210,7 +210,7 @@ public class ImageView extends Composite {
                             threadData.errorMessage);
             }
         };
-        
+
         addListener(SWT.Dispose, new Listener() {
             public void handleEvent(Event e) {
                 workerThread.quit();
@@ -221,19 +221,19 @@ public class ImageView extends Composite {
     public HistoryBlimpSession getSession() {
         return session;
     }
-    
+
     private void updateZoomLabel() {
         int zoomPercentage = (int) (threadData.zoom * 100.0);
         zoomLabel.setText(Integer.toString(zoomPercentage) + "%");
         layout();
     }
-    
+
     private void cancelProgressBarTimer() {
         if (progressBarTimer != null)
             progressBarTimer.cancelled = true;
         progressBarTimer = null;
     }
-    
+
     private void setProgress(String message, double progress) {
         if (isDisposed())
             return;
@@ -261,14 +261,14 @@ public class ImageView extends Composite {
         else
             imageCanvas.setProgressMessage(message);
     }
-    
+
     private BlimpSession.PreviewQuality getPreviewQuality() {
         if (qualityCombo.getSelectionIndex() == 0)
             return PreviewQuality.Fast;
         else
             return PreviewQuality.Accurate;
     }
-    
+
     private void asyncImageRequestSent() {
         if (cachedSessionXml == null)
             cachedSessionXml = Serializer.beanToXml(session);
@@ -276,13 +276,13 @@ public class ImageView extends Composite {
                 getPreviewQuality());
         asyncRequestCount++;
     }
-    
+
     private boolean lastRequestEqualsCurrent() {
         return lastRequestedImageInfo != null
             && lastRequestedImageInfo.equals(cachedSessionXml, zoomLevel,
                     getPreviewQuality());
     }
-    
+
     private void asyncGenerateBitmap() {
         if (isDisposed())
             return;
@@ -291,9 +291,9 @@ public class ImageView extends Composite {
             needNewRequest = true;
             return;
         }
-        
+
         needNewRequest = false;
-        
+
         if (lastRequestEqualsCurrent())
             return;
 
@@ -304,15 +304,15 @@ public class ImageView extends Composite {
                 getPreviewQuality());
         asyncImageRequestSent();
     }
-    
+
     public void addBitmapListener(BitmapChangeListener listener) {
         bitmapEventSource.addListener(listener);
     }
-    
+
     public void removeBitmapListener(BitmapChangeListener listener) {
         bitmapEventSource.removeListener(listener);
     }
-    
+
     public void triggerBitmapChange() {
         if (threadData == null)
             return;

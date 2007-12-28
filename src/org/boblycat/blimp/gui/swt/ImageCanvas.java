@@ -33,10 +33,10 @@ import org.eclipse.swt.widgets.ScrollBar;
 
 /**
  * A canvas wrapper for displaying and scrolling an image.
- * 
+ *
  * Zooming (resizing) is not supported directly by this class,
- * and should be done by passing on a resized image. 
- * 
+ * and should be done by passing on a resized image.
+ *
  * @author Knut Arild Erstad
  */
 public class ImageCanvas extends Composite {
@@ -48,7 +48,7 @@ public class ImageCanvas extends Composite {
     private boolean dirty;
     private boolean delayedRedrawInProgress;
     private Runnable delayedRedrawTask;
-    
+
     /**
      * Construct a new image canvas.
      * @param parent
@@ -80,13 +80,13 @@ public class ImageCanvas extends Composite {
                 invalidate();
             }
         });
-        
+
         addListener(SWT.Dispose, new Listener() {
             public void handleEvent(Event e) {
                 SwtUtil.dispose(currentImage);
             }
         });
-        
+
         delayedRedrawTask = new Runnable() {
             public void run() {
                 if (canvas.isDisposed())
@@ -96,10 +96,10 @@ public class ImageCanvas extends Composite {
             }
         };
     }
-    
+
     /**
      * Update the currently displayed image.
-     * 
+     *
      * @param data
      *      the new image data, or <code>null</code> to clear the image.
      */
@@ -111,11 +111,11 @@ public class ImageCanvas extends Composite {
             currentImage = new Image(getDisplay(), data);
         invalidate();
     }
-    
+
     /**
      * Set or clear a progress message, which will be displayed after a
      * short delay.
-     * 
+     *
      * @param message
      *      a progress message, or <code>null</code> to clear the message.
      */
@@ -123,13 +123,13 @@ public class ImageCanvas extends Composite {
         currentProgressMessage = message;
         delayedRedraw(PROGRESS_REDRAW_DELAY);
     }
-    
+
     /**
      * Returns the bounds of the canvas client area, which is the current
      * size available for displaying an image.
-     * 
+     *
      * Typical usage for this is to determine a default zoom/size.
-     * 
+     *
      * @return a size rectangle.
      */
     public Rectangle getCanvasClientArea() {
@@ -142,7 +142,7 @@ public class ImageCanvas extends Composite {
         delayedRedrawInProgress = true;
         getDisplay().timerExec(delayMillisecs, delayedRedrawTask);
     }
-    
+
     private void paintCanvas(GC gc) {
         if (currentImage == null) {
             SwtUtil.fillBlackRect(gc, canvas.getClientArea());
@@ -171,7 +171,7 @@ public class ImageCanvas extends Composite {
         gc.drawImage(bufferImage, 0, 0);
         bufferImage.dispose(); // important!
     }
-    
+
     private void drawProgressMessage(GC gc) {
         if (currentProgressMessage == null)
             return;
@@ -204,7 +204,7 @@ public class ImageCanvas extends Composite {
         //layout();
         dirty = false;
     }
-    
+
     private void invalidate() {
         dirty = true;
         canvas.redraw();

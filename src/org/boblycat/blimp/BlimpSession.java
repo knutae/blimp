@@ -34,26 +34,26 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         Fast,
         Accurate
     }
-    
+
     Vector<Layer> layerList;
 
     Bitmap currentBitmap;
 
     ViewResizeLayer viewLayer = new ViewResizeLayer();
-    
+
     PreviewQuality previewQuality;
-    
+
     private String projectFilePath;
-    
+
     class SessionProgressListener implements ProgressListener {
         BlimpSession session;
         Layer layer;
-        
+
         SessionProgressListener(BlimpSession session, Layer layer) {
             this.session = session;
             this.layer = layer;
         }
-        
+
         public void reportProgress(ProgressEvent e) {
             session.reportLayerProgress(layer, e.progress);
         }
@@ -65,13 +65,13 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         viewLayer = new ViewResizeLayer();
         previewQuality = PreviewQuality.Accurate;
     }
-    
+
     private void reportLayerProgress(Layer layer, double progress) {
         if (layer instanceof ViewResizeLayer)
             return;
         triggerProgress(layer.getProgressDescription(), progress);
     }
-    
+
     protected Bitmap applyLayer(Bitmap source, AdjustmentLayer layer) {
         reportLayerProgress(layer, 0.0);
         ProgressListener listener = new SessionProgressListener(this, layer);
@@ -83,7 +83,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         reportLayerProgress(layer, 1.0);
         return result;
     }
-    
+
     protected Bitmap inputBitmap(InputLayer input) throws IOException {
         reportLayerProgress(input, 0.0);
         ProgressListener listener = new SessionProgressListener(this, input);
@@ -95,11 +95,11 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         reportLayerProgress(input, 1.0);
         return result;
     }
-    
+
     protected BitmapSize inputSize(InputLayer input) throws IOException {
         return input.getBitmapSize();
     }
-    
+
     public void applyLayers() throws IOException {
         currentBitmap = generateBitmap(true);
     }
@@ -122,7 +122,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         }
         return bm;
     }
-    
+
     private Vector<AdjustmentLayer> layersBefore(String layerName) {
         Vector<AdjustmentLayer> list = new Vector<AdjustmentLayer>();
         for (Layer layer: layerList) {
@@ -133,7 +133,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         }
         return list;
     }
-    
+
     private Vector<AdjustmentLayer> tryRearrangeLayersBefore(String layerName,
             boolean useViewport) {
         Vector<AdjustmentLayer> list = layersBefore(layerName);
@@ -143,7 +143,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             list = LayerRearranger.optimizeLayerOrder(list);
         return list;
     }
-    
+
     private Bitmap internalGenerateBitmapBeforeLayer(String layerName,
             boolean useViewport) throws IOException {
         if (layerName != null) {
@@ -162,11 +162,11 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         Bitmap bm = getInputBitmap();
         if (bm == null)
             return null;
-        
+
         Debug.print(this, "preview quality " + previewQuality);
         Vector<AdjustmentLayer> layers = tryRearrangeLayersBefore(layerName,
                 useViewport);
-        
+
         for (AdjustmentLayer layer : layers) {
             if (layer.isActive())
                 bm = applyLayer(bm, layer);
@@ -178,11 +178,11 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     protected Bitmap generateBitmap(boolean useViewport) throws IOException {
         return internalGenerateBitmapBeforeLayer(null, useViewport);
     }
-    
+
     /**
      * Returns a histogram for the bitmap generated just before a specific
      * adjustment layer is applied.
-     * 
+     *
      * @param layerName
      *      the name of a layer.
      * @param useViewport
@@ -203,11 +203,11 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             bm = BitmapUtil.create8BitCopy(bm);
         return new Histogram(bm);
     }
-    
+
     /**
      * Returns the size of the bitmap before the specified adjustment layer.
      * The viewport size will not be applied.
-     * 
+     *
      * @param layerName
      *      a layer name.
      * @return
@@ -240,19 +240,19 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         }
         return size;
     }
-    
+
     @Override
     public BitmapSize getBitmapSize() throws IOException {
         return getBitmapSizeBeforeLayer(null);
     }
-    
+
     /**
      * Copy session data from the other session.  The implementation will attempt
      * to reuse existing layer object, if possible.
-     * 
-     * The data copied includes the layers and the name of the other session. 
-     * 
-     * @param other The session to copy layers from. 
+     *
+     * The data copied includes the layers and the name of the other session.
+     *
+     * @param other The session to copy layers from.
      */
     public void synchronizeSessionData(BlimpSession other) {
         Vector<Layer> newList = new Vector<Layer>();
@@ -265,7 +265,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             setProjectFilePath(other.getProjectFilePath());
         //viewport.copyDataFrom(other.viewport);
     }
-    
+
     private Layer findOrCloneLayer(Layer otherLayer) {
         String layerName = otherLayer.getName();
         Layer foundLayer = findLayer(layerName);
@@ -348,7 +348,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     public int layerCount() {
         return layerList.size();
     }
-    
+
     private static <T extends Layer> T findLayerInList(String name,
             Vector<T> layers) {
         if (name == null)
@@ -359,11 +359,11 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         }
         return null;
     }
-    
+
     public Layer findLayer(String name) {
         return findLayerInList(name, layerList);
     }
-    
+
     private void uniqifyLayerName(Layer layer) {
         Layer found = findLayer(layer.getName());
         if (found == null || found == layer)
@@ -419,11 +419,11 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             invalidate();
         triggerChangeEvent();
     }
-    
+
     private boolean validIndex(int index) {
         return (index >= 0) && (index < layerList.size());
     }
-    
+
     public void moveLayer(int oldIndex, int newIndex) {
         if (!validIndex(oldIndex) || !validIndex(newIndex)
                 || (oldIndex == newIndex)) {
@@ -488,7 +488,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             return false;
         return super.isSerializableProperty(pd);
     }
-    
+
     /**
      * Test if the session data (the layers) is the same as the other session.
      * Unlike equals(), this function can return true even if the session
@@ -505,7 +505,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
                 return false;
         return true;
     }
-    
+
     /**
      * Create a deep copy of the given session.  This differs from clone()
      * because it will create a direct instance of BlimpSession even if the
@@ -518,10 +518,10 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         Serializer.copyBeanData(session, newSession);
         return newSession;
     }
-    
+
     /**
      * Set the session's name from the given filename.
-     * Call this explicitly after loading a session from file. 
+     * Call this explicitly after loading a session from file.
      * @param filename The file name of an image or saved session, for instance.
      */
     public void setNameFromFilename(String filename) {
@@ -530,7 +530,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         if (!shortName.isEmpty())
             setName(shortName);
     }
-    
+
     public void setPreviewQuality(PreviewQuality previewQuality) {
         this.previewQuality = previewQuality;
     }
@@ -557,14 +557,14 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     public String getProjectFilePath() {
         return projectFilePath;
     }
-    
+
     /**
      * Overridden to automatically set the project file path.
      */
     protected void beanLoaded(String filename) {
         setProjectFilePath(filename);
     }
-    
+
     /**
      * Overridden to automatically set the project file path.
      */

@@ -36,12 +36,12 @@ import org.junit.Test;
 public class LayerRearrangerTest {
     Vector<AdjustmentLayer> layers;
     Vector<AdjustmentLayer> newLayers;
-    
+
     public LayerRearrangerTest() {
         layers = new Vector<AdjustmentLayer>();
         newLayers = null;
     }
-    
+
     private void execute() {
         newLayers = LayerRearranger.optimizeLayerOrder(layers);
         assertNotNull(newLayers);
@@ -53,7 +53,7 @@ public class LayerRearrangerTest {
         newLayers = LayerRearranger.optimizeLayerOrder(layers);
         execute();
     }
-    
+
     @Test
     public void testSingle() {
         layers.add(new TestLayer());
@@ -61,7 +61,7 @@ public class LayerRearrangerTest {
         execute();
         assertSame(layers.get(0), newLayers.get(0));
     }
-    
+
     @Test
     public void testResizeOptimization() {
         ResizeLayer resize = new ResizeLayer();
@@ -75,7 +75,7 @@ public class LayerRearrangerTest {
         assertSame(gamma, newLayers.get(1));
         assertSame(mixer, newLayers.get(2));
     }
-    
+
     @Test
     public void testCropAndResizeOptimization() {
         CropLayer crop = new CropLayer();
@@ -89,7 +89,7 @@ public class LayerRearrangerTest {
         assertSame(resize, newLayers.get(1));
         assertSame(gamma, newLayers.get(2));
     }
-    
+
     @Test
     public void testGammaAndBorderLayers() {
         GammaLayer gamma = new GammaLayer();
@@ -100,7 +100,7 @@ public class LayerRearrangerTest {
         assertSame(gamma, newLayers.get(0));
         assertSame(border, newLayers.get(1));
     }
-    
+
     @Test
     public void testBorderAndResizeLayers() {
         SolidColorBorderLayer border = new SolidColorBorderLayer();
@@ -111,7 +111,7 @@ public class LayerRearrangerTest {
         assertSame(border, newLayers.get(0));
         assertSame(resize, newLayers.get(1));
     }
-    
+
     @Test
     public void testGammaCurvesResizeAndBorder() {
         GammaLayer gamma = new GammaLayer();
@@ -145,7 +145,7 @@ public class LayerRearrangerTest {
         assertSame(border, newLayers.get(2));
         assertSame(resize, newLayers.get(3));
     }
-    
+
     @Test
     public void testGammaAndViewResize() {
         GammaLayer gamma = new GammaLayer();

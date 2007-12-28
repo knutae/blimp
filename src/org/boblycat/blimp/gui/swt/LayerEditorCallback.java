@@ -20,7 +20,7 @@ package org.boblycat.blimp.gui.swt;
 
 /**
  * A simple callback interface for layer editors.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public interface LayerEditorCallback {

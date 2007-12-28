@@ -85,7 +85,7 @@ public class Serializer {
             return ((PointDouble) value).toCommaString();
         return value.toString();
     }
-    
+
     private static void appendPropertyValue(Element property, Object value) {
         if (value == null)
             return;
@@ -132,7 +132,7 @@ public class Serializer {
     public static String layerToXml(Layer layer) {
         return beanToXml(layer);
     }
-    
+
     public static String beanToXml(BlimpBean bean) {
         LSSerializer serializer = domImplLS.createLSSerializer();
         return serializer.writeToString(beanToDOM(bean));
@@ -278,7 +278,7 @@ public class Serializer {
                     + prop.getName());
         }
     }
-    
+
     static BlimpBean newBeanInstance(Class<? extends BlimpBean> beanClass) {
         try {
             return beanClass.newInstance();
@@ -313,7 +313,7 @@ public class Serializer {
     /**
      * Iterate through the children of the given node and copy the data, which
      * can include properties and child beans.
-     * 
+     *
      * @param beanNode
      *            The bean DOM node.
      * @param dest
@@ -403,7 +403,7 @@ public class Serializer {
 
     /**
      * Save the bean in XML format to the given file.
-     * 
+     *
      * @param bean
      *            The bean to save.
      * @param filename
@@ -426,7 +426,7 @@ public class Serializer {
 
     /**
      * Load the bean from the given file, which must be in XML format.
-     * 
+     *
      * @param filename
      *            File to load.
      * @return A new bean object.
@@ -452,7 +452,7 @@ public class Serializer {
             bean.beanLoaded(filename);
         return bean;
     }
-    
+
     private static BlimpSession loadSessionFromFile(String filename,
             Class<? extends BlimpSession> sessionClass)
             throws FileNotFoundException, SAXException, IOException,
@@ -466,7 +466,7 @@ public class Serializer {
         copyBeanData(bean, session);
         return session;
     }
-    
+
     /**
      * Load a history-enabled session from file.
      * @param filename

@@ -30,18 +30,18 @@ public class CachedBlimpSession extends BlimpSession {
     // some bitmaps are kept alive for speed purposes:
     Bitmap activeInputBitmap;
     Bitmap activeResizedBitmap;
-    
+
     public CachedBlimpSession() {
         cache = new BitmapCache();
     }
-    
+
     private void log(String msg) {
         if (Debug.debugEnabled(this)) {
             Debug.print(this, msg);
             cache.printSizes();
         }
     }
-    
+
     protected Bitmap applyLayer(Bitmap source, AdjustmentLayer layer) {
         Bitmap bitmap = cache.get(source, layer);
         if (bitmap == null) {
@@ -56,7 +56,7 @@ public class CachedBlimpSession extends BlimpSession {
             activeResizedBitmap = bitmap;
         return bitmap;
     }
-    
+
     protected Bitmap inputBitmap(InputLayer input) throws IOException {
         activeInputBitmap = null; // allow last input to be garbage collected
         Bitmap bitmap = cache.get(input);
@@ -67,7 +67,7 @@ public class CachedBlimpSession extends BlimpSession {
         }
         else {
             log("hit: " + input.getClass());
-            
+
         }
         activeInputBitmap = bitmap;
         return bitmap;
@@ -86,7 +86,7 @@ public class CachedBlimpSession extends BlimpSession {
         }
         return bitmap.getSize();
     }
-    
+
     private boolean hasActiveResizeLayer() {
         for (Layer layer: layerList)
             if (layer.isActive() && (layer instanceof ResizeLayer))

@@ -42,7 +42,7 @@ class MultiLineData {
     int[] removedLine;
     int[] combined;
     int channel;
-    
+
     MultiLineData(IntegerImage image, int channel) {
         this.image = image;
         this.channel = channel;
@@ -51,7 +51,7 @@ class MultiLineData {
         activeLineData = new Vector<int[]>();
         combined = new int[width];
     }
-    
+
     void addLine(int y) {
         int[] lineData;
         if (removedLine != null) {
@@ -66,7 +66,7 @@ class MultiLineData {
             combined[x] += lineData[x];
         activeLineData.add(lineData);
     }
-    
+
     void popLine() {
         removedLine = activeLineData.remove(0);
         for (int x = 0; x < width; x++)
@@ -76,7 +76,7 @@ class MultiLineData {
     int[] getCombinedData() {
         return combined;
     }
-    
+
     int getNumLines() {
         return activeLineData.size();
     }
@@ -93,11 +93,11 @@ class MultiLineHSLData {
     double[] greenLineData;
     double[] blueLineData;
     double maxSample;
-    
+
     MultiLineData redData;
     MultiLineData greenData;
     MultiLineData blueData;
-    
+
     MultiLineHSLData(IntegerImage image, int radius, double maxSample) {
         this.image = image;
         this.radius = radius;
@@ -112,19 +112,19 @@ class MultiLineHSLData {
         greenLineData = new double[width];
         blueLineData = new double[width];
     }
-    
+
     void addLine(int y) {
         redData.addLine(y);
         greenData.addLine(y);
         blueData.addLine(y);
     }
-    
+
     void popLine() {
         redData.popLine();
         greenData.popLine();
         blueData.popLine();
     }
-    
+
     void updateHslLineData() {
         int[] combinedRed = redData.getCombinedData();
         int[] combinedGreen = greenData.getCombinedData();
@@ -171,7 +171,7 @@ class LocalContrastOperation extends ImageToImageOperation {
     int radius;
     int amount;
     int adaptive;
-    
+
     public void process() throws MissingParameterException,
     WrongParameterException {
         PixelImage pinput = getInputImage();
@@ -250,19 +250,19 @@ class LocalContrastOperation extends ImageToImageOperation {
         }
         setOutputImage(output);
     }
-    
+
 }
 
 /**
  * A layer for adding contrast in local areas within an image.
- * 
+ *
  * The local contrast enchancement is implemented like an unsharp mask filter
  * with a big radius, but optimized by taking the average intensity of square
  * areas around each pixel instead of using a convolution matrix.
- * 
+ *
  * The algorithm is adaptive, which means that is is able to add less contrast
  * for areas that already have a high local contrast.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class LocalContrastLayer extends AdjustmentLayer {
@@ -275,7 +275,7 @@ public class LocalContrastLayer extends AdjustmentLayer {
     private int radius = 100;
     private int amount = 100;
     private int adaptive = 70;
-    
+
     @Override
     public Bitmap applyLayer(Bitmap source) {
         LocalContrastOperation op = new LocalContrastOperation();

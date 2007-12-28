@@ -40,7 +40,7 @@ public class HistogramView extends Composite {
     Double blackLevel;
     Double centerLevel;
     Double whiteLevel;
-    
+
     public HistogramView(Composite parent, int style) {
         super(parent, style);
         setLayout(new FillLayout());
@@ -59,27 +59,27 @@ public class HistogramView extends Composite {
             }
         });
         creator = new Histogram1DCreator();
-        
+
         addListener(SWT.Dispose, new Listener() {
             public void handleEvent(Event e) {
                 SwtUtil.dispose(histogramImage);
             }
         });
     }
-    
+
     public void setBitmap(Bitmap bitmap) {
         currentBitmap = bitmap;
         allChannelsHistogram = null;
         invalidateHistogramImage();
         canvas.redraw();
     }
-    
+
     public void setAllchannelsHistogram(Histogram1D histogram) {
         allChannelsHistogram = histogram;
         invalidateHistogramImage();
         canvas.redraw();
     }
-    
+
     public void setLevels(double black, double center, double white) {
         blackLevel = black;
         centerLevel = center;
@@ -87,12 +87,12 @@ public class HistogramView extends Composite {
         invalidateHistogramImage();
         canvas.redraw();
     }
-    
+
     private void invalidateHistogramImage() {
         SwtUtil.dispose(histogramImage);
         histogramImage = null;
     }
-    
+
     private static void fillGrayRectange(GC gc, int width, int height,
             double startPercentage, double endPercentage) {
         int x1 = (int) (startPercentage * width);
@@ -101,7 +101,7 @@ public class HistogramView extends Composite {
         SwtUtil.fillColorRect(gc, new Rectangle(x1, 0, x2, height),
                 intensity, intensity, intensity);
     }
-    
+
     private Image getHistogramImage(int width, int height) {
         if (histogramImage != null) {
             // invalidate if the size has changed
@@ -137,14 +137,14 @@ public class HistogramView extends Composite {
         black.dispose();
         return histogramImage;
     }
-    
+
     private Histogram1D getFullHistogram() {
         if (allChannelsHistogram != null)
             return allChannelsHistogram;
         allChannelsHistogram = new Histogram(currentBitmap);
         return allChannelsHistogram;
     }
-    
+
     private static void generateHistogramPath(Histogram1D histogram, Path path,
             int width, int height) {
         float sourceWidth = histogram.getMaxValue();
@@ -152,7 +152,7 @@ public class HistogramView extends Composite {
         for (int i=0; i<=histogram.getMaxValue(); i++)
             ymax = Math.max(histogram.getEntry(i), ymax);
         float sourceHeight = ymax;
-        
+
         path.moveTo(0, height);
         for (int x=0; x<histogram.getMaxValue(); x++) {
             float destx = (x * width) / sourceWidth;

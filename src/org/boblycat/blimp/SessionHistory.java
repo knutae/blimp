@@ -34,7 +34,7 @@ public class SessionHistory {
     Vector<HistoryEntry> historyList;
     int currentIndex;
     HistoryEntry savedHistoryEntry;
-    
+
     public SessionHistory(BlimpSession session) {
         this.session = session;
         historyList = new Vector<HistoryEntry>();
@@ -44,15 +44,15 @@ public class SessionHistory {
         currentIndex = 0;
         savedHistoryEntry = new HistoryEntry(session);
     }
-    
+
     public boolean canUndo() {
         return currentIndex > 0;
     }
-    
+
     public boolean canRedo() {
         return currentIndex < historyList.size()-1;
     }
-    
+
     public void record() {
         HistoryEntry currentEntry = historyList.get(currentIndex);
         if (session.sessionDataEquals(currentEntry.sessionCopy))
@@ -63,7 +63,7 @@ public class SessionHistory {
         historyList.add(newEntry);
         currentIndex++;
     }
-    
+
     /**
      * Record that the session has been saved in its current state.
      * It should not be dirty after this.
@@ -71,13 +71,13 @@ public class SessionHistory {
     public void recordSaved() {
         savedHistoryEntry = new HistoryEntry(session);
     }
-    
+
     public boolean isDirty() {
         HistoryEntry currentEntry = historyList.get(currentIndex);
         return !savedHistoryEntry.sessionCopy.sessionDataEquals(
                 currentEntry.sessionCopy);
     }
-    
+
     public void undo() {
         if (!canUndo())
             return;
@@ -85,7 +85,7 @@ public class SessionHistory {
         HistoryEntry entry = historyList.get(currentIndex);
         session.synchronizeSessionData(entry.sessionCopy);
     }
-    
+
     public void redo() {
         if (!canRedo())
             return;
@@ -93,7 +93,7 @@ public class SessionHistory {
         HistoryEntry entry = historyList.get(currentIndex);
         session.synchronizeSessionData(entry.sessionCopy);
     }
-    
+
     public int size() {
         return historyList.size();
     }

@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Listener;
  * A subclass of LayerEditor which uses a single-column GridLayout
  * and has some useful utility functions for creating sliders and
  * radio groups.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public abstract class GridBasedLayerEditor extends LayerEditor {
@@ -47,19 +47,19 @@ public abstract class GridBasedLayerEditor extends LayerEditor {
             }
         };
     }
-    
+
     /**
      * Update the layer based on the current GUI state.
      * This function must be implemented by subclasses.
-     * 
+     *
      * This function will not be called if the layer is null or
      * the editor is disposed.
-     * 
+     *
      * Note: do not invalidate the layer from this function, since
      * it will be done automatically after the function has returned.
      */
     protected abstract void updateLayer();
-    
+
     /**
      * Update the layer with the current GUI values, then invalidate the
      * layer.  This function cannot be overridden, implement updateLayer()
@@ -71,7 +71,7 @@ public abstract class GridBasedLayerEditor extends LayerEditor {
         updateLayer();
         layer.invalidate();
     }
-    
+
     private Button createButton(Composite parent, String caption, int style) {
         Button button = new Button(parent, style);
         button.setText(caption);
@@ -82,11 +82,11 @@ public abstract class GridBasedLayerEditor extends LayerEditor {
     protected Button createRadioButton(Composite parent, String caption) {
         return createButton(parent, caption, SWT.RADIO);
     }
-    
+
     protected Button createCheckButton(Composite parent, String caption) {
         return createButton(parent, caption, SWT.CHECK);
     }
-    
+
     protected Group createGroup(String caption) {
         Group group = new Group(this, SWT.NONE);
         group.setText(caption);
@@ -94,7 +94,7 @@ public abstract class GridBasedLayerEditor extends LayerEditor {
         group.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
         return group;
     }
-    
+
     protected ValueSlider createSliderWithoutListener(String caption,
             int min, int max, int digits) {
         ValueSlider slider = new ValueSlider(this, SWT.NONE,
@@ -102,7 +102,7 @@ public abstract class GridBasedLayerEditor extends LayerEditor {
         slider.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         return slider;
     }
-    
+
     protected ValueSlider createSlider(String caption, int min, int max, int digits) {
         ValueSlider slider = createSliderWithoutListener(caption, min, max, digits);
         slider.addListener(SWT.Selection, updateLayerListener);

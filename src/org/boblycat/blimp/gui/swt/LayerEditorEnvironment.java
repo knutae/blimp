@@ -24,7 +24,7 @@ import org.boblycat.blimp.layers.Layer;
 
 /**
  * A collection of variables used by layer editors.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class LayerEditorEnvironment {
@@ -33,7 +33,7 @@ public class LayerEditorEnvironment {
     public HistoryBlimpSession session;
     public Layer layer;
     public boolean layerWasJustAdded;
-    
+
     public LayerEditorEnvironment clone() {
         LayerEditorEnvironment env = new LayerEditorEnvironment();
         env.editorCallback = editorCallback;

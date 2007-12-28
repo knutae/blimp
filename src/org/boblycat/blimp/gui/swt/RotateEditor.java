@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Group;
 
 /**
  * SWT RotateLayer editor.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class RotateEditor extends GridBasedLayerEditor {
@@ -41,7 +41,7 @@ public class RotateEditor extends GridBasedLayerEditor {
         fastRadioButton = createRadioButton(group, "Fast");
         antiAliasedRadioButton = createRadioButton(group, "Anti-Aliased");
     }
-    
+
     @Override
     protected void updateLayer() {
         rotateLayer.setAngle(angleSlider.getSelectionAsDouble());
@@ -50,7 +50,7 @@ public class RotateEditor extends GridBasedLayerEditor {
         else
             rotateLayer.setQuality(RotateLayer.Quality.AntiAliased);
     }
-    
+
     @Override
     protected void layerChanged() {
         rotateLayer = (RotateLayer) layer;

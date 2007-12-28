@@ -38,7 +38,7 @@ public class CommandLine {
         System.err.println(message);
         System.exit(1);
     }
-    
+
     private static IIOMetadataNode findUnknownNodeType(Node tree, int tag) {
         if (tree == null || !(tree instanceof Element))
             return null;
@@ -53,7 +53,7 @@ public class CommandLine {
         }
         return null;
     }
-    
+
     private static IIOMetadataNode findExifNode(Node tree) {
         return findUnknownNodeType(tree, 225);
     }
@@ -75,7 +75,7 @@ public class CommandLine {
             }
         }
     }
-    
+
     private static void printIFDs(byte[] exifData) {
         try {
             ExifBlobReader reader = new ExifBlobReader(exifData);
@@ -104,11 +104,11 @@ public class CommandLine {
             //fatal(e.getMessage());
         }
     }
-    
+
     public static void main(String[] args) throws Exception {
         if (args.length != 1)
             fatal("missing file name");
-        
+
         String filename = args[0];
         String format = Util.getFileExtension(filename);
         ImageReader reader = BitmapUtil.getImageReader(format);

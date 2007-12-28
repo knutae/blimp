@@ -32,36 +32,36 @@ import java.net.Socket;
 
 /**
  * A socket server which serves two purposes:
- * 
+ *
  * 1. can be used to ensure that only one instance of an application is running.
- * 
+ *
  * 2. can be used to send extra arguments to the running "singleton application"
  * before shutting down.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class ArgumentSocketServer extends Thread {
     public interface Listener {
         void handleArgument(String arg);
     }
-    
+
     private class MyEventSource extends EventSource<Listener, String> {
         public void triggerListenerEvent(Listener li, String fileName) {
             li.handleArgument(fileName);
         }
     }
-    
+
     private static final int PORT = 29707;
-    
+
     ServerSocket serverSocket;
     Socket clientSocket;
     MyEventSource eventSource;
-    
+
     public ArgumentSocketServer() {
         super("Blimp ArgumentSocketServer Thread");
         eventSource = new MyEventSource();
     }
-    
+
     @Override
     public void run() {
         try {
@@ -92,13 +92,13 @@ public class ArgumentSocketServer extends Thread {
             Util.err("ArgumentSocketServer exception: " + e.getMessage());
         }
     }
-    
+
     public void addListener(Listener listener) {
         synchronized (eventSource) {
             eventSource.addListener(listener);
         }
     }
-    
+
     public void removeListener(Listener listener) {
         synchronized (eventSource) {
             eventSource.removeListener(listener);
@@ -110,7 +110,7 @@ public class ArgumentSocketServer extends Thread {
             eventSource.triggerChangeWithEvent(arg);
         }
     }
-    
+
     private static boolean connectToServerAndSendArguments(String[] args) {
         Socket sock;
         try {
@@ -140,7 +140,7 @@ public class ArgumentSocketServer extends Thread {
         }
         return true;
     }
-    
+
     public void close() {
         try {
             if (serverSocket != null)
@@ -150,7 +150,7 @@ public class ArgumentSocketServer extends Thread {
         }
         interrupt();
     }
-    
+
     public static void startServerOrQuit(ArgumentSocketServer server,
             String[] args) {
         if (connectToServerAndSendArguments(args))

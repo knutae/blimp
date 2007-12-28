@@ -26,7 +26,7 @@ import org.boblycat.blimp.Util;
 
 /**
  * Crop layer.
- * 
+ *
  * All values (left, right, top, bottom) are positive integers given in
  * pixels of the original image data, even if an earlier layer has resized
  * the image.

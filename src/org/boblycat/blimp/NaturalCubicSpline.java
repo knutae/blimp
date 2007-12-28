@@ -33,7 +33,7 @@ public class NaturalCubicSpline {
      * </pre>
      * The numbers a0 and cN-1 are ignored. Note that the input arrays will be
      * modified by this function.
-     * 
+     *
      * @param va
      *            Lower diagonal vector.
      * @param vd
@@ -116,7 +116,7 @@ public class NaturalCubicSpline {
      * (x-X[i])^3 + B[i] * (x-X[i]]^2 + C[i] * (x-X[i]) + D[i] where X[i] <= x <=
      * X[i+i] and X[1..n+1] is the sorted array of x values in the control
      * points.)
-     * 
+     *
      * @return A wrapper of the coefficient vectors.
      */
     Coefficients calculateCoefficients() {

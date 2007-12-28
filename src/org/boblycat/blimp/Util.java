@@ -38,7 +38,7 @@ public class Util {
             return max;
         return value;
     }
-    
+
     public static double constrainedValue(double value, double min, double max) {
         if (max < min)
             throw new IllegalArgumentException("max (" + max
@@ -49,16 +49,16 @@ public class Util {
             return max;
         return value;
     }
-    
+
     public static int constrainedLower(int value, int min) {
         if (value < min)
             return min;
         return value;
     }
-    
+
     /**
      * Returns the smallest of the given arguments.
-     * 
+     *
      * @param <T>
      *      a comparable type
      * @param first
@@ -79,7 +79,7 @@ public class Util {
 
     /**
      * Returns the largest of the given arguments.
-     * 
+     *
      * @param <T>
      *      a comparable type
      * @param first
@@ -104,7 +104,7 @@ public class Util {
         File file = new File(path);
         return file.getName();
     }
-    
+
     public static Logger logger = Logger.getLogger("org.boblycat.blimp");
 
     /**
@@ -114,9 +114,9 @@ public class Util {
     public static void warn(String message) {
         logger.warning(message);
     }
-    
+
     /**
-     * Print a non-fatal error message. 
+     * Print a non-fatal error message.
      * @param message an error message.
      */
     public static void err(String message) {
@@ -125,7 +125,7 @@ public class Util {
 
     /**
      * Print a non-fatal error message with an exception.
-     * The exception stack trace will be logged. 
+     * The exception stack trace will be logged.
      * @param message an error message
      * @param ex an exception
      */
@@ -136,7 +136,7 @@ public class Util {
         ex.printStackTrace(new PrintWriter(sw));
         logger.severe(sw.toString());
     }
-    
+
     /**
      * Print (log) an informational message.
      * @param message a message.
@@ -144,7 +144,7 @@ public class Util {
     public static void info(String message) {
         logger.info(message);
     }
-    
+
     public static String getFileExtension(String filePath) {
         int dotpos = filePath.lastIndexOf('.');
         if (dotpos < 0)
@@ -158,7 +158,7 @@ public class Util {
                 || ext.equals("dng");
         // todo: add more raw extensions
     }
-    
+
     public static boolean fileExists(String path) {
         if (path == null || path.length() == 0)
             return false;
@@ -243,7 +243,7 @@ public class Util {
         else
             return filename.substring(0, lastDotPos) + suffix;
     }
-    
+
     /**
      * Perform an integer division which rounds the answer to the closest
      * whole number.

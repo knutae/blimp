@@ -26,7 +26,7 @@ import org.boblycat.blimp.layers.*;
 /**
  * Registry for adjustment layers (not input layers).
  * This is used for generating menus in the GUI.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class LayerRegistry implements Iterable<LayerRegistry.Category> {
@@ -54,20 +54,20 @@ public class LayerRegistry implements Iterable<LayerRegistry.Category> {
             layers.add(info);
         }
     }
-    
+
     private Vector<Category> categoryList;
 
     public LayerRegistry() {
         categoryList = new Vector<Category>();
     }
-    
+
     public Category addCategory(String label) {
         Category cat = new Category();
         cat.label = label;
         categoryList.add(cat);
         return cat;
     }
-    
+
     public Iterator<Category> iterator() {
         return categoryList.iterator();
     }
@@ -76,7 +76,7 @@ public class LayerRegistry implements Iterable<LayerRegistry.Category> {
     public static LayerRegistry createDefaultRegistry() {
         LayerRegistry reg = new LayerRegistry();
         Category cat;
-        
+
         cat = reg.addCategory("&Image");
         cat.registerLayer(OrientationLayer.class, "&Orientation",
                 "Flip or rotate the image in 90 degree increments.");
@@ -88,7 +88,7 @@ public class LayerRegistry implements Iterable<LayerRegistry.Category> {
                 "Resize the image.");
         cat.registerLayer(SolidColorBorderLayer.class, "&Border",
                 "Add a solid color border around the image.");
-        
+
         cat = reg.addCategory("&Color");
         cat.registerLayer(BrightnessContrastLayer.class, "&Brightness/Contrast",
                 "Brightness and contrast");
@@ -108,7 +108,7 @@ public class LayerRegistry implements Iterable<LayerRegistry.Category> {
                 "Invert all colors, resulting in a negative image");
         cat.registerLayer(Color16BitLayer.class, "Promote to &16-Bit",
                 "Promote the image from 8-bit to 16-bit per color channel");
-        
+
         cat = reg.addCategory("&Enhance");
         cat.registerLayer(LocalContrastLayer.class, "&Local Contrast Enhancement",
                 "Increase contrast locally in adjacent areas of the image");

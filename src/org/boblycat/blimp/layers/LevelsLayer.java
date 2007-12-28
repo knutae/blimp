@@ -43,7 +43,7 @@ public class LevelsLayer extends AdjustmentLayer {
     private double blackLevel;
     private double center;
     private double whiteLevel;
-    
+
     public LevelsLayer() {
         blackLevel = 0;
         center = 0.5;

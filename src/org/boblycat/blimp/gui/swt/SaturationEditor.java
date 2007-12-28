@@ -33,14 +33,14 @@ public class SaturationEditor extends GridBasedLayerEditor {
         saturationSlider = createSlider("Saturation", 0, 400, 0);
         lightnessSlider = createSlider("Lightness", 0, 400, 0);
     }
-    
+
     @Override
     protected void updateLayer() {
         saturation.setSaturation(saturationSlider.getSelection());
         saturation.setLightness(lightnessSlider.getSelection());
         saturation.setHue(hueSlider.getSelection());
     }
-    
+
     @Override
     protected void layerChanged() {
         saturation = (SaturationLayer) layer;

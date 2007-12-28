@@ -29,7 +29,7 @@ import java.util.Vector;
 
 /**
  * Base class for serializable Blimp objects.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
@@ -92,7 +92,7 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
             this.bean = bean;
             this.descriptor = descriptor;
         }
-        
+
         public PropertyDescriptor getDescriptor() {
             return descriptor;
         }
@@ -107,11 +107,11 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
      * be included when serializing the bean.  By default all read-write
      * properties are included, so the default implementation always returns
      * <code>true</code>.
-     * 
+     *
      * This function must always return the same result for the same property,
      * regardless of any internal state.  To filter out properties dynamically,
      * use <code>isVisibleProperty</code> instead.
-     * 
+     *
      * @param pd
      *            A property descriptor.
      * @return <code>true</code> by default.
@@ -119,16 +119,16 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
     protected boolean isSerializableProperty(PropertyDescriptor pd) {
         return true;
     }
-    
+
     /**
      * This function can be overridden to dynamically hide some properties
      * for property editors or in the XML representation.  For instance,
      * setting a certain boolean property could cause another property to
      * become hidden.
-     * 
+     *
      * The default implementation always returns <code>true</code>, which
      * means that no properties are hidden.
-     * 
+     *
      * @param pd
      *            A property descriptor.
      * @return <code>true</code> by default.
@@ -140,7 +140,7 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
     /**
      * Iterator for BlimpBean properties. This includes all JavaBean properties
      * defined in subclasses of BlimpBean which are both readable and writable.
-     * 
+     *
      * @return An iterator for this bean's properties.
      */
     public Iterator<Property> iterator() {
@@ -173,7 +173,7 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
     /**
      * Find a BlimpBean property by name. This function currently has linear
      * time complexity.
-     * 
+     *
      * @param name
      *            The name of the (JavaBeans) property to search for.
      * @return A property with the given name, or null.
@@ -190,7 +190,7 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
     /**
      * The element name used for XML/DOM representations of beans. Override in
      * subclasses.
-     * 
+     *
      * @return The string "bean", unless the function is overridden.
      */
     public String elementName() {
@@ -199,7 +199,7 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
 
     /**
      * Retrieves a list of child beans. Override this for beans with children.
-     * 
+     *
      * @return A list of child beans, or <code>null</code>.
      */
     public Vector<? extends BlimpBean> getChildren() {
@@ -208,7 +208,7 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
 
     /**
      * Add a child bean. Override this for beans with children.
-     * 
+     *
      * @param child
      *            The new child to add.
      * @throws NotImplementedException
@@ -256,22 +256,22 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
         // TODO: optimize this
         return Serializer.beanToXml(bean).equals(Serializer.beanToXml(this));
     }
-    
+
     /**
      * Called after this bean has been loaded from a file.
      * The default implementation does nothing, but can be overridden.
      * @param filename The filename the bean was loaded from.
      */
     protected void beanLoaded(String filename) {
-        
+
     }
-    
+
     /**
      * Called after this bean has been saved to a file.
      * The default implementation does nothing, but can be overridden.
      * @param filename The filename the bean was saved to.
      */
     protected void beanSaved(String filename) {
-        
+
     }
 }

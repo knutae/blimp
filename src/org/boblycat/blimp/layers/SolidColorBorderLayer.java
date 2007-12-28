@@ -29,7 +29,7 @@ import org.boblycat.blimp.Util;
 /**
  * A layer which adds a solid color border around the image.
  * The four border sizes are given in pixels.
- *  
+ *
  * @author Knut Arild Erstad
  */
 public class SolidColorBorderLayer extends DimensionAdjustmentLayer {
@@ -42,11 +42,11 @@ public class SolidColorBorderLayer extends DimensionAdjustmentLayer {
     public SolidColorBorderLayer() {
         color = ColorRGB.White;
     }
-    
+
     private static int shiftChannelValue(int value, int bitDepth) {
         return value << (bitDepth - 8);
     }
-    
+
     @Override
     public Bitmap applyLayer(Bitmap source) {
         if (!(source.getImage() instanceof RGBIntegerImage)) {
@@ -69,7 +69,7 @@ public class SolidColorBorderLayer extends DimensionAdjustmentLayer {
                 shiftChannelValue(color.getGreen(), bitDepth));
         output.clear(RGBIndex.INDEX_BLUE,
                 shiftChannelValue(color.getBlue(), bitDepth));
-        
+
         // copy input image (TODO: optimize)
         int[] samples = new int[inputWidth * inputHeight];
         for (int channel = 0; channel < input.getNumChannels(); channel++) {

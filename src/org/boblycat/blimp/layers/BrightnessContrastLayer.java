@@ -30,7 +30,7 @@ class MultiplicativeContrast extends LookupTableOperation {
     static double transform(double x, double contrast) {
         return Util.constrainedValue(x * contrast, -1, 1);
     }
-    
+
     void setTablesFromContrast(double contrast, int bitdepth) {
         int size = 1 << bitdepth;
         double factor = (size - 1);
@@ -50,7 +50,7 @@ public class BrightnessContrastLayer extends AdjustmentLayer {
     public static final int MAX_BRIGHTNESS = 100;
     public static final int MIN_CONTRAST = 0;
     public static final int MAX_CONTRAST = 400;
-    
+
     int brightness = 0;
     int contrast = 100;
 

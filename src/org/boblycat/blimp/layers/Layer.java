@@ -35,13 +35,13 @@ public abstract class Layer extends BlimpBean {
     boolean active;
 
     LayerEventSource eventSource;
-    
+
     ProgressEventSource progressEventSource;
-    
+
     String name;
 
     public abstract String getDescription();
-    
+
     public String getProgressDescription() {
         return getDescription();
     }
@@ -72,20 +72,20 @@ public abstract class Layer extends BlimpBean {
     public void triggerChangeEvent() {
         eventSource.triggerChangeWithEvent(new LayerEvent(this));
     }
-    
+
     public void addProgressListener(ProgressListener listener) {
         progressEventSource.addListener(listener);
     }
-    
+
     public void removeProgressListener(ProgressListener listener) {
         progressEventSource.removeListener(listener);
     }
-    
+
     protected void triggerProgress(String message, double progress) {
         progressEventSource.triggerChangeWithEvent(
                 new ProgressEvent(this, message, progress));
     }
-    
+
     protected void triggerProgress(double progress) {
         triggerProgress(getProgressDescription(), progress);
     }
@@ -102,7 +102,7 @@ public abstract class Layer extends BlimpBean {
     public String elementName() {
         return "layer";
     }
-    
+
     /**
      * Get a name which can be used as an identifier for the layer.
      * Within a session all names should be unique.
@@ -113,19 +113,19 @@ public abstract class Layer extends BlimpBean {
             name = generateName(this, 1);
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
         // TODO: make sure it is unique within a session...?
     }
-    
+
     protected String getBaseName() {
         String className = getClass().getSimpleName();
         if (className.endsWith("Layer"))
             className = className.substring(0, className.length()-5);
         return className;
     }
-    
+
     protected static String generateName(Layer layer, int suffixNumber) {
         return layer.getBaseName() + Integer.toString(suffixNumber);
     }

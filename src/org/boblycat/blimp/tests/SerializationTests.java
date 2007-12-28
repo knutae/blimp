@@ -39,7 +39,7 @@ import static org.junit.Assert.*;
 
 public class SerializationTests {
     int eventCount;
-    
+
     private static DocumentBuilder createDocBuilder() {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
@@ -84,7 +84,7 @@ public class SerializationTests {
         }
         return null;
     }
-    
+
     private static String getChildValue(Element element) {
         assertNotNull(element);
         assertNotNull(element.getFirstChild());
@@ -93,7 +93,7 @@ public class SerializationTests {
         assertNull(textNode.getNextSibling());
         return textNode.getNodeValue();
     }
-    
+
     private static void assertChildValueEquals(Element element, String expected) {
         assertEquals(expected, getChildValue(element));
     }
@@ -124,13 +124,13 @@ public class SerializationTests {
         Element stringValueElement = null;
         Element doubleArrayValueElement = null;
         Element colorValueElement = null;
-        
+
         for (Node node: new DOMNodeIterator(root)) {
             assertTrue(node instanceof Element);
             Element child = (Element) node;
             assertEquals("property", child.getNodeName());
             String nameAttr = child.getAttribute("name");
-            
+
             if (nameAttr.equals("active"))
                 activeElement = child;
             else if (nameAttr.equals("doubleValue"))
@@ -153,7 +153,7 @@ public class SerializationTests {
         assertChildValueEquals(intValueElement, "42");
         assertChildValueEquals(stringValueElement, "abcDEF");
         assertChildValueEquals(colorValueElement, "#0064FF");
-        
+
         // array value
         assertNotNull(doubleArrayValueElement);
         Node child = doubleArrayValueElement.getFirstChild();
@@ -200,7 +200,7 @@ public class SerializationTests {
         assertEquals(5, color.getGreen());
         assertEquals(128, color.getBlue());
     }
-    
+
     @Test
     public void testClone() {
         TestLayer layer = new TestLayer();
@@ -392,7 +392,7 @@ public class SerializationTests {
         assertTrue(layer != layerClone);
         assertEquals(3.45, layerClone.getDoubleValue());
     }
-    
+
     private static void checkTypeIdXml(Class <? extends Layer> layerClass,
             String typeId) throws Exception {
         // from xml
@@ -405,7 +405,7 @@ public class SerializationTests {
         assertEquals(typeId, root.getAttribute("type"));
         assertEquals("", root.getAttribute("class"));
     }
-    
+
     @Test
     public void testLayerTypeIds() throws Exception {
         checkTypeIdXml(InvertLayer.class, "Invert");
@@ -425,7 +425,7 @@ public class SerializationTests {
         checkTypeIdXml(RawFileInputLayer.class, "RawInput");
         checkTypeIdXml(FileInputLayer.class, "FileInput");
     }
-    
+
     private static Element findPropertyElement(Element root,
             String propertyName) {
         Element foundChild = null;
@@ -443,13 +443,13 @@ public class SerializationTests {
         assertTrue(foundCount <= 1);
         return foundChild;
     }
-    
+
     private static void checkSinglePropertyElement(Element root,
             String propertyName, String expectedValue) {
         Element propertyChild = findPropertyElement(root, propertyName);
         assertChildValueEquals(propertyChild, expectedValue);
     }
-    
+
     @Test
     public void testRawFileInputLayerToXmlWithCustomWB() throws Exception {
         RawFileInputLayer layer = new RawFileInputLayer();
@@ -457,7 +457,7 @@ public class SerializationTests {
         layer.setColorDepth(ColorDepth.Depth16Bit);
         layer.setWhiteBalance(WhiteBalance.CustomRaw);
         layer.setRawWhiteBalance(new double[] {1.23, 0.5, 0.78, 0.0});
-        
+
         String xml = Serializer.layerToXml(layer);
         Element root = parseLayerXml(xml);
         checkSinglePropertyElement(root, "filePath", "/foo/bar.raw");
@@ -487,7 +487,7 @@ public class SerializationTests {
         layer.setFilePath("c:\\photos\\img_1234.raw");
         layer.setColorDepth(ColorDepth.Depth8Bit);
         layer.setWhiteBalance(WhiteBalance.Camera);
-        
+
         String xml = Serializer.layerToXml(layer);
         Element root = parseLayerXml(xml);
         checkSinglePropertyElement(root, "filePath", "c:\\photos\\img_1234.raw");
@@ -498,7 +498,7 @@ public class SerializationTests {
                 root, "rawWhiteBalance");
         assertNull(rawWhiteBalanceElement);
     }
-    
+
     @Test
     public void testProjectFilePathAfterLoadFromFile() throws Exception {
         File temp = File.createTempFile("projectTest", ".blimp");
@@ -512,7 +512,7 @@ public class SerializationTests {
         assertNotNull(session.getProjectFilePath());
         assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
     }
-    
+
     @Test
     public void testProjectFilePathAfterLoadHistorySessionFromFile()
     throws Exception {
@@ -527,7 +527,7 @@ public class SerializationTests {
         assertNotNull(session.getProjectFilePath());
         assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
     }
-    
+
     @Test
     public void testProjectFilePathAfterSaveToFile() throws Exception {
         File temp = File.createTempFile("projectTest", ".blimp");
@@ -538,7 +538,7 @@ public class SerializationTests {
         assertNotNull(session.getProjectFilePath());
         assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
     }
-    
+
     @Test
     public void testLoadHistorySessionFromFile() throws Exception {
         File temp = File.createTempFile("projectTest", ".blimp");
@@ -552,7 +552,7 @@ public class SerializationTests {
         FileWriter out = new FileWriter(temp);
         out.write(xml);
         out.close();
-        
+
         HistoryBlimpSession session = Serializer.loadHistorySessionFromFile(
                 temp.getAbsolutePath());
         assertFalse(session.isDirty());
@@ -560,20 +560,20 @@ public class SerializationTests {
         TestInput input = (TestInput) session.getInput();
         assertNotNull(input);
         assertEquals("initial path", input.getPath());
-        
+
         eventCount = 0;
         session.addChangeListener(new LayerChangeListener () {
             public void handleChange(LayerEvent e) {
                 eventCount++;
             }
         });
-        
+
         input.setPath("new path");
         input.invalidate();
         assertEquals(1, eventCount);
         assertNotNull(session.getHistory());
         assertTrue(session.getHistory().canUndo());
-        
+
         session.undo();
         assertEquals("initial path", input.getPath());
         assertFalse(session.getHistory().canUndo());
@@ -592,11 +592,11 @@ public class SerializationTests {
         FileWriter out = new FileWriter(temp);
         out.write(xml);
         out.close();
-        
+
         HistoryBlimpSession session = Serializer.loadHistorySessionFromFile(
                 temp.getAbsolutePath());
         assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
-        
+
         // change a value and record history
         TestInput input = (TestInput) session.getInput();
         input.invalidate();
@@ -604,7 +604,7 @@ public class SerializationTests {
         input.setPath("new path");
         input.invalidate();
         assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
-        
+
         // undo
         session.undo();
         assertEquals("initial path", input.getPath());

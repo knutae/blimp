@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.Text;
 /**
  * A slider component for numerical values which is a composite of a caption
  * label, a edit field and a visual slider (scale).
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class ValueSlider extends Composite {
@@ -77,20 +77,20 @@ public class ValueSlider extends Composite {
                 e.text = buf.toString();
             }
         });
-        
+
         /*
          * The text editing behavior should be as follows:
-         * 
+         *
          * Update the value immediately while typing, if possible.
-         * 
+         *
          * If an illegal numeric value (such as an empty string) is entered,
          * it is ignored, and the last legal value is restored when the text
          * field loses focus.
-         * 
+         *
          * If an out-of-bounds value is entered, it is immediately converted
          * to the closest in-bounds value, but the caret (cursor) position
          * should not change.
-         */ 
+         */
         valueEdit.addListener(SWT.Modify, new Listener() {
             public void handleEvent(Event e) {
                 if (inSetValueNoEvent)
@@ -177,7 +177,7 @@ public class ValueSlider extends Composite {
         if (!fromTextEditor)
             setValueNoEvent(strValue);
     }
-    
+
     void setValueNoEvent(String newText) {
         inSetValueNoEvent = true;
         try {
@@ -212,7 +212,7 @@ public class ValueSlider extends Composite {
     public int getMaximum() {
         return maximum;
     }
-    
+
     public void updateMinMax(int minimum, int maximum) {
         if (minimum > maximum)
             throw new IllegalArgumentException("minimum > maximum");
@@ -259,15 +259,15 @@ public class ValueSlider extends Composite {
         for (int i=0; i<digits; i++)
             digitsDivisor *= 10.0;
     }
-    
+
     public double getSelectionAsDouble() {
         return getSelection() / digitsDivisor;
     }
-    
+
     public void setSelectionAsDouble(double newValue) {
         setSelection((int) (newValue * digitsDivisor));
     }
-    
+
     private void setAutoPageIncrement() {
         int range = maximum - minimum;
         int incr = 1;
@@ -279,7 +279,7 @@ public class ValueSlider extends Composite {
     public int getDigits() {
         return digits;
     }
-    
+
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);

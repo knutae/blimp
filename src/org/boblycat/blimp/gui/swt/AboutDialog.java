@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * Class for showing an About dialog.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class AboutDialog {
@@ -64,12 +64,12 @@ public class AboutDialog {
             label.setImage(aboutImage);
             label.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
         }
-        
+
         Label heading = new Label(dialog, SWT.NONE);
         heading.setText("Blimp, a layered photo editor.");
         final Font bigFont = SwtUtil.copyFontWithHeight(heading.getFont(), 18);
         heading.setFont(bigFont);
-        
+
         Link linkText = new Link(dialog, SWT.NONE);
         linkText.setText(
                 "Copyright 2006-2007 Knut Arild Erstad\n"
@@ -96,14 +96,14 @@ public class AboutDialog {
             }
         });
         button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
-        
+
         dialog.addListener(SWT.Dispose, new Listener() {
             public void handleEvent(Event e) {
                 SwtUtil.dispose(aboutImage);
                 SwtUtil.dispose(bigFont);
             }
         });
-        
+
         dialog.pack();
         dialog.open();
     }

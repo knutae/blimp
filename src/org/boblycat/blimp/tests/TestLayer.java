@@ -26,17 +26,17 @@ public class TestLayer extends AdjustmentLayer {
     public enum Enum {
         ONE, TWO, THREE
     };
-    
+
     int intValue;
     double doubleValue;
     String stringValue;
     Enum enumValue;
     double[] doubleArrayValue;
     ColorRGB colorValue;
-    
+
     public TestLayer() {
     }
-    
+
     public TestLayer(String strValue) {
         stringValue = strValue;
     }

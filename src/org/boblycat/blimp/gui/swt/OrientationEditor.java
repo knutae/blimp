@@ -33,19 +33,19 @@ public class OrientationEditor extends GridBasedLayerEditor {
     Button radioRotate180;
     Button checkFlipHorizontal;
     Button checkFlipVertical;
-    
+
     public OrientationEditor(Composite parent, int style) {
         super(parent, style);
         GridLayout grid = new GridLayout();
         grid.numColumns = 1;
         setLayout(grid);
-        
+
         Group group = createGroup("Rotation");
         radioRotateNone = createRadioButton(group, "None");
         radioRotate90Left = createRadioButton(group, "90 Degrees Left");
         radioRotate90Right = createRadioButton(group, "90 Degrees Right");
         radioRotate180 = createRadioButton(group, "180 Degrees");
-        
+
         group = createGroup("Flip / Mirror");
         checkFlipHorizontal = createCheckButton(group, "Flip Horizontally");
         checkFlipVertical = createCheckButton(group, "Flip Vertically");
@@ -64,7 +64,7 @@ public class OrientationEditor extends GridBasedLayerEditor {
         orientation.setFlipHorizontal(checkFlipHorizontal.getSelection());
         orientation.setFlipVertical(checkFlipVertical.getSelection());
     }
-    
+
     @Override
     protected void layerChanged() {
         orientation = (OrientationLayer) layer;

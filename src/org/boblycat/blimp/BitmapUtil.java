@@ -96,7 +96,7 @@ public class BitmapUtil {
     /**
      * Get the BGR image data as a byte array. If the color depth is 16 bit, the
      * least significant byte will be dropped.
-     * 
+     *
      * @param pixelImage
      *            The image to convert.
      * @return A byte array of BGR triplets, or <code>null</code> if the image
@@ -111,7 +111,7 @@ public class BitmapUtil {
     /**
      * Get the RGB image data as a byte array. If the color depth is 16 bit, the
      * least significant byte will be dropped.
-     * 
+     *
      * @param pixelImage
      *            The image to convert.
      * @return A byte array of RGB triplets, or <code>null</code> if the image
@@ -122,7 +122,7 @@ public class BitmapUtil {
         return getRGBData(pixelImage, RGBIndex.INDEX_RED, RGBIndex.INDEX_GREEN,
                 RGBIndex.INDEX_BLUE);
     }
-    
+
     /**
      * Create a copy of the bitmap, reducing to 8-bit color depth if necessary.
      * @param bitmap The bitmap to copy.
@@ -212,7 +212,7 @@ public class BitmapUtil {
         ImageWriter writer = iter.next();
         return writer;
     }
-    
+
     public static ImageReader getImageReader(String formatName) {
         Iterator<ImageReader> iter
             = ImageIO.getImageReadersByFormatName(formatName);

@@ -42,7 +42,7 @@ public class LocalContrastEditor extends GridBasedLayerEditor {
         localContrast.setAmount(amountSlider.getSelection());
         localContrast.setAdaptive(adaptiveSlider.getSelection());
     }
-    
+
     @Override
     protected void layerChanged() {
         localContrast = (LocalContrastLayer) layer;

@@ -26,7 +26,7 @@ import net.sourceforge.jiu.geometry.ScaleReplication;
 
 /**
  * A fast resize layer for e.g. zooming in the image view.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class ViewResizeLayer extends DimensionAdjustmentLayer {
@@ -49,7 +49,7 @@ public class ViewResizeLayer extends DimensionAdjustmentLayer {
         imageWidth = w;
         imageHeight = h;
     }
-    
+
     private ZoomFactor getAutoZoomFactor(int imageWidth, int imageHeight) {
         ZoomFactor autoZoomFactor = new ZoomFactor();
         while (autoZoomFactor.scale(imageWidth) > viewWidth
@@ -73,7 +73,7 @@ public class ViewResizeLayer extends DimensionAdjustmentLayer {
 
         width = Math.max(width, 1);
         height = Math.max(height, 1);
-        
+
         resize.setSize(width, height);
         try {
             resize.process();
@@ -83,11 +83,11 @@ public class ViewResizeLayer extends DimensionAdjustmentLayer {
             return source;
         }
         Bitmap ret = new Bitmap(resize.getOutputImage());
-        double scaleFactor = source.getWidth() / (double) ret.getWidth(); 
+        double scaleFactor = source.getWidth() / (double) ret.getWidth();
         ret.setPixelScaleFactor(source.getPixelScaleFactor() * scaleFactor);
         return ret;
     }
-    
+
     public ZoomFactor zoom() {
         return zoomFactor;
     }
@@ -99,7 +99,7 @@ public class ViewResizeLayer extends DimensionAdjustmentLayer {
     public double getZoomValue() {
         return zoomFactor.toDouble();
     }
-    
+
     public void setZoomValue(double value) {
         // Currently this function is only here in order to get the bean
         // serialization to work, needed for the bitmap cache

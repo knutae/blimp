@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Listener;
 
 /**
  * SWT implementation of an image worker thread.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class SwtImageWorkerThread extends ImageWorkerThread {
@@ -47,19 +47,19 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
     private SharedData sharedData;
     private boolean finished;
     private ProgressEventSource guiProgressEventSource;
-    
+
     class ProgressGuiEventRunner implements Runnable {
         ProgressEvent event;
-        
+
         ProgressGuiEventRunner(ProgressEvent event) {
             this.event = event;
         }
-        
+
         public void run() {
             guiProgressEventSource.triggerChangeWithEvent(event);
         }
     }
-    
+
     public SwtImageWorkerThread(Display display) {
         this.display = display;
         Listener disposeListener = new Listener() {
@@ -71,13 +71,13 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
         sharedData = new SharedData();
         guiProgressEventSource = new ProgressEventSource();
     }
-    
+
     @Override
     public void quit() {
         setFinished(true);
         super.quit();
     }
-    
+
     @Override
     protected void bitmapGenerated(Runnable runnable, Bitmap bitmap) {
         if (isFinished())
@@ -97,14 +97,14 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
         if (!display.isDisposed())
             display.asyncExec(runnable);
     }
-    
+
     @Override
     protected void asyncExec(Runnable runnable) {
         if (isFinished() || display.isDisposed())
             return;
         display.asyncExec(runnable);
     }
-    
+
     @Override
     protected void progressReported(ProgressEvent event) {
         if (isFinished())
@@ -113,7 +113,7 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
         // Note: the event must not be used on the worker thread
         // from here on.
     }
-    
+
     @Override
     protected void handleError(Runnable runnable, String errorMessage) {
         if (isFinished())
@@ -124,15 +124,15 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
         if (!display.isDisposed())
             display.asyncExec(runnable);
     }
-    
+
     protected synchronized boolean isFinished() {
         return finished;
     }
-    
+
     private synchronized void setFinished(boolean finished) {
         this.finished = finished;
     }
-    
+
     public SharedData getSharedData() {
         SharedData returnData = new SharedData();
         synchronized (sharedData) {
@@ -143,11 +143,11 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
         }
         return returnData;
     }
-    
+
     public void addProgressListener(ProgressListener listener) {
         guiProgressEventSource.addListener(listener);
     }
-    
+
     public void removeProgressListener(ProgressListener listener) {
         guiProgressEventSource.removeListener(listener);
     }

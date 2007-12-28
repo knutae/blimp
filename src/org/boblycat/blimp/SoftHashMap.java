@@ -29,7 +29,7 @@ import java.util.Vector;
 /**
  * A hash map in which the values are SoftReferences, which makes it suitable
  * for memory-sensitive caches.
- * 
+ *
  * @author Knut Arild Erstad
  *
  * @param <K> The key type.
@@ -39,39 +39,39 @@ public class SoftHashMap<K, V> implements Map<K, V> {
     public class Entry implements Map.Entry<K, V> {
         K key;
         SoftReference<V> valueRef;
-        
+
         Entry(K key, V value) {
             this.key = key;
             valueRef = new SoftReference<V>(value);
         }
-        
+
         public K getKey() {
             return key;
         }
-        
+
         public V getValue() {
             return valueRef.get();
         }
-        
+
         public V setValue(V value) {
             SoftReference<V> oldRef = valueRef;
             valueRef = new SoftReference<V>(value);
             return oldRef.get();
         }
     }
-    
+
     HashMap<K, Entry> map;
-    
+
     private final V entryValue(Entry entry) {
         if (entry == null)
             return null;
         return entry.getValue();
     }
-    
+
     public SoftHashMap() {
         map = new HashMap<K, Entry>();
     }
-    
+
     public void clear() {
         map.clear();
     }

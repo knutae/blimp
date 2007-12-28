@@ -21,14 +21,14 @@ package org.boblycat.blimp;
 /**
  * A subclass of BlimpSession which has a SessionHistory member and
  * automatically records changes to it.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class HistoryBlimpSession extends BlimpSession {
     SessionHistory history;
     int autoRecordDisableLevel;
     LayerEventSource historyEventSource;
-    
+
     public HistoryBlimpSession() {
         autoRecordDisableLevel = 0;
         history = null;
@@ -40,15 +40,15 @@ public class HistoryBlimpSession extends BlimpSession {
         });
         historyEventSource = new LayerEventSource();
     }
-    
+
     public void addHistoryListener(LayerChangeListener listener) {
         historyEventSource.addListener(listener);
     }
-    
+
     public void removeHistoryListener(LayerChangeListener listener) {
         historyEventSource.removeListener(listener);
     }
-    
+
     private void tryEnsureHistoryExists() {
         if (history == null && getInput() != null && getInput().isActive())
             history = new SessionHistory(this);
@@ -62,7 +62,7 @@ public class HistoryBlimpSession extends BlimpSession {
         Debug.print(this, "recorded, history size is now " + history.size());
         triggerHistoryChange();
     }
-    
+
     private void triggerHistoryChange() {
         historyEventSource.triggerChangeWithEvent(new LayerEvent(this));
     }
@@ -80,7 +80,7 @@ public class HistoryBlimpSession extends BlimpSession {
             internalEndDisableAutoRecord();
         }
     }
-    
+
     public void redo() {
         if (history == null)
             return;
@@ -94,7 +94,7 @@ public class HistoryBlimpSession extends BlimpSession {
             internalEndDisableAutoRecord();
         }
     }
-    
+
     /**
      * Returns the internal session history object.
      * This can return <code>null</code> if it has not yet been created.
@@ -103,13 +103,13 @@ public class HistoryBlimpSession extends BlimpSession {
     public SessionHistory getHistory() {
         return history;
     }
-    
+
     public boolean isDirty() {
         if (history == null)
             return false;
         return history.isDirty();
     }
-    
+
     public void recordSaved() {
         tryEnsureHistoryExists();
         if (history == null)
@@ -117,7 +117,7 @@ public class HistoryBlimpSession extends BlimpSession {
         history.recordSaved();
         historyEventSource.triggerChangeWithEvent(new LayerEvent(this));
     }
-    
+
     /**
      * Temporarily disable auto-recording to history.
      * This can be useful for user interations such as dialogs, where
@@ -129,7 +129,7 @@ public class HistoryBlimpSession extends BlimpSession {
         autoRecordDisableLevel++;
         Debug.print(this, "beginDisableAutoRecord " + autoRecordDisableLevel);
     }
-    
+
     private void internalEndDisableAutoRecord() {
         autoRecordDisableLevel--;
         Debug.print(this, "endDisableAutoRecord " + autoRecordDisableLevel);
@@ -138,7 +138,7 @@ public class HistoryBlimpSession extends BlimpSession {
             autoRecordDisableLevel = 0;
         }
     }
-    
+
     /**
      * Reenable auto-recording to history.
      * <code>beginDisableAutoRecord()</code> must have been called first.

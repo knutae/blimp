@@ -26,7 +26,7 @@ public class ColorUtilTests {
     private boolean almostEquals(double x, double y) {
         return Math.abs(x - y) < 1e-10;
     }
-    
+
     private boolean vecAlmostEquals(double[] v1, double[] v2) {
         if (v1.length != v2.length)
             return false;
@@ -35,18 +35,18 @@ public class ColorUtilTests {
                 return false;
         return true;
     }
-    
+
     private boolean tripletAlmostEquals(double x, double y, double z, double[] vec) {
         return vecAlmostEquals(new double[] {x, y, z}, vec);
     }
-    
+
     private void assertColorAlmostEquals(double x, double y, double z, double[] result) {
         assertTrue(
                 String.format("[%f %f %f] ~= [%f %f %f]",
                         x, y, z, result[0], result[1], result[2]),
                 tripletAlmostEquals(x, y, z, result));
     }
-    
+
     private void checkRgbHsvRoundtrip(double r, double g, double b) {
         double[] hsv = rgbToHsv(r, g, b, null);
         double[] rgb = hsvToRgb(hsv[0], hsv[1], hsv[2], null);
@@ -56,7 +56,7 @@ public class ColorUtilTests {
         hsvToRgb(tmp[0], tmp[1], tmp[2], tmp);
         assertColorAlmostEquals(r, g, b, tmp);
     }
-    
+
     private void checkHsvRgbRoundtrip(double h, double s, double v) {
         double[] rgb = hsvToRgb(h, s, v, null);
         double[] hsv = rgbToHsv(rgb[0], rgb[1], rgb[2], null);
@@ -66,7 +66,7 @@ public class ColorUtilTests {
         rgbToHsv(tmp[0], tmp[1], tmp[2], tmp);
         assertColorAlmostEquals(h, s, v, tmp);
     }
-    
+
     private void checkRgbHslRoundtrip(double r, double g, double b) {
         double[] hsl = rgbToHsl(r, g, b, null);
         double[] rgb = hslToRgb(hsl[0], hsl[1], hsl[2], null);
@@ -86,7 +86,7 @@ public class ColorUtilTests {
         rgbToHsl(tmp[0], tmp[1], tmp[2], tmp);
         assertColorAlmostEquals(h, s, l, tmp);
     }
-    
+
     @Test
     public void testRgbToHsv() {
         // black
@@ -108,7 +108,7 @@ public class ColorUtilTests {
         // magenta
         assertColorAlmostEquals(300, 1, 1, rgbToHsv(1, 0, 1, null));
     }
-    
+
     @Test
     public void testHsvToRgb() {
         // black
@@ -130,7 +130,7 @@ public class ColorUtilTests {
         // magenta
         assertColorAlmostEquals(1, 0, 1, hsvToRgb(300, 1, 1, null));
     }
-    
+
     @Test
     public void testRgbHsvRoundtrips() {
         checkRgbHsvRoundtrip(0.0, 0.0, 0.0);
@@ -141,7 +141,7 @@ public class ColorUtilTests {
         checkRgbHsvRoundtrip(0.8, 0.9, 1.0);
         checkRgbHsvRoundtrip(1.0, 1.0, 1.0);
     }
-    
+
     @Test
     public void testHsvRgbRoundtrips() {
         checkHsvRgbRoundtrip(UNDEFINED_HUE, 0.0, 0.0);
@@ -155,7 +155,7 @@ public class ColorUtilTests {
         checkHsvRgbRoundtrip(301, 0.7, 0.22);
         checkHsvRgbRoundtrip(359, 0.55, 0.66);
     }
-    
+
     @Test
     public void testRgbToHsl() {
         // black
@@ -214,7 +214,7 @@ public class ColorUtilTests {
         checkRgbHslRoundtrip(0.8, 0.9, 1.0);
         checkRgbHslRoundtrip(1.0, 1.0, 1.0);
     }
-    
+
     @Test
     public void testHslRgbRoundtrips() {
         checkHslRgbRoundtrip(UNDEFINED_HUE, 0.0, 0.0);

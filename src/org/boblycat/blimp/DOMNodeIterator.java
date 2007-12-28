@@ -33,7 +33,7 @@ public class DOMNodeIterator implements Iterable<Node> {
 
     /**
      * Utility function to determine if a node consists of white space only.
-     * 
+     *
      * @param node
      *            The node to check.
      * @return True if the node is a text node which is either empty or

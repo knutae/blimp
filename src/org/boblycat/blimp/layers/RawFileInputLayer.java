@@ -43,7 +43,7 @@ import net.sourceforge.jiu.ops.ProgressListener;
 /**
  * A file input layer which supports many camera raw formats.
  * This is a wrapper for Dave Coffin's dcraw program.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class RawFileInputLayer extends InputLayer {
@@ -53,7 +53,7 @@ public class RawFileInputLayer extends InputLayer {
         Normal,
         High,
     }
-    
+
     public enum WhiteBalance {
         Camera, // as shot
         Auto,
@@ -61,11 +61,11 @@ public class RawFileInputLayer extends InputLayer {
         // TODO: add many more, including custom white balance
         // Need camera-specific tables to make this user friendly.
     }
-    
+
     private static Quality DEFAULT_QUALITY = Quality.HalfSize;
     private static ColorDepth DEFAULT_COLOR_DEPTH = ColorDepth.Depth16Bit;
     private static String dcrawPath = null;
-    
+
     String filePath;
     ColorDepth colorDepth;
     ColorSpace colorSpace;
@@ -79,7 +79,7 @@ public class RawFileInputLayer extends InputLayer {
         colorSpace = ColorSpace.sRGB;
         quality = DEFAULT_QUALITY;
         whiteBalance = WhiteBalance.Camera;
-        
+
         rawWhiteBalance = new double[4];
         rawWhiteBalance[0] = 1.0; // R
         rawWhiteBalance[1] = 0.5; // G1
@@ -92,7 +92,7 @@ public class RawFileInputLayer extends InputLayer {
         setFilePath(filePath);
         // load();
     }
-    
+
     private static String findDcrawExecutable() {
         // Configured by system property
         String path = System.getProperty("blimp.dcraw.path");
@@ -165,11 +165,11 @@ public class RawFileInputLayer extends InputLayer {
             colorDepth = ColorDepth.Depth8Bit;
         return colorDepth;
     }
-    
+
     public void setQuality(Quality q) {
         quality = q;
     }
-    
+
     public Quality getQuality() {
         return quality;
     }
@@ -203,14 +203,14 @@ public class RawFileInputLayer extends InputLayer {
             // 8 or 16-bit depth
             if (getColorDepth() == ColorDepth.Depth16Bit)
                 commandLine.add("-4");
-            
-            // color space, probably only sRGB makes sense for now 
+
+            // color space, probably only sRGB makes sense for now
             String colorSpaceArg = dcrawColorSpaceArgument(colorSpace);
             if (colorSpaceArg != null && colorSpaceArg.length() > 0) {
                 commandLine.add("-o");
                 commandLine.add(colorSpaceArg);
             }
-            
+
             // interpolation quality (or half-size)
             if (quality == Quality.HalfSize) {
                 commandLine.add("-h");
@@ -227,7 +227,7 @@ public class RawFileInputLayer extends InputLayer {
                 commandLine.add("-q");
                 commandLine.add("3");
             }
-            
+
             // white balance
             if (whiteBalance == WhiteBalance.Auto)
                 commandLine.add("-a");
@@ -238,12 +238,12 @@ public class RawFileInputLayer extends InputLayer {
                 for (int i=0; i<rawWhiteBalance.length; i++)
                     commandLine.add(Double.toString(rawWhiteBalance[i]));
             }
-            
+
             commandLine.add("-c"); // write to stdout
             commandLine.add(filePath); // raw file
-            
+
             Debug.print(this, commandLine.toString());
-            
+
             ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
             Process process = processBuilder.start();
             try {
@@ -265,7 +265,7 @@ public class RawFileInputLayer extends InputLayer {
                 Bitmap bitmap = new Bitmap();
                 bitmap.setImage(codec.getImage());
                 if (quality == Quality.HalfSize)
-                    // compensate for half-size performed by dcraw 
+                    // compensate for half-size performed by dcraw
                     bitmap.setPixelScaleFactor(2);
                 return bitmap;
             }
@@ -288,7 +288,7 @@ public class RawFileInputLayer extends InputLayer {
     public String getDescription() {
         return Util.getFileNameFromPath(filePath);
     }
-    
+
     public String getProgressDescription() {
         return Util.getFileNameFromPath(filePath) + " raw input";
     }

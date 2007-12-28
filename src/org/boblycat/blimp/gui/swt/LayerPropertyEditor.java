@@ -111,7 +111,7 @@ public class LayerPropertyEditor extends Composite {
     private void setTreeEditor(Control editor) {
         treeEditor.setEditor(editor, editedItem, VALUE_COLUMN);
     }
-    
+
     private void refreshCurrentTreeEditor() {
         Control currentEditor = treeEditor.getEditor();
         if (currentEditor != null)
@@ -199,7 +199,7 @@ public class LayerPropertyEditor extends Composite {
         editedItem = parentItem;
         subTreeEdited(parentItem, null);
     }
-    
+
     private void refreshVisibleProperties() {
         // Refresh the property tree without destroying the existing tree
         // items if possible.
@@ -246,7 +246,7 @@ public class LayerPropertyEditor extends Composite {
             }
         }
     }
-    
+
     private void configureTreeItem(TreeItem item, String name, Object value) {
         item.setText(name);
         if (value.getClass().isArray()) {

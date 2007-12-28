@@ -27,33 +27,33 @@ import net.sourceforge.jiu.ops.OperationFailedException;
 /**
  * A one-dimensional histogram.
  * This is a subclass of JIU's ArrayHistogram1D with some Blimp-specific
- * functions. 
- * 
+ * functions.
+ *
  * @author Knut Arild Erstad
  */
 public class Histogram extends ArrayHistogram1D {
     private static final int DEFAULT_NUM_ENTRIES = 256;
-    
+
     Histogram1DCreator creator;
-    
+
     public Histogram(int numEntries) {
         super(numEntries);
         creator = new Histogram1DCreator();
     }
-    
+
     public Histogram() {
         this(DEFAULT_NUM_ENTRIES);
     }
-    
+
     public Histogram(int numEntries, Bitmap bm) {
         this(numEntries);
         getAllChannels(bm);
     }
-    
+
     public Histogram(Bitmap bm) {
         this(DEFAULT_NUM_ENTRIES, bm);
     }
-    
+
     public void getAllChannels(Bitmap bitmap) {
         IntegerImage image = (IntegerImage) bitmap.getImage();
         clear();

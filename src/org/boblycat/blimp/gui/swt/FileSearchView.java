@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * A GUI for searching for files by name.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class FileSearchView extends Composite {
@@ -60,7 +60,7 @@ public class FileSearchView extends Composite {
                 "folder to search for the file below, then click Start Search.",
                 strFileName));
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1));
-        
+
         label = new Label(this, SWT.NONE);
         label.setText("Directory");
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -152,15 +152,15 @@ public class FileSearchView extends Composite {
             }
         });
     }
-    
+
     private void fileFound(File file) {
         foundFiles.add(file.getAbsolutePath());
     }
-    
+
     private boolean isCancelledOrDisposed() {
         return searchCancelled || isDisposed();
     }
-    
+
     private boolean tryDispatchMessages() {
         do {
             if (isCancelledOrDisposed())
@@ -168,11 +168,11 @@ public class FileSearchView extends Composite {
         } while (getDisplay().readAndDispatch());
         return true;
     }
-    
+
     private void message(String msg) {
         progressLabel.setText(msg);
     }
-    
+
     private void doSearch() {
         Queue<File> dirs = new LinkedList<File>();
         File baseDir = new File(baseDirectory.getText());
@@ -208,19 +208,19 @@ public class FileSearchView extends Composite {
             message(String.format("Found %d matching file(s).",
                     foundFiles.getItemCount()));
     }
-    
+
     private void stopSearch() {
         searchCancelled = true;
     }
-    
+
     public String getSelectedFilePath() {
         return selectedFilePath;
     }
-    
+
     private void setSelectedFilePath(String newPath) {
         selectedFilePath = newPath;
     }
-    
+
     private void updateSelectedFilePath() {
         if (isDisposed())
             return;
@@ -230,16 +230,16 @@ public class FileSearchView extends Composite {
         else
             setSelectedFilePath(foundFiles.getItem(index));
     }
-    
+
     private void updateOkButton() {
         okButton.setEnabled(foundFiles.getSelectionIndex() >= 0);
     }
-    
+
     private void useSelected() {
         updateSelectedFilePath();
         closeDialog();
     }
-    
+
     private void closeDialog() {
         // a bit ugly, but never mind
         getShell().dispose();
@@ -247,7 +247,7 @@ public class FileSearchView extends Composite {
 
     /**
      * Show a file search dialog and return a search result.
-     * 
+     *
      * @param parent The parent shell.
      * @param fileName The (default) file name to search for.
      * @return A full path selected by the user, or <code>null</code>

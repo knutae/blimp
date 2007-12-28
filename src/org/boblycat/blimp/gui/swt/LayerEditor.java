@@ -38,20 +38,20 @@ public abstract class LayerEditor extends Composite {
             return;
         layerChanged();
     }
-    
+
     /**
      * Called after the layer has been changed.
      * Implement this in subclasses to update the GUI.
-     * 
+     *
      * This function will not be called if the layer is null or the editor is
      * disposed.
      */
     protected abstract void layerChanged();
-    
+
     /**
      * This function decides if the layer editor will enable previewing
      * while editing by default.
-     * @return <code>true</code> by default, override to change the behaviour. 
+     * @return <code>true</code> by default, override to change the behaviour.
      */
     public boolean previewByDefault() {
         return true;

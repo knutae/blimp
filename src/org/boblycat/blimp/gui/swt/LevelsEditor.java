@@ -34,7 +34,7 @@ public class LevelsEditor extends LayerEditor {
     ValueSlider blackSlider;
     ValueSlider whiteSlider;
     ValueSlider centerSlider;
-    
+
     public LevelsEditor(Composite parent, int style) {
         super(parent, style);
         GridLayout grid = new GridLayout();
@@ -48,7 +48,7 @@ public class LevelsEditor extends LayerEditor {
         blackSlider = createSlider("Black Level");
         whiteSlider = createSlider("White Level");
         centerSlider = createSlider("Center");
-        
+
         Listener blackAndWhiteListener = new Listener() {
             public void handleEvent(Event e) {
                 if (levels == null)
@@ -83,7 +83,7 @@ public class LevelsEditor extends LayerEditor {
             }
         });
     }
-    
+
     ValueSlider createSlider(String caption) {
         ValueSlider slider = new ValueSlider(this, SWT.NONE,
                 caption, 0, 1000, 3);
@@ -91,7 +91,7 @@ public class LevelsEditor extends LayerEditor {
         slider.setLayoutData(data);
         return slider;
     }
-    
+
     private void updateLevels(double black, double center, double white) {
         if (levels == null)
             return;
@@ -101,7 +101,7 @@ public class LevelsEditor extends LayerEditor {
         levels.invalidate();
         histogramView.setLevels(black, center, white);
     }
-    
+
     private void updateGui() {
         if (levels == null)
             return;

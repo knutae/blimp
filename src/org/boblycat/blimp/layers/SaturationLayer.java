@@ -34,14 +34,14 @@ class SaturationOperation extends ImageToImageOperation {
     int saturation;
     int lightness;
     int hue;
-    
+
     private static final double MAX_8BIT = 255.0;
     private static final double MAX_16BIT = 65535.0;
-    
+
     private static double adjust(double input, double factor) {
         return input * factor;
     }
-    
+
     private static void adjustColor(
             double r, double g, double b,
             double hueOffset,
@@ -58,7 +58,7 @@ class SaturationOperation extends ImageToImageOperation {
         out[2] = adjust(out[2], lightnessFactor);
         ColorUtil.hslToRgb(out[0], out[1], out[2], out);
     }
-    
+
     public void process() throws
             MissingParameterException,
             WrongParameterException {
@@ -157,23 +157,23 @@ class SaturationOperation extends ImageToImageOperation {
 
 /**
  * Layer which adjusts the Hue, Saturation and Lightness (luminance) of an image.
- * 
+ *
  * Each pixel's color is adjusted individually by converting the color from
  * RGB to HSL, adjusting it, and converting it back to RGB.
- * 
+ *
  * The hue adjustment is given in degrees according to a color circle going from
  * red (0) to yellow (60), green (120), cyan (180), blue (240), magenta (300) and
  * back to red.
- * 
+ *
  * The saturation and lightness adjustments are given as percentage multipliers.
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class SaturationLayer extends AdjustmentLayer {
     private int hue;
     private int saturation;
     private int lightness;
-    
+
     public SaturationLayer() {
         hue = 0;
         saturation = 100;

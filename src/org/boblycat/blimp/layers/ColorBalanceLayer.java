@@ -36,17 +36,17 @@ class ColorMixerOperation extends ImageToImageOperation {
     int magentaGreen;
     int yellowBlue;
     boolean preserveLightness;
-    
+
     private static final double MAX_8BIT = 255.0;
     private static final double MAX_16BIT = 65535.0;
-    
+
     private static double adjust(double input, double factor) {
         if (factor <= 0.0)
             return input * (1.0 + factor);
         else
             return input + (1.0 - input) * factor;
     }
-    
+
     private static void adjustColor(
             double r, double g, double b,
             double cyanRedFactor,
@@ -66,11 +66,11 @@ class ColorMixerOperation extends ImageToImageOperation {
             ColorUtil.hslToRgb(tmp[0], tmp[1], lightness, out);
         }
     }
-    
+
     private static double toFactor(int ivalue) {
         return ivalue / 100.0;
     }
-    
+
     public void process() throws
             MissingParameterException,
             WrongParameterException {
@@ -170,17 +170,17 @@ class ColorMixerOperation extends ImageToImageOperation {
 
 /**
  * A layer for modifying specific color tones (hues).
- * 
+ *
  * @author Knut Arild Erstad
  */
 public class ColorBalanceLayer extends AdjustmentLayer {
     public static final int MIN_VALUE = -100;
     public static final int MAX_VALUE = 100;
-    
+
     private static int constrain(int value) {
         return Util.constrainedValue(value, MIN_VALUE, MAX_VALUE);
     }
-    
+
     private int cyanRed;
     private int magentaGreen;
     private int yellowBlue;
@@ -195,7 +195,7 @@ public class ColorBalanceLayer extends AdjustmentLayer {
         yellowBlue = 0;
         preserveLightness = true;
     }
-    
+
     /* (non-Javadoc)
      * @see org.boblycat.blimp.layers.AdjustmentLayer#applyLayer(org.boblycat.blimp.Bitmap)
      */

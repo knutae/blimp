@@ -31,7 +31,7 @@ public class SessionTests {
     int eventCount;
 
     LayerEvent lastLayerEvent;
-    
+
     protected BlimpSession newSession() {
         return new BlimpSession();
     }
@@ -129,7 +129,7 @@ public class SessionTests {
         assertEquals("ab", testBitmap.testValue);
         session.activateLayer(3, true);
     }
-    
+
     @Test
     public void testMoveLayer() {
         BlimpSession session = createTestSession();
@@ -137,13 +137,13 @@ public class SessionTests {
         session.addLayer(new TestLayer("b"));
         session.addLayer(new TestLayer("c"));
         assertEquals("abc", getTestBitmap(session).testValue);
-        
+
         session.moveLayer(1, 3);
         assertEquals("bca", getTestBitmap(session).testValue);
-        
+
         session.moveLayer(3, 2);
         assertEquals("bac", getTestBitmap(session).testValue);
-        
+
         session.moveLayer(2, 1);
         assertEquals("abc", getTestBitmap(session).testValue);
     }
@@ -190,19 +190,19 @@ public class SessionTests {
                 eventCount++;
             }
         });
-        
+
         TestInput input = (TestInput) session.getInput();
         TestLayer layer = new TestLayer("a");
         assertEquals(0, eventCount);
         session.addLayer(layer);
         assertEquals(1, eventCount);
-        
+
         input.invalidate();
         assertEquals(2, eventCount);
         layer.invalidate();
         assertEquals(3, eventCount);
     }
-    
+
     @Test
     public void testLayerChangeEvent() {
         eventCount = 0;
@@ -227,7 +227,7 @@ public class SessionTests {
         layer.invalidate();
         assertEquals(1, eventCount);
     }
-    
+
     @Test
     public void testSynchronizeSessionData() {
         BlimpSession session1 = newSession();
@@ -241,7 +241,7 @@ public class SessionTests {
         layer1.setName("layer1 name");
         session1.addLayer(layer1);
         session1.setProjectFilePath("/path/to/session1.blimp");
-        
+
         session2.synchronizeSessionData(session1);
         TestInput input2 = (TestInput) session2.getInput();
         assertNotNull(input2);
@@ -254,7 +254,7 @@ public class SessionTests {
         assertEquals("layer1 value", layer2.getStringValue());
         assertEquals("layer1 name", layer2.getName());
         assertEquals("/path/to/session1.blimp", session2.getProjectFilePath());
-        
+
         input2.setPath("input2 path");
         layer2.setStringValue("layer2 value");
         session1.synchronizeSessionData(session2);
@@ -263,20 +263,20 @@ public class SessionTests {
         assertTrue(layer1 == session1.getLayer(1));
         assertEquals("layer2 value", layer1.getStringValue());
     }
-    
+
     @Test
     public void testPixelScaleFactor() throws IOException {
         BlimpSession session = createTestSession();
         Bitmap output = session.getBitmap();
         assertEquals(1.0, output.getPixelScaleFactor());
-        
+
         int origWidth = output.getWidth();
         int origHeight = output.getHeight();
-        
+
         session.addLayer(new TestLayer());
         output = session.getBitmap();
         assertEquals(1.0, output.getPixelScaleFactor());
-        
+
         ViewResizeLayer viewResize = new ViewResizeLayer();
         viewResize.setViewWidth(origWidth / 2);
         viewResize.setViewHeight(origHeight / 2);
@@ -284,14 +284,14 @@ public class SessionTests {
         output = session.getBitmap();
         assertEquals(2.0, output.getPixelScaleFactor());
         session.removeLayer(viewResize);
-        
+
         ResizeLayer resize = new ResizeLayer();
         resize.setMaxSize(origWidth / 4);
         session.addLayer(resize);
         output = session.getBitmap();
         assertEquals(4.0, output.getPixelScaleFactor());
     }
-    
+
     @Test
     public void testGeneratedNames() {
         BlimpSession session = createTestSession();
@@ -303,45 +303,45 @@ public class SessionTests {
         assertEquals("Test1", layer1.getName());
         assertEquals("Test2", layer2.getName());
     }
-    
+
     private static TestLayer addTestLayer(BlimpSession session, String layerName) {
         TestLayer layer = new TestLayer();
         layer.setName(layerName);
         session.addLayer(layer);
         return layer;
     }
-    
+
     @Test
     public void testGetHistogramBeforeLayer() throws IOException {
         BlimpSession session = createTestSession();
         session.getInput().setName("input");
         TestLayer layer1 = addTestLayer(session, "layer1");
         TestLayer layer2 = addTestLayer(session, "layer2");
-        
+
         for (int i = 0; i < 2; i++) {
             boolean useViewport = (i == 0);
-            
+
             assertNull(session.getHistogramBeforeLayer("", useViewport));
             assertNull(session.getHistogramBeforeLayer("dummy", useViewport));
             assertNull(session.getHistogramBeforeLayer("input", useViewport));
-            
+
             assertNotNull(session.getHistogramBeforeLayer("layer1", useViewport));
             assertNotNull(session.getHistogramBeforeLayer("layer2", useViewport));
             assertNotNull(session.getHistogramBeforeLayer(null, useViewport));
-            
+
             layer1.setActive(false);
             layer2.setActive(false);
             assertNotNull(session.getHistogramBeforeLayer("layer1", useViewport));
             assertNotNull(session.getHistogramBeforeLayer("layer2", useViewport));
         }
     }
-    
+
     private void assertSizeEquals(int width, int height, BitmapSize size) {
         assertNotNull(size);
         assertEquals(width, size.width);
         assertEquals(height, size.height);
     }
-    
+
     @Test
     public void testGetSizeBeforeLayer() throws IOException {
         BlimpSession session = createTestSession();
@@ -349,13 +349,13 @@ public class SessionTests {
         input.setName("input");
         input.setInputSize(100, 50);
         addTestLayer(session, "layer1");
-        
+
         assertNull(session.getBitmapSizeBeforeLayer(""));
         assertNull(session.getBitmapSizeBeforeLayer("dummy"));
         assertNull(session.getBitmapSizeBeforeLayer("input"));
-        
+
         assertSizeEquals(100, 50, session.getBitmapSizeBeforeLayer("layer1"));
-        
+
         ResizeLayer resize = new ResizeLayer();
         resize.setName("resize");
         resize.setMaxSize(20);
@@ -367,7 +367,7 @@ public class SessionTests {
         resize.setActive(true);
         assertSizeEquals(100, 50, session.getBitmapSizeBeforeLayer("resize"));
         assertSizeEquals(100, 50, session.getBitmapSizeBeforeLayer("layer1"));
-        
+
         addTestLayer(session, "layer2");
         assertSizeEquals(20, 10, session.getBitmapSizeBeforeLayer("layer2"));
     }

@@ -44,12 +44,12 @@ public class LayerEditorRegistry {
             this.editorClass = editorClass;
             editorConstructor = getConstructor(editorClass);
         }
-        
+
         void showDialog(LayerEditorEnvironment environment) {
-            new DialogWrapper().showDialog(this, environment); 
+            new DialogWrapper().showDialog(this, environment);
         }
     }
-    
+
     class DialogWrapper {
         Layer originalClone;
         Layer workingClone;
@@ -65,7 +65,7 @@ public class LayerEditorRegistry {
             else
                 return workingClone;
         }
-        
+
         boolean previewEnabled() {
             return previewCheckButton.getSelection();
         }
@@ -95,7 +95,7 @@ public class LayerEditorRegistry {
             actualLayer = env.layer;
             originalClone = (Layer) actualLayer.clone();
             workingClone = (Layer) actualLayer.clone();
-            
+
             previewCheckButton = new Button(dialog, SWT.CHECK);
             previewCheckButton.setText("Preview");
             previewCheckButton.setSelection(editor.previewByDefault());
@@ -154,7 +154,7 @@ public class LayerEditorRegistry {
             dialog.pack();
             dialog.open();
         }
-        
+
         void editingFinished(boolean cancelled) {
             dialog.close();
             dialog = null;
@@ -207,7 +207,7 @@ public class LayerEditorRegistry {
         entry.showDialog(env);
         return true;
     }
-    
+
     public LayerEditor createEdior(Layer layer, Composite parent, int flags)
     throws InvocationTargetException, IllegalAccessException,
     InstantiationException {

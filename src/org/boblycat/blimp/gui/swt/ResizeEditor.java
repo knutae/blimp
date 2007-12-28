@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.Listener;
 
 public class ResizeEditor extends LayerEditor {
     static final int MAX_SIZE = 2000;
-    
+
     ResizeLayer resizeLayer;
     int inputWidth;
     int inputHeight;
@@ -41,7 +41,7 @@ public class ResizeEditor extends LayerEditor {
     ValueSlider heightSlider;
     Label inputSizeLabel;
     boolean gotInputSize;
-    
+
     public ResizeEditor(Composite parent, int style) {
         super(parent, style);
         setLayout(new GridLayout());
@@ -64,13 +64,13 @@ public class ResizeEditor extends LayerEditor {
         });
         gotInputSize = false;
     }
-    
+
     void fitInGrid(Control control) {
         control.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
     }
-    
+
     void widthChanged(int newWidth) {
-        int maxSize; 
+        int maxSize;
         if (inputWidth > inputHeight) {
             maxSize = newWidth;
             heightSlider.setSelection(
@@ -83,7 +83,7 @@ public class ResizeEditor extends LayerEditor {
         resizeLayer.setMaxSize(maxSize);
         resizeLayer.invalidate();
     }
-    
+
     void heightChanged(int newHeight) {
         int maxSize;
         if (inputHeight > inputWidth) {
@@ -98,7 +98,7 @@ public class ResizeEditor extends LayerEditor {
         resizeLayer.setMaxSize(maxSize);
         resizeLayer.invalidate();
     }
-    
+
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
@@ -106,7 +106,7 @@ public class ResizeEditor extends LayerEditor {
         heightSlider.setEnabled(enabled);
         inputSizeLabel.setEnabled(enabled);
     }
-    
+
     void initLayerSize(int width, int height) {
         if (isDisposed() || width <= 0 || height <= 0)
             return;
@@ -120,7 +120,7 @@ public class ResizeEditor extends LayerEditor {
         setEnabled(true);
         gotInputSize = true;
     }
-    
+
     @Override
     protected void layerChanged() {
         resizeLayer = (ResizeLayer) layer;
@@ -137,7 +137,7 @@ public class ResizeEditor extends LayerEditor {
             });
         }
     }
-    
+
     @Override
     public boolean previewByDefault() {
         return false;

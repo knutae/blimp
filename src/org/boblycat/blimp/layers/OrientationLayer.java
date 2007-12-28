@@ -35,17 +35,17 @@ public class OrientationLayer extends DimensionAdjustmentLayer {
         Rotate90Right,
         Rotate180,
     }
-    
+
     private Rotation rotation;
-    
+
     boolean flipHorizontal;
-    
+
     boolean flipVertical;
-    
+
     public OrientationLayer() {
         rotation = Rotation.None;
     }
-    
+
     @Override
     public Bitmap applyLayer(Bitmap source) {
         PixelImage image = source.getImage();
