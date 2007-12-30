@@ -31,7 +31,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public abstract class ImageWorkerThread extends Thread {
     enum RequestType {
         GENERATE_BITMAP,
-        GENERATE_HISTOGRAM,
+        GENERATE_HISTOGRAMS,
         GENERATE_SIZE,
         ZOOM_IN,
         ZOOM_OUT,
@@ -123,14 +123,14 @@ public abstract class ImageWorkerThread extends Thread {
                 Debug.print(this, "finished generating bitmap");
                 bitmapGenerated(req.runnable, bitmap);
                 break;
-            case GENERATE_HISTOGRAM:
+            case GENERATE_HISTOGRAMS:
                 assert(req.histogramTask != null && req.layerName != null);
                 Debug.print(this, "generating histogram for layer " + req.layerName);
-                Histogram histogram = session.getHistogramBeforeLayer(req.layerName, true);
+                RGBHistograms histograms = session.getHistogramsBeforeLayer(req.layerName, true);
                 Debug.print(this, "finished generating histogram");
                 // Note: the following should work without synchronization problems,
                 // because the histogram task is only used by one thread at a time.
-                req.histogramTask.setHistogram(histogram);
+                req.histogramTask.setHistograms(histograms);
                 asyncExec(req.histogramTask);
                 break;
             case GENERATE_SIZE:
@@ -246,7 +246,7 @@ public abstract class ImageWorkerThread extends Thread {
 
     public void asyncGenerateHistogram(Object owner, BlimpSession session,
             String layerName, HistogramGeneratedTask task) {
-        Request req = new Request(owner, RequestType.GENERATE_HISTOGRAM);
+        Request req = new Request(owner, RequestType.GENERATE_HISTOGRAMS);
         req.histogramTask = task;
         req.layerName = layerName;
         req.sessionCopy = BlimpSession.createCopy(session);

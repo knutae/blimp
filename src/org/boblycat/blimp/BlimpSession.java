@@ -193,7 +193,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
      * @throws IOException
      *      if an I/O error occured when processing the input layer.
      */
-    public Histogram getHistogramBeforeLayer(String layerName, boolean useViewport)
+    public RGBHistograms getHistogramsBeforeLayer(String layerName, boolean useViewport)
     throws IOException {
         Bitmap bm = internalGenerateBitmapBeforeLayer(layerName, useViewport);
         if (bm == null)
@@ -201,7 +201,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         // TODO: figure out a more logical way to reduce the color weight
         if (bm.getChannelBitDepth() != 8)
             bm = BitmapUtil.create8BitCopy(bm);
-        return new Histogram(bm);
+        return new RGBHistograms(bm);
     }
 
     /**

@@ -312,7 +312,7 @@ public class SessionTests {
     }
 
     @Test
-    public void testGetHistogramBeforeLayer() throws IOException {
+    public void testGetHistogramsBeforeLayer() throws IOException {
         BlimpSession session = createTestSession();
         session.getInput().setName("input");
         TestLayer layer1 = addTestLayer(session, "layer1");
@@ -321,18 +321,18 @@ public class SessionTests {
         for (int i = 0; i < 2; i++) {
             boolean useViewport = (i == 0);
 
-            assertNull(session.getHistogramBeforeLayer("", useViewport));
-            assertNull(session.getHistogramBeforeLayer("dummy", useViewport));
-            assertNull(session.getHistogramBeforeLayer("input", useViewport));
+            assertNull(session.getHistogramsBeforeLayer("", useViewport));
+            assertNull(session.getHistogramsBeforeLayer("dummy", useViewport));
+            assertNull(session.getHistogramsBeforeLayer("input", useViewport));
 
-            assertNotNull(session.getHistogramBeforeLayer("layer1", useViewport));
-            assertNotNull(session.getHistogramBeforeLayer("layer2", useViewport));
-            assertNotNull(session.getHistogramBeforeLayer(null, useViewport));
+            assertNotNull(session.getHistogramsBeforeLayer("layer1", useViewport));
+            assertNotNull(session.getHistogramsBeforeLayer("layer2", useViewport));
+            assertNotNull(session.getHistogramsBeforeLayer(null, useViewport));
 
             layer1.setActive(false);
             layer2.setActive(false);
-            assertNotNull(session.getHistogramBeforeLayer("layer1", useViewport));
-            assertNotNull(session.getHistogramBeforeLayer("layer2", useViewport));
+            assertNotNull(session.getHistogramsBeforeLayer("layer1", useViewport));
+            assertNotNull(session.getHistogramsBeforeLayer("layer2", useViewport));
         }
     }
 

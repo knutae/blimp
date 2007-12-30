@@ -18,16 +18,32 @@
  */
 package org.boblycat.blimp;
 
-public abstract class HistogramGeneratedTask implements Runnable {
-    RGBHistograms histograms;
+/**
+ * This class creates and holds histograms for an RGB image.
+ * Separate red, green and blue histograms are created.
+ *
+ * @author Knut Arild Erstad
+ */
+public class RGBHistograms {
+    Histogram hRed;
+    Histogram hGreen;
+    Histogram hBlue;
 
-    public void setHistograms(RGBHistograms histograms) {
-        this.histograms = histograms;
+    public RGBHistograms(Bitmap bitmap) {
+        hRed = new Histogram(RGBChannel.Red, bitmap);
+        hGreen = new Histogram(RGBChannel.Green, bitmap);
+        hBlue = new Histogram(RGBChannel.Blue, bitmap);
     }
 
-    public void run() {
-        handleHistograms(histograms);
+    public Histogram getHistogram(RGBChannel channel) {
+        switch (channel) {
+        case Red:
+            return hRed;
+        case Green:
+            return hGreen;
+        case Blue:
+            return hBlue;
+        }
+        return null;
     }
-
-    public abstract void handleHistograms(RGBHistograms histograms);
 }

@@ -35,6 +35,7 @@ public class Histogram extends ArrayHistogram1D {
     private static final int DEFAULT_NUM_ENTRIES = 256;
 
     Histogram1DCreator creator;
+    RGBChannel channel;
 
     public Histogram(int numEntries) {
         super(numEntries);
@@ -54,15 +55,26 @@ public class Histogram extends ArrayHistogram1D {
         this(DEFAULT_NUM_ENTRIES, bm);
     }
 
-    public void getAllChannels(Bitmap bitmap) {
+    public Histogram(RGBChannel channel, Bitmap bm) {
+        this(DEFAULT_NUM_ENTRIES);
+        this.channel = channel;
+        getForChannel(bm, channel);
+    }
+
+    public RGBChannel getChannel() {
+        return channel;
+    }
+
+    private void getForChannelRange(Bitmap bitmap, int startIndex, int endIndex) {
         IntegerImage image = (IntegerImage) bitmap.getImage();
         clear();
-        for (int channel=0; channel<image.getNumChannels(); channel++) {
-            creator.setImage((IntegerImage) bitmap.getImage(), channel);
+        for (int channel = startIndex; channel < endIndex; channel++) {
+            creator.setImage(image, channel);
             try {
                 creator.process();
             }
             catch (OperationFailedException e) {
+                e.printStackTrace();
                 Util.err("Failed to create histogram for channel" + channel);
                 return;
             }
@@ -77,5 +89,26 @@ public class Histogram extends ArrayHistogram1D {
                 setEntry(i, getEntry(i) + channelHistogram.getEntry(i));
             }
         }
+    }
+
+    /**
+     * Generate a joint histogram for all channels in the bitmap.
+     * @param bitmap a bitmap
+     */
+    public void getAllChannels(Bitmap bitmap) {
+        getForChannelRange(bitmap, 0, bitmap.getImage().getNumChannels());
+    }
+
+    /**
+     * Generate a histogram for the specified channel in the bitmap.
+     * @param bitmap a bitmap
+     * @param channel an RGB channel
+     */
+    public void getForChannel(Bitmap bitmap, RGBChannel channel) {
+        int index = channel.toJiuIndex();
+        if (index < 0)
+            getAllChannels(bitmap);
+        else
+            getForChannelRange(bitmap, index, index+1);
     }
 }

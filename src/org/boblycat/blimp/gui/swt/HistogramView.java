@@ -18,11 +18,14 @@
  */
 package org.boblycat.blimp.gui.swt;
 
-import net.sourceforge.jiu.color.analysis.Histogram1DCreator;
-import net.sourceforge.jiu.color.data.Histogram1D;
+import net.sourceforge.jiu.data.MemoryRGB24Image;
+import net.sourceforge.jiu.data.RGB24Image;
+import net.sourceforge.jiu.data.RGBIndex;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.Histogram;
+import org.boblycat.blimp.RGBChannel;
+import org.boblycat.blimp.RGBHistograms;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.FillLayout;
@@ -34,8 +37,7 @@ import org.eclipse.swt.widgets.Listener;
 public class HistogramView extends Composite {
     Canvas canvas;
     Bitmap currentBitmap;
-    Histogram1DCreator creator;
-    Histogram1D allChannelsHistogram;
+    RGBHistograms histograms;
     Image histogramImage;
     Double blackLevel;
     Double centerLevel;
@@ -48,7 +50,7 @@ public class HistogramView extends Composite {
         canvas.addListener(SWT.Paint, new Listener() {
             public void handleEvent(Event e) {
                 Rectangle rect = canvas.getClientArea();
-                if (currentBitmap == null && allChannelsHistogram == null) {
+                if (currentBitmap == null && histograms == null) {
                     SwtUtil.fillWhiteRect(e.gc, rect);
                     return;
                 }
@@ -58,7 +60,6 @@ public class HistogramView extends Composite {
                 e.gc.drawImage(image, 0, 0);
             }
         });
-        creator = new Histogram1DCreator();
 
         addListener(SWT.Dispose, new Listener() {
             public void handleEvent(Event e) {
@@ -69,13 +70,13 @@ public class HistogramView extends Composite {
 
     public void setBitmap(Bitmap bitmap) {
         currentBitmap = bitmap;
-        allChannelsHistogram = null;
+        histograms = null;
         invalidateHistogramImage();
         canvas.redraw();
     }
 
-    public void setAllchannelsHistogram(Histogram1D histogram) {
-        allChannelsHistogram = histogram;
+    public void setHistograms(RGBHistograms h) {
+        histograms = h;
         invalidateHistogramImage();
         canvas.redraw();
     }
@@ -93,13 +94,17 @@ public class HistogramView extends Composite {
         histogramImage = null;
     }
 
-    private static void fillGrayRectange(GC gc, int width, int height,
-            double startPercentage, double endPercentage) {
-        int x1 = (int) (startPercentage * width);
-        int x2 = (int) (endPercentage * width);
-        int intensity = 128;
-        SwtUtil.fillColorRect(gc, new Rectangle(x1, 0, x2, height),
-                intensity, intensity, intensity);
+    private static boolean isBlackPixel(RGB24Image image, int x, int y) {
+        return ((image.getSample(RGBIndex.INDEX_RED, x, y) == 0) &&
+                (image.getSample(RGBIndex.INDEX_GREEN, x, y) == 0) &&
+                (image.getSample(RGBIndex.INDEX_BLUE, x, y) == 0));
+    }
+
+    private static void putGrayPixel(RGB24Image image, int x, int y,
+            int intensity) {
+        image.putSample(RGBIndex.INDEX_RED, x, y, intensity);
+        image.putSample(RGBIndex.INDEX_GREEN, x, y, intensity);
+        image.putSample(RGBIndex.INDEX_BLUE, x, y, intensity);
     }
 
     private Image getHistogramImage(int width, int height) {
@@ -112,54 +117,71 @@ public class HistogramView extends Composite {
         if (histogramImage != null)
             // return cached image
             return histogramImage;
-        histogramImage = new Image(getDisplay(), width, height);
-        GC gc = new GC(histogramImage);
-        SwtUtil.fillWhiteRect(gc, new Rectangle(0, 0, width, height));
+
+        // A JIU image is somewhat easier to work with than an SWT image,
+        // but it does involve an extra conversion step...
+        RGB24Image image = new MemoryRGB24Image(width, height);
+        if (currentBitmap == null && histograms == null) {
+            histogramImage = ImageConverter.jiuToSwtImageViaPixels(getDisplay(), image);
+            return histogramImage;
+        }
+
+        if (histograms == null) {
+            assert(currentBitmap != null);
+            histograms = new RGBHistograms(currentBitmap);
+        }
+
+        int maxEntry = 0;
+        for (RGBChannel channel: RGBChannel.COLORS) {
+            Histogram histogram = histograms.getHistogram(channel);
+            for (int i=0; i<histogram.getMaxValue(); i++) {
+                int entry = histogram.getEntry(i);
+                if (entry > maxEntry)
+                    maxEntry = entry;
+            }
+        }
+
+        for (RGBChannel channel: RGBChannel.COLORS) {
+            Histogram histogram = histograms.getHistogram(channel);
+            int jiuChannel = channel.toJiuIndex();
+            for (int y=0; y<height; y++) {
+                for (int x=0; x<width; x++) {
+                    int hindex = x * histogram.getMaxValue() / width;
+                    int entry = histogram.getEntry(hindex);
+                    if (entry * height >= (height - y) * maxEntry)
+                        image.putSample(jiuChannel, x, y, 255);
+                }
+            }
+        }
+
+        // replace black samples with gray
+        int blackX = 0;
+        int whiteX = width;
         if (blackLevel != null)
-            fillGrayRectange(gc, width, height, 0.0, blackLevel);
+            blackX = (int) Math.round(blackLevel * width);
         if (whiteLevel != null)
-            fillGrayRectange(gc, width, height, whiteLevel, 1.0);
-        Color black = new Color(gc.getDevice(), 0, 0, 0);
-        gc.setForeground(black);
-        Histogram1D histogram = getFullHistogram();
-        if (histogram != null) {
-            Path path = new Path(gc.getDevice());
-            generateHistogramPath(histogram, path, width, height);
-            gc.setBackground(black);
-            gc.fillPath(path);
-            path.dispose();
+            whiteX = (int) Math.round(whiteLevel * width);
+        for (int y=0; y<height; y++) {
+            for (int x=0; x<width; x++) {
+                if (isBlackPixel(image, x, y)) {
+                    int intensity = 128;
+                    if (x < blackX || x >= whiteX)
+                        intensity = 64;
+                    putGrayPixel(image, x, y, intensity);
+                }
+            }
         }
+
         if (centerLevel != null) {
-            int x = (int) (centerLevel * width);
-            SwtUtil.drawColorLine(gc, x, 0, x, height-1, 100, 100, 255);
+            int centerX = (int) Math.round(centerLevel * width);
+            if (centerX >= 0 && centerX < width) {
+                for (int y = 0; y < height; y++) {
+                    putGrayPixel(image, centerX, y, 64);
+                }
+            }
         }
-        gc.dispose();
-        black.dispose();
+
+        histogramImage = ImageConverter.jiuToSwtImageViaPixels(getDisplay(), image);
         return histogramImage;
-    }
-
-    private Histogram1D getFullHistogram() {
-        if (allChannelsHistogram != null)
-            return allChannelsHistogram;
-        allChannelsHistogram = new Histogram(currentBitmap);
-        return allChannelsHistogram;
-    }
-
-    private static void generateHistogramPath(Histogram1D histogram, Path path,
-            int width, int height) {
-        float sourceWidth = histogram.getMaxValue();
-        int ymax = 0;
-        for (int i=0; i<=histogram.getMaxValue(); i++)
-            ymax = Math.max(histogram.getEntry(i), ymax);
-        float sourceHeight = ymax;
-
-        path.moveTo(0, height);
-        for (int x=0; x<histogram.getMaxValue(); x++) {
-            float destx = (x * width) / sourceWidth;
-            float desty = (histogram.getEntry(x) * height) / sourceHeight;
-            path.lineTo(destx, height - desty);
-        }
-        path.lineTo(width, height);
-        path.close();
     }
 }

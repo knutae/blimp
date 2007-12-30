@@ -18,8 +18,8 @@
  */
 package org.boblycat.blimp.gui.swt;
 
-import org.boblycat.blimp.Histogram;
 import org.boblycat.blimp.HistogramGeneratedTask;
+import org.boblycat.blimp.RGBHistograms;
 import org.boblycat.blimp.layers.LevelsLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -119,9 +119,9 @@ public class LevelsEditor extends LayerEditor {
             return;
         workerThread.asyncGenerateHistogram(this, session, levels.getName(),
                 new HistogramGeneratedTask() {
-            public void handleHistogram(Histogram h) {
+            public void handleHistograms(RGBHistograms h) {
                 if (!histogramView.isDisposed())
-                    histogramView.setAllchannelsHistogram(h);
+                    histogramView.setHistograms(h);
             }
         });
         updateGui();

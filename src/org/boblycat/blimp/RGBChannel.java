@@ -44,4 +44,10 @@ public enum RGBChannel {
             return -1;
         }
     }
+
+    /**
+     * An array of all RGB channels (Red, Green and Blue).
+     * This does not include special enum values like "All".
+     */
+    public static final RGBChannel[] COLORS = { Red, Green, Blue };
 }
