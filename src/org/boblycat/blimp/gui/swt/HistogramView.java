@@ -144,10 +144,10 @@ public class HistogramView extends Composite {
         for (RGBChannel channel: RGBChannel.COLORS) {
             Histogram histogram = histograms.getHistogram(channel);
             int jiuChannel = channel.toJiuIndex();
-            for (int y=0; y<height; y++) {
-                for (int x=0; x<width; x++) {
-                    int hindex = x * histogram.getMaxValue() / width;
-                    int entry = histogram.getEntry(hindex);
+            int[] entries = histogram.scaledEntries(width);
+            for (int x=0; x<width; x++) {
+                int entry = entries[x];
+                for (int y=0; y<height; y++) {
                     if (entry * height >= (height - y) * maxEntry)
                         image.putSample(jiuChannel, x, y, 255);
                 }

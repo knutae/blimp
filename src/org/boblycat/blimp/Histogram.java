@@ -111,4 +111,33 @@ public class Histogram extends ArrayHistogram1D {
         else
             getForChannelRange(bitmap, index, index+1);
     }
+
+    /**
+     * Returns an array of histogram entries scaled to the given size.
+     * The result should be be used for visual purposes only.
+     * The algorithm may or may not involve interpolation.
+     *
+     * @param size a size larger than zero
+     * @return a histogram array of the given size
+     */
+    public int[] scaledEntries(int size) {
+        int[] result = new int[size];
+        float unitSize = getMaxValue() / (float) size;
+        for (int i=0; i<size; i++) {
+            float start = i * unitSize;
+            float end = (i+1) * unitSize;
+            int iStart = (int) Math.floor(start);
+            int iEnd = (int) Math.ceil(end);
+            // sum all spanned entries
+            float sum = 0;
+            for (int iCur = iStart; iCur < iEnd; iCur++) {
+                sum += getEntry(iCur);
+            }
+            // subtract partial entries at ends
+            sum -= (start - iStart) * getEntry(iStart);
+            sum -= (iEnd - end) * getEntry(iEnd-1);
+            result[i] = (int) Math.round(sum / unitSize);
+        }
+        return result;
+    }
 }
