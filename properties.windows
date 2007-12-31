@@ -12,7 +12,7 @@ dcraw.exe = blimp-dcraw.exe
 # compile dcraw under cygwin without cygwin1.dll dependency
 c-compiler-args = -mno-cygwin
 c-linker-args = -mno-cygwin
-dcraw.defines.minimal = NO_JPEG,NO_LCMS,W32_GETC_UNLOCKED
+dcraw.defines.minimal = NO_JPEG,NO_LCMS,W32_GETC_UNLOCKED,ftello=ftell,fseeko=fseek
 dcraw.libs.minimal = ws2_32
 
 # jsmooth java .exe wrapper
