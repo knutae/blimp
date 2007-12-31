@@ -25,6 +25,9 @@ import org.boblycat.blimp.Util;
 import org.boblycat.blimp.jiu.UnsharpMaskKernel;
 
 public class UnsharpMaskLayer extends AdjustmentLayer {
+    public static final int MIN_LEVEL = 0;
+    public static final int MAX_LEVEL = 50;
+
     int level;
 
     public UnsharpMaskLayer() {
@@ -33,6 +36,8 @@ public class UnsharpMaskLayer extends AdjustmentLayer {
 
     @Override
     public Bitmap applyLayer(Bitmap source) {
+        if (level == 0)
+            return source;
         ConvolutionKernelFilter op = new ConvolutionKernelFilter();
         op.setKernel(new UnsharpMaskKernel(level));
         //op.setKernel(ConvolutionKernelFilter.TYPE_SHARPEN);
@@ -45,7 +50,7 @@ public class UnsharpMaskLayer extends AdjustmentLayer {
     }
 
     public void setLevel(int level) {
-        this.level = Util.constrainedValue(level, 1, 50);
+        this.level = Util.constrainedValue(level, MIN_LEVEL, MAX_LEVEL);
     }
 
     public int getLevel() {

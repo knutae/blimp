@@ -46,5 +46,6 @@ public class DefaultEditorRegistry extends LayerEditorRegistry {
         register(RotateLayer.class, RotateEditor.class);
         register(ColorBalanceLayer.class, ColorBalanceEditor.class);
         register(ColorizeLayer.class, ColorizeEditor.class);
+        register(UnsharpMaskLayer.class, UnsharpMaskEditor.class);
     }
 }
