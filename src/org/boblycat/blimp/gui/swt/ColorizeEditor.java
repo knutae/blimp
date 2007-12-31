@@ -43,7 +43,7 @@ public class ColorizeEditor extends GridBasedLayerEditor {
         hueSlider = createSlider("Hue", 0, 360, 0);
         lightnessSlider = createSlider("Lightness", 0, 400, 0);
         baseSaturationSlider = createSlider("Base Saturation", 0, 400, 0);
-        saturationMultiplierSlider = createSlider("Saturation Multiplier", 0, 400, 0);
+        saturationMultiplierSlider = createSlider("Relative Saturation", 0, 400, 0);
     }
 
     @Override
