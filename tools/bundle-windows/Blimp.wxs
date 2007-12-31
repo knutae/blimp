@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
-    <Product Name='Blimp' Id='1A61C3A2-DA8E-478E-A64D-D5B1394ADEC1'
-             Language='1033' Codepage='1252' Version='0.9.1' Manufacturer='Boblycat'
+    <!--
+    Note: before each release, change both the product and upgrade versions,
+    and generate a new product Id GUID.
+    -->
+    <Product Name='Blimp' Id='8F934390-ADB9-4071-B0CC-D9B13E0236F0'
+             Language='1033' Codepage='1252' Version='1.0.0' Manufacturer='Boblycat'
              UpgradeCode='733D3C3F-C40F-4ADD-AF62-8CD66DBE93AD'>
         <Package Keywords='Installer'
                  Description="Blimp Photo Editor Installer"
@@ -83,19 +87,19 @@
         <Property Id='WIXUI_INSTALLDIR' Value='INSTALLDIR'/>
         <UIRef Id="WixUI_InstallDir_NoEula" />
         <UIRef Id="WixUI_ErrorProgressText" />
-        
+
         <WixVariable Id='WixUIDialogBmp' Value='icons\blimp-wix-dialog.jpg'/>
         <WixVariable Id='WixUIBannerBmp' Value='icons\blimp-wix-banner.jpg'/>
 
         <!-- Upgrade information below -->
         <Upgrade Id='733D3C3F-C40F-4ADD-AF62-8CD66DBE93AD'>
-            <UpgradeVersion Property='NEWVERSION' OnlyDetect='yes' Minimum='0.9.2' />
-            <UpgradeVersion Property='OLDVERSION' Maximum='0.9.1' />
+            <UpgradeVersion Property='NEWVERSION' OnlyDetect='yes' Minimum='1.0.1' />
+            <UpgradeVersion Property='OLDVERSION' Maximum='0.999.999' />
         </Upgrade>
-        
+
         <!-- Refuse to install over a newer version -->
         <CustomAction Id='NewVersionFound'
-                      Error='A Blimp version newer than 0.9.0 is already installed.' />
+                      Error='A newer Blimp version is already installed.' />
         <InstallExecuteSequence>
             <Custom Action='NewVersionFound' After='FindRelatedProducts'>NEWVERSION</Custom>
             <RemoveExistingProducts After='InstallFinalize'/>
