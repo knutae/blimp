@@ -219,9 +219,9 @@
     </target>
 
     <target name="tar-source">
-        <tar destfile="../blimp-dist.tar.gz" compression="gzip">
-            <tarfileset dir="." prefix="blimp">
-                <exclude name="**/build/**"/>
+        <tar destfile="../blimp_${blimp.version}.orig.tar.gz" compression="gzip">
+            <tarfileset dir="." prefix="blimp-${blimp.version}">
+                <exclude name="**/${build}/**"/>
                 <exclude name="**/debian/**"/>
                 <exclude name="**/swt*win32*/**"/>
                 <exclude name="**/*-stamp"/>

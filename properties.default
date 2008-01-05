@@ -20,6 +20,7 @@ xerces.jar = jars/xercesImpl.jar
 dcraw.exe = blimp-dcraw
 dcraw.exe.path = ${build}/${dcraw.exe}
 
+blimp.version = 1.0.0
 blimp.jar = ${build}/blimp.jar
 
 javadoc.src = ${src}
