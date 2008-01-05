@@ -219,7 +219,7 @@
     </target>
 
     <target name="tar-source">
-        <tar destfile="../blimp_${blimp.version}.orig.tar.gz" compression="gzip">
+        <tar destfile="../blimp_${blimp.version}.tar.gz" compression="gzip">
             <tarfileset dir="." prefix="blimp-${blimp.version}">
                 <exclude name="**/${build}/**"/>
                 <exclude name="**/debian/**"/>
