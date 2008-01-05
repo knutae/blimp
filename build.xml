@@ -218,6 +218,17 @@
         </exec>
     </target>
 
+    <target name="tar-source">
+        <tar destfile="../blimp-dist.tar.gz" compression="gzip">
+            <tarfileset dir="." prefix="blimp">
+                <exclude name="**/build/**"/>
+                <exclude name="**/debian/**"/>
+                <exclude name="**/swt*win32*/**"/>
+                <exclude name="**/*-stamp"/>
+            </tarfileset>
+        </tar>
+    </target>
+
     <target name="install-msi" depends="bundle-msi">
         <exec executable="msiexec" failonerror="true">
             <arg value="/quiet"/>

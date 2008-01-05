@@ -34,6 +34,9 @@ test:
 run:
 	$(ANT) run
 
+tar-source:
+	$(ANT) tar-source
+
 install-dcraw:
 	$(ANT_INSTALL) install-dcraw
 	mkdir -p $(MAN_DIR)
