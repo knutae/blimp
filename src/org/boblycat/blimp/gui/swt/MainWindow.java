@@ -35,8 +35,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Vector;
 
-import javax.annotation.processing.FilerException;
-
 class ImageTab {
     CTabItem item;
 
