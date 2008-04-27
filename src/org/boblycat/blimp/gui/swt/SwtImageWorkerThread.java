@@ -18,6 +18,8 @@
  */
 package org.boblycat.blimp.gui.swt;
 
+import java.io.File;
+
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapUtil;
 import org.boblycat.blimp.ImageWorkerThread;
@@ -57,6 +59,30 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
 
         public void run() {
             guiProgressEventSource.triggerChangeWithEvent(event);
+        }
+    }
+
+    // "Adapts" a FileExportTask to a Runnable in order to be called with
+    // asyncExec.  Basically a manually built closure.
+    class FileExportRunnable implements Runnable {
+        FileExportTask task;
+        File filename;
+        boolean success;
+        String errorMessage;
+
+        public FileExportRunnable(FileExportTask task, File filename,
+                boolean success, String errorMessage) {
+            this.task = task;
+            this.filename = filename;
+            this.success = success;
+            this.errorMessage = errorMessage;
+        }
+
+        public void run() {
+            if (success)
+                task.handleSuccess(filename);
+            else
+                task.handleError(filename, errorMessage);
         }
     }
 
@@ -150,5 +176,18 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
 
     public void removeProgressListener(ProgressListener listener) {
         guiProgressEventSource.removeListener(listener);
+    }
+
+    @Override
+    protected void exportError(File filename, FileExportTask task,
+            String errorMessage) {
+        if (isFinished())
+            return;
+        display.asyncExec(new FileExportRunnable(task, filename, false, errorMessage));
+    }
+
+    @Override
+    protected void exportSuccess(File filename, FileExportTask task) {
+        display.asyncExec(new FileExportRunnable(task, filename, true, null));
     }
 }

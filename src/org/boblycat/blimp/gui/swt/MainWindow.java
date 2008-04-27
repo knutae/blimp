@@ -35,6 +35,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Vector;
 
+import javax.annotation.processing.FilerException;
+
 class ImageTab {
     CTabItem item;
 
@@ -709,18 +711,25 @@ public class MainWindow {
                     "No image was exported.", SWT.ICON_WARNING);
             return;
         }
-        try {
-            double quality = 0.9;
-            if (ext.equals("jpg") || ext.equals("jpeg"))
-                quality = JpegQualityDialog.queryJpegQuality(shell);
-            BitmapUtil.writeBitmap(session.getFullBitmap(), ext, filename, quality);
-            SwtUtil.messageDialog(shell, "Image Exported",
-                    "The image was exported to:\n" + filename, SWT.ICON_INFORMATION);
-        }
-        catch (IOException e) {
-            SwtUtil.errorDialog(shell, "Image Export", "An I/O error occured: "
-                    + e.getMessage());
-        }
+        double quality = 0.9;
+        if (ext.equals("jpg") || ext.equals("jpeg"))
+            quality = JpegQualityDialog.queryJpegQuality(shell);
+
+        // Export the image on the worker thread, and handle the result on the
+        // main thread.
+        currentImageTab.getEditorEnv().workerThread.asyncExportBitmap(
+                currentImageTab.imageView, session, new File(filename), quality,
+                new ImageWorkerThread.FileExportTask() {
+                    public void handleSuccess(File file) {
+                        SwtUtil.messageDialog(shell, "Image Exported",
+                                "The image was exported to:\n" + file,
+                                SWT.ICON_INFORMATION);
+                    }
+                    public void handleError(File file, String errorMessage) {
+                        SwtUtil.errorDialog(shell, "Image Export Error",
+                                "An I/O error occurred: " + errorMessage);
+                    }
+                });
     }
 
     void doMenuAbout() {

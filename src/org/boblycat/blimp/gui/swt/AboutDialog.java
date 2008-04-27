@@ -75,7 +75,7 @@ public class AboutDialog {
                 "Copyright (C) 2006, 2007 Knut Arild Erstad\n"
                 + "\n"
                 + "Blimp is <a href=\"http://www.gnu.org/philosophy/free-sw.html\">free software</a>"
-                + " distributed under the <a href=\"http://www.gnu.org/licenses/info/GPLv2.html\">GNU General Public License, version 2</a>.\n"
+                + " distributed under the <a href=\"http://www.gnu.org/licenses/gpl-2.0.html\">GNU General Public License, version 2</a>.\n"
                 + "\n"
                 + "Credits:\n"
                 + "<a href=\"http://schmidt.devlib.org/jiu/\">Java Imaging Utilities</a> by Marco Schmidt and others\n"

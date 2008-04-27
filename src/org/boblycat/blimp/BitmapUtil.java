@@ -176,15 +176,23 @@ public class BitmapUtil {
     }
 
     public static void writeBitmap(Bitmap bitmap, String formatName,
+            File fileName, double quality) throws IOException {
+        writeBitmap(bitmap, formatName, fileName.toString(), quality);
+    }
+
+    public static void writeBitmap(Bitmap bitmap, String formatName,
             String fileName, double quality) throws IOException {
         ImageWriter writer = getImageWriter(formatName);
         if (writer == null) {
-            Util.err("Failed to get image writer for format: "
+            throw new IOException("Failed to get image writer for format: "
                     + formatName);
-            return;
         }
-        ImageOutputStream output = ImageIO.createImageOutputStream(new File(
-                fileName));
+        ImageOutputStream output = ImageIO.createImageOutputStream(new File(fileName));
+        if (output == null) {
+            // For some strange reason, a null value can be returned instead of throwing
+            // an IO exception.  Create an exception here instead.
+            throw new IOException("Could not write to file " + fileName);
+        }
         writer.setOutput(output);
         ImageWriteParam param = writer.getDefaultWriteParam();
         if (param instanceof JPEGImageWriteParam) {
@@ -195,7 +203,8 @@ public class BitmapUtil {
             writer.write(null, toIIOImage(bitmap), param);
         }
         finally {
-            output.close();
+            if (output != null)
+                output.close();
             writer.dispose();
         }
     }

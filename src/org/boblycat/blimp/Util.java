@@ -145,6 +145,10 @@ public class Util {
         logger.info(message);
     }
 
+    public static String getFileExtension(File filePath) {
+        return getFileExtension(filePath.toString());
+    }
+
     public static String getFileExtension(String filePath) {
         int dotpos = filePath.lastIndexOf('.');
         if (dotpos < 0)
