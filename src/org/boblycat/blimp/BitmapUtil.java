@@ -165,7 +165,7 @@ public class BitmapUtil {
         return new Bitmap(outImage);
     }
 
-    private static BufferedImage toAwtImage(PixelImage pixelImage) {
+    public static BufferedImage toAwtImage(PixelImage pixelImage) {
         BufferedImage awtImage = new BufferedImage(pixelImage.getWidth(),
                 pixelImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
         // bytes need to be RGB even though the type is BGR, not sure why
@@ -213,7 +213,7 @@ public class BitmapUtil {
         return getImageWriter(formatName) != null;
     }
 
-    private static ImageWriter getImageWriter(String formatName) {
+    public static ImageWriter getImageWriter(String formatName) {
         Iterator<ImageWriter> iter = ImageIO
                 .getImageWritersByFormatName(formatName);
         if (!iter.hasNext())
