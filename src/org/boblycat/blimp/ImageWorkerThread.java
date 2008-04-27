@@ -77,6 +77,32 @@ public abstract class ImageWorkerThread extends Thread {
         }
     }
 
+    private class FileExportSuccess implements Runnable {
+        FileExportTask task;
+        File filename;
+        FileExportSuccess(FileExportTask task, File filename) {
+            this.task = task;
+            this.filename = filename;
+        }
+        public void run() {
+            task.handleSuccess(filename);
+        }
+    }
+
+    private class FileExportFailure implements Runnable {
+        FileExportTask task;
+        File filename;
+        String errorMessage;
+        FileExportFailure(FileExportTask task, File filename, String errorMessage) {
+            this.task = task;
+            this.filename = filename;
+            this.errorMessage = errorMessage;
+        }
+        public void run() {
+            task.handleError(filename, errorMessage);
+        }
+    }
+
     BlockingQueue<Request> requestQueue;
 
     protected BlimpSession session;
@@ -112,14 +138,10 @@ public abstract class ImageWorkerThread extends Thread {
 
     protected abstract void handleError(Runnable runnable, String errorMessage);
 
-    protected abstract void exportSuccess(File filename, FileExportTask task);
-
-    protected abstract void exportError(File filename, FileExportTask task,
-            String errorMessage);
-
     private void handleExceptionError(Request req, String message) {
         if (req.exportTask != null) {
-            exportError(req.exportFile, req.exportTask, message);
+            assert(req.exportFile != null);
+            asyncExec(new FileExportFailure(req.exportTask, req.exportFile, message));
         }
         else {
             assert(req.runnable != null);
@@ -190,7 +212,7 @@ public abstract class ImageWorkerThread extends Thread {
                 String ext = Util.getFileExtension(req.exportFile);
                 BitmapUtil.writeBitmap(bitmap, ext, req.exportFile, req.exportQuality);
                 Debug.print(this, "finished writing bitmap");
-                exportSuccess(req.exportFile, req.exportTask);
+                asyncExec(new FileExportSuccess(req.exportTask, req.exportFile));
                 break;
             }
         }
