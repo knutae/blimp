@@ -20,6 +20,7 @@ package org.boblycat.blimp.exif;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Vector;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -27,6 +28,7 @@ import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
 
 import org.boblycat.blimp.Bitmap;
@@ -70,7 +72,23 @@ public class WriterTest {
             for (String format: metadata.getMetadataFormatNames()) {
                 System.out.println("Format: " + format);
             }
-            //Element root = (Element) metadata.getAsTree("javax_imageio_jpeg_stream_1.0");
+            Element root = (Element) metadata.getAsTree(MetaDataUtil.JPEG_10_FORMAT_STRING);
+            //System.out.println(root.toString());
+            IIOMetadataNode exifNode = MetaDataUtil.findExifNode(root, true);
+            System.out.println(exifNode.getNodeName());
+            System.out.println(exifNode.getParentNode().getNodeName());
+
+            Vector<ImageFileDirectory> ifds = new Vector<ImageFileDirectory>();
+            ImageFileDirectory ifd = new ImageFileDirectory();
+            ExifField softwareTag = new ExifField(ExifTag.Software.getTag(),
+                    "Blimp Testing");
+            ifd.addField(softwareTag);
+            ifds.add(ifd);
+            BlobCreator blob = new BlobCreator();
+            blob.writeIFDs(ifds);
+            exifNode.setUserObject(blob.getDataWithHeader());
+
+            metadata.setFromTree(MetaDataUtil.JPEG_10_FORMAT_STRING, root);
             CommandLine.printMetaData(metadata);
 
         }

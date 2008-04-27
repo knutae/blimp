@@ -42,7 +42,7 @@ public class CommandLine {
 
     private static void indentLine(int level) {
         for (int i=0; i<level; ++i)
-            System.out.print("  ");
+            System.out.print("    ");
     }
 
     private static IIOMetadataNode findUnknownNodeType(Node tree, int tag,
@@ -100,9 +100,14 @@ public class CommandLine {
             if (exifNode != null) {
                 System.out.println("Found Exif node in format " + format);
                 byte[] rawExifData = (byte[]) exifNode.getUserObject();
-                System.out.println("Bytes: " + rawExifData.length);
-                //System.out.println(new String(rawExifData));
-                printIFDs(rawExifData);
+                if (rawExifData == null || rawExifData.length == 0) {
+                    System.out.println("raw data is null");
+                }
+                else {
+                    System.out.println("Bytes: " + rawExifData.length);
+                    //System.out.println(new String(rawExifData));
+                    printIFDs(rawExifData);
+                }
             }
         }
     }

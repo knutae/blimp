@@ -131,7 +131,9 @@ public class ExifBlobReader {
             // try to interpret type
             ExifDataType type = ExifDataType.fromTypeTag(typeTag);
             if (type == null)
-                throw new ReaderError("Unrecoginzed Exif type " + typeTag);
+                throw new ReaderError("Unrecognized Exif type " + typeTag);
+            // If the value fits in 4 bytes, it is stored "inline", otherwise
+            // an offset is stored.
             int valueOffset;
             if (type.getByteCount() * dataCount <= 4)
                 valueOffset = currentOffset + 8;

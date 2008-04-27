@@ -27,7 +27,7 @@ import java.util.Vector;
  * @author Knut Arild Erstad
  */
 public class ImageFileDirectory implements Iterable<ExifField> {
-    Vector<ExifField> fields;
+    private Vector<ExifField> fields;
 
     public ImageFileDirectory() {
         fields = new Vector<ExifField>();
@@ -39,5 +39,9 @@ public class ImageFileDirectory implements Iterable<ExifField> {
 
     public Iterator<ExifField> iterator() {
         return fields.iterator();
+    }
+
+    public int size() {
+        return fields.size();
     }
 }

@@ -71,6 +71,11 @@ public class ExifField {
         stringValue = value;
     }
 
+    public String getStringValue() {
+        assert(type == ExifDataType.ASCII);
+        return stringValue;
+    }
+
     public void addValue(Object value) {
         assert(type != ExifDataType.ASCII);
         assert(values != null);
@@ -84,6 +89,10 @@ public class ExifField {
         if (values.size() > 0)
             return values.get(0);
         return null;
+    }
+
+    public Vector<Object> getValues() {
+        return values;
     }
 
     public int getByteCount() {
