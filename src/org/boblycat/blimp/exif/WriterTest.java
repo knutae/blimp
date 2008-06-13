@@ -78,13 +78,9 @@ public class WriterTest {
             System.out.println(exifNode.getParentNode().getNodeName());
 
             ExifTable table = new ExifTable();
-            ExifField softwareTag = new ExifField(ExifTag.Software.getTag(),
-                    "Blimp Testing");
-            table.put(softwareTag);
-            ExifField shutterSpeed = new ExifField(ExifTag.ShutterSpeedValue.getTag(),
-                    ExifDataType.RATIONAL);
-            shutterSpeed.addValue(new Rational(1, 100));
-            table.put(shutterSpeed);
+            table.put(new ExifField(ExifTag.Software, "Blimp Testing"));
+            table.put(new ExifField(ExifTag.ShutterSpeedValue, new Rational(1, 100)));
+            //table.put(new ExifField(ExifTag.BitsPerSample, "foo"));
             exifNode.setUserObject(BlobCreator.dataFromExifTable(table));
 
             metadata.setFromTree(MetaDataUtil.JPEG_10_FORMAT_STRING, root);

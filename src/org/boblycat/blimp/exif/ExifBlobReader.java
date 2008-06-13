@@ -172,7 +172,7 @@ public class ExifBlobReader {
             }
             ifd.addField(field);
             if (field.getTag() == ExifTag.Exif_IFD_Pointer.getTag())
-                exifPointer = (Integer) field.getValue();
+                exifPointer = (Integer) field.valueAt(0);
             currentOffset += 12;
         }
         return ifd;

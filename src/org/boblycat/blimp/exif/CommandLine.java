@@ -125,12 +125,13 @@ public class CommandLine {
                         System.out.println("+++ Unknown tag " + tag);
                     else
                         System.out.println("+++ " + exifTag.toString());
-                    System.out.println("  tag   : " + Integer.toString(field.getTag())
+                    System.out.println("  tag      : " + Integer.toString(field.getTag())
                             + " (0x" + Integer.toHexString(field.getTag()) + ")");
-                    System.out.println("  type  : " + field.getType());
+                    System.out.println("  type     : " + field.getType());
                     if (field.getCount() != 1)
-                        System.out.println("  count : " + field.getCount());
-                    System.out.println("  value : " + field.getValue());
+                        System.out.println("  count    : " + field.getCount());
+                    System.out.println("  value(s) : " + field.toString());
+                    //System.out.println("  value : " + field.getValue());
                     //System.out.println("+++");
                 }
             }

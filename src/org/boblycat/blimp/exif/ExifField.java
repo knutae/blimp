@@ -46,6 +46,62 @@ public class ExifField {
         this.stringValue = asciiValue;
     }
 
+    public ExifField(ExifTag tag) {
+        this(tag.getTag(), tag.getDefaultType());
+    }
+
+    public ExifField(ExifTag tag, Object value) throws ValidationError {
+        this(tag);
+        if (values != null)
+            values.add(value);
+        else if (value instanceof String)
+            stringValue = (String) value;
+        else
+            throw new ValidationError("Internal type error, expected a string");
+        validate();
+    }
+
+    private void validateValueTypes(Class<?> expectedType) throws ValidationError {
+        for (Object value: values) {
+            if (!expectedType.isInstance(value))
+                throw new ValidationError("Internal type error, expected "
+                        + expectedType.getCanonicalName() + " but got "
+                        + value.getClass().getCanonicalName());
+        }
+    }
+
+    private void validate() throws ValidationError {
+        ExifTag exifTag = ExifTag.fromTag(tag);
+        if (exifTag == null)
+            throw new ValidationError("Unknown tag " + tag);
+        if (!exifTag.supportsType(type))
+            throw new ValidationError(exifTag.name() +
+                    " does not support the type " + type.name());
+        switch (type) {
+        case ASCII:
+        case UNDEFINED:
+            if (values != null && stringValue == null)
+                throw new ValidationError("Internal type error, expected a string value");
+            break;
+        case BYTE:
+            validateValueTypes(Byte.class);
+            break;
+        case LONG:
+        case SLONG:
+        case SHORT:
+            validateValueTypes(Integer.class);
+            break;
+        case RATIONAL:
+        case SRATIONAL:
+            validateValueTypes(Rational.class);
+            break;
+        }
+        if (!exifTag.supportsCount(getCount()))
+            throw new ValidationError(exifTag.name() +
+                    " does not support a count of " + getCount());
+
+    }
+
     public int getTag() {
         return tag;
     }
@@ -88,13 +144,28 @@ public class ExifField {
         values.add(value);
     }
 
-    public Object getValue() {
-        // TODO: is this function really needed?
-        if (type == ExifDataType.ASCII || type == ExifDataType.UNDEFINED)
+    public Object valueAt(int index) {
+        if (index < 0 || index >= getCount())
+            return null;
+        if (stringValue != null) {
+            if (index == stringValue.length())
+                return '\0';
+            return stringValue.charAt(index);
+        }
+        return values.get(index);
+    }
+
+    public String toString() {
+        if (stringValue != null)
             return stringValue;
-        if (values.size() > 0)
-            return values.get(0);
-        return null;
+        StringBuilder str = new StringBuilder();
+        str.append("[ ");
+        for (Object val: values) {
+            str.append(val.toString());
+            str.append(' ');
+        }
+        str.append(']');
+        return str.toString();
     }
 
     public Vector<Object> getValues() {

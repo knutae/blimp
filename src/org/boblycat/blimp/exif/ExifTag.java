@@ -179,6 +179,26 @@ public enum ExifTag {
         return category;
     }
 
+    public ExifDataType getDefaultType() {
+        assert(supportedTypes.size() > 0);
+        if (supportedTypes.size() == 1)
+            return supportedTypes.iterator().next();
+        // prefer SHORT over LONG...?
+        if (supportedTypes.contains(SHORT))
+            return SHORT;
+        return supportedTypes.iterator().next();
+    }
+
+    public boolean supportsType(ExifDataType type) {
+        return supportedTypes.contains(type);
+    }
+
+    public boolean supportsCount(int testCount) {
+        if (count < 0)
+            return true;
+        return testCount == count;
+    }
+
     private static HashMap<Integer, ExifTag> map;
 
     static {

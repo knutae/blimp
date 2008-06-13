@@ -33,6 +33,7 @@ public class RunTests {
                 "org.boblycat.blimp.tests.ZoomTests",
                 "org.boblycat.blimp.tests.UtilTests",
                 "org.boblycat.blimp.tests.ColorUtilTests",
-                "org.boblycat.blimp.tests.LayerRearrangerTest");
+                "org.boblycat.blimp.tests.LayerRearrangerTest",
+                "org.boblycat.blimp.tests.ExifTests");
     }
 }

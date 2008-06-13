@@ -43,4 +43,14 @@ public class Rational {
     public String toString() {
         return Integer.toString(numerator) + '/' + Integer.toString(denominator);
     }
+
+    public boolean equals(Rational other) {
+        return (numerator == other.numerator) && (denominator == other.denominator);
+    }
+
+    public boolean equals(Object other) {
+        if (other instanceof Rational)
+            return equals((Rational) other);
+        return false;
+    }
 }
