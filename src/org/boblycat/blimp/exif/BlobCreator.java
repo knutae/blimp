@@ -85,14 +85,19 @@ public class BlobCreator {
         currentOffset += byteCount;
     }
 
-    private int putAscii(int offset, String value) {
+    private int putAscii(int offset, String value, boolean nullTerminated) {
         try {
             byte[] bytes = value.getBytes("US-ASCII");
             for (int i=0; i<bytes.length; i++) {
                 putByte(offset + i, bytes[i]);
             }
-            putByte(offset + bytes.length, (byte) 0);
-            return bytes.length + 1;
+            if (nullTerminated) {
+                putByte(offset + bytes.length, (byte) 0);
+                return bytes.length + 1;
+            }
+            else {
+                return bytes.length;
+            }
         }
         catch (UnsupportedEncodingException e) {
             // ugly... improve this
@@ -101,8 +106,8 @@ public class BlobCreator {
         return 0;
     }
 
-    private void writeAscii(String value) {
-        int length = putAscii(currentOffset, value);
+    private void writeAscii(String value, boolean nullTerminated) {
+        int length = putAscii(currentOffset, value, nullTerminated);
         currentOffset += length;
     }
 
@@ -123,18 +128,18 @@ public class BlobCreator {
                 writeInt(r.getNumerator(), 4);
                 writeInt(r.getDenominator(), 4);
                 break;
-            case UNDEFINED:
-                // anything to do here?
-                break;
             }
         }
     }
 
     private void writeExifFieldValue(ExifField field) {
+        // ASCII and UNDEFINED are special cases
         switch (field.getType()) {
         case ASCII:
-            // special case
-            writeAscii(field.getStringValue());
+            writeAscii(field.getStringValue(), true);
+            break;
+        case UNDEFINED:
+            writeAscii(field.getStringValue(), false);
             break;
         default:
             writeValues(field.getValues(), field.getType());
@@ -158,12 +163,22 @@ public class BlobCreator {
         assert(currentOffset == 4);
     }
 
-    public void writeIFDs(Vector<ImageFileDirectory> ifds) {
+    private void writeTable(ExifTable table) {
         if (currentOffset == 0)
             writeEndianInfo();
         Vector<DelayedValueInfo> delayedValues = new Vector<DelayedValueInfo>();
+        Vector<ImageFileDirectory> ifds = new Vector<ImageFileDirectory>();
+        ifds.add(table.getPrimaryIFD());
+        ImageFileDirectory exifIFD = table.getExifIFD();
+        ifds.add(exifIFD);
+        int exifIFDPointerOffset = -1;
+        writeInt(currentOffset + 4, 4); // offset to primary (0th) IFD
         for (ImageFileDirectory ifd: ifds) {
-            writeInt(currentOffset + 4, 4); // offset to next IFD
+            if (ifd == exifIFD && exifIFDPointerOffset >= 0) {
+                // overwrite previously written Exif_IFD_Pointer value
+                // with current offset
+                putInt(exifIFDPointerOffset, currentOffset, 4);
+            }
             writeInt(ifd.size(), 2);
             for (ExifField field: ifd) {
                 writeInt(field.getTag(), 2);
@@ -175,6 +190,11 @@ public class BlobCreator {
                     writeExifFieldValue(field);
                     assert(currentOffset <= tmpOffset + 4);
                     currentOffset = tmpOffset + 4;
+
+                    if (field.getTag() == ExifTag.Exif_IFD_Pointer.getTag()) {
+                        // remember Exif_IFD_Pointer offset to write later
+                        exifIFDPointerOffset = tmpOffset;
+                    }
                 }
                 else {
                     // write the field value later
@@ -199,13 +219,19 @@ public class BlobCreator {
 
     public byte[] getDataWithHeader() {
         byte[] header = "Exif\0\0".getBytes();
-        dump(header);
+        //dump(header);
         grow(currentOffset-1);
         assert(data.length >= currentOffset);
         byte[] result = new byte[header.length + currentOffset];
         System.arraycopy(header, 0, result, 0, header.length);
         System.arraycopy(data, 0, result, header.length, currentOffset);
-        dump(result);
+        //dump(result);
         return result;
+    }
+
+    public static byte[] dataFromExifTable(ExifTable table) {
+        BlobCreator creator = new BlobCreator();
+        creator.writeTable(table);
+        return creator.getDataWithHeader();
     }
 }

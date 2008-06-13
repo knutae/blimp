@@ -34,7 +34,7 @@ public class ExifField {
     public ExifField(int tag, ExifDataType type) {
         this.tag = tag;
         this.type = type;
-        if (type == ExifDataType.ASCII)
+        if (type == ExifDataType.ASCII || type == ExifDataType.UNDEFINED)
             stringValue = "";
         else
             values = new Vector<Object>();
@@ -55,36 +55,42 @@ public class ExifField {
     }
 
     public int getCount() {
-        if (type == ExifDataType.ASCII) {
-            // length + zero byte (?)
+        switch (type) {
+        case ASCII:
             assert(stringValue != null);
             return stringValue.length() + 1;
-        }
-        else {
+
+        case UNDEFINED:
+            if (stringValue == null)
+                return 0;
+            else
+                return stringValue.length();
+
+        default:
             assert(values != null);
             return values.size();
         }
     }
 
     public void setStringValue(String value) {
-        assert(type == ExifDataType.ASCII);
+        assert(type == ExifDataType.ASCII || type == ExifDataType.UNDEFINED);
         stringValue = value;
     }
 
     public String getStringValue() {
-        assert(type == ExifDataType.ASCII);
+        assert(type == ExifDataType.ASCII || type == ExifDataType.UNDEFINED);
         return stringValue;
     }
 
     public void addValue(Object value) {
-        assert(type != ExifDataType.ASCII);
+        assert(type != ExifDataType.ASCII && type != ExifDataType.UNDEFINED);
         assert(values != null);
         values.add(value);
     }
 
     public Object getValue() {
         // TODO: is this function really needed?
-        if (type == ExifDataType.ASCII)
+        if (type == ExifDataType.ASCII || type == ExifDataType.UNDEFINED)
             return stringValue;
         if (values.size() > 0)
             return values.get(0);

@@ -20,7 +20,6 @@ package org.boblycat.blimp.exif;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.Vector;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -78,15 +77,15 @@ public class WriterTest {
             System.out.println(exifNode.getNodeName());
             System.out.println(exifNode.getParentNode().getNodeName());
 
-            Vector<ImageFileDirectory> ifds = new Vector<ImageFileDirectory>();
-            ImageFileDirectory ifd = new ImageFileDirectory();
+            ExifTable table = new ExifTable();
             ExifField softwareTag = new ExifField(ExifTag.Software.getTag(),
                     "Blimp Testing");
-            ifd.addField(softwareTag);
-            ifds.add(ifd);
-            BlobCreator blob = new BlobCreator();
-            blob.writeIFDs(ifds);
-            exifNode.setUserObject(blob.getDataWithHeader());
+            table.put(softwareTag);
+            ExifField shutterSpeed = new ExifField(ExifTag.ShutterSpeedValue.getTag(),
+                    ExifDataType.RATIONAL);
+            shutterSpeed.addValue(new Rational(1, 100));
+            table.put(shutterSpeed);
+            exifNode.setUserObject(BlobCreator.dataFromExifTable(table));
 
             metadata.setFromTree(MetaDataUtil.JPEG_10_FORMAT_STRING, root);
             CommandLine.printMetaData(metadata);

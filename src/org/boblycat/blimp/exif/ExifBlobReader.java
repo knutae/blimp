@@ -48,8 +48,10 @@ public class ExifBlobReader {
         detectEndianness();
     }
 
-    protected String extractAscii(int offset, int size) throws ReaderError {
+    protected String extractAscii(int offset, int size, boolean nullTerminated) throws ReaderError {
         try {
+            if (nullTerminated)
+                size--;
             return new String(data, baseOffset + offset, size, "US-ASCII");
         }
         catch (UnsupportedEncodingException e) {
@@ -93,7 +95,7 @@ public class ExifBlobReader {
     }
 
     protected void detectEndianness() throws ReaderError {
-        String byteOrderIndicator = extractAscii(0, 2);
+        String byteOrderIndicator = extractAscii(0, 2, false);
         if (byteOrderIndicator.equals("MM"))
             bigEndian = true;
         else if (byteOrderIndicator.equals("II"))
@@ -106,12 +108,12 @@ public class ExifBlobReader {
     }
 
     protected void detectBaseOffset() throws ReaderError {
-        String tmp = extractAscii(0, 2);
+        String tmp = extractAscii(0, 2, false);
         if (tmp.equals("MM") || tmp.equals("II")) {
             baseOffset = 0;
             return;
         }
-        tmp = extractAscii(0, 6);
+        tmp = extractAscii(0, 6, false);
         if (tmp.equals("Exif\0\0")) {
             baseOffset = 6;
             return;
@@ -142,10 +144,12 @@ public class ExifBlobReader {
             ExifField field = new ExifField(tag, type);
             switch (type) {
             case ASCII:
-                field.setStringValue(extractAscii(valueOffset, dataCount));
+                field.setStringValue(extractAscii(valueOffset, dataCount, true));
+                break;
+            case UNDEFINED:
+                field.setStringValue(extractAscii(valueOffset, dataCount, false));
                 break;
             case BYTE:
-            case UNDEFINED:
                 // TODO: implement something here...
                 break;
             case SHORT:
