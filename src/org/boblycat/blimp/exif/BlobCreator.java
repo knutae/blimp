@@ -157,8 +157,7 @@ public class BlobCreator {
 
     private void writeEndianInfo() {
         assert(currentOffset == 0);
-        writeByte((byte) 73);
-        writeByte((byte) 73);
+        writeAscii("II", false);
         writeInt(42, 2);
         assert(currentOffset == 4);
     }
@@ -209,23 +208,13 @@ public class BlobCreator {
         }
     }
 
-    private void dump(byte[] arr) {
-        for (byte b: arr) {
-            //System.out.print(Integer.toHexString(b & 0xff) + " ");
-            System.out.print(Integer.toString(b & 0xff) + " ");
-        }
-        System.out.println();
-    }
-
     public byte[] getDataWithHeader() {
         byte[] header = "Exif\0\0".getBytes();
-        //dump(header);
         grow(currentOffset-1);
         assert(data.length >= currentOffset);
         byte[] result = new byte[header.length + currentOffset];
         System.arraycopy(header, 0, result, 0, header.length);
         System.arraycopy(data, 0, result, header.length, currentOffset);
-        //dump(result);
         return result;
     }
 

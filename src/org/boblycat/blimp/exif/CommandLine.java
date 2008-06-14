@@ -131,14 +131,11 @@ public class CommandLine {
                     if (field.getCount() != 1)
                         System.out.println("  count    : " + field.getCount());
                     System.out.println("  value(s) : " + field.toString());
-                    //System.out.println("  value : " + field.getValue());
-                    //System.out.println("+++");
                 }
             }
         }
         catch (ReaderError e) {
             e.printStackTrace();
-            //fatal(e.getMessage());
         }
     }
 
