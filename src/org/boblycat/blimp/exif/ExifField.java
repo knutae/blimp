@@ -53,7 +53,7 @@ public class ExifField {
     public ExifField(ExifTag tag, Object value) throws ValidationError {
         this(tag);
         if (values != null)
-            values.add(value);
+            addValue(value);
         else if (value instanceof String)
             stringValue = (String) value;
         else
@@ -61,12 +61,45 @@ public class ExifField {
         validate();
     }
 
+    private static Object coerceValue(Class<?> expectedType, Object value)
+    throws ValidationError {
+        if (expectedType.isInstance(value))
+            return value;
+        if (expectedType == Rational.class) {
+            if (value instanceof Integer)
+                return new Rational((Integer) value, 1);
+        }
+        throw new ValidationError("Failed to coerce "
+                + value.getClass().getSimpleName()
+                + " to " + expectedType.getSimpleName());
+    }
+
+    private Class<?> valueClass() {
+        switch (type) {
+        case ASCII:
+        case UNDEFINED:
+            // not really in use
+            return String.class;
+        case BYTE:
+            return Byte.class;
+        case LONG:
+        case SLONG:
+        case SHORT:
+            return Integer.class;
+        case RATIONAL:
+        case SRATIONAL:
+            return Rational.class;
+        }
+        return null;
+    }
+
     private void validateValueTypes(Class<?> expectedType) throws ValidationError {
         for (Object value: values) {
-            if (!expectedType.isInstance(value))
+            if (!expectedType.isInstance(value)) {
                 throw new ValidationError("Internal type error, expected "
                         + expectedType.getCanonicalName() + " but got "
                         + value.getClass().getCanonicalName());
+            }
         }
     }
 
@@ -83,17 +116,8 @@ public class ExifField {
             if (values != null && stringValue == null)
                 throw new ValidationError("Internal type error, expected a string value");
             break;
-        case BYTE:
-            validateValueTypes(Byte.class);
-            break;
-        case LONG:
-        case SLONG:
-        case SHORT:
-            validateValueTypes(Integer.class);
-            break;
-        case RATIONAL:
-        case SRATIONAL:
-            validateValueTypes(Rational.class);
+        default:
+            validateValueTypes(valueClass());
             break;
         }
         if (!exifTag.supportsCount(getCount()))
@@ -141,6 +165,12 @@ public class ExifField {
     public void addValue(Object value) {
         assert(type != ExifDataType.ASCII && type != ExifDataType.UNDEFINED);
         assert(values != null);
+        try {
+            value = coerceValue(valueClass(), value);
+        }
+        catch (ValidationError e) {
+            // ignore the error here (maybe change this?)
+        }
         values.add(value);
     }
 

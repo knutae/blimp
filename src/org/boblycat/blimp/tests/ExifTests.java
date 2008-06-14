@@ -97,6 +97,16 @@ public class ExifTests {
         }
     }
 
+    private void checkCoercedValid(ExifTag tag, Object value, Object expectedValue) {
+        try {
+            ExifField field = new ExifField(tag, value);
+            assertEquals(expectedValue, field.valueAt(0));
+        }
+        catch (ValidationError e) {
+            fail(e.getMessage());
+        }
+    }
+
     private void checkInvalid(ExifTag tag, Object value) {
         try {
             new ExifField(tag, value);
@@ -121,7 +131,10 @@ public class ExifTests {
         checkInvalid(ExifTag.Software, 41139);
         checkInvalid(ExifTag.ImageWidth, "800");
         checkInvalid(ExifTag.XResolution, "123");
-        // TODO: coerce types to make the following work
-        checkInvalid(ExifTag.XResolution, 123);
+    }
+
+    @Test
+    public void testValidFieldsWithCoercedValue() {
+        checkCoercedValid(ExifTag.XResolution, 123, new Rational(123, 1));
     }
 }
