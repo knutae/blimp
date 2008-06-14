@@ -18,6 +18,8 @@
  */
 package org.boblycat.blimp.exif;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * A base class for reading Exif or TIFF data from a binary source.
  *
@@ -63,5 +65,54 @@ public abstract class BinaryReader {
             return;
         }
         throw new ReaderError("Failed to detect a valid Exif header.");
+    }
+
+    protected static String extractAsciiFromArray(byte[] array,
+            int offset, int size, boolean nullTerminated) throws ReaderError {
+        try {
+            int total = offset + size;
+            if (array.length < total)
+                throw new ReaderError("Premature end of data while extracting string");
+            if (nullTerminated) {
+                if (array[total-1] != 0)
+                    throw new ReaderError("Extracted string not null terminated");
+                size--;
+            }
+            return new String(array, offset, size, "US-ASCII");
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new ReaderError("Ascii encoding not supported?", e);
+        }
+        catch (IndexOutOfBoundsException e) {
+            // length has been checked, should never get here
+            assert(false);
+            throw new ReaderError("Premature end of data", e);
+        }
+    }
+
+    protected static long extractLongFromArray(byte[] array,
+            int offset, int byteCount, boolean bigEndian) throws ReaderError {
+        assert(byteCount <= 8);
+        try {
+            long result = 0;
+            if (bigEndian) {
+                for (int i = offset; i < offset+byteCount; i++) {
+                    int byteValue = array[i] & 0xff;
+                    //System.out.println("   byte val " + i + " : " + byteValue);
+                    result = (result << 8) | byteValue;
+                }
+            }
+            else {
+                for (int i = offset+byteCount-1; i >= offset; i--) {
+                    int byteValue = array[i] & 0xff;
+                    //System.out.println("   byte val " + i + " : " + byteValue);
+                    result = (result << 8) | byteValue;
+                }
+            }
+            return result;
+        }
+        catch (IndexOutOfBoundsException e) {
+            throw new ReaderError("Premature end of data", e);
+        }
     }
 }

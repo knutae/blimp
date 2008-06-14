@@ -37,52 +37,13 @@ public class ByteArrayReader extends BinaryReader {
     @Override
     public String extractAscii(int offset, int size, boolean nullTerminated)
             throws ReaderError {
-        try {
-            int total = baseOffset + offset + size;
-            if (data.length < total)
-                throw new ReaderError("Premature end of data while extracting string");
-            if (nullTerminated) {
-                if (data[total-1] != 0)
-                    throw new ReaderError("Extracted string not null terminated");
-                size--;
-            }
-            return new String(data, baseOffset + offset, size, "US-ASCII");
-        }
-        catch (UnsupportedEncodingException e) {
-            throw new ReaderError("Ascii encoding not supported?", e);
-        }
-        catch (IndexOutOfBoundsException e) {
-            // length has been checked, should never get here
-            assert(false);
-            throw new ReaderError("Premature end of data", e);
-        }
+        return extractAsciiFromArray(data, baseOffset + offset, size, nullTerminated);
     }
 
     @Override
     public long extractLong(int offset, int byteCount) throws ReaderError {
         assert(byteCount <= 8);
-        try {
-            offset += baseOffset;
-            long result = 0;
-            if (bigEndian) {
-                for (int i = offset; i < offset+byteCount; i++) {
-                    int byteValue = data[i] & 0xff;
-                    //System.out.println("   byte val " + i + " : " + byteValue);
-                    result = (result << 8) | byteValue;
-                }
-            }
-            else {
-                for (int i = offset+byteCount-1; i >= offset; i--) {
-                    int byteValue = data[i] & 0xff;
-                    //System.out.println("   byte val " + i + " : " + byteValue);
-                    result = (result << 8) | byteValue;
-                }
-            }
-            return result;
-        }
-        catch (IndexOutOfBoundsException e) {
-            throw new ReaderError("Premature end of data", e);
-        }
+        return extractLongFromArray(data, baseOffset + offset, byteCount, bigEndian);
     }
 
 }

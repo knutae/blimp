@@ -19,6 +19,7 @@
 package org.boblycat.blimp.exif;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.imageio.ImageReader;
@@ -106,15 +107,40 @@ public class CommandLine {
                 else {
                     System.out.println("Bytes: " + rawExifData.length);
                     //System.out.println(new String(rawExifData));
-                    printIFDs(rawExifData);
+                    try {
+                        printIFDs(new ExifBlobReader(rawExifData));
+                    }
+                    catch (ReaderError e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
     }
 
-    private static void printIFDs(byte[] exifData) {
+    static byte[] findRawExifData(IIOMetadata metadata) {
+        // move this to MetaDataUtil
+        String[] formats = metadata.getMetadataFormatNames();
+        for (String format: formats) {
+            IIOMetadataNode tree = null;
+            try {
+                 tree = (IIOMetadataNode) metadata.getAsTree(format);
+            }
+            catch (IllegalArgumentException e) {
+                continue;
+            }
+            IIOMetadataNode exifNode = MetaDataUtil.findExifNode(tree, false);
+            if (exifNode != null) {
+                byte[] rawExifData = (byte[]) exifNode.getUserObject();
+                if (rawExifData != null && rawExifData.length > 0)
+                    return rawExifData;
+            }
+        }
+        return null;
+    }
+
+    private static void printIFDs(ExifBlobReader reader) {
         try {
-            ExifBlobReader reader = new ExifBlobReader(exifData);
             Vector<ImageFileDirectory> dirs = reader.extractIFDs();
             for (ImageFileDirectory ifd: dirs) {
                 System.out.println("-------------------");
@@ -139,21 +165,29 @@ public class CommandLine {
         }
     }
 
+    private static ExifBlobReader getExifReader(File filename)
+    throws IOException, ReaderError {
+        String format = Util.getFileExtension(filename);
+        ImageReader reader = BitmapUtil.getImageReader(format);
+        if (reader != null) {
+            // metadata reader
+            ImageInputStream input = new FileImageInputStream(filename);
+            reader.setInput(input);
+            System.out.println("Finding metadata...");
+            IIOMetadata metadata = reader.getImageMetadata(0);
+            byte[] data = findRawExifData(metadata);
+            if (data != null)
+                return new ExifBlobReader(data);
+        }
+        // attempt to read Exif data directly from the file
+        return new ExifBlobReader(filename);
+    }
+
     public static void main(String[] args) throws Exception {
         if (args.length != 1)
             fatal("missing file name");
 
-        String filename = args[0];
-        System.out.println("Reading file " + filename);
-        String format = Util.getFileExtension(filename);
-        ImageReader reader = BitmapUtil.getImageReader(format);
-        if (reader == null)
-            fatal("unknown format " + format);
-        ImageInputStream input = new FileImageInputStream(new File(filename));
-        reader.setInput(input);
-        System.out.println("Finding metadata...");
-        IIOMetadata metadata = reader.getImageMetadata(0);
-        printMetaData(metadata);
-        System.out.println("Done.");
+        ExifBlobReader reader = getExifReader(new File(args[0]));
+        printIFDs(reader);
     }
 }

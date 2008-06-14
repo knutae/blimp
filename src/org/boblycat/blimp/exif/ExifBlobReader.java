@@ -18,6 +18,8 @@
  */
 package org.boblycat.blimp.exif;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Vector;
 
 /**
@@ -32,6 +34,11 @@ public class ExifBlobReader {
 
     public ExifBlobReader(byte[] data) throws ReaderError {
         reader = new ByteArrayReader(data);
+        currentOffset = 0;
+    }
+
+    public ExifBlobReader(File fileName) throws FileNotFoundException, ReaderError {
+        reader = new FileBinaryReader(fileName);
         currentOffset = 0;
     }
 

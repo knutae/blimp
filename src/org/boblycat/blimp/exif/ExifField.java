@@ -185,9 +185,25 @@ public class ExifField {
         return values.get(index);
     }
 
+    private static String printable(String str) {
+        boolean isPrintable = true;
+        for (int i=0; i<str.length(); ++i) {
+            char c = str.charAt(i);
+            if (Character.isISOControl(c) || c >= 128) {
+                isPrintable = false;
+                break;
+            }
+        }
+        if (isPrintable)
+            return str;
+        else
+            return "<binary data>";
+    }
+
     public String toString() {
-        if (stringValue != null)
-            return stringValue;
+        if (stringValue != null) {
+            return printable(stringValue);
+        }
         StringBuilder str = new StringBuilder();
         str.append("[ ");
         for (Object val: values) {
