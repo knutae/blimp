@@ -69,6 +69,10 @@ public abstract class BinaryReader {
 
     protected static String extractAsciiFromArray(byte[] array,
             int offset, int size, boolean nullTerminated) throws ReaderError {
+        if (size == 0) {
+            // special case that handles size == 0 even for null terminated strings
+            return "";
+        }
         try {
             int total = offset + size;
             if (array.length < total)

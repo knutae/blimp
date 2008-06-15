@@ -343,7 +343,7 @@ public class ExifTests {
 
         // Exif IFD
         assertEquals(exifOffset, writer.offset);
-        writer.writeShort(3); // field count
+        writer.writeShort(4); // field count
         // Exif Version (use the fictional version "2.2.9")
         writer.writeShort(36864);
         writer.writeShort(7); // UNDEFINED
@@ -361,6 +361,13 @@ public class ExifTests {
         writer.writeInt(2); // two values, 13 and 37
         writer.writeShort(13);
         writer.writeShort(37);
+        // Unknown tag with an empty string value, count = 0
+        // (Maybe count should be 1, but this case has been observed in
+        // real images and should be handled.)
+        writer.writeShort(54322);
+        writer.writeShort(2); // ASCII
+        writer.writeInt(0);
+        writer.writeInt(0);
         // next IFD offset (should this be necessary to write after Exif IFD?)
         writer.writeInt(0);
 
@@ -384,7 +391,7 @@ public class ExifTests {
         assertEquals(1, field.getCount());
 
         ifd = ifds.get(1);
-        assertEquals(3, ifd.size());
+        assertEquals(4, ifd.size());
         it = ifd.iterator();
 
         field = it.next();
@@ -402,5 +409,11 @@ public class ExifTests {
         assertEquals(2, field.getCount());
         assertEquals(13, field.valueAt(0));
         assertEquals(37, field.valueAt(1));
+
+        field = it.next();
+        assertEquals(54322, field.getTag()); // unknown tag 2
+        //assertEquals(0, field.getCount());
+        assertEquals(1, field.getCount());
+        assertEquals("", field.getStringValue());
     }
 }
