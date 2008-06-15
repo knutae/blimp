@@ -151,8 +151,9 @@ public class CommandLine {
                         System.out.println("+ Unknown tag " + tag +
                                 " (0x" + Integer.toHexString(tag) + ")");
                     else {
-                        System.out.println("+ " + exifTag.toString());
-                        System.out.println("  category : " + exifTag.getCategory());
+                        System.out.println("+ " + exifTag.toString()
+                                + " [" + exifTag.getCategory() + "]");
+                        //System.out.println("  category : " + exifTag.getCategory());
                     }
                     System.out.println("  type     : " + field.getType());
                     if (field.getCount() != 1)

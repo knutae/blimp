@@ -143,6 +143,42 @@ public enum ExifTag {
 
     // 4.6.6 GPS Attribute Information: not yet
 
+    // BaseLine TIFF 6.0 tags NOT used by Exif
+    NewSubfileType (254, Category.TIFF, LONG, 1),
+    SubfileType (255, Category.TIFF, SHORT, 1),
+    Threshholding (263, Category.TIFF, SHORT, 1),
+    CellWidth (264, Category.TIFF, SHORT, 1),
+    CellLength (265, Category.TIFF, SHORT, 1),
+    FillOrder (266, Category.TIFF, SHORT, 1),
+    MinSampleValue (280, Category.TIFF, SHORT, -1),
+    MaxSampleValue (281, Category.TIFF, SHORT, -1),
+    FreeOffsets (288, Category.TIFF, LONG, -1),
+    FreeByteCounts (289, Category.TIFF, LONG, -1),
+    GrayResponseUnit (290, Category.TIFF, SHORT, 1),
+    GrayResponseCurve (291, Category.TIFF, SHORT, -1),
+    HostComputer (316, Category.TIFF, ASCII, -1),
+    ColorMap (320, Category.TIFF, SHORT, -1),
+    ExtraSamples (338, Category.TIFF, SHORT, -1),
+
+    // Other TIFF tags
+    XMP (700, Category.TIFF, BYTE, -1),
+
+    // TIFF/EP tags (see http://en.wikipedia.org/wiki/TIFF/EP)
+    SubIFDs (330, Category.TIFF, LONG, -1),
+    JPEGTables (347, Category.TIFF, UNDEFINED, -1),
+    CFARepeatPatternDim (33421, Category.TIFF, SHORT, 2),
+    BatteryLevel (33423, Category.TIFF, EnumSet.of(RATIONAL, ASCII), -1),
+    IPTC_NAA (33723, Category.TIFF, EnumSet.of(LONG, ASCII), -1),
+    InterColorProfile (34675, Category.TIFF, UNDEFINED, -1),
+    Interlace (34857, Category.TIFF, SHORT, 1),
+    TimeZoneOffset (34858, Category.TIFF, SSHORT, -1), // 1 or 2
+    SelfTimerMode (34859, Category.TIFF, SHORT, 1),
+    Noise (37389, Category.TIFF, UNDEFINED, -1),
+    ImageNumber (37393, Category.TIFF, LONG, 1),
+    SecurityClassification (37394, Category.TIFF, ASCII, -1),
+    ImageHistory (37395, Category.TIFF, ASCII, -1),
+    TIFF_EPStandardID (37398, Category.TIFF, BYTE, 4),
+
     // DNG 1.2.0 format tags (Adobe's Digital Negative format)
     DNGVersion (50706, Category.DNG, BYTE, 4),
     DNGBackwardVersion (50707, Category.DNG, BYTE, 4),
