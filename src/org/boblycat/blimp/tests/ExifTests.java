@@ -18,6 +18,10 @@
  */
 package org.boblycat.blimp.tests;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Iterator;
+import java.util.Vector;
+
 import org.boblycat.blimp.exif.*;
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -269,5 +273,134 @@ public class ExifTests {
             }
             offset += 12;
         }
+    }
+
+    private class ByteWriter {
+        ByteArrayOutputStream stream;
+        int offset;
+
+        ByteWriter() {
+            stream = new ByteArrayOutputStream();
+            offset = 0;
+        }
+
+        void writeLong(long value, int count) {
+            for (int i=0; i<count; ++i) {
+                byte b = (byte) (value & 0xff);
+                stream.write(b);
+                value = value >> 8;
+            }
+            offset += count;
+        }
+
+        void writeInt(int value) {
+            writeLong(value, 4);
+        }
+
+        void writeShort(int value) {
+            writeLong(value, 2);
+        }
+
+        void writeString(String value) {
+            for (int i=0; i<value.length(); ++i)
+                stream.write(value.charAt(i));
+            offset += value.length();
+        }
+    }
+
+    @Test
+    public void testBinaryReader() throws Exception {
+        ByteWriter writer = new ByteWriter();
+        // Write some Exif data
+        // Offsets are pretty hard to do by hand, so use only inline values
+        // (max 4 bytes) except for the Exif IFD pointer
+        writer.writeString("II");
+        writer.writeShort(42);
+        writer.writeInt(8); // offset to 0th IFD
+
+        // 0th IFD
+        writer.writeShort(3); // field count
+        // Image width
+        writer.writeShort(256);
+        writer.writeShort(3); // SHORT
+        writer.writeInt(1);
+        writer.writeInt(640);
+        // Write a dummy field with an undefined data type (42)
+        // the reader must be able to handle this by skipping the field
+        writer.writeShort(32123);
+        writer.writeShort(42); // data type not defined in TIFF
+        writer.writeInt(1);
+        writer.writeInt(55555);
+        // Exif IFD pointer
+        // offset = 8 (header) + 2 (field count) + 12 * 3 (fields) + 4 (IFD offset)
+        int exifOffset = 8 + 2 + 12 * 3 + 4;
+        writer.writeShort(34665);
+        writer.writeShort(4); // LONG
+        writer.writeInt(1);
+        writer.writeInt(exifOffset);
+        // next IFD offset
+        writer.writeInt(0);
+
+        // Exif IFD
+        assertEquals(exifOffset, writer.offset);
+        writer.writeShort(3); // field count
+        // Exif Version (use the fictional version "2.2.9")
+        writer.writeShort(36864);
+        writer.writeShort(7); // UNDEFINED
+        writer.writeInt(4);
+        writer.writeString("0229");
+        // Metering Mode
+        writer.writeShort(37383);
+        writer.writeShort(3); // SHORT
+        writer.writeInt(1);
+        writer.writeShort(3);
+        writer.writeShort(0); // padding
+        // Unknown tag (but with a known data type)
+        writer.writeShort(54321);
+        writer.writeShort(3); // SHORT
+        writer.writeInt(2); // two values, 13 and 37
+        writer.writeShort(13);
+        writer.writeShort(37);
+        // next IFD offset (should this be necessary to write after Exif IFD?)
+        writer.writeInt(0);
+
+        // We're finished writing, test the reader
+        byte[] data = writer.stream.toByteArray();
+        ExifBlobReader reader = new ExifBlobReader(data);
+        Vector<ImageFileDirectory> ifds = reader.extractIFDs();
+        assertEquals(2, ifds.size());
+        // Test 0th IFD
+        ImageFileDirectory ifd = ifds.get(0);
+        assertEquals(2, ifd.size()); // unknown data type not included
+        Iterator<ExifField> it = ifd.iterator();
+
+        ExifField field = it.next();
+        assertEquals(ExifTag.ImageWidth.getTag(), field.getTag());
+        assertEquals(1, field.getCount());
+        assertEquals(640, field.valueAt(0));
+
+        field = it.next();
+        assertEquals(ExifTag.Exif_IFD_Pointer.getTag(), field.getTag());
+        assertEquals(1, field.getCount());
+
+        ifd = ifds.get(1);
+        assertEquals(3, ifd.size());
+        it = ifd.iterator();
+
+        field = it.next();
+        assertEquals(ExifTag.ExifVersion.getTag(), field.getTag());
+        assertEquals(4, field.getCount());
+        assertEquals("0229", field.getStringValue());
+
+        field = it.next();
+        assertEquals(ExifTag.MeteringMode.getTag(), field.getTag());
+        assertEquals(1, field.getCount());
+        assertEquals(3, field.valueAt(0));
+
+        field = it.next();
+        assertEquals(54321, field.getTag()); // unknown tag
+        assertEquals(2, field.getCount());
+        assertEquals(13, field.valueAt(0));
+        assertEquals(37, field.valueAt(1));
     }
 }
