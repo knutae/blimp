@@ -142,6 +142,50 @@ public enum ExifTag {
     ImageUniqueID (42016, Category.Exif, ASCII, 33),
 
     // 4.6.6 GPS Attribute Information: not yet
+
+    // DNG 1.2.0 format tags (Adobe's Digital Negative format)
+    DNGVersion (50706, Category.DNG, BYTE, 4),
+    DNGBackwardVersion (50707, Category.DNG, BYTE, 4),
+    UniqueCameraModel (50708, Category.DNG, ASCII, -1),
+    LocalizedCameraModel (50709, Category.DNG, EnumSet.of(ASCII, BYTE), -1),
+    CFAPlaneColor (50710, Category.DNG, BYTE, -1),
+    CFALayout (50711, Category.DNG, SHORT, 1),
+    LinearizationTable (50712, Category.DNG, SHORT, -1),
+    BlackLevelRepeatDim (50713, Category.DNG, SHORT, 2),
+    BlackLevel (50714, Category.DNG, EnumSet.of(SHORT, LONG, RATIONAL), -1),
+    BlackLevelDeltaH (50715, Category.DNG, SRATIONAL, -1),
+    BlackLevelDeltaV (50716, Category.DNG, SRATIONAL, -1),
+    WhiteLevel (50717, Category.DNG, EnumSet.of(SHORT, LONG), -1),
+    DefaultScale (50718, Category.DNG, RATIONAL, 2),
+    BestQualityScale (50780, Category.DNG, RATIONAL, 1),
+    DefaultCropOrigin (50719, Category.DNG, EnumSet.of(SHORT, LONG, RATIONAL), 2),
+    DefaultCropSize (50720, Category.DNG, EnumSet.of(SHORT, LONG, RATIONAL), 2),
+    CalibrationIlluminant1 (50778, Category.DNG, SHORT, 1),
+    CalibrationIlluminant2 (50779, Category.DNG, SHORT, 1),
+    ColorMatrix1 (50721, Category.DNG, SRATIONAL, -1),
+    ColorMatrix2 (50722, Category.DNG, SRATIONAL, -1),
+    CameraCalibration1 (50723, Category.DNG, SRATIONAL, -1),
+    CameraCalibration2 (50724, Category.DNG, SRATIONAL, -1),
+    ReductionMatrix1 (50725, Category.DNG, SRATIONAL, -1),
+    ReductionMatrix2 (50726, Category.DNG, SRATIONAL, -1),
+    AnalogBalance (50727, Category.DNG, RATIONAL, -1),
+    AsShotNeutral (50728, Category.DNG, EnumSet.of(SHORT, RATIONAL), -1),
+    AsShotWhiteXY (50729, Category.DNG, RATIONAL, 2),
+    BaselineExposure (50730, Category.DNG, SRATIONAL, 1),
+    BaselineNoise (50731, Category.DNG, RATIONAL, 1),
+    BaselineSharpness (50732, Category.DNG, RATIONAL, 1),
+    BayerGreenSplit (50733, Category.DNG, LONG, 1),
+    LinearResponseLimit (50734, Category.DNG, RATIONAL, 1),
+    CameraSerialNumber (50735, Category.DNG, ASCII, -1),
+    LensInfo (50736, Category.DNG, RATIONAL, 4),
+    ChromaBlurRadius (50737, Category.DNG, RATIONAL, 1),
+    AntiAliasStrength (50738, Category.DNG, RATIONAL, 1),
+    ShadowScale (50739, Category.DNG, RATIONAL, 1),
+    DNGPrivateData (50740, Category.DNG, BYTE, -1),
+    MarkerNoteSafety (50741, Category.DNG, SHORT, 1),
+    RawDataUniqueID (50781, Category.DNG, BYTE, 16),
+    OriginalRawFileName (50827, Category.DNG, EnumSet.of(ASCII, BYTE), -1),
+    OriginalRawFileData (50828, Category.DNG, UNDEFINED, -1),
     ;
 
     /**
@@ -153,6 +197,7 @@ public enum ExifTag {
         Pointer,
         Tiff,
         Exif,
+        DNG,
     }
 
     private int tag;

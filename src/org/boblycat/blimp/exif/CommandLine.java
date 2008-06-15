@@ -150,8 +150,10 @@ public class CommandLine {
                     if (exifTag == null)
                         System.out.println("+ Unknown tag " + tag +
                                 " (0x" + Integer.toHexString(tag) + ")");
-                    else
+                    else {
                         System.out.println("+ " + exifTag.toString());
+                        System.out.println("  category : " + exifTag.getCategory());
+                    }
                     System.out.println("  type     : " + field.getType());
                     if (field.getCount() != 1)
                         System.out.println("  count    : " + field.getCount());
