@@ -187,6 +187,20 @@ public class ExifField {
         return values.get(index);
     }
 
+    private static String escape(String str) {
+        StringBuilder buf = new StringBuilder();
+        for (int i=0; i<str.length(); ++i) {
+            char c = str.charAt(i);
+            if (c == '\\')
+                buf.append("\\\\");
+            else if (Character.isISOControl(c) || (c >= 128))
+                buf.append(String.format("[0x%02x]", (int) c));
+            else
+                buf.append(c);
+        }
+        return buf.toString();
+    }
+
     private static String printable(String str) {
         boolean isPrintable = true;
         for (int i=0; i<str.length(); ++i) {
@@ -198,8 +212,12 @@ public class ExifField {
         }
         if (isPrintable)
             return str;
-        else
-            return "<binary data>";
+        else {
+            if (str.length() <= 1024)
+                return escape(str);
+            else
+                return "<binary data, " + str.length() + " bytes>";
+        }
     }
 
     public String toString() {
