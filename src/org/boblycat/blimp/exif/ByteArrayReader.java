@@ -18,8 +18,6 @@
  */
 package org.boblycat.blimp.exif;
 
-import java.io.UnsupportedEncodingException;
-
 /**
  * Reads binary Exif or TIFF data from a byte array.
  *
