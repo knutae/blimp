@@ -145,6 +145,10 @@ public class BlobCreator {
             writeValues(field.getValues(), field.getType());
             break;
         }
+        if (currentOffset % 2 == 1) {
+            // always align offset to a two-byte boundary
+            writeByte((byte) 0);
+        }
     }
 
     private void writeDelayedValues(Vector<DelayedValueInfo> values) {
