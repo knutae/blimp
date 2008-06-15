@@ -81,10 +81,12 @@ public class ExifField {
             // not really in use
             return String.class;
         case BYTE:
+        case SBYTE:
             return Byte.class;
+        case SHORT:
+        case SSHORT:
         case LONG:
         case SLONG:
-        case SHORT:
             return Integer.class;
         case RATIONAL:
         case SRATIONAL:

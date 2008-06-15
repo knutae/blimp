@@ -115,9 +115,11 @@ public class BlobCreator {
         for (Object obj: values) {
             switch (type) {
             case BYTE:
+            case SBYTE:
                 writeByte((Byte) obj);
                 break;
             case SHORT:
+            case SSHORT:
             case LONG:
             case SLONG:
                 writeInt((Integer) obj, type.getByteCount());

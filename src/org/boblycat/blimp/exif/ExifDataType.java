@@ -30,9 +30,12 @@ public enum ExifDataType {
     SHORT     (3, 2),
     LONG      (4, 4),
     RATIONAL  (5, 8),
+    SBYTE     (6, 1),
     UNDEFINED (7, 1),
+    SSHORT    (8, 2),
     SLONG     (9, 4),
     SRATIONAL (10, 8);
+    /* Note: FLOAT (11) and DOUBLE (12) are not recognized. */
 
     private int type;
     private int byteCount;
@@ -75,8 +78,12 @@ public enum ExifDataType {
             return LONG;
         case 5:
             return RATIONAL;
+        case 6:
+            return SBYTE;
         case 7:
             return UNDEFINED;
+        case 8:
+            return SSHORT;
         case 9:
             return SLONG;
         case 10:
