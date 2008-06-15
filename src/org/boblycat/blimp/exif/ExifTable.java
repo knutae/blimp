@@ -56,7 +56,7 @@ public class ExifTable {
 
     public ImageFileDirectory getPrimaryIFD() {
         ImageFileDirectory ifd = new ImageFileDirectory();
-        addCategoryFields(ifd, ExifTag.Category.Tiff);
+        addCategoryFields(ifd, ExifTag.Category.TIFF);
         ExifField exifPtr = new ExifField(
                 ExifTag.Exif_IFD_Pointer.getTag(), ExifDataType.LONG);
         exifPtr.addValue(0);
