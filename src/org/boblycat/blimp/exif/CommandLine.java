@@ -148,11 +148,10 @@ public class CommandLine {
                     int tag = field.getTag();
                     ExifTag exifTag = ExifTag.fromTag(tag);
                     if (exifTag == null)
-                        System.out.println("+++ Unknown tag " + tag);
+                        System.out.println("+ Unknown tag " + tag +
+                                " (0x" + Integer.toHexString(tag) + ")");
                     else
-                        System.out.println("+++ " + exifTag.toString());
-                    System.out.println("  tag      : " + Integer.toString(field.getTag())
-                            + " (0x" + Integer.toHexString(field.getTag()) + ")");
+                        System.out.println("+ " + exifTag.toString());
                     System.out.println("  type     : " + field.getType());
                     if (field.getCount() != 1)
                         System.out.println("  count    : " + field.getCount());

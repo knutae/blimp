@@ -205,12 +205,10 @@ public class ExifField {
             return printable(stringValue);
         }
         StringBuilder str = new StringBuilder();
-        str.append("[ ");
         for (Object val: values) {
             str.append(val.toString());
             str.append(' ');
         }
-        str.append(']');
         return str.toString();
     }
 
