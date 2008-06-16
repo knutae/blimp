@@ -160,7 +160,11 @@ public enum ExifTag {
     ColorMap (320, Category.TIFF, SHORT, -1),
     ExtraSamples (338, Category.TIFF, SHORT, -1),
 
-    // Other TIFF tags
+    // Extension TIFF tags
+    TileWidth (322, Category.TIFF, EnumSet.of(SHORT, LONG), 1),
+    TileLength (323, Category.TIFF, EnumSet.of(SHORT, LONG), 1),
+    TileOffsets (324, Category.TIFF, LONG, -1),
+    TileByteCount (325, Category.TIFF, EnumSet.of(SHORT, LONG), -1),
     XMP (700, Category.TIFF, BYTE, -1),
 
     // TIFF/EP tags (see http://en.wikipedia.org/wiki/TIFF/EP)
@@ -178,6 +182,15 @@ public enum ExifTag {
     SecurityClassification (37394, Category.TIFF, ASCII, -1),
     ImageHistory (37395, Category.TIFF, ASCII, -1),
     TIFF_EPStandardID (37398, Category.TIFF, BYTE, 4),
+    // TIFF/EP tags which are also defined in Exif (what, me confused?)
+    EP_CFAPattern (33422, Category.TIFF, BYTE, -1),
+    EP_FlashEnergy (37387, Category.TIFF, RATIONAL, -1), // 1 or 2
+    EP_SpatialFrequencyResponse (37388, Category.TIFF, RATIONAL, -1), // 1 or 2
+    EP_FocalPlaneXResolution (37390, Category.TIFF, RATIONAL, 1),
+    EP_FocalPlaneYResolution (37391, Category.TIFF, RATIONAL, 1),
+    EP_SubjectLocation (37396, Category.TIFF, SHORT, -1), // 2, 3 or 4
+    EP_ExposureIndex (37397, Category.TIFF, RATIONAL, -1), // 1 or 2
+    EP_SensingMethod (37399, Category.TIFF, SHORT, 1),
 
     // DNG 1.2.0 format tags (Adobe's Digital Negative format)
     DNGVersion (50706, Category.DNG, BYTE, 4),
