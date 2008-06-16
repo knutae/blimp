@@ -82,10 +82,11 @@ public abstract class BinaryReader {
                     throw new ReaderError("Extracted string not null terminated");
                 size--;
             }
-            return new String(array, offset, size, "US-ASCII");
-        }
-        catch (UnsupportedEncodingException e) {
-            throw new ReaderError("Ascii encoding not supported?", e);
+            StringBuilder buf = new StringBuilder(size);
+            for (int i=offset; i<offset+size; ++i) {
+                buf.append((char) (array[i] & 0xff));
+            }
+            return buf.toString();
         }
         catch (IndexOutOfBoundsException e) {
             // length has been checked, should never get here

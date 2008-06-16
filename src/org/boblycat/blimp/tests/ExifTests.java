@@ -301,6 +301,11 @@ public class ExifTests {
             writeLong(value, 2);
         }
 
+        void writeByte(int value) {
+            stream.write(value);
+            offset++;
+        }
+
         void writeString(String value) {
             for (int i=0; i<value.length(); ++i)
                 stream.write(value.charAt(i));
@@ -343,7 +348,7 @@ public class ExifTests {
 
         // Exif IFD
         assertEquals(exifOffset, writer.offset);
-        writer.writeShort(4); // field count
+        writer.writeShort(5); // field count
         // Exif Version (use the fictional version "2.2.9")
         writer.writeShort(36864);
         writer.writeShort(7); // UNDEFINED
@@ -355,6 +360,14 @@ public class ExifTests {
         writer.writeInt(1);
         writer.writeShort(3);
         writer.writeShort(0); // padding
+        // MakerNote with binary data (hex 00 FF EE DD)
+        writer.writeShort(37500);
+        writer.writeShort(7); // UNDEFINED
+        writer.writeInt(4);
+        writer.writeByte(0x00);
+        writer.writeByte(0xFF);
+        writer.writeByte(0xEE);
+        writer.writeByte(0xDD);
         // Unknown tag (but with a known data type)
         writer.writeShort(54321);
         writer.writeShort(3); // SHORT
@@ -391,7 +404,7 @@ public class ExifTests {
         assertEquals(1, field.getCount());
 
         ifd = ifds.get(1);
-        assertEquals(4, ifd.size());
+        assertEquals(5, ifd.size());
         it = ifd.iterator();
 
         field = it.next();
@@ -403,6 +416,16 @@ public class ExifTests {
         assertEquals(ExifTag.MeteringMode.getTag(), field.getTag());
         assertEquals(1, field.getCount());
         assertEquals(3, field.valueAt(0));
+
+        field = it.next();
+        assertEquals(ExifTag.MakerNote.getTag(), field.getTag());
+        assertEquals(4, field.getCount());
+        String value = field.getStringValue();
+        assertEquals(4, value.length());
+        assertEquals(0x00, (int) value.charAt(0));
+        assertEquals(0xFF, (int) value.charAt(1));
+        assertEquals(0xEE, (int) value.charAt(2));
+        assertEquals(0xDD, (int) value.charAt(3));
 
         field = it.next();
         assertEquals(54321, field.getTag()); // unknown tag
