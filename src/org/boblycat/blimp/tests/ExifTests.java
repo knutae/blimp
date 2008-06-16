@@ -413,10 +413,13 @@ public class ExifTests {
         // We're finished writing, test the reader
         byte[] data = writer.stream.toByteArray();
         ExifBlobReader reader = new ExifBlobReader(data);
-        Vector<ImageFileDirectory> ifds = reader.extractIFDs();
-        assertEquals(2, ifds.size());
+        ExifTable table = reader.extractIFDTable();
+        Vector<ImageFileDirectory> ifds = table.getMainIFDs();
+
+        assertEquals(1, ifds.size());
         // Test 0th IFD
         ImageFileDirectory ifd = ifds.get(0);
+        assertSame(ifd, table.getPrimaryIFD());
         assertEquals(2, ifd.size()); // unknown data type not included
         Iterator<ExifField> it = ifd.iterator();
 
@@ -429,7 +432,8 @@ public class ExifTests {
         assertEquals(ExifTag.Exif_IFD_Pointer.getTag(), field.getTag());
         assertEquals(1, field.getCount());
 
-        ifd = ifds.get(1);
+        ifd = table.getExifIFD();
+        assertNotNull(ifd);
         assertEquals(5, ifd.size());
         it = ifd.iterator();
 

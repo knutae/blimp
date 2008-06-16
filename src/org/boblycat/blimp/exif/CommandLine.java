@@ -20,7 +20,6 @@ package org.boblycat.blimp.exif;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Vector;
 
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
@@ -145,8 +144,8 @@ public class CommandLine {
         System.out.println(str);
     }
 
-    private static void printIFD(ImageFileDirectory ifd, int indent) {
-        printIndent(indent, "-------------------");
+    private static void printIFD(ImageFileDirectory ifd, int indent, String name) {
+        printIndent(indent, "--- Begin IFD " + name + " ---");
         for (ExifField field: ifd) {
             int tag = field.getTag();
             ExifTag exifTag = ExifTag.fromTag(tag);
@@ -164,18 +163,24 @@ public class CommandLine {
                 printIndent(indent, "  count    : " + field.getCount());
             printIndent(indent, "  value(s) : " + field.toString());
         }
+        int subIndex = 0;
         for (ImageFileDirectory sub: ifd.getSubIFDs()) {
-            printIndent(indent + 1, "****** SubIFD ******");
-            printIFD(sub, indent + 1);
+            printIFD(sub, indent + 1, name + "." + subIndex);
+            subIndex++;
         }
+        printIndent(indent, "--- End IFD " + name + " ---");
+        System.out.println();
     }
 
     private static void printIFDs(ExifBlobReader reader) {
         try {
-            Vector<ImageFileDirectory> dirs = reader.extractIFDs();
-            for (ImageFileDirectory ifd: dirs) {
-                printIFD(ifd, 0);
+            ExifTable table = reader.extractIFDTable();
+            int index = 0;
+            for (ImageFileDirectory ifd: table.getMainIFDs()) {
+                printIFD(ifd, 0, Integer.toString(index));
+                index++;
             }
+            printIFD(table.getExifIFD(), 0, "Exif");
         }
         catch (ReaderError e) {
             e.printStackTrace();
@@ -190,7 +195,7 @@ public class CommandLine {
             // metadata reader
             ImageInputStream input = new FileImageInputStream(filename);
             reader.setInput(input);
-            System.out.println("Finding metadata...");
+            //System.out.println("Finding metadata...");
             IIOMetadata metadata = reader.getImageMetadata(0);
             byte[] data = findRawExifData(metadata);
             if (data != null)

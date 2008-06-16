@@ -116,19 +116,29 @@ public class ExifBlobReader {
         return ifd;
     }
 
-    public Vector<ImageFileDirectory> extractIFDs() throws ReaderError {
-        Vector<ImageFileDirectory> directories = new Vector<ImageFileDirectory>();
+    public ExifTable extractIFDTable() throws ReaderError {
+        Vector<ImageFileDirectory> ifds = new Vector<ImageFileDirectory>();
+        ImageFileDirectory exifIFD = null;
+        boolean nextIsExif = false;
         currentOffset = reader.extractInt(4, 4);
         while (currentOffset != 0) {
-            //System.out.println("current offset: " + currentOffset);
-            directories.add(extractIFD());
+            ImageFileDirectory ifd = extractIFD();
+            if (nextIsExif) {
+                exifIFD = ifd;
+                nextIsExif = false;
+            }
+            else {
+                ifds.add(ifd);
+            }
             currentOffset = reader.extractInt(currentOffset, 4);
             if (currentOffset == 0 && exifPointer != 0) {
-                //System.out.println("jumping to exif pointer: " + exifPointer);
                 currentOffset = exifPointer;
                 exifPointer = 0;
+                nextIsExif = true;
             }
         }
-        return directories;
+        ExifTable table = new ExifTable();
+        table.setIFDs(ifds, exifIFD);
+        return table;
     }
 }

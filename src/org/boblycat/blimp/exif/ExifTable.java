@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp.exif;
 
-import java.util.HashMap;
+import java.util.Vector;
 
 /**
  * A table of Exif data, and functions for converting to and from a set of IFDs.
@@ -26,10 +26,20 @@ import java.util.HashMap;
  * @author Knut Arild Erstad
  */
 public class ExifTable {
-    private HashMap<Integer, ExifField> map;
+    private Vector<ImageFileDirectory> mainIFDs;
+    ImageFileDirectory primaryIFD;
+    ImageFileDirectory exifIFD;
 
     public ExifTable() {
-        map = new HashMap<Integer, ExifField>();
+        primaryIFD = new ImageFileDirectory();
+
+        exifIFD = new ImageFileDirectory();
+        ExifField version = new ExifField(ExifTag.ExifVersion);
+        version.setStringValue("0220");
+        exifIFD.addField(version);
+
+        mainIFDs = new Vector<ImageFileDirectory>();
+        mainIFDs.add(primaryIFD);
     }
 
     /**
@@ -38,39 +48,50 @@ public class ExifTable {
      * @param field
      */
     public void put(ExifField field) {
-        map.put(field.getTag(), field);
+        ImageFileDirectory ifd = primaryIFD;
+        ExifTag tag = ExifTag.fromTag(field.getTag());
+        if (tag != null && tag.getCategory() == ExifTag.Category.Exif)
+            ifd = exifIFD;
+        ifd.addField(field);
     }
 
     public ExifField get(int tag) {
-        return map.get(tag);
+        for (ImageFileDirectory ifd: mainIFDs) {
+            ExifField field = ifd.get(tag);
+            if (field != null)
+                return field;
+        }
+        return exifIFD.get(tag);
     }
 
-    private void addCategoryFields(ImageFileDirectory ifd, ExifTag.Category cat) {
-        for (ExifField field: map.values()) {
-            ExifTag tag = ExifTag.fromTag(field.getTag());
-            if (tag != null && tag.getCategory() == cat) {
-                ifd.addField(field);
-            }
+    private void preparePrimaryIFD() {
+        // add default fields to primary IFD
+        if (primaryIFD.get(ExifTag.Exif_IFD_Pointer) == null) {
+            ExifField pointer = new ExifField(ExifTag.Exif_IFD_Pointer);
+            pointer.addValue(0);
+            primaryIFD.addField(pointer);
         }
     }
 
     public ImageFileDirectory getPrimaryIFD() {
-        ImageFileDirectory ifd = new ImageFileDirectory();
-        addCategoryFields(ifd, ExifTag.Category.TIFF);
-        ExifField exifPtr = new ExifField(
-                ExifTag.Exif_IFD_Pointer.getTag(), ExifDataType.LONG);
-        exifPtr.addValue(0);
-        ifd.addField(exifPtr);
-        return ifd;
+        preparePrimaryIFD();
+        return primaryIFD;
     }
 
     public ImageFileDirectory getExifIFD() {
-        ImageFileDirectory ifd = new ImageFileDirectory();
-        ExifField version = new ExifField(
-                ExifTag.ExifVersion.getTag(), ExifDataType.UNDEFINED);
-        version.setStringValue("0220");
-        ifd.addField(version);
-        addCategoryFields(ifd, ExifTag.Category.Exif);
-        return ifd;
+        return exifIFD;
+    }
+
+    public Vector<ImageFileDirectory> getMainIFDs() {
+        return mainIFDs;
+    }
+
+    public void setIFDs(Vector<ImageFileDirectory> mainIFDs,
+            ImageFileDirectory exifIFD) {
+        if (mainIFDs.size() == 0)
+            throw new IllegalArgumentException("At least one IFD is required");
+        this.mainIFDs = mainIFDs;
+        primaryIFD = mainIFDs.get(0);
+        this.exifIFD = exifIFD;
     }
 }
