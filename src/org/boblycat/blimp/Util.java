@@ -23,7 +23,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.logging.Logger;
 
-import org.boblycat.blimp.layers.FileInputLayer;
+import org.boblycat.blimp.layers.SimpleFileInputLayer;
 import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.RawFileInputLayer;
 
@@ -174,7 +174,7 @@ public class Util {
         if (isRawFile(filePath))
             return new RawFileInputLayer(filePath);
         else
-            return new FileInputLayer(filePath);
+            return new SimpleFileInputLayer(filePath);
     }
 
     public static String fixPointDecimalToString(int value, int digits) {

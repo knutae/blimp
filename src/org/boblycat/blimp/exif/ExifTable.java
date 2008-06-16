@@ -64,6 +64,10 @@ public class ExifTable {
         return exifIFD.get(tag);
     }
 
+    public ExifField get(ExifTag tag) {
+        return get(tag.getTag());
+    }
+
     private void preparePrimaryIFD() {
         // add default fields to primary IFD
         if (primaryIFD.get(ExifTag.Exif_IFD_Pointer) == null) {

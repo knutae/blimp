@@ -77,8 +77,12 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         ProgressListener listener = new SessionProgressListener(this, layer);
         layer.addProgressListener(listener);
         Bitmap result = layer.applyLayer(source);
-        if (result != null && result.getPixelScaleFactor() <= 0)
-            result.setPixelScaleFactor(source.getPixelScaleFactor());
+        if (result != null) {
+            if (result.getPixelScaleFactor() <= 0)
+                result.setPixelScaleFactor(source.getPixelScaleFactor());
+            if (result.getExifTable() == null)
+                result.setExifTable(source.getExifTable());
+        }
         layer.removeProgressListener(listener);
         reportLayerProgress(layer, 1.0);
         return result;

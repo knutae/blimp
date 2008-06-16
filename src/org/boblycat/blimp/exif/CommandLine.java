@@ -19,17 +19,10 @@
 package org.boblycat.blimp.exif;
 
 import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
-import javax.imageio.stream.FileImageInputStream;
-import javax.imageio.stream.ImageInputStream;
 
-import org.boblycat.blimp.BitmapUtil;
 import org.boblycat.blimp.DOMNodeIterator;
-import org.boblycat.blimp.Util;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -117,27 +110,6 @@ public class CommandLine {
         }
     }
 
-    static byte[] findRawExifData(IIOMetadata metadata) {
-        // move this to MetaDataUtil
-        String[] formats = metadata.getMetadataFormatNames();
-        for (String format: formats) {
-            IIOMetadataNode tree = null;
-            try {
-                 tree = (IIOMetadataNode) metadata.getAsTree(format);
-            }
-            catch (IllegalArgumentException e) {
-                continue;
-            }
-            IIOMetadataNode exifNode = MetaDataUtil.findExifNode(tree, false);
-            if (exifNode != null) {
-                byte[] rawExifData = (byte[]) exifNode.getUserObject();
-                if (rawExifData != null && rawExifData.length > 0)
-                    return rawExifData;
-            }
-        }
-        return null;
-    }
-
     private static void printIndent(int indent, String str) {
         for (int i=0; i<indent; ++i)
             System.out.print("    ");
@@ -187,29 +159,11 @@ public class CommandLine {
         }
     }
 
-    private static ExifBlobReader getExifReader(File filename)
-    throws IOException, ReaderError {
-        String format = Util.getFileExtension(filename);
-        ImageReader reader = BitmapUtil.getImageReader(format);
-        if (reader != null) {
-            // metadata reader
-            ImageInputStream input = new FileImageInputStream(filename);
-            reader.setInput(input);
-            //System.out.println("Finding metadata...");
-            IIOMetadata metadata = reader.getImageMetadata(0);
-            byte[] data = findRawExifData(metadata);
-            if (data != null)
-                return new ExifBlobReader(data);
-        }
-        // attempt to read Exif data directly from the file
-        return new ExifBlobReader(filename);
-    }
-
     public static void main(String[] args) throws Exception {
         if (args.length != 1)
             fatal("missing file name");
 
-        ExifBlobReader reader = getExifReader(new File(args[0]));
+        ExifBlobReader reader = new ExifBlobReader(new File(args[0]));
         printIFDs(reader);
     }
 }

@@ -20,7 +20,16 @@ package org.boblycat.blimp.exif;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Vector;
+
+import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.ImageInputStream;
+
+import org.boblycat.blimp.BitmapUtil;
+import org.boblycat.blimp.Util;
 
 /**
  * A class for extracting Exif data from binary data.
@@ -37,9 +46,24 @@ public class ExifBlobReader {
         currentOffset = 0;
     }
 
-    public ExifBlobReader(File fileName) throws FileNotFoundException, ReaderError {
-        reader = new FileBinaryReader(fileName);
+    public ExifBlobReader(File fileName)
+    throws FileNotFoundException, IOException, ReaderError {
+        reader = null;
         currentOffset = 0;
+        String format = Util.getFileExtension(fileName);
+        ImageReader imgReader = BitmapUtil.getImageReader(format);
+        if (imgReader != null) {
+            // metadata reader
+            ImageInputStream input = new FileImageInputStream(fileName);
+            imgReader.setInput(input);
+            IIOMetadata metadata = imgReader.getImageMetadata(0);
+            byte[] data = MetaDataUtil.findRawExifData(metadata);
+            if (data != null)
+                reader = new ByteArrayReader(data);
+        }
+        if (reader == null)
+            // attempt to read Exif data directly from the file
+            reader = new FileBinaryReader(fileName);
     }
 
     protected ImageFileDirectory extractIFD() throws ReaderError {

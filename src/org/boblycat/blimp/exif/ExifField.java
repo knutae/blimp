@@ -165,17 +165,17 @@ public class ExifField {
     }
 
     public void setStringValue(String value) {
-        assert(type == ExifDataType.ASCII || type == ExifDataType.UNDEFINED);
+        assert(useStringValue());
         stringValue = value;
     }
 
     public String getStringValue() {
-        assert(type == ExifDataType.ASCII || type == ExifDataType.UNDEFINED);
+        assert(useStringValue());
         return stringValue;
     }
 
     public void addValue(Object value) {
-        assert(type != ExifDataType.ASCII && type != ExifDataType.UNDEFINED);
+        assert(!useStringValue());
         assert(values != null);
         try {
             value = coerceValue(valueClass(), value);

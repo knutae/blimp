@@ -423,7 +423,7 @@ public class SerializationTests {
         checkTypeIdXml(SolidColorBorderLayer.class, "Border");
         checkTypeIdXml(Color16BitLayer.class, "Promote16Bit");
         checkTypeIdXml(RawFileInputLayer.class, "RawInput");
-        checkTypeIdXml(FileInputLayer.class, "FileInput");
+        checkTypeIdXml(SimpleFileInputLayer.class, "FileInput");
     }
 
     private static Element findPropertyElement(Element root,

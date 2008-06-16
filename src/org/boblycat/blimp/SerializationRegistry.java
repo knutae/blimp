@@ -100,7 +100,7 @@ public class SerializationRegistry {
         reg.registerTypeId(LevelsLayer.class, "Levels");
         reg.registerTypeId(SolidColorBorderLayer.class, "Border");
         reg.registerTypeId(RawFileInputLayer.class, "RawInput");
-        reg.registerTypeId(FileInputLayer.class, "FileInput");
+        reg.registerTypeId(SimpleFileInputLayer.class, "FileInput");
         return reg;
     }
 }

@@ -18,15 +18,17 @@
  */
 package org.boblycat.blimp;
 
+import org.boblycat.blimp.exif.ExifTable;
+
 import net.sourceforge.jiu.data.PixelImage;
 
 /**
  * A bitmap. Wraps JIU's PixelImage and adds Blimp-specific fields.
  */
 public class Bitmap {
-    PixelImage image;
-
-    double pixelScaleFactor;
+    private PixelImage image;
+    private double pixelScaleFactor;
+    private ExifTable exifTable;
 
     public PixelImage getImage() {
         return this.image;
@@ -112,5 +114,19 @@ public class Bitmap {
      */
     public double getPixelScaleFactor() {
         return pixelScaleFactor;
+    }
+
+    /**
+     * @param exifTable the Exif Table to set
+     */
+    public void setExifTable(ExifTable exifTable) {
+        this.exifTable = exifTable;
+    }
+
+    /**
+     * @return the Exif Table
+     */
+    public ExifTable getExifTable() {
+        return exifTable;
     }
 }

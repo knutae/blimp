@@ -46,7 +46,7 @@ import net.sourceforge.jiu.ops.ProgressListener;
  *
  * @author Knut Arild Erstad
  */
-public class RawFileInputLayer extends InputLayer {
+public class RawFileInputLayer extends FileInputLayer {
     public enum Quality {
         HalfSize,
         Low,
@@ -66,7 +66,6 @@ public class RawFileInputLayer extends InputLayer {
     private static ColorDepth DEFAULT_COLOR_DEPTH = ColorDepth.Depth16Bit;
     private static String dcrawPath = null;
 
-    String filePath;
     ColorDepth colorDepth;
     ColorSpace colorSpace;
     Quality quality;
@@ -146,14 +145,6 @@ public class RawFileInputLayer extends InputLayer {
         if (dcrawPath == null)
             dcrawPath = findDcrawExecutable();
         return dcrawPath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public String getFilePath() {
-        return filePath;
     }
 
     public void setColorDepth(ColorDepth depth) {
@@ -282,7 +273,9 @@ public class RawFileInputLayer extends InputLayer {
     }
 
     public Bitmap getBitmap() throws IOException {
-        return load();
+        Bitmap bm = load();
+        tryLoadExifData(bm);
+        return bm;
     }
 
     public String getDescription() {

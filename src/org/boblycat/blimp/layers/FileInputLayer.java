@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007 Knut Arild Erstad
+ * Copyright (C) 2007, 2008 Knut Arild Erstad
  *
  * This file is part of Blimp, a layered photo editor.
  *
@@ -18,24 +18,27 @@
  */
 package org.boblycat.blimp.layers;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.Util;
-
-import net.sourceforge.jiu.data.PixelImage;
-import net.sourceforge.jiu.gui.awt.ToolkitLoader;
+import org.boblycat.blimp.exif.ExifBlobReader;
+import org.boblycat.blimp.exif.ExifTable;
+import org.boblycat.blimp.exif.ExifTag;
+import org.boblycat.blimp.exif.ReaderError;
 
 /**
- * A file input layer which does not support camera raw formats.
+ * A base class for loading a bitmap from file.
  *
  * @author Knut Arild Erstad
  */
-public class FileInputLayer extends InputLayer {
-    String filePath;
+public abstract class FileInputLayer extends InputLayer {
+    protected String filePath;
 
     public FileInputLayer() {
-        filePath = null;
+        filePath = "";
     }
 
     public FileInputLayer(String filePath) {
@@ -50,14 +53,38 @@ public class FileInputLayer extends InputLayer {
         return filePath;
     }
 
-    public Bitmap getBitmap() throws IOException {
-        PixelImage image = ToolkitLoader.loadViaToolkitOrCodecs(filePath);
-        if (image == null)
-            throw new IOException("Failed to load image from " + filePath);
-        return new Bitmap(image);
+    private static void print(ExifTable table, ExifTag tag) {
+        System.out.println(tag.toString() + ": " + table.get(tag));
     }
 
-    public String getDescription() {
-        return Util.getFileNameFromPath(filePath);
+    protected void tryLoadExifData(Bitmap bitmap) {
+        try {
+            ExifBlobReader reader = new ExifBlobReader(new File(filePath));
+            ExifTable table = reader.extractIFDTable();
+            bitmap.setExifTable(table);
+            Util.info("Loaded Exif data from " + filePath);
+            // TODO: placeholder code until we can do something useful with
+            // Exif data, remove later
+            print(table, ExifTag.Make);
+            print(table, ExifTag.Model);
+            print(table, ExifTag.DateTime);
+            print(table, ExifTag.ExposureTime);
+            print(table, ExifTag.FNumber);
+            print(table, ExifTag.ISOSpeedRatings);
+            print(table, ExifTag.Model);
+            print(table, ExifTag.DateTimeOriginal);
+            print(table, ExifTag.DateTimeDigitized);
+            print(table, ExifTag.ShutterSpeedValue);
+            print(table, ExifTag.ApertureValue);
+        }
+        catch (ReaderError e) {
+            Util.info("No Exif data loaded from " + filePath);
+        }
+        catch (FileNotFoundException e) {
+            Util.err("File not found while loading Exif data from " + filePath, e);
+        }
+        catch (IOException e) {
+            Util.err("I/O error while loading Exif data from " + filePath, e);
+        }
     }
 }

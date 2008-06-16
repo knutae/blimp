@@ -18,6 +18,7 @@
  */
 package org.boblycat.blimp.exif;
 
+import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 
 import org.boblycat.blimp.DOMNodeIterator;
@@ -69,6 +70,26 @@ public class MetaDataUtil {
             el.setAttribute(MARKER_TAG, exifTag);
             markerSequence.appendChild(el);
             return el;
+        }
+        return null;
+    }
+
+    public static byte[] findRawExifData(IIOMetadata metadata) {
+        String[] formats = metadata.getMetadataFormatNames();
+        for (String format: formats) {
+            IIOMetadataNode tree = null;
+            try {
+                 tree = (IIOMetadataNode) metadata.getAsTree(format);
+            }
+            catch (IllegalArgumentException e) {
+                continue;
+            }
+            IIOMetadataNode exifNode = MetaDataUtil.findExifNode(tree, false);
+            if (exifNode != null) {
+                byte[] rawExifData = (byte[]) exifNode.getUserObject();
+                if (rawExifData != null && rawExifData.length > 0)
+                    return rawExifData;
+            }
         }
         return null;
     }
