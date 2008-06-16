@@ -416,4 +416,38 @@ public class ExifTests {
         assertEquals(1, field.getCount());
         assertEquals("", field.getStringValue());
     }
+
+    @Test
+    public void testIFD() throws Exception {
+        ImageFileDirectory ifd = new ImageFileDirectory();
+        assertEquals(0, ifd.size());
+        ifd.addField(new ExifField(ExifTag.Software, "Blimp"));
+        assertEquals(1, ifd.size());
+        ifd.addField(new ExifField(ExifTag.Model, "Boblycat"));
+        assertEquals(2, ifd.size());
+
+        Iterator<ExifField> it = ifd.iterator();
+        ExifField field = ifd.get(ExifTag.Software);
+        assertNotNull(field);
+        assertEquals("Blimp", field.getStringValue());
+        assertSame(field, ifd.get(ExifTag.Software.getTag()));
+        assertSame(field, it.next());
+
+        field = ifd.get(ExifTag.Model);
+        assertNotNull(field);
+        assertEquals("Boblycat", field.getStringValue());
+        assertSame(field, ifd.get(ExifTag.Model.getTag()));
+        assertSame(field, it.next());
+
+        // replace an existing field
+        ifd.addField(new ExifField(ExifTag.Software, "iBlimp"));
+        assertEquals(2, ifd.size());
+        it = ifd.iterator();
+
+        field = ifd.get(ExifTag.Software);
+        assertNotNull(field);
+        assertEquals("iBlimp", field.getStringValue());
+        assertSame(field, ifd.get(ExifTag.Software.getTag()));
+        assertSame(field, it.next());
+    }
 }

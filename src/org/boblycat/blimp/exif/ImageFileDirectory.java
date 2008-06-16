@@ -18,6 +18,7 @@
  */
 package org.boblycat.blimp.exif;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -28,13 +29,25 @@ import java.util.Vector;
  */
 public class ImageFileDirectory implements Iterable<ExifField> {
     private Vector<ExifField> fields;
+    private HashMap<Integer, Integer> indexMap;
 
     public ImageFileDirectory() {
         fields = new Vector<ExifField>();
+        indexMap = new HashMap<Integer, Integer>();
     }
 
     public void addField(ExifField field) {
-        fields.add(field);
+        if (indexMap.containsKey(field.getTag())) {
+            // replace existing field
+            int index = indexMap.get(field.getTag());
+            assert(index >= 0 && index < fields.size());
+            fields.set(index, field);
+        }
+        else {
+            // append new element
+            indexMap.put(field.getTag(), fields.size());
+            fields.add(field);
+        }
     }
 
     public Iterator<ExifField> iterator() {
@@ -43,5 +56,18 @@ public class ImageFileDirectory implements Iterable<ExifField> {
 
     public int size() {
         return fields.size();
+    }
+
+    public ExifField get(int tag) {
+        if (indexMap.containsKey(tag)) {
+            int index = indexMap.get(tag);
+            assert(index >= 0 && index < fields.size());
+            return fields.get(index);
+        }
+        return null;
+    }
+
+    public ExifField get(ExifTag tag) {
+        return get(tag.getTag());
     }
 }
