@@ -34,7 +34,7 @@ public class ExifField {
     public ExifField(int tag, ExifDataType type) {
         this.tag = tag;
         this.type = type;
-        if (type == ExifDataType.ASCII || type == ExifDataType.UNDEFINED)
+        if (useStringValue())
             stringValue = "";
         else
             values = new Vector<Object>();
@@ -74,15 +74,26 @@ public class ExifField {
                 + " to " + expectedType.getSimpleName());
     }
 
+    private boolean useStringValue() {
+        switch (type) {
+        case ASCII:
+        case UNDEFINED:
+        case BYTE:
+        case SBYTE:
+            return true;
+        default:
+            return false;
+        }
+    }
+
     private Class<?> valueClass() {
         switch (type) {
         case ASCII:
         case UNDEFINED:
-            // not really in use
-            return String.class;
         case BYTE:
         case SBYTE:
-            return Byte.class;
+            // not really in use
+            return String.class;
         case SHORT:
         case SSHORT:
         case LONG:
@@ -112,15 +123,12 @@ public class ExifField {
         if (!exifTag.supportsType(type))
             throw new ValidationError(exifTag.name() +
                     " does not support the type " + type.name());
-        switch (type) {
-        case ASCII:
-        case UNDEFINED:
-            if (values != null && stringValue == null)
+        if (useStringValue()) {
+            if (values != null || stringValue == null)
                 throw new ValidationError("Internal type error, expected a string value");
-            break;
-        default:
+        }
+        else {
             validateValueTypes(valueClass());
-            break;
         }
         if (!exifTag.supportsCount(getCount()))
             throw new ValidationError(exifTag.name() +
@@ -143,6 +151,8 @@ public class ExifField {
             return stringValue.length() + 1;
 
         case UNDEFINED:
+        case BYTE:
+        case SBYTE:
             if (stringValue == null)
                 return 0;
             else
@@ -179,12 +189,21 @@ public class ExifField {
     public Object valueAt(int index) {
         if (index < 0 || index >= getCount())
             return null;
-        if (stringValue != null) {
+        switch (type) {
+        case ASCII:
             if (index == stringValue.length())
                 return '\0';
+            // note, no break here by purpose!
+        case UNDEFINED:
             return stringValue.charAt(index);
+        case BYTE:
+            return (int) stringValue.charAt(index);
+        case SBYTE:
+            // this one is neat
+            return (int) (byte) stringValue.charAt(index);
+        default:
+            return values.get(index);
         }
-        return values.get(index);
     }
 
     private static String escape(String str) {

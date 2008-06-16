@@ -34,7 +34,14 @@ public class ExifTests {
         assertEquals("test123", field.getStringValue());
         assertEquals(8, field.getCount()); // string length + null byte
         assertEquals(8, field.getByteCount());
-        assertNull(field.getValues());
+        //assertNull(field.getValues());
+        assertEquals('t', field.valueAt(0));
+        assertEquals('e', field.valueAt(1));
+        assertEquals('s', field.valueAt(2));
+        assertEquals('t', field.valueAt(3));
+        assertEquals('1', field.valueAt(4));
+        assertEquals('2', field.valueAt(5));
+        assertEquals('3', field.valueAt(6));
     }
 
     @Test
@@ -44,19 +51,38 @@ public class ExifTests {
         assertEquals("test123", field.getStringValue());
         assertEquals(7, field.getCount());
         assertEquals(7, field.getByteCount());
-        assertNull(field.getValues());
+        //assertNull(field.getValues());
+        assertEquals('t', field.valueAt(0));
+        assertEquals('e', field.valueAt(1));
+        assertEquals('s', field.valueAt(2));
+        assertEquals('t', field.valueAt(3));
+        assertEquals('1', field.valueAt(4));
+        assertEquals('2', field.valueAt(5));
+        assertEquals('3', field.valueAt(6));
     }
 
     @Test
     public void testFieldByte() {
         ExifField field = new ExifField(42, ExifDataType.BYTE);
-        field.addValue(43);
-        field.addValue(13);
-        assertEquals(43, field.valueAt(0));
-        assertEquals(13, field.valueAt(1));
+        field.setStringValue("\u002b\u000e");
         assertEquals(2, field.getCount());
         assertEquals(2, field.getByteCount());
-        assertNull(field.getStringValue());
+        assertEquals(43, field.valueAt(0));
+        assertEquals(14, field.valueAt(1));
+        assertEquals("\u002b\u000e", field.getStringValue());
+    }
+
+    @Test
+    public void testFieldSignedByte() {
+        ExifField field = new ExifField(42, ExifDataType.SBYTE);
+        field.setStringValue("\u0001\u00ff\u0007\u00ee");
+        assertEquals(4, field.getCount());
+        assertEquals(4, field.getByteCount());
+        assertEquals(1, field.valueAt(0));
+        assertEquals(-1, field.valueAt(1));
+        assertEquals(7, field.valueAt(2));
+        assertEquals(-18, field.valueAt(3));
+        assertEquals("\u0001\u00ff\u0007\u00ee", field.getStringValue());
     }
 
     @Test

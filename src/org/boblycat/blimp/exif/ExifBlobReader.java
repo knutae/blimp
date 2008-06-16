@@ -71,11 +71,9 @@ public class ExifBlobReader {
                 field.setStringValue(reader.extractAscii(valueOffset, dataCount, true));
                 break;
             case UNDEFINED:
-                field.setStringValue(reader.extractAscii(valueOffset, dataCount, false));
-                break;
             case BYTE:
             case SBYTE:
-                // TODO: implement something here...
+                field.setStringValue(reader.extractAscii(valueOffset, dataCount, false));
                 break;
             case SHORT:
             case SSHORT:
