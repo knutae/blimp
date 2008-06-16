@@ -18,8 +18,6 @@
  */
 package org.boblycat.blimp.exif;
 
-import java.io.UnsupportedEncodingException;
-
 /**
  * A base class for reading Exif or TIFF data from a binary source.
  *
