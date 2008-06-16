@@ -139,27 +139,42 @@ public class CommandLine {
         return null;
     }
 
+    private static void printIndent(int indent, String str) {
+        for (int i=0; i<indent; ++i)
+            System.out.print("    ");
+        System.out.println(str);
+    }
+
+    private static void printIFD(ImageFileDirectory ifd, int indent) {
+        printIndent(indent, "-------------------");
+        for (ExifField field: ifd) {
+            int tag = field.getTag();
+            ExifTag exifTag = ExifTag.fromTag(tag);
+            if (exifTag == null)
+                printIndent(indent,
+                        "+ Unknown tag " + tag +
+                        " (0x" + Integer.toHexString(tag) + ")");
+            else {
+                printIndent(indent,
+                        "+ " + exifTag.toString() +
+                        " [" + exifTag.getCategory() + "]");
+            }
+            printIndent(indent, "  type     : " + field.getType());
+            if (field.getCount() != 1)
+                printIndent(indent, "  count    : " + field.getCount());
+            printIndent(indent, "  value(s) : " + field.toString());
+        }
+        for (ImageFileDirectory sub: ifd.getSubIFDs()) {
+            printIndent(indent + 1, "****** SubIFD ******");
+            printIFD(sub, indent + 1);
+        }
+    }
+
     private static void printIFDs(ExifBlobReader reader) {
         try {
             Vector<ImageFileDirectory> dirs = reader.extractIFDs();
             for (ImageFileDirectory ifd: dirs) {
-                System.out.println("-------------------");
-                for (ExifField field: ifd) {
-                    int tag = field.getTag();
-                    ExifTag exifTag = ExifTag.fromTag(tag);
-                    if (exifTag == null)
-                        System.out.println("+ Unknown tag " + tag +
-                                " (0x" + Integer.toHexString(tag) + ")");
-                    else {
-                        System.out.println("+ " + exifTag.toString()
-                                + " [" + exifTag.getCategory() + "]");
-                        //System.out.println("  category : " + exifTag.getCategory());
-                    }
-                    System.out.println("  type     : " + field.getType());
-                    if (field.getCount() != 1)
-                        System.out.println("  count    : " + field.getCount());
-                    System.out.println("  value(s) : " + field.toString());
-                }
+                printIFD(ifd, 0);
             }
         }
         catch (ReaderError e) {

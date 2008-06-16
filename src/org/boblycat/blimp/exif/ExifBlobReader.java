@@ -99,6 +99,20 @@ public class ExifBlobReader {
                 exifPointer = (Integer) field.valueAt(0);
             currentOffset += 12;
         }
+
+        ExifField subIFDOffsets = ifd.get(ExifTag.SubIFDs);
+        if (subIFDOffsets != null) {
+            // extract subIFDs before returning
+            int savedOffset = currentOffset;
+            for (int i=0; i<subIFDOffsets.getCount(); ++i) {
+                int offset = (Integer) subIFDOffsets.valueAt(i);
+                currentOffset = offset;
+                ifd.addSubIFD(extractIFD());
+            }
+            // restore offset
+            currentOffset = savedOffset;
+        }
+
         return ifd;
     }
 

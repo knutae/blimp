@@ -30,10 +30,12 @@ import java.util.Vector;
 public class ImageFileDirectory implements Iterable<ExifField> {
     private Vector<ExifField> fields;
     private HashMap<Integer, Integer> indexMap;
+    private Vector<ImageFileDirectory> subIFDs;
 
     public ImageFileDirectory() {
         fields = new Vector<ExifField>();
         indexMap = new HashMap<Integer, Integer>();
+        subIFDs = new Vector<ImageFileDirectory>();
     }
 
     public void addField(ExifField field) {
@@ -69,5 +71,13 @@ public class ImageFileDirectory implements Iterable<ExifField> {
 
     public ExifField get(ExifTag tag) {
         return get(tag.getTag());
+    }
+
+    public Iterable<ImageFileDirectory> getSubIFDs() {
+        return subIFDs;
+    }
+
+    public void addSubIFD(ImageFileDirectory ifd) {
+        subIFDs.add(ifd);
     }
 }
