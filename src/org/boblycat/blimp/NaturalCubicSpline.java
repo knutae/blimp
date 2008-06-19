@@ -79,8 +79,7 @@ public class NaturalCubicSpline {
         }
         assert (startIndex + count <= array.length);
         double[] ret = new double[count];
-        for (int i = 0; i < count; i++)
-            ret[i] = array[i + startIndex];
+        System.arraycopy(array, startIndex, ret, 0, count);
         return ret;
     }
 
