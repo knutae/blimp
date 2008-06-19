@@ -18,6 +18,10 @@
  */
 package org.boblycat.blimp.exif;
 
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 
@@ -92,5 +96,29 @@ public class MetaDataUtil {
             }
         }
         return null;
+    }
+
+    public static IIOMetadata generateExifMetaData(
+            ImageWriter writer, ImageTypeSpecifier imageType,
+            ExifTable table) {
+
+        ImageWriteParam iwp = writer.getDefaultWriteParam();
+        IIOMetadata metadata = writer.getDefaultImageMetadata(imageType, iwp);
+        if (metadata == null)
+            return null;
+
+        Element root = (Element) metadata.getAsTree(JPEG_10_FORMAT_STRING);
+        IIOMetadataNode exifNode = findExifNode(root, true);
+        if (exifNode == null)
+            return null;
+
+        exifNode.setUserObject(BlobCreator.dataFromExifTable(table));
+        try {
+            metadata.setFromTree(JPEG_10_FORMAT_STRING, root);
+        } catch (IIOInvalidTreeException e) {
+            return null;
+        }
+
+        return metadata;
     }
 }

@@ -19,6 +19,7 @@
 package org.boblycat.blimp;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -26,10 +27,18 @@ import java.util.Iterator;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
+import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
+import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageOutputStream;
+
+import org.boblycat.blimp.exif.ExifField;
+import org.boblycat.blimp.exif.ExifTable;
+import org.boblycat.blimp.exif.ExifTag;
+import org.boblycat.blimp.exif.MetaDataUtil;
+import org.boblycat.blimp.exif.ValidationError;
 
 import net.sourceforge.jiu.data.MemoryRGB24Image;
 import net.sourceforge.jiu.data.PixelImage;
@@ -199,8 +208,23 @@ public class BitmapUtil {
             param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
             param.setCompressionQuality((float) quality);
         }
+        IIOImage image = toIIOImage(bitmap);
+        if (bitmap.getExifTable() != null) {
+            RenderedImage rendered = image.getRenderedImage();
+            if (rendered == null) {
+                Util.err("Exif writer: failed to get rendered image");
+            }
+            else {
+                ExifTable newTable = copyInterestingExifData(bitmap.getExifTable());
+                IIOMetadata metadata = MetaDataUtil.generateExifMetaData(
+                        writer, new ImageTypeSpecifier(rendered),
+                        newTable);
+                image.setMetadata(metadata);
+                //CommandLine.printMetaData(metadata);
+            }
+        }
         try {
-            writer.write(null, toIIOImage(bitmap), param);
+            writer.write(null, image, param);
         }
         finally {
             if (output != null)
@@ -233,5 +257,61 @@ public class BitmapUtil {
 
     private static IIOImage toIIOImage(Bitmap bitmap) {
         return new IIOImage(toAwtImage(bitmap.getImage()), null, null);
+    }
+
+    private static void copyTag(ExifTag tag, ExifTable fromTable, ExifTable toTable) {
+        ExifField field = fromTable.get(tag);
+        if (field != null)
+            toTable.put(field);
+    }
+
+    private static void copyTags(ExifTable fromTable, ExifTable toTable,
+            ExifTag[] tags) {
+        for (ExifTag tag: tags) {
+            copyTag(tag, fromTable, toTable);
+        }
+    }
+
+    public static ExifTable copyInterestingExifData(ExifTable fromTable) {
+        ExifTable newTable = new ExifTable();
+        copyTags(fromTable, newTable, new ExifTag[] {
+                ExifTag.XResolution,
+                ExifTag.YResolution,
+                ExifTag.ResolutionUnit,
+                ExifTag.Make,
+                ExifTag.Model,
+                //ExifTag.ShutterSpeedValue,
+                //ExifTag.ApertureValue,
+                ExifTag.Flash,
+                ExifTag.FlashEnergy,
+                ExifTag.FNumber,
+                ExifTag.ExposureTime,
+                ExifTag.ISOSpeedRatings,
+                ExifTag.MeteringMode,
+                ExifTag.ExposureProgram,
+                ExifTag.ExposureBiasValue,
+                ExifTag.FocalLength,
+                ExifTag.FocalLengthIn35mmFilm,
+                ExifTag.SubjectDistance,
+                ExifTag.LightSource,
+                ExifTag.WhiteBalance,
+                ExifTag.DateTime,
+                ExifTag.DateTimeOriginal,
+                ExifTag.DateTimeDigitized,
+                ExifTag.SubsecTime,
+                ExifTag.SubsecTimeOriginal,
+                ExifTag.SubsecTimeDigitized,
+                ExifTag.ImageDescription,
+                ExifTag.Artist,
+                ExifTag.Copyright,
+                ExifTag.ImageUniqueID,
+        });
+        try {
+            newTable.put(new ExifField(ExifTag.Software, "Blimp Photo Editor"));
+        }
+        catch (ValidationError e) {
+            Util.err("Internal Exif error", e);
+        }
+        return newTable;
     }
 }

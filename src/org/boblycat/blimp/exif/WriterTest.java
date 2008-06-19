@@ -24,10 +24,8 @@ import java.io.File;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageTypeSpecifier;
-import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
 
 import org.boblycat.blimp.Bitmap;
@@ -35,7 +33,6 @@ import org.boblycat.blimp.BitmapUtil;
 import org.boblycat.blimp.BlimpSession;
 import org.boblycat.blimp.Serializer;
 import org.boblycat.blimp.Util;
-import org.w3c.dom.Element;
 
 /**
  *
@@ -62,32 +59,22 @@ public class WriterTest {
         ImageWriter writer = BitmapUtil.getImageWriter("jpg");
         BufferedImage awtImage = BitmapUtil.toAwtImage(bitmap.getImage());
         IIOImage iioImage = new IIOImage(awtImage, null, null);
-        ImageWriteParam iwp = writer.getDefaultWriteParam();
         ImageTypeSpecifier imageType = new ImageTypeSpecifier(awtImage);
-        IIOMetadata metadata = writer.getDefaultImageMetadata(imageType, iwp);
-        if (metadata == null)
+
+        ExifTable table = new ExifTable();
+        table.put(new ExifField(ExifTag.Software, "Blimp Testing"));
+        table.put(new ExifField(ExifTag.ShutterSpeedValue, new Rational(1, 100)));
+        //table.put(new ExifField(ExifTag.BitsPerSample, "foo"));
+
+        IIOMetadata metadata = MetaDataUtil.generateExifMetaData(
+                writer, imageType, table);
+        if (metadata == null) {
             System.out.println("no metadata");
-        else {
-            for (String format: metadata.getMetadataFormatNames()) {
-                System.out.println("Format: " + format);
-            }
-            Element root = (Element) metadata.getAsTree(MetaDataUtil.JPEG_10_FORMAT_STRING);
-            //System.out.println(root.toString());
-            IIOMetadataNode exifNode = MetaDataUtil.findExifNode(root, true);
-            System.out.println(exifNode.getNodeName());
-            System.out.println(exifNode.getParentNode().getNodeName());
-
-            ExifTable table = new ExifTable();
-            table.put(new ExifField(ExifTag.Software, "Blimp Testing"));
-            table.put(new ExifField(ExifTag.ShutterSpeedValue, new Rational(1, 100)));
-            //table.put(new ExifField(ExifTag.BitsPerSample, "foo"));
-            exifNode.setUserObject(BlobCreator.dataFromExifTable(table));
-
-            metadata.setFromTree(MetaDataUtil.JPEG_10_FORMAT_STRING, root);
-            CommandLine.printMetaData(metadata);
-
         }
-        iioImage.setMetadata(metadata);
+        else {
+            CommandLine.printMetaData(metadata);
+            iioImage.setMetadata(metadata);
+        }
 
         ImageOutputStream output = ImageIO.createImageOutputStream(
                 new File(imageFilename));

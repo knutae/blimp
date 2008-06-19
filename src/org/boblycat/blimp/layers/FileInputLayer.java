@@ -26,7 +26,6 @@ import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.Util;
 import org.boblycat.blimp.exif.ExifBlobReader;
 import org.boblycat.blimp.exif.ExifTable;
-import org.boblycat.blimp.exif.ExifTag;
 import org.boblycat.blimp.exif.ReaderError;
 
 /**
@@ -53,29 +52,12 @@ public abstract class FileInputLayer extends InputLayer {
         return filePath;
     }
 
-    private static void print(ExifTable table, ExifTag tag) {
-        System.out.println(tag.toString() + ": " + table.get(tag));
-    }
-
     protected void tryLoadExifData(Bitmap bitmap) {
         try {
             ExifBlobReader reader = new ExifBlobReader(new File(filePath));
             ExifTable table = reader.extractIFDTable();
             bitmap.setExifTable(table);
             Util.info("Loaded Exif data from " + filePath);
-            // TODO: placeholder code until we can do something useful with
-            // Exif data, remove later
-            print(table, ExifTag.Make);
-            print(table, ExifTag.Model);
-            print(table, ExifTag.DateTime);
-            print(table, ExifTag.ExposureTime);
-            print(table, ExifTag.FNumber);
-            print(table, ExifTag.ISOSpeedRatings);
-            print(table, ExifTag.Model);
-            print(table, ExifTag.DateTimeOriginal);
-            print(table, ExifTag.DateTimeDigitized);
-            print(table, ExifTag.ShutterSpeedValue);
-            print(table, ExifTag.ApertureValue);
         }
         catch (ReaderError e) {
             Util.info("No Exif data loaded from " + filePath);

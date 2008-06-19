@@ -74,7 +74,7 @@ public class CommandLine {
         return findUnknownNodeType(tree, 225, 0, true);
     }
 
-    static void printMetaData(IIOMetadata metadata) {
+    public static void printMetaData(IIOMetadata metadata) {
         System.out.println(metadata.toString());
         System.out.println(metadata.getClass().getName());
         String[] formats = metadata.getMetadataFormatNames();
