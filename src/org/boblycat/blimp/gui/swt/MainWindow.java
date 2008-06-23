@@ -19,6 +19,7 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.*;
+import org.boblycat.blimp.exif.ExifTable;
 import org.boblycat.blimp.layers.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -87,6 +88,7 @@ public class MainWindow {
     MenuItem menuHelpAbout;
     MenuItem menuUndo;
     MenuItem menuRedo;
+    MenuItem menuViewExif;
     CTabFolder mainTabFolder;
     CTabFolder rightTabFolder;
     LayersView layers;
@@ -136,6 +138,9 @@ public class MainWindow {
             }
             else if (event.widget == menuRedo) {
                 doRedo();
+            }
+            else if (event.widget == menuViewExif) {
+                doViewExif();
             }
             else if (event.widget instanceof MenuItem) {
                 MenuItem item = (MenuItem) event.widget;
@@ -256,6 +261,10 @@ public class MainWindow {
             }
         });
         fileMenu.addListener(SWT.Hide, enableAllMenuItems);
+
+        Menu viewMenu = addMenu(bar, "&View");
+        menuViewExif = addMenuItem(viewMenu, "&Exif Metadata",
+                "View Exif data for digital photographs");
 
         Menu editMenu = addMenu(bar, "&Edit");
         menuUndo = addMenuItem(editMenu, "&Undo\tCtrl+Z", "Undo a change");
@@ -746,6 +755,21 @@ public class MainWindow {
             return;
         currentImageTab.getSession().redo();
         layers.refresh();
+    }
+
+    void doViewExif() {
+        if (currentImageTab == null)
+            return;
+        ImageView view = currentImageTab.imageView;
+        view.workerThread.getExifData(view, view.getSession(), new ExifQueryTask() {
+            public void handleExifData(ExifTable table) {
+                if (table == null)
+                    SwtUtil.messageDialog(shell, "No Exif data",
+                            "No Exif data detected", SWT.ICON_INFORMATION);
+                else
+                    ExifView.showInDialog(shell, table);
+            }
+        });
     }
 
     void status(String msg) {

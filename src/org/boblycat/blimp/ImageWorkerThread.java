@@ -39,6 +39,7 @@ public abstract class ImageWorkerThread extends Thread {
         GENERATE_BITMAP,
         GENERATE_HISTOGRAMS,
         GENERATE_SIZE,
+        QUERY_EXIF_DATA,
         ZOOM_IN,
         ZOOM_OUT,
         EXPORT_BITMAP,
@@ -53,6 +54,7 @@ public abstract class ImageWorkerThread extends Thread {
         String layerName;
         HistogramGeneratedTask histogramTask;
         BitmapSizeGeneratedTask sizeTask;
+        ExifQueryTask exifTask;
         int viewWidth;
         int viewHeight;
         BlimpSession.PreviewQuality previewQuality;
@@ -214,6 +216,15 @@ public abstract class ImageWorkerThread extends Thread {
                 Debug.print(this, "finished writing bitmap");
                 asyncExec(new FileExportSuccess(req.exportTask, req.exportFile));
                 break;
+            case QUERY_EXIF_DATA:
+                assert(req.exifTask != null);
+                bitmap = session.getBitmap();
+                if (bitmap == null || bitmap.getExifTable() == null)
+                    req.exifTask.data = null;
+                else
+                    req.exifTask.data = BitmapUtil.copyInterestingExifData(bitmap.getExifTable());
+                asyncExec(req.exifTask);
+                break;
             }
         }
         catch (IOException e) {
@@ -338,6 +349,13 @@ public abstract class ImageWorkerThread extends Thread {
 
     public void zoomOut(Object owner, BlimpSession session, Runnable runnable) {
         Request req = new Request(owner, RequestType.ZOOM_OUT, session, runnable);
+        putRequest(req);
+    }
+
+    public void getExifData(Object owner, BlimpSession session,
+            ExifQueryTask task) {
+        Request req = new Request(owner, RequestType.QUERY_EXIF_DATA, session);
+        req.exifTask = task;
         putRequest(req);
     }
 }
