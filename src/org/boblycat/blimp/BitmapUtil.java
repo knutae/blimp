@@ -204,12 +204,13 @@ public class BitmapUtil {
         }
         writer.setOutput(output);
         ImageWriteParam param = writer.getDefaultWriteParam();
-        if (param instanceof JPEGImageWriteParam) {
+        boolean isJpeg = (param instanceof JPEGImageWriteParam);
+        if (isJpeg) {
             param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
             param.setCompressionQuality((float) quality);
         }
         IIOImage image = toIIOImage(bitmap);
-        if (bitmap.getExifTable() != null) {
+        if (isJpeg && bitmap.getExifTable() != null) {
             RenderedImage rendered = image.getRenderedImage();
             if (rendered == null) {
                 Util.err("Exif writer: failed to get rendered image");
