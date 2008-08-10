@@ -43,6 +43,28 @@ public class Rational {
     public String toString() {
         return Integer.toString(numerator) + '/' + Integer.toString(denominator);
     }
+    
+    public double toDouble() {
+        if (denominator == 0)
+            return Double.NaN;
+        return ((double) numerator) / (double) denominator;
+    }
+    
+    public String toDecimalString() {
+        if (denominator == 0)
+            return "NaN";
+        if (denominator == 1 || numerator == 0)
+            return Integer.toString(numerator);
+        return Double.toString(toDouble());
+    }
+    
+    public String toSimpleString() {
+        if (denominator == 0)
+            return "NaN";
+        if (denominator == 1 || numerator == 0)
+            return Integer.toString(numerator);
+        return toString();
+    }
 
     public boolean equals(Rational other) {
         return (numerator == other.numerator) && (denominator == other.denominator);
