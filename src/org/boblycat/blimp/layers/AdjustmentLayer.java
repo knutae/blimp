@@ -97,7 +97,7 @@ public abstract class AdjustmentLayer extends Layer {
     /**
      * All layers that change the color or color intensity of an image must
      * return <code>true</code>.  The default implementation returns the
-     * oppsosite of <code>canChangeDimensions()</code>, since most layers
+     * opposite of <code>canChangeDimensions()</code>, since most layers
      * will only change either change one or the other.
      *
      * @return
