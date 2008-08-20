@@ -21,6 +21,7 @@ package org.boblycat.blimp;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.boblycat.blimp.layers.SimpleFileInputLayer;
@@ -143,6 +144,15 @@ public class Util {
      */
     public static void info(String message) {
         logger.info(message);
+    }
+    
+    /**
+     * Generic logging method.
+     * @param level the log level
+     * @param message the log message
+     */
+    public static void log(Level level, String message) {
+        logger.log(level, message);
     }
 
     public static String getFileExtension(File filePath) {

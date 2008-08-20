@@ -21,6 +21,7 @@ package org.boblycat.blimp.gui.swt;
 import java.util.Vector;
 
 import org.boblycat.blimp.Util;
+import org.boblycat.blimp.Version;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
@@ -72,7 +73,8 @@ public class AboutDialog {
 
         Link linkText = new Link(dialog, SWT.NONE);
         linkText.setText(
-                "Copyright (C) 2006, 2007 Knut Arild Erstad\n"
+                "Version " + Version.versionString + "\n\n"
+                + "Copyright (C) 2007, 2008 Knut Arild Erstad\n"
                 + "\n"
                 + "Blimp is <a href=\"http://www.gnu.org/philosophy/free-sw.html\">free software</a>"
                 + " distributed under the <a href=\"http://www.gnu.org/licenses/gpl-2.0.html\">GNU General Public License, version 2</a>.\n"

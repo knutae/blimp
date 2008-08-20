@@ -49,6 +49,7 @@ public class SwtUtil {
 
     public static void errorDialog(Shell parentShell, String title,
             String message) {
+        Util.err(message);
         messageDialog(parentShell, title, message, SWT.ICON_ERROR);
     }
 
@@ -62,6 +63,7 @@ public class SwtUtil {
      */
     public static void messageDialog(Shell parentShell, String title,
             String message, int style) {
+        Util.info(message);
         MessageBox box = new MessageBox(parentShell, SWT.OK | style);
         box.setText(title);
         box.setMessage(message);

@@ -21,6 +21,7 @@ package org.boblycat.blimp.layers;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.logging.Level;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.Util;
@@ -57,10 +58,10 @@ public abstract class FileInputLayer extends InputLayer {
             ExifBlobReader reader = new ExifBlobReader(new File(filePath));
             ExifTable table = reader.extractIFDTable();
             bitmap.setExifTable(table);
-            Util.info("Loaded Exif data from " + filePath);
+            Util.log(Level.FINE, "Loaded Exif data from " + filePath);
         }
         catch (ReaderError e) {
-            Util.info("No Exif data loaded from " + filePath);
+            Util.log(Level.FINE, "No Exif data loaded from " + filePath);
         }
         catch (FileNotFoundException e) {
             Util.err("File not found while loading Exif data from " + filePath, e);

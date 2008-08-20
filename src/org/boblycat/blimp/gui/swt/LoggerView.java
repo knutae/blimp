@@ -81,7 +81,7 @@ public class LoggerView extends Composite {
      * Thread-safe logging method.
      * @param record
      */
-    private void logMessage(LogRecord record) {
+    public void logMessage(LogRecord record) {
         if (getDisplay().getThread() == Thread.currentThread()) {
             directLogMessage(record);
             return;

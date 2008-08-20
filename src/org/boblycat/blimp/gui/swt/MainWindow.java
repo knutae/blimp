@@ -106,7 +106,7 @@ public class MainWindow {
         }
 
         public void handleEvent(Event event) {
-            statusLabel.setText(helpText);
+            status(helpText);
         }
     }
 
@@ -186,7 +186,7 @@ public class MainWindow {
         imageTabs = new Vector<ImageTab>();
         display = new Display(deviceData);
         shell = new Shell(display);
-        shell.setText("Blimp");
+        shell.setText("Blimp " + Version.versionString);
         FormLayout layout = new FormLayout();
         shell.setLayout(layout);
         shell.addListener(SWT.Close, new Listener() {
@@ -322,6 +322,7 @@ public class MainWindow {
         
         CTabFolder bottomTabs = new CTabFolder(leftSash, SWT.TOP | SWT.BORDER);
         LoggerView loggerView = new LoggerView(bottomTabs, SWT.NONE);
+        Util.info("Welcome to the Blimp photo editor " + Version.versionString + "!");
         CTabItem tabItem = new CTabItem(bottomTabs, SWT.NONE);
         tabItem.setText("Messages");
         tabItem.setControl(loggerView);
@@ -655,7 +656,7 @@ public class MainWindow {
             Serializer.saveBeanToFile(session, filename);
             session.recordSaved();
             currentImageTab.item.setText(session.getName());
-            status("Project saved to " + filename);
+            Util.info("Project saved to " + filename);
             //SwtUtil.messageDialog(shell, "Project Saved",
             //        "The project was saved:\n" + filename, SWT.ICON_INFORMATION);
         }
