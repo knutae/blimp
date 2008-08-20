@@ -307,18 +307,27 @@ public class MainWindow {
         // Main GUI with two notebooks
         // int bottomHeight = statusLabel.getSize().y;
         // int bottomHeight = 20;
-        SashForm sashForm = new SashForm(shell, SWT.HORIZONTAL);
+        SashForm mainSash = new SashForm(shell, SWT.HORIZONTAL);
         FormData formData = new FormData();
         formData.left = new FormAttachment(0);
         formData.right = new FormAttachment(100);
         formData.top = new FormAttachment(0);
         // formData.bottom = new FormAttachment(100, -bottomHeight);
         formData.bottom = new FormAttachment(statusLabel, -2);
-        sashForm.setLayoutData(formData);
+        mainSash.setLayoutData(formData);
 
-        mainTabFolder = new CTabFolder(sashForm, SWT.TOP | SWT.BORDER
+        SashForm leftSash = new SashForm(mainSash, SWT.VERTICAL);
+        mainTabFolder = new CTabFolder(leftSash, SWT.TOP | SWT.BORDER
                 | SWT.CLOSE);
-        SashForm rightSash = new SashForm(sashForm, SWT.VERTICAL);
+        
+        CTabFolder bottomTabs = new CTabFolder(leftSash, SWT.TOP | SWT.BORDER);
+        LoggerView loggerView = new LoggerView(bottomTabs, SWT.NONE);
+        CTabItem tabItem = new CTabItem(bottomTabs, SWT.NONE);
+        tabItem.setText("Messages");
+        tabItem.setControl(loggerView);
+        bottomTabs.setSelection(tabItem);
+
+        SashForm rightSash = new SashForm(mainSash, SWT.VERTICAL);
 
         CTabFolder histogramTabFolder = new CTabFolder(rightSash,
                 SWT.TOP | SWT.BORDER);
@@ -327,10 +336,12 @@ public class MainWindow {
         histogramTabItem.setText("Histogram");
         histogramTabItem.setControl(histogramView);
         histogramTabFolder.setSelection(histogramTabItem);
-
         rightTabFolder = new CTabFolder(rightSash, SWT.TOP | SWT.BORDER);
-        sashForm.setWeights(new int[] { 4, 1 });
+
+        mainSash.setWeights(new int[] { 4, 1 });
+        leftSash.setWeights(new int[] { 5, 1 });
         rightSash.setWeights(new int[] { 1, 4 });
+        
         mainTabFolder.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 for (int i = 0; i < imageTabs.size(); i++)
