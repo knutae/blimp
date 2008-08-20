@@ -60,6 +60,7 @@ public class LoggerView extends Composite {
         else if (level >= Level.WARNING.intValue())
             prefix = "WARNING: ";
         String message = prefix + record.getMessage();
+        message = message.replace('\n', ' ');
         messages.add(message);
         // Scroll to the last item by selecting and deselecting it,
         // is there a better way to do this?
