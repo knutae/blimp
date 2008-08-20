@@ -26,7 +26,8 @@ import org.boblycat.blimp.exif.Rational;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -57,6 +58,17 @@ public class ExifView extends Composite {
         col = new TableColumn(table, SWT.LEFT);
         col.setText("Value");
         col.setWidth(200);
+        
+        addListener(SWT.Resize, new Listener() {
+            public void handleEvent(Event e) {
+                // Quick solution: all columns get the same width after resize.
+                // Should ideally keep track of weights for each column...
+                int colWidth = getClientArea().width / table.getColumnCount();
+                for (TableColumn col: table.getColumns()) {
+                    col.setWidth(colWidth);
+                }
+            }
+        });
     }
     
     private static String splitTagNameIntoWords(String name) {
@@ -220,7 +232,7 @@ public class ExifView extends Composite {
 
     public void setData(ExifTable data) {
         this.data = data;
-        table.clearAll();
+        table.removeAll();
         if (data == null)
             return;
         addFields(new ExifTag[] {
@@ -242,16 +254,5 @@ public class ExifView extends Composite {
                 ExifTag.Copyright,
                 ExifTag.ImageUniqueID,
         });
-    }
-
-    public static void showInDialog(Shell parentShell, ExifTable data) {
-        Shell dialog = new Shell(parentShell,
-                SWT.APPLICATION_MODAL | SWT.CLOSE | SWT.RESIZE);
-        dialog.setText("Exif Metadata");
-        dialog.setLayout(new FillLayout());
-        ExifView view = new ExifView(dialog, SWT.NONE);
-        view.setData(data);
-        dialog.pack();
-        dialog.open();
     }
 }

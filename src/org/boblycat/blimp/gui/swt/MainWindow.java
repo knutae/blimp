@@ -88,7 +88,6 @@ public class MainWindow {
     MenuItem menuHelpAbout;
     MenuItem menuUndo;
     MenuItem menuRedo;
-    MenuItem menuViewExif;
     CTabFolder mainTabFolder;
     CTabFolder rightTabFolder;
     LayersView layers;
@@ -97,6 +96,7 @@ public class MainWindow {
     LayerRegistry layerRegistry;
     HistogramView histogramView;
     Vector<Image> appImages;
+    ExifView exifView;
 
     class MenuArmListener implements Listener {
         String helpText;
@@ -138,9 +138,6 @@ public class MainWindow {
             }
             else if (event.widget == menuRedo) {
                 doRedo();
-            }
-            else if (event.widget == menuViewExif) {
-                doViewExif();
             }
             else if (event.widget instanceof MenuItem) {
                 MenuItem item = (MenuItem) event.widget;
@@ -262,10 +259,6 @@ public class MainWindow {
         });
         fileMenu.addListener(SWT.Hide, enableAllMenuItems);
 
-        Menu viewMenu = addMenu(bar, "&View");
-        menuViewExif = addMenuItem(viewMenu, "&Exif Metadata",
-                "View Exif data for digital photographs");
-
         Menu editMenu = addMenu(bar, "&Edit");
         menuUndo = addMenuItem(editMenu, "&Undo\tCtrl+Z", "Undo a change");
         menuUndo.setAccelerator(SWT.CONTROL | 'Z');
@@ -327,6 +320,11 @@ public class MainWindow {
         tabItem.setText("Messages");
         tabItem.setControl(loggerView);
         bottomTabs.setSelection(tabItem);
+        
+        exifView = new ExifView(bottomTabs, SWT.NONE);
+        tabItem = new CTabItem(bottomTabs, SWT.NONE);
+        tabItem.setText("Exif Metadata");
+        tabItem.setControl(exifView);
 
         SashForm rightSash = new SashForm(mainSash, SWT.VERTICAL);
 
@@ -451,12 +449,28 @@ public class MainWindow {
     void updateCurrentImageTab(ImageTab newImageTab) {
         currentImageTab = newImageTab;
         updateLayersView();
+        updateExifView();
         if (currentImageTab == null) {
             histogramView.setBitmap(null);
         }
         else {
             currentImageTab.imageView.triggerBitmapChange();
         }
+    }
+    
+    void updateExifView() {
+        exifView.setData(null);
+        if (currentImageTab == null)
+            return;
+
+        LayerEditorEnvironment env = currentImageTab.getEditorEnv();
+        env.workerThread.getExifData(currentImageTab, env.session,
+                new ExifQueryTask() {
+            public void handleExifData(ExifTable table) {
+                if (!exifView.isDisposed())
+                    exifView.setData(table);
+            }
+        });
     }
 
     ImageTab findImageTab(BlimpSession session) {
@@ -471,6 +485,7 @@ public class MainWindow {
         // Disposing an image tab will automatically close it and
         // select a new one.  The only special case to consider
         // is when the last tab is closed.
+        tab.getEditorEnv().workerThread.cancelRequestsByOwner(tab);
         tab.dispose();
         imageTabs.remove(tab);
         if (imageTabs.size() == 0)
@@ -587,6 +602,7 @@ public class MainWindow {
                 }
                 addImageViewWithSession(historySession, dirty);
                 updateLayersView();
+                updateExifView();
                 historySession.triggerChangeEvent();
             }
             catch (ClassCastException e) {
@@ -627,8 +643,10 @@ public class MainWindow {
                         env.session.recordSaved();
                     }
                 }
+                updateExifView();
             }
         });
+        updateExifView();
     }
 
     void asyncOpenFile(String fileName) {
@@ -769,21 +787,6 @@ public class MainWindow {
             return;
         currentImageTab.getSession().redo();
         layers.refresh();
-    }
-
-    void doViewExif() {
-        if (currentImageTab == null)
-            return;
-        ImageView view = currentImageTab.imageView;
-        view.workerThread.getExifData(view, view.getSession(), new ExifQueryTask() {
-            public void handleExifData(ExifTable table) {
-                if (table == null)
-                    SwtUtil.messageDialog(shell, "No Exif data",
-                            "No Exif data detected", SWT.ICON_INFORMATION);
-                else
-                    ExifView.showInDialog(shell, table);
-            }
-        });
     }
 
     void status(String msg) {
