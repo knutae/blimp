@@ -61,7 +61,10 @@ public class LoggerView extends Composite {
             prefix = "WARNING: ";
         String message = prefix + record.getMessage();
         messages.add(message);
-        messages.getVerticalBar().setSelection(messages.getVerticalBar().getMaximum());
+        // Scroll to the last item by selecting and deselecting it,
+        // is there a better way to do this?
+        messages.setSelection(messages.getItemCount()-1);
+        messages.deselectAll();
     }
     
     private class AsyncLogMessage implements Runnable {
