@@ -19,7 +19,6 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.HistoryBlimpSession;
-import org.boblycat.blimp.ImageWorkerThread;
 import org.boblycat.blimp.layers.Layer;
 
 /**
@@ -29,7 +28,7 @@ import org.boblycat.blimp.layers.Layer;
  */
 public class LayerEditorEnvironment {
     public LayerEditorCallback editorCallback;
-    public ImageWorkerThread workerThread;
+    public SwtImageWorkerThread workerThread;
     public HistoryBlimpSession session;
     public Layer layer;
     public boolean layerWasJustAdded;

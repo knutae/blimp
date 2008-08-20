@@ -213,7 +213,11 @@ public class ImageView extends Composite {
 
         addListener(SWT.Dispose, new Listener() {
             public void handleEvent(Event e) {
+                asyncRequestCount -= workerThread.cancelRequestsByOwner(this);
                 workerThread.quit();
+                // Note that while the image view calls quit() here, the worker
+                // thread may still be processing, and outlive the image view.
+                // For instance, an image export could be in progress.
             }
         });
     }

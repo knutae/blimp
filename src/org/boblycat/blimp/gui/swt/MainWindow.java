@@ -38,29 +38,27 @@ import java.util.Vector;
 
 class ImageTab {
     CTabItem item;
-
     ImageView imageView;
+    LayerEditorEnvironment editorEnv;
 
     ImageTab(CTabItem item, ImageView imageView) {
         this.item = item;
         this.imageView = imageView;
+        
+        editorEnv = new LayerEditorEnvironment();
+        editorEnv.session = getSession();
+        editorEnv.workerThread = imageView.workerThread;
+        editorEnv.layerWasJustAdded = true;
     }
 
     HistoryBlimpSession getSession() {
         return imageView.getSession();
     }
 
-    LayerEditorEnvironment getEditorEnv() {
-        LayerEditorEnvironment env = new LayerEditorEnvironment();
-        env.session = getSession();
-        env.workerThread = imageView.workerThread;
-        env.layerWasJustAdded = true;
-        return env;
-    }
-
     void dispose() {
         item.dispose();
         imageView.dispose();
+        editorEnv.workerThread.cancelRequestsByOwner(this);
     }
 
     int tryClose(Shell shell) {
@@ -463,7 +461,7 @@ public class MainWindow {
         if (currentImageTab == null)
             return;
 
-        LayerEditorEnvironment env = currentImageTab.getEditorEnv();
+        LayerEditorEnvironment env = currentImageTab.editorEnv;
         env.workerThread.getExifData(currentImageTab, env.session,
                 new ExifQueryTask() {
             public void handleExifData(ExifTable table) {
@@ -485,7 +483,7 @@ public class MainWindow {
         // Disposing an image tab will automatically close it and
         // select a new one.  The only special case to consider
         // is when the last tab is closed.
-        tab.getEditorEnv().workerThread.cancelRequestsByOwner(tab);
+        tab.editorEnv.workerThread.cancelRequestsByOwner(tab);
         tab.dispose();
         imageTabs.remove(tab);
         if (imageTabs.size() == 0)
@@ -539,7 +537,7 @@ public class MainWindow {
         if (currentImageTab == null)
             layers.updateWithEnvironment(null);
         else
-            layers.updateWithEnvironment(currentImageTab.getEditorEnv());
+            layers.updateWithEnvironment(currentImageTab.editorEnv);
     }
 
     private void showLayerEditor(Layer layer, LayerEditorCallback callback) {
@@ -547,7 +545,7 @@ public class MainWindow {
             Util.err("Attempted to show editor without an active image tab");
             return;
         }
-        LayerEditorEnvironment env = currentImageTab.getEditorEnv();
+        LayerEditorEnvironment env = currentImageTab.editorEnv;
         env.layer = layer;
         env.editorCallback = callback;
         layers.updateWithEnvironment(env);
@@ -756,8 +754,8 @@ public class MainWindow {
 
         // Export the image on the worker thread, and handle the result on the
         // main thread.
-        currentImageTab.getEditorEnv().workerThread.asyncExportBitmap(
-                currentImageTab.imageView, session, new File(filename), quality,
+        currentImageTab.editorEnv.workerThread.asyncExportBitmap(
+                this, session, new File(filename), quality,
                 new ImageWorkerThread.FileExportTask() {
                     public void handleSuccess(File file) {
                         SwtUtil.messageDialog(shell, "Image Exported",

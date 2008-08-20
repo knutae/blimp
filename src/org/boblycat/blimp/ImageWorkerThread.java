@@ -235,6 +235,7 @@ public abstract class ImageWorkerThread extends Thread {
             // error will succeed, but the following attempt does no harm,
             // at least.
             handleExceptionError(req, outOfMemoryMessage);
+            cancelAllRequests();
             quit();
         }
         catch (Exception e) {
@@ -290,7 +291,6 @@ public abstract class ImageWorkerThread extends Thread {
     }
 
     public void quit() {
-        cancelAllRequests();
         putRequest(new Request(this, RequestType.QUIT));
     }
 

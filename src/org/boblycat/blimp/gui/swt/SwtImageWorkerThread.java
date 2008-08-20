@@ -29,6 +29,7 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Widget;
 
 /**
  * SWT implementation of an image worker thread.
@@ -47,6 +48,7 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
     private SharedData sharedData;
     private boolean finished;
     private ProgressEventSource guiProgressEventSource;
+    private Listener disposeListener;
 
     class ProgressGuiEventRunner implements Runnable {
         ProgressEvent event;
@@ -62,20 +64,20 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
 
     public SwtImageWorkerThread(Display display) {
         this.display = display;
-        Listener disposeListener = new Listener() {
+        Listener displayDisposeListener = new Listener() {
             public void handleEvent(Event e) {
                 setFinished(true);
             }
         };
-        display.addListener(SWT.Dispose, disposeListener);
+        display.addListener(SWT.Dispose, displayDisposeListener);
         sharedData = new SharedData();
         guiProgressEventSource = new ProgressEventSource();
-    }
-
-    @Override
-    public void quit() {
-        setFinished(true);
-        super.quit();
+        
+        disposeListener = new Listener() {
+            public void handleEvent(Event e) {
+                cancelRequestsByOwner(e.widget);
+            }
+        };
     }
 
     @Override
@@ -150,5 +152,16 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
 
     public void removeProgressListener(ProgressListener listener) {
         guiProgressEventSource.removeListener(listener);
+    }
+    
+    /**
+     * Register a widget as a possible owner for asynchronous events.
+     * Causes outstanding events to be canceled when the widget is disposed
+     * (except for events that are already started).
+     * 
+     * @param widget a widget that is also an event owner.
+     */
+    public void registerOwnerWidget(Widget widget) {
+        widget.addListener(SWT.Dispose, disposeListener);
     }
 }
