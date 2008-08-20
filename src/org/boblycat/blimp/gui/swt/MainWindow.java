@@ -649,16 +649,18 @@ public class MainWindow {
         if (currentImageTab == null)
             return;
         HistoryBlimpSession session = currentImageTab.getSession();
+        String oldName = session.getName();
         try {
+            session.setNameFromFilename(filename);
             Serializer.saveBeanToFile(session, filename);
             session.recordSaved();
-            session.setNameFromFilename(filename);
             currentImageTab.item.setText(session.getName());
             status("Project saved to " + filename);
             //SwtUtil.messageDialog(shell, "Project Saved",
             //        "The project was saved:\n" + filename, SWT.ICON_INFORMATION);
         }
         catch (IOException e) {
+            session.setName(oldName); // restore old name if the save failed
             SwtUtil.errorDialog(shell, "Save Error",
                     "An I/O error occured: " + e.getMessage());
         }
