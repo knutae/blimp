@@ -126,4 +126,17 @@ public class ColorRGB {
         }
         return null;
     }
+    
+    public boolean equals(ColorRGB other) {
+        if (other == null)
+            return false;
+        return (red == other.red) && (green == other.green) && (blue == other.blue);
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof ColorRGB)
+            return equals((ColorRGB) other);
+        return false;
+    }
 }

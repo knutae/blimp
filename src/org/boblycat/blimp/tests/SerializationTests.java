@@ -610,4 +610,33 @@ public class SerializationTests {
         assertEquals("initial path", input.getPath());
         assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
     }
+    
+    @Test
+    public void copyBeanDataProperties() {
+        TestLayer layer1 = new TestLayer();
+        layer1.setActive(false);
+        layer1.setColorValue(ColorRGB.Black);
+        layer1.setDoubleValue(4.2);
+        layer1.setEnumValue(TestLayer.Enum.TWO);
+        layer1.setIntValue(-43);
+        layer1.setName("layer1");
+        layer1.setStringValue("Text Value");
+        layer1.setDoubleArrayValue(new double[] { 1, 2, 3 });
+        
+        TestLayer layer2 = new TestLayer();
+        Serializer.copyBeanData(layer1, layer2);
+        
+        assertEquals(false, layer2.isActive());
+        assertEquals(ColorRGB.Black, layer2.getColorValue());
+        assertEquals(4.2, layer2.getDoubleValue());
+        assertEquals(TestLayer.Enum.TWO, layer2.getEnumValue());
+        assertEquals(-43, layer2.getIntValue());
+        assertEquals("layer1", layer2.getName());
+        assertEquals("Text Value", layer2.getStringValue());
+        double[] arr = layer2.getDoubleArrayValue();
+        assertEquals(3, arr.length);
+        assertEquals(1.0, arr[0]);
+        assertEquals(2.0, arr[1]);
+        assertEquals(3.0, arr[2]);
+    }
 }
