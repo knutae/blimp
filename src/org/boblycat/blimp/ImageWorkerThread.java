@@ -20,7 +20,8 @@ package org.boblycat.blimp;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -277,7 +278,7 @@ public abstract class ImageWorkerThread extends Thread {
      * @return The number of requests cancelled.
      */
     public int cancelRequestsByOwner(Object owner) {
-        Vector<Request> tmp = new Vector<Request>();
+        List<Request> tmp = new ArrayList<Request>();
         requestQueue.drainTo(tmp);
         int count = 0;
         for (Request req: tmp) {

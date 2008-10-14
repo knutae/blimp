@@ -28,7 +28,7 @@ import org.eclipse.swt.events.*;
 import static org.boblycat.blimp.Serializer.propertyValueToString;
 
 import java.lang.reflect.Array;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class LayerPropertyEditor extends Composite {
     private static final int VALUE_COLUMN = 1;
@@ -37,14 +37,14 @@ public class LayerPropertyEditor extends Composite {
     Tree propertyTree;
     TreeEditor treeEditor;
     TreeItem editedItem;
-    Vector<Layer.Property> layerProperties;
+    ArrayList<Layer.Property> layerProperties;
     Menu contextMenu;
     MenuItem menuAddValue;
     MenuItem menuRemoveValue;
 
     public LayerPropertyEditor(Composite parent) {
         super(parent, SWT.NONE);
-        layerProperties = new Vector<Layer.Property>();
+        layerProperties = new ArrayList<Layer.Property>();
         propertyTree = new Tree(this, SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
         propertyTree.setHeaderVisible(true);
         TreeColumn col = new TreeColumn(propertyTree, SWT.LEFT);

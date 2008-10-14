@@ -18,7 +18,8 @@
  */
 package org.boblycat.blimp;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A generic event source implementation.  Mostly meant for change events
@@ -30,16 +31,16 @@ import java.util.Vector;
  * @param <E> An event type.
  */
 public abstract class EventSource<L, E> {
-    Vector<L> listenerList;
+    List<L> listenerList;
 
     public EventSource() {
-        listenerList = new Vector<L>();
+        listenerList = new ArrayList<L>();
     }
 
     public void addListener(L listener) {
         int index = listenerList.indexOf(null);
         if (index >= 0)
-            listenerList.setElementAt(listener, index);
+            listenerList.set(index, listener);
         else
             listenerList.add(listener);
     }
@@ -47,7 +48,7 @@ public abstract class EventSource<L, E> {
     public void removeListener(L listener) {
         int index = listenerList.indexOf(listener);
         if (index >= 0)
-            listenerList.setElementAt(null, index);
+            listenerList.set(index, null);
     }
 
     protected abstract void triggerListenerEvent(L listener, E event);

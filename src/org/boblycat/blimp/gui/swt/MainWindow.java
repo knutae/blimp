@@ -34,7 +34,7 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 class ImageTab {
     CTabItem item;
@@ -89,11 +89,11 @@ public class MainWindow {
     CTabFolder mainTabFolder;
     CTabFolder rightTabFolder;
     LayersView layers;
-    Vector<ImageTab> imageTabs;
+    ArrayList<ImageTab> imageTabs;
     ImageTab currentImageTab;
     LayerRegistry layerRegistry;
     HistogramView histogramView;
-    Vector<Image> appImages;
+    ArrayList<Image> appImages;
     ExifView exifView;
 
     class MenuArmListener implements Listener {
@@ -178,7 +178,7 @@ public class MainWindow {
     }
 
     public MainWindow(DeviceData deviceData) {
-        imageTabs = new Vector<ImageTab>();
+        imageTabs = new ArrayList<ImageTab>();
         display = new Display(deviceData);
         shell = new Shell(display);
         shell.setText("Blimp " + Version.versionString);
@@ -202,7 +202,7 @@ public class MainWindow {
         });
 
         // Application images
-        appImages = new Vector<Image>();
+        appImages = new ArrayList<Image>();
         SwtUtil.addResourceImages(display, "blimp-logo-16.png", appImages);
         SwtUtil.addResourceImages(display, "blimp-logo-32.png", appImages);
         SwtUtil.addResourceImages(display, "blimp-logo-48.png", appImages);

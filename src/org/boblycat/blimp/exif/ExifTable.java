@@ -18,7 +18,8 @@
  */
 package org.boblycat.blimp.exif;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A table of Exif data, and functions for converting to and from a set of IFDs.
@@ -26,7 +27,7 @@ import java.util.Vector;
  * @author Knut Arild Erstad
  */
 public class ExifTable {
-    private Vector<ImageFileDirectory> mainIFDs;
+    private List<ImageFileDirectory> mainIFDs;
     ImageFileDirectory primaryIFD;
     ImageFileDirectory exifIFD;
 
@@ -38,7 +39,7 @@ public class ExifTable {
         version.setStringValue("0220");
         exifIFD.addField(version);
 
-        mainIFDs = new Vector<ImageFileDirectory>();
+        mainIFDs = new ArrayList<ImageFileDirectory>();
         mainIFDs.add(primaryIFD);
     }
 
@@ -86,11 +87,11 @@ public class ExifTable {
         return exifIFD;
     }
 
-    public Vector<ImageFileDirectory> getMainIFDs() {
+    public List<ImageFileDirectory> getMainIFDs() {
         return mainIFDs;
     }
 
-    public void setIFDs(Vector<ImageFileDirectory> mainIFDs,
+    public void setIFDs(List<ImageFileDirectory> mainIFDs,
             ImageFileDirectory exifIFD) {
         if (mainIFDs.size() == 0)
             throw new IllegalArgumentException("At least one IFD is required");

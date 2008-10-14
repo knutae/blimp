@@ -24,7 +24,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Array;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -224,8 +225,8 @@ public class Serializer {
             Layer.Property prop) {
         Class<?> arrayClass = prop.getPropertyClass();
         Class<?> componentClass = arrayClass.getComponentType();
-        // Collect array values in a vector
-        Vector<Object> values = new Vector<Object>();
+        // Collect array values in a list
+        List<Object> values = new ArrayList<Object>();
         for (Node child : new DOMNodeIterator(parent, true)) {
             if (!(child instanceof Element)
                     || !child.getNodeName().equals("value")) {
@@ -238,7 +239,7 @@ public class Serializer {
             if (value != null)
                 values.add(value);
         }
-        // Convert the vector to an array of the correct type
+        // Convert the list to an array of the correct type
         Object arrayValues = Array.newInstance(componentClass, values.size());
         for (int i = 0; i < values.size(); i++) {
             Array.set(arrayValues, i, values.get(i));

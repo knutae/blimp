@@ -21,7 +21,8 @@ package org.boblycat.blimp.exif;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
@@ -141,7 +142,7 @@ public class ExifBlobReader {
     }
 
     public ExifTable extractIFDTable() throws ReaderError {
-        Vector<ImageFileDirectory> ifds = new Vector<ImageFileDirectory>();
+        List<ImageFileDirectory> ifds = new ArrayList<ImageFileDirectory>();
         ImageFileDirectory exifIFD = null;
         boolean nextIsExif = false;
         currentOffset = reader.extractInt(4, 4);

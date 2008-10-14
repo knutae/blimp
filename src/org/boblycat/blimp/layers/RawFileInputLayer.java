@@ -26,8 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Vector;
+import java.util.List;
 
 import javax.imageio.IIOException;
 //import net.sourceforge.jiu.codecs.PNMCodec;
@@ -188,7 +189,7 @@ public class RawFileInputLayer extends FileInputLayer {
         if (!isActive())
             return null;
         try {
-            Vector<String> commandLine = new Vector<String>();
+            List<String> commandLine = new ArrayList<String>();
             commandLine.add(dcrawExecutable());
 
             // 8 or 16-bit depth

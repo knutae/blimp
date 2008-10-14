@@ -18,7 +18,8 @@
  */
 package org.boblycat.blimp;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.boblycat.blimp.layers.AdjustmentLayer;
 
@@ -34,10 +35,10 @@ import org.boblycat.blimp.layers.AdjustmentLayer;
  * @author Knut Arild Erstad
  */
 public class LayerRearranger {
-    public static <T extends AdjustmentLayer> Vector<T> optimizeLayerOrder(
-            Vector<T> layers) {
-        Vector<T> newLayers = new Vector<T>();
-        Vector<T> buffer = new Vector<T>();
+    public static <T extends AdjustmentLayer> ArrayList<T> optimizeLayerOrder(
+            List<T> layers) {
+        ArrayList<T> newLayers = new ArrayList<T>();
+        ArrayList<T> buffer = new ArrayList<T>();
         for (T layer: layers) {
             if (layer.canChangeDimensions()) {
                 if (layer.canChangeColors()) {

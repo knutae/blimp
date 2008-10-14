@@ -19,7 +19,8 @@
 package org.boblycat.blimp.exif;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A class for creating an in-memory blob (byte array) of Exif data.
@@ -111,7 +112,7 @@ public class BlobCreator {
         currentOffset += length;
     }
 
-    private void writeValues(Vector<Object> values, ExifDataType type) {
+    private void writeValues(List<Object> values, ExifDataType type) {
         for (Object obj: values) {
             switch (type) {
             case BYTE:
@@ -153,7 +154,7 @@ public class BlobCreator {
         }
     }
 
-    private void writeDelayedValues(Vector<DelayedValueInfo> values) {
+    private void writeDelayedValues(List<DelayedValueInfo> values) {
         for (DelayedValueInfo dv: values) {
             putInt(dv.offset, currentOffset, 4);
             writeExifFieldValue(dv.field);
@@ -171,8 +172,8 @@ public class BlobCreator {
     private void writeTable(ExifTable table) {
         if (currentOffset == 0)
             writeEndianInfo();
-        Vector<DelayedValueInfo> delayedValues = new Vector<DelayedValueInfo>();
-        Vector<ImageFileDirectory> ifds = new Vector<ImageFileDirectory>();
+        List<DelayedValueInfo> delayedValues = new ArrayList<DelayedValueInfo>();
+        List<ImageFileDirectory> ifds = new ArrayList<ImageFileDirectory>();
         ifds.add(table.getPrimaryIFD());
         ImageFileDirectory exifIFD = table.getExifIFD();
         ifds.add(exifIFD);

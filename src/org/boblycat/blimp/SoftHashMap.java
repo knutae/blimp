@@ -19,12 +19,12 @@
 package org.boblycat.blimp;
 
 import java.lang.ref.SoftReference;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * A hash map in which the values are SoftReferences, which makes it suitable
@@ -123,7 +123,7 @@ public class SoftHashMap<K, V> implements Map<K, V> {
     }
 
     public Collection<V> values() {
-        Vector<V> vec = new Vector<V>(size());
+        ArrayList<V> vec = new ArrayList<V>(size());
         for (Entry entry: map.values())
             vec.add(entry.getValue());
         return vec;

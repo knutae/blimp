@@ -20,7 +20,7 @@ package org.boblycat.blimp.tests;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import org.boblycat.blimp.exif.*;
 import org.junit.*;
@@ -414,7 +414,7 @@ public class ExifTests {
         byte[] data = writer.stream.toByteArray();
         ExifBlobReader reader = new ExifBlobReader(data);
         ExifTable table = reader.extractIFDTable();
-        Vector<ImageFileDirectory> ifds = table.getMainIFDs();
+        List<ImageFileDirectory> ifds = table.getMainIFDs();
 
         assertEquals(1, ifds.size());
         // Test 0th IFD

@@ -18,8 +18,9 @@
  */
 package org.boblycat.blimp;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import org.boblycat.blimp.layers.*;
 
@@ -38,9 +39,9 @@ public class LayerRegistry implements Iterable<LayerRegistry.Category> {
 
     public class Category implements Iterable<LayerInfo> {
         public String label;
-        private Vector<LayerInfo> layers;
+        private List<LayerInfo> layers;
         private Category() {
-            layers = new Vector<LayerInfo>();
+            layers = new ArrayList<LayerInfo>();
         }
         public Iterator<LayerInfo> iterator() {
             return layers.iterator();
@@ -55,10 +56,10 @@ public class LayerRegistry implements Iterable<LayerRegistry.Category> {
         }
     }
 
-    private Vector<Category> categoryList;
+    private List<Category> categoryList;
 
     public LayerRegistry() {
-        categoryList = new Vector<Category>();
+        categoryList = new ArrayList<Category>();
     }
 
     public Category addCategory(String label) {

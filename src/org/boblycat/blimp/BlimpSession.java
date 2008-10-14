@@ -21,7 +21,8 @@ package org.boblycat.blimp;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.DimensionAdjustmentLayer;
@@ -35,7 +36,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         Accurate
     }
 
-    Vector<Layer> layerList;
+    List<Layer> layerList;
 
     Bitmap currentBitmap;
 
@@ -60,7 +61,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     }
 
     public BlimpSession() {
-        layerList = new Vector<Layer>();
+        layerList = new ArrayList<Layer>();
         currentBitmap = null;
         viewLayer = new ViewResizeLayer();
         previewQuality = PreviewQuality.Accurate;
@@ -127,8 +128,8 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return bm;
     }
 
-    private Vector<AdjustmentLayer> layersBefore(String layerName) {
-        Vector<AdjustmentLayer> list = new Vector<AdjustmentLayer>();
+    private List<AdjustmentLayer> layersBefore(String layerName) {
+        List<AdjustmentLayer> list = new ArrayList<AdjustmentLayer>();
         for (Layer layer: layerList) {
             if (layerName != null && layerName.equals(layer.getName()))
                 break;
@@ -138,9 +139,9 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         return list;
     }
 
-    private Vector<AdjustmentLayer> tryRearrangeLayersBefore(String layerName,
+    private List<AdjustmentLayer> tryRearrangeLayersBefore(String layerName,
             boolean useViewport) {
-        Vector<AdjustmentLayer> list = layersBefore(layerName);
+        List<AdjustmentLayer> list = layersBefore(layerName);
         if (useViewport)
             list.add(viewLayer);
         if (previewQuality == PreviewQuality.Fast)
@@ -168,7 +169,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             return null;
 
         Debug.print(this, "preview quality " + previewQuality);
-        Vector<AdjustmentLayer> layers = tryRearrangeLayersBefore(layerName,
+        List<AdjustmentLayer> layers = tryRearrangeLayersBefore(layerName,
                 useViewport);
 
         for (AdjustmentLayer layer : layers) {
@@ -230,7 +231,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         if (size.pixelScaleFactor <= 0)
             size.pixelScaleFactor = 1.0;
         Debug.print(this, "input size: " + size.width + "x" + size.height);
-        Vector<AdjustmentLayer> layers = layersBefore(layerName);
+        List<AdjustmentLayer> layers = layersBefore(layerName);
         double lastFactor = size.pixelScaleFactor;
         for (AdjustmentLayer layer: layers) {
             if (layer.isActive() && (layer instanceof DimensionAdjustmentLayer)) {
@@ -259,7 +260,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
      * @param other The session to copy layers from.
      */
     public void synchronizeSessionData(BlimpSession other) {
-        Vector<Layer> newList = new Vector<Layer>();
+        List<Layer> newList = new ArrayList<Layer>();
         for (Layer otherLayer: other.layerList)
             newList.add(findOrCloneLayer(otherLayer));
         layerList = newList;
@@ -288,8 +289,8 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         if (layerList.isEmpty()) {
             layerList.add(newInput);
         }
-        else if (layerList.firstElement() instanceof InputLayer) {
-            layerList.firstElement().removeChangeListener(this);
+        else if (layerList.get(0) instanceof InputLayer) {
+            layerList.get(0).removeChangeListener(this);
             layerList.set(0, newInput);
         }
         else {
@@ -303,7 +304,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     public InputLayer getInput() {
         if (layerList.isEmpty())
             return null;
-        Layer first = layerList.firstElement();
+        Layer first = layerList.get(0);
         if (first instanceof InputLayer)
             return (InputLayer) first;
         Util.warn("the first layer is not an input layer (getInput)");
@@ -354,7 +355,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     }
 
     private static <T extends Layer> T findLayerInList(String name,
-            Vector<T> layers) {
+            List<T> layers) {
         if (name == null)
             return null;
         for (T layer: layers) {
@@ -418,7 +419,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     public void removeLayer(int index) {
         Layer layer = getLayer(index);
         layer.removeChangeListener(this);
-        layerList.removeElementAt(index);
+        layerList.remove(index);
         if (layer.isActive())
             invalidate();
         triggerChangeEvent();
@@ -468,7 +469,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     /**
      * Overrides the BlimpBean function used by serialization.
      */
-    public Vector<? extends BlimpBean> getChildren() {
+    public List<? extends BlimpBean> getChildren() {
         return layerList;
     }
 

@@ -24,8 +24,9 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Base class for serializable Blimp objects.
@@ -144,7 +145,7 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
      * @return An iterator for this bean's properties.
      */
     public Iterator<Property> iterator() {
-        Vector<Property> props = new Vector<Property>();
+        List<Property> props = new ArrayList<Property>();
         try {
             BeanInfo beanInfo = Introspector.getBeanInfo(this.getClass(),
                     BlimpBean.class);
@@ -202,7 +203,7 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
      *
      * @return A list of child beans, or <code>null</code>.
      */
-    public Vector<? extends BlimpBean> getChildren() {
+    public List<? extends BlimpBean> getChildren() {
         return null;
     }
 

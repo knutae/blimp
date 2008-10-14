@@ -18,7 +18,8 @@
  */
 package org.boblycat.blimp.exif;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A single Exif field, which can hold several elements of the same type.
@@ -28,7 +29,7 @@ import java.util.Vector;
 public class ExifField {
     private int tag;
     private ExifDataType type;
-    private Vector<Object> values;
+    private ArrayList<Object> values;
     private String stringValue;
 
     public ExifField(int tag, ExifDataType type) {
@@ -37,7 +38,7 @@ public class ExifField {
         if (useStringValue())
             stringValue = "";
         else
-            values = new Vector<Object>();
+            values = new ArrayList<Object>();
     }
 
     public ExifField(int tag, String asciiValue) {
@@ -251,7 +252,7 @@ public class ExifField {
         return str.toString();
     }
 
-    public Vector<Object> getValues() {
+    public List<Object> getValues() {
         return values;
     }
 

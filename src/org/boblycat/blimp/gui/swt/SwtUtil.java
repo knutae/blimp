@@ -19,7 +19,7 @@
 package org.boblycat.blimp.gui.swt;
 
 import java.io.InputStream;
-import java.util.Vector;
+import java.util.List;
 
 import org.boblycat.blimp.Util;
 import org.eclipse.swt.SWT;
@@ -205,15 +205,15 @@ public class SwtUtil {
     }
 
     public static void addResourceImages(Device device, String filename,
-            Vector<Image> imageVector) {
+            List<Image> imageList) {
         Image[] loadedImages = loadResourceImages(device, filename);
         if (loadedImages == null)
             return;
         for (Image image: loadedImages)
-            imageVector.add(image);
+            imageList.add(image);
     }
 
-    public static void setImages(Shell shell, Vector<Image> images) {
+    public static void setImages(Shell shell, List<Image> images) {
         if (images == null || images.size() == 0)
             return;
         Image[] imageArray = new Image[images.size()];

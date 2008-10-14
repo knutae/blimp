@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp.layers;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import net.sourceforge.jiu.data.IntegerImage;
 import net.sourceforge.jiu.data.PixelImage;
@@ -38,7 +38,7 @@ class MultiLineData {
     IntegerImage image;
     int width;
     int height;
-    Vector<int[]> activeLineData;
+    ArrayList<int[]> activeLineData;
     int[] removedLine;
     int[] combined;
     int channel;
@@ -48,7 +48,7 @@ class MultiLineData {
         this.channel = channel;
         width = image.getWidth();
         height = image.getHeight();
-        activeLineData = new Vector<int[]>();
+        activeLineData = new ArrayList<int[]>();
         combined = new int[width];
     }
 

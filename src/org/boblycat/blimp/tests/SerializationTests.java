@@ -22,7 +22,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -467,7 +468,7 @@ public class SerializationTests {
         Element rawWhiteBalanceElement = findPropertyElement(
                 root, "rawWhiteBalance");
         assertNotNull(rawWhiteBalanceElement);
-        Vector<String> childValues = new Vector<String>();
+        List<String> childValues = new ArrayList<String>();
         for (Node node: new DOMNodeIterator(rawWhiteBalanceElement)) {
             assertTrue(node instanceof Element);
             Element child = (Element) node;

@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp.gui.swt;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.boblycat.blimp.Util;
 import org.boblycat.blimp.Version;
@@ -45,7 +45,7 @@ public class AboutDialog {
      * @param parentShell a parent shell, usually the main window.
      * @param appImages application images (icons) for the dialog title bar.
      */
-    public static void show(Shell parentShell, Vector<Image> appImages) {
+    public static void show(Shell parentShell, List<Image> appImages) {
         final Shell dialog = new Shell(parentShell,
                 SWT.APPLICATION_MODAL | SWT.CLOSE);
         SwtUtil.setImages(dialog, appImages);

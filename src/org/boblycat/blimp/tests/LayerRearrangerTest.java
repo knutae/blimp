@@ -20,7 +20,8 @@ package org.boblycat.blimp.tests;
 
 import static org.junit.Assert.*;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.boblycat.blimp.LayerRearranger;
 import org.boblycat.blimp.layers.AdjustmentLayer;
@@ -34,11 +35,11 @@ import org.boblycat.blimp.layers.ViewResizeLayer;
 import org.junit.Test;
 
 public class LayerRearrangerTest {
-    Vector<AdjustmentLayer> layers;
-    Vector<AdjustmentLayer> newLayers;
+    List<AdjustmentLayer> layers;
+    List<AdjustmentLayer> newLayers;
 
     public LayerRearrangerTest() {
-        layers = new Vector<AdjustmentLayer>();
+        layers = new ArrayList<AdjustmentLayer>();
         newLayers = null;
     }
 

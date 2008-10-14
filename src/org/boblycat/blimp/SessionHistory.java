@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 class HistoryEntry {
     BlimpSession sessionCopy;
@@ -31,13 +31,13 @@ class HistoryEntry {
 
 public class SessionHistory {
     BlimpSession session;
-    Vector<HistoryEntry> historyList;
+    ArrayList<HistoryEntry> historyList;
     int currentIndex;
     HistoryEntry savedHistoryEntry;
 
     public SessionHistory(BlimpSession session) {
         this.session = session;
-        historyList = new Vector<HistoryEntry>();
+        historyList = new ArrayList<HistoryEntry>();
         // record initial state
         HistoryEntry newEntry = new HistoryEntry(session);
         historyList.add(newEntry);
@@ -58,7 +58,10 @@ public class SessionHistory {
         if (session.sessionDataEquals(currentEntry.sessionCopy))
             // no changes to record
             return;
-        historyList.setSize(currentIndex+1);
+        // Remove all entries > currentIndex
+        for (int i = historyList.size()-1; i > currentIndex; --i) {
+            historyList.remove(i);
+        }
         HistoryEntry newEntry = new HistoryEntry(session);
         historyList.add(newEntry);
         currentIndex++;

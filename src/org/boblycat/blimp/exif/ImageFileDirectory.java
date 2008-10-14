@@ -18,9 +18,10 @@
  */
 package org.boblycat.blimp.exif;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * An image file directory (IFD) with Exif data, as defined in TIFF.
@@ -28,14 +29,14 @@ import java.util.Vector;
  * @author Knut Arild Erstad
  */
 public class ImageFileDirectory implements Iterable<ExifField> {
-    private Vector<ExifField> fields;
+    private List<ExifField> fields;
     private HashMap<Integer, Integer> indexMap;
-    private Vector<ImageFileDirectory> subIFDs;
+    private List<ImageFileDirectory> subIFDs;
 
     public ImageFileDirectory() {
-        fields = new Vector<ExifField>();
+        fields = new ArrayList<ExifField>();
         indexMap = new HashMap<Integer, Integer>();
-        subIFDs = new Vector<ImageFileDirectory>();
+        subIFDs = new ArrayList<ImageFileDirectory>();
     }
 
     public void addField(ExifField field) {
