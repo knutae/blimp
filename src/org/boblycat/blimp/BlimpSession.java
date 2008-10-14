@@ -483,6 +483,13 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         else
             super.addChild(bean);
     }
+    
+    /**
+     * Overrides the BlimpBean function used by serialization.
+     */
+    public void removeAllChildren() {
+        layerList.clear();
+    }
 
     /**
      * Overridden so that the input property is not serialized directly.

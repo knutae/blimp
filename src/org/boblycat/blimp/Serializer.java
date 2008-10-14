@@ -393,6 +393,7 @@ public class Serializer {
 
     public static void copyBeanData(BlimpBean source, BlimpBean dest) {
         Element beanNode = beanToDOM(source);
+        dest.removeAllChildren();
         copyBeanChildrenFromDOM(beanNode, dest);
     }
 

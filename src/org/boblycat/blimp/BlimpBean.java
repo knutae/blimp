@@ -218,6 +218,13 @@ public abstract class BlimpBean implements Iterable<BlimpBean.Property> {
     public void addChild(BlimpBean child) throws NotImplementedException {
         throw new NotImplementedException();
     }
+    
+    /**
+     * Removes all children.  Override this for beans with children.
+     * The default implementation does nothing.
+     */
+    public void removeAllChildren() {
+    }
 
     /**
      * Create a deep copy of this bean. Internally, this uses Serializer

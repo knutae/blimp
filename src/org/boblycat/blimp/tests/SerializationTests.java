@@ -639,4 +639,50 @@ public class SerializationTests {
         assertEquals(2.0, arr[1]);
         assertEquals(3.0, arr[2]);
     }
+    
+    private static void addTestLayer(BlimpSession session, String name, String stringValue) {
+        TestLayer layer = new TestLayer();
+        layer.setName(name);
+        layer.setStringValue(stringValue);
+        session.addLayer(layer);
+    }
+    
+    private static void checkCopiedSessionData(BlimpSession session) {
+        assertEquals(3, session.layerCount());
+        assertEquals("input1", session.getLayer(0).getName());
+        assertEquals("layer1", session.getLayer(1).getName());
+        assertEquals("layer2", session.getLayer(2).getName());
+    }
+    
+    @Test
+    public void copyBeanDataSession() {
+        BlimpSession session1 = new BlimpSession();
+        session1.setName("session1");
+        TestInput input = new TestInput();
+        input.setName("input1");
+        input.setPath("input path");
+        session1.setInput(input);
+        addTestLayer(session1, "layer1", "value1");
+        addTestLayer(session1, "layer2", "value2");
+        // sanity checks before copying
+        checkCopiedSessionData(session1);
+        
+        BlimpSession session2 = new BlimpSession();
+        
+        // first copy (from nothing)
+        Serializer.copyBeanData(session1, session2);
+        checkCopiedSessionData(session2);
+
+        // second copy (no changes) 
+        Serializer.copyBeanData(session1, session2);
+        checkCopiedSessionData(session2);
+        
+        // third copy (with some changed data)
+        session2.getInput().setName("NEW INPUT VALUE");
+        session2.moveLayer(1, 2);
+        assertEquals("layer2", session2.getLayer(1).getName());
+        assertEquals("layer1", session2.getLayer(2).getName());
+        Serializer.copyBeanData(session1, session2);
+        checkCopiedSessionData(session2);
+    }
 }
