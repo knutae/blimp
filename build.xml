@@ -13,6 +13,14 @@
     <condition property="swt.dir" value="swt-3.4-win32_64">
         <os family="windows" arch="amd64"/>
     </condition>
+	
+	<!-- Assign ProgramFiles32 on windows (base for 32-bit utilities) -->
+	<condition property="ProgramFiles32" value="${env.PROGRAMFILES(X86)}">
+		<os family="windows" arch="amd64"/>
+	</condition>
+	<condition property="ProgramFiles32" value="${env.PROGRAMFILES}">
+		<os family="windows"/>
+	</condition>
 
     <!-- Most properties are loaded from properties.* files -->
     <condition property="os.property.file" value="properties.windows">
@@ -189,7 +197,12 @@
             <fileset dir="jars" includes="*.jar"/>
         </copy>
         <copy todir="${install.lib}" file="${jiu.jar}"/>
+    	<!--
         <copy todir="${install.lib}" file="${swt.jar}"/>
+        -->
+    	<!-- WORKAROUND until I figure out a solution that installs both 32-bit and 64-bit
+    	versions of SWT. -->
+    	<copy todir="${install.lib}" file="swt-3.4-win32/swt.jar"/>
     </target>
 
     <target name="blimp-exe" depends="install-windows">

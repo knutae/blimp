@@ -15,12 +15,13 @@ dcraw.defines.minimal = NO_JPEG,NO_LCMS,W32_GETC_UNLOCKED,ftello=ftell,fseeko=fs
 dcraw.libs.minimal = ws2_32
 
 # jsmooth java .exe wrapper
-jsmooth.dir = ${env.PROGRAMFILES}/JSmooth 0.9.9-7
+jsmooth.dir = ${ProgramFiles32}/JSmooth 0.9.9-7
 jsmooth.compiler = ${jsmooth.dir}/jsmoothcmd.exe
 jsmooth.installdir = ${install.home}
 
 # WiX (Windows Installer XML) files
-wix.dir = ${env.PROGRAMFILES}/Windows Installer XML v3
+#wix.dir = ${env.PROGRAMFILES}/Windows Installer XML v3
+wix.dir = ${ProgramFiles32}/Windows Installer XML Toolset 3.0.4617.0
 wix.bin = ${wix.dir}/bin
 wix.candle = ${wix.bin}/candle.exe
 wix.light = ${wix.bin}/light.exe
