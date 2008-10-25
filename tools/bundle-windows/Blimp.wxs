@@ -24,7 +24,7 @@
                             <Component Id='BlimpExecutable'
                                        Guid='2B083629-CEFD-454E-A0A6-ECAAE22C1C98'>
                                 <File Id='blimp.exe' Name='blimp.exe' DiskId='1'
-                                      Source='build\install\bin\blimp.exe'>
+                                      Source='build\install\bin\blimp.exe' KeyPath='yes'>
                                     <Shortcut Id='BlimpShortcut'
                                               Advertise='yes'
                                               Directory='BoblycatMenuFolder' Name='Blimp'
