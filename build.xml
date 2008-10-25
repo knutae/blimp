@@ -9,6 +9,11 @@
 
     <property environment="env"/>
 
+    <!-- Special SWT directory for 64-bit windows -->
+    <condition property="swt.dir" value="swt-3.4-win32_64">
+        <os family="windows" arch="amd64"/>
+    </condition>
+
     <!-- Most properties are loaded from properties.* files -->
     <condition property="os.property.file" value="properties.windows">
         <os family="windows"/>
