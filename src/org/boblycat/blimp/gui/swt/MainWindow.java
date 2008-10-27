@@ -84,6 +84,7 @@ public class MainWindow {
     MenuItem menuFileSaveSessionAs;
     MenuItem menuFileExportImage;
     MenuItem menuHelpAbout;
+    MenuItem menuHelpSystemInfo;
     MenuItem menuUndo;
     MenuItem menuRedo;
     CTabFolder mainTabFolder;
@@ -130,6 +131,9 @@ public class MainWindow {
             }
             else if (event.widget == menuHelpAbout) {
                 doMenuAbout();
+            }
+            else if (event.widget == menuHelpSystemInfo) {
+            	SystemInfoDialog.show(shell, appImages);
             }
             else if (event.widget == menuUndo) {
                 doUndo();
@@ -285,6 +289,7 @@ public class MainWindow {
         }
 
         Menu helpMenu = addMenu(bar, "&Help");
+        menuHelpSystemInfo = addMenuItem(helpMenu, "&System Information", "System Information");
         menuHelpAbout = addMenuItem(helpMenu, "&About", "About Blimp...");
 
         // Bottom status line
