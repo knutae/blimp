@@ -1,0 +1,24 @@
+# Blimp SCons rules for bundling on windows
+
+Import('dcraw', 'install_base', 'install_bin', 'install_lib')
+
+import os
+
+jsmoothcmd = os.path.join(os.environ['PROGRAMFILES'], 'JSmooth 0.9.9-7', 'jsmoothcmd.exe')
+
+
+InstallAs(install_bin + '/blimp_dcraw.exe', dcraw)
+
+Install(install_base, [
+	'tools/bundle-windows/blimp.jsmooth',
+	'icons/blimp.ico',
+])
+
+if os.path.isfile(jsmoothcmd):
+	print 'JSmooth:', jsmoothcmd
+	env = Environment()
+	env['JSMOOTHCMD'] = jsmoothcmd
+	env['BUILDERS']['JSmooth'] = Builder(action = '"$JSMOOTHCMD" $SOURCE')
+	blimp_exe = env.JSmooth(install_bin + '/blimp.exe', install_base + '/blimp.jsmooth')
+else:
+	print '*** WARNING: JSmooth not detected'

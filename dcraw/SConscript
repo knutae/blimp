@@ -23,9 +23,10 @@ if sys.platform == 'win32':
 	# Visual Studio 2008 (vc90) hack
 	sdk_dir = query_windows_sdk_dir()
 	if sdk_dir:
-		print 'Detected Windows SDK at:', sdk_dir
+		print '--- Detected Windows SDK at:', sdk_dir
 		env.Append(CPPPATH = [os.path.join(sdk_dir, 'Include')])
 		env.Append(LIBPATH = [os.path.join(sdk_dir, 'Lib')])
 
 dcraw = env.Program('dcraw.c')
 Default(dcraw)
+Export('dcraw')
