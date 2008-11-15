@@ -12,6 +12,6 @@ Install(install_lib, install_jars)
 
 platform_script = 'SConscript.bundle.' + sys.platform
 if os.path.isfile(platform_script):
-	SConscript(platform_script, ['install_base', 'install_bin', 'install_lib'])
+    SConscript(platform_script, ['install_base', 'install_bin', 'install_lib'])
 else:
-	print '*** WARNING: platform install script (%s) not found' % (platform_script)
+    print '*** WARNING: platform install script (%s) not found' % (platform_script)

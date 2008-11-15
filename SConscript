@@ -4,9 +4,9 @@ import os, sys
 
 env = Environment()
 if os.environ.has_key('JAVA_HOME'):
-	java_home = os.environ['JAVA_HOME']
-	print '--- Using JAVA_HOME:', java_home
-	env['ENV']['PATH'] = os.path.join(java_home, 'bin')
+    java_home = os.environ['JAVA_HOME']
+    print '--- Using JAVA_HOME:', java_home
+    env['ENV']['PATH'] = os.path.join(java_home, 'bin')
 
 class_dir = 'build/classes'
 
@@ -17,30 +17,30 @@ junit_jar = 'junit4.1/junit-4.1.jar'
 blimp_jar = env.Jar('build/blimp.jar', class_dir)
 
 if sys.platform == 'win32':
-	# TODO: detect 32/64-bit java VM (or support both somehow)
-	swt_jar = 'swt-3.4-win32_64/swt.jar'
+    # TODO: detect 32/64-bit java VM (or support both somehow)
+    swt_jar = 'swt-3.4-win32_64/swt.jar'
 
 env.Append(JAVACLASSPATH = [ jiu_jar, swt_jar, junit_jar ])
 env.Java(class_dir, 'src')
 
 def emit_java_runner(target, source, env):
-	assert len(target) == 1
-	assert len(source) == 1
-	# The source is the full class name (org.example.foo.MyClass)
-	# The target is garbage (org.example.foo)
-	# Quirky hack: return the source as the target and discard the old target
-	return source, []
+    assert len(target) == 1
+    assert len(source) == 1
+    # The source is the full class name (org.example.foo.MyClass)
+    # The target is garbage (org.example.foo)
+    # Quirky hack: return the source as the target and discard the old target
+    return source, []
 
 def generate_java_runner(source, target, env, for_signature):
-	assert len(target) == 1
-	mainclass = str(target[0])
-	classpath = os.pathsep.join(env['JAVACLASSPATH'])
-	cmd = 'java -classpath ' + classpath + ' ' + mainclass
-	return cmd
+    assert len(target) == 1
+    mainclass = str(target[0])
+    classpath = os.pathsep.join(env['JAVACLASSPATH'])
+    cmd = 'java -classpath ' + classpath + ' ' + mainclass
+    return cmd
 
 java_runner = Builder(
-	generator = generate_java_runner,
-	emitter = emit_java_runner)
+    generator = generate_java_runner,
+    emitter = emit_java_runner)
 
 runner_env = env.Clone()
 runner_env.Replace(JAVACLASSPATH = [class_dir, jiu_jar, xerces_jar])
@@ -62,3 +62,4 @@ Default(class_dir, 'test')
 install_jars = [ blimp_jar, jiu_jar, xerces_jar, swt_jar ]
 Export('install_jars')
 #Export('blimp_jar', 'jiu_jar', 'xerces_jar', 'swt_jar')
+

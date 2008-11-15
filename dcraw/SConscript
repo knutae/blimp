@@ -6,27 +6,28 @@ env = Environment()
 env.Append(CPPDEFINES = ['NO_JPEG', 'NO_LCMS'])
 
 def query_windows_sdk_dir():
-	import _winreg
-	for hkey in [_winreg.HKEY_LOCAL_MACHINE, _winreg.HKEY_CURRENT_USER]:
-		try:
-			key = _winreg.OpenKey(hkey, r'SOFTWARE\Microsoft\Microsoft SDKs\Windows')
-			value, type = _winreg.QueryValueEx(key, 'CurrentInstallFolder')
-			return value
-		except WindowsError:
-			pass
-	print 'Warning: failed to detect Windows SDK folder, expect winsock compile errors'
-	return ''
+    import _winreg
+    for hkey in [_winreg.HKEY_LOCAL_MACHINE, _winreg.HKEY_CURRENT_USER]:
+        try:
+            key = _winreg.OpenKey(hkey, r'SOFTWARE\Microsoft\Microsoft SDKs\Windows')
+            value, type = _winreg.QueryValueEx(key, 'CurrentInstallFolder')
+            return value
+        except WindowsError:
+            pass
+    print 'Warning: failed to detect Windows SDK folder, expect winsock compile errors'
+    return ''
 
 if sys.platform == 'win32':
-	env.Append(CPPDEFINES = ['WIN32', 'W32_GETC_UNLOCKED', 'ftello=ftell', 'fseeko=fseek'])
-	env.Append(CCFLAGS = ['/Ox'])
-	# Visual Studio 2008 (vc90) hack
-	sdk_dir = query_windows_sdk_dir()
-	if sdk_dir:
-		print '--- Detected Windows SDK at:', sdk_dir
-		env.Append(CPPPATH = [os.path.join(sdk_dir, 'Include')])
-		env.Append(LIBPATH = [os.path.join(sdk_dir, 'Lib')])
+    env.Append(CPPDEFINES = ['WIN32', 'W32_GETC_UNLOCKED', 'ftello=ftell', 'fseeko=fseek'])
+    env.Append(CCFLAGS = ['/Ox'])
+    # Visual Studio 2008 (vc90) hack
+    sdk_dir = query_windows_sdk_dir()
+    if sdk_dir:
+        print '--- Detected Windows SDK at:', sdk_dir
+        env.Append(CPPPATH = [os.path.join(sdk_dir, 'Include')])
+        env.Append(LIBPATH = [os.path.join(sdk_dir, 'Lib')])
 
 dcraw = env.Program('dcraw.c')
 Default(dcraw)
 Export('dcraw')
+
