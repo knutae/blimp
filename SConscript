@@ -1,6 +1,6 @@
 # Blimp SCons rules for java
 
-import os, sys
+import os, sys, glob
 
 env = Environment()
 if os.environ.has_key('JAVA_HOME'):
@@ -9,6 +9,12 @@ if os.environ.has_key('JAVA_HOME'):
     env['ENV']['PATH'] = os.path.join(java_home, 'bin')
 
 class_dir = 'build/classes'
+
+# Install image resources to be included in blimp.jar
+# Include all PNGs except those named something with 'wix'
+env.Install(
+    class_dir + '/resources/images',
+    [x for x in glob.glob('icons/*.png') if 'wix' not in x])
 
 jiu_jar = 'jiu-0.14.2/jiu.jar'
 xerces_jar = 'jars/xercesImpl.jar'
