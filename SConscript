@@ -14,7 +14,7 @@ jiu_jar = 'jiu-0.14.2/jiu.jar'
 xerces_jar = 'jars/xercesImpl.jar'
 swt_jar = '/usr/lib/java/swt.jar'
 junit_jar = 'junit4.1/junit-4.1.jar'
-blimp_jar = env.Jar('build/blimp.jar', class_dir)
+blimp_jar = env.Jar('build/blimp.jar', class_dir, JARCHDIR = class_dir)
 
 if sys.platform == 'win32':
     # TODO: detect 32/64-bit java VM (or support both somehow)
@@ -60,6 +60,6 @@ Default(class_dir, 'test')
 
 # Export variables for bundling
 install_jars = [ blimp_jar, jiu_jar, xerces_jar, swt_jar ]
-Export('install_jars')
-#Export('blimp_jar', 'jiu_jar', 'xerces_jar', 'swt_jar')
+#Export('install_jars')
+Export('blimp_jar', 'jiu_jar', 'xerces_jar', 'swt_jar')
 
