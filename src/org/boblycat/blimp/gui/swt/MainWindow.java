@@ -804,9 +804,10 @@ public class MainWindow {
         HistoryBlimpSession session = tab.getSession();
         session.beginDisableAutoRecord();
         try {
-            // New layers are always inactive initially
+            // New layers are always inactive before the editing starts
             layer.setActive(false);
             session.addLayer(layer);
+            tab.editorEnv.layerWasJustAdded = true;
             showLayerEditor(layer, new LayerEditorCallback() {
                 public void editingFinished(LayerEditorEnvironment env,
                         boolean cancelled) {
@@ -817,6 +818,7 @@ public class MainWindow {
             });
         }
         finally {
+            tab.editorEnv.layerWasJustAdded = false;
             session.endDisableAutoRecord();
         }
     }
