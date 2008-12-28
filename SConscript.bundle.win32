@@ -18,7 +18,7 @@ Install(install_base, [
 ])
 
 if os.path.isfile(jsmoothcmd):
-    print 'JSmooth:', jsmoothcmd
+    print '--- JSmooth detected:', jsmoothcmd
     env = Environment()
     env['JSMOOTHCMD'] = jsmoothcmd
     env['BUILDERS']['JSmooth'] = Builder(action = '"$JSMOOTHCMD" $SOURCE')
@@ -26,3 +26,28 @@ if os.path.isfile(jsmoothcmd):
 else:
     print '*** WARNING: JSmooth not detected'
 
+def query_wix_dir():
+    import _winreg
+    for hkey in [_winreg.HKEY_LOCAL_MACHINE, _winreg.HKEY_CURRENT_USER]:
+        try:
+            key = _winreg.OpenKey(hkey, r'SOFTWARE\Microsoft\Windows Installer XML\3.0')
+            value, type = _winreg.QueryValueEx(key, 'InstallRoot')
+            return value
+        except WindowsError:
+            pass
+    print '*** WARNING: failed to detect Windows Installer XML 3.0 folder'
+    return ''
+
+wix_dir = query_wix_dir()
+if wix_dir:
+    print '--- WiX detected:', wix_dir
+    env = Environment()
+    env.Tool('wixtool', ['tools/scons'])
+    env['ENV']['PATH'] = wix_dir
+    env['WIXLIGHTFLAGS'] = '-nologo -ext WixUIExtension'
+    blimp_msi = env.WiX('Blimp.msi', [
+        'tools/bundle-windows/Blimp.wxs',
+        'tools/bundle-windows/WixUI_InstallDir_NoEula.wxs',
+        ])
+    env.Depends(blimp_msi, [install_base, blimp_exe])
+    env.Alias('msi', blimp_msi)
