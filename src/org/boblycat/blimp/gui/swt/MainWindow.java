@@ -133,7 +133,7 @@ public class MainWindow {
                 doMenuAbout();
             }
             else if (event.widget == menuHelpSystemInfo) {
-            	SystemInfoDialog.show(shell, appImages);
+                SystemInfoDialog.show(shell, appImages);
             }
             else if (event.widget == menuUndo) {
                 doUndo();
