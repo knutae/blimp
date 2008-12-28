@@ -410,4 +410,14 @@ public class SessionTests {
     	assertEquals(45, bitmap.getHeight());
     	assertEquals(1.0, session.getCurrentZoom());
     }
+    
+    @Test
+    public void testGetBitmapNoZoomSideEffect() throws Exception {
+        BlimpSession session = createTestSession();
+        TestInput input = (TestInput) session.getInput();
+        input.setInputSize(1000, 500);
+        assertEquals(1.0, session.getCurrentZoom());
+        session.getBitmap(); // just for side effects
+        assertEquals(1.0, session.getCurrentZoom());
+    }
 }

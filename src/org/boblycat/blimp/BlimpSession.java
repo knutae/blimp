@@ -312,8 +312,10 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     }
 
     public Bitmap getBitmap() throws IOException {
+        ZoomFactor zoom = viewLayer.zoom();
         if (currentBitmap == null)
             applyLayers();
+        viewLayer.setZoom(zoom);
         return currentBitmap;
     }
 
