@@ -27,7 +27,7 @@ if sys.platform == 'win32':
         env.Append(CPPPATH = [os.path.join(sdk_dir, 'Include')])
         env.Append(LIBPATH = [os.path.join(sdk_dir, 'Lib')])
 
-dcraw = env.Program('dcraw.c')
+dcraw = env.Program('blimp-dcraw', 'dcraw.c')
 Default(dcraw)
 Export('dcraw')
 
