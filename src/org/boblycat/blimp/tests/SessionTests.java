@@ -21,6 +21,7 @@ package org.boblycat.blimp.tests;
 import java.io.IOException;
 
 import org.boblycat.blimp.*;
+import org.boblycat.blimp.BlimpSession.PreviewQuality;
 import org.boblycat.blimp.layers.Layer;
 import org.boblycat.blimp.layers.ResizeLayer;
 import org.boblycat.blimp.layers.ViewResizeLayer;
@@ -370,5 +371,43 @@ public class SessionTests {
 
         addTestLayer(session, "layer2");
         assertSizeEquals(20, 10, session.getBitmapSizeBeforeLayer("layer2"));
+    }
+    
+    @Test
+    public void testGetSizedBitmapNoResize() throws Exception {
+    	BlimpSession session = createTestSession();
+    	TestInput input = (TestInput) session.getInput();
+    	input.setInputSize(150, 100);
+    	Bitmap bitmap = session.getSizedBitmap(200, 200, PreviewQuality.Fast);
+    	assertEquals(150, bitmap.getWidth());
+    	assertEquals(100, bitmap.getHeight());
+    	assertEquals(1.0, session.getCurrentZoom());
+    }
+
+    @Test
+    public void testGetSizedBitmapHalfSize() throws Exception {
+    	// Use a bitmap large enough that it has to be halved in size
+    	BlimpSession session = createTestSession();
+    	TestInput input = (TestInput) session.getInput();
+    	input.setInputSize(190, 100);
+    	Bitmap bitmap = session.getSizedBitmap(100, 100, PreviewQuality.Fast);
+    	assertEquals(95, bitmap.getWidth());
+    	assertEquals(50, bitmap.getHeight());
+    	assertEquals(0.5, session.getCurrentZoom());
+    }
+
+    @Test
+    public void testGetSizedBitmapWithResizeLayer() throws Exception {
+    	// Use a large bitmap, but with a resize layer so there should be no zooming
+    	BlimpSession session = createTestSession();
+    	TestInput input = (TestInput) session.getInput();
+    	input.setInputSize(1000, 500);
+    	ResizeLayer resize = new ResizeLayer();
+    	resize.setMaxSize(90);
+    	session.addLayer(resize);
+    	Bitmap bitmap = session.getSizedBitmap(100, 100, PreviewQuality.Fast);
+    	assertEquals(90, bitmap.getWidth());
+    	assertEquals(45, bitmap.getHeight());
+    	assertEquals(1.0, session.getCurrentZoom());
     }
 }
