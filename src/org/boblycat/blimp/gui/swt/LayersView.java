@@ -94,6 +94,10 @@ public class LayersView extends SashForm {
         });
 
         DragSource dragSource = new DragSource(layerTable, DND.DROP_MOVE);
+        // The following is a workaround for a coordinate bug in SWT 3.4
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=240817
+        dragSource.setDragSourceEffect(null);
+        // (end workaround)
         dragSource.setTransfer(new Transfer[] {TextTransfer.getInstance()});
         dragSource.addDragListener(new DragSourceListener() {
             public void dragStart(DragSourceEvent e) {
