@@ -556,8 +556,8 @@ public class SerializationTests {
 
         HistoryBlimpSession session = Serializer.loadHistorySessionFromFile(
                 temp.getAbsolutePath());
-        assertFalse(session.isDirty());
         assertNotNull(session);
+        assertFalse(session.isDirty());
         TestInput input = (TestInput) session.getInput();
         assertNotNull(input);
         assertEquals("initial path", input.getPath());
@@ -578,6 +578,56 @@ public class SerializationTests {
         session.undo();
         assertEquals("initial path", input.getPath());
         assertFalse(session.getHistory().canUndo());
+    }
+
+    @Test
+    public void testNoUndoAfterLoadFromFile() throws Exception {
+        File temp = File.createTempFile("projectTest", ".blimp");
+        temp.deleteOnExit();
+        String xml =
+            "<session>" +
+            "    <property name='active'>true</property>" +
+            "    <property name='name'>test_6530</property>" +
+            "    <property name='previewQuality'>Accurate</property>" +
+            "    <layer type='RawInput'>" +
+            "        <property name='active'>true</property>" +
+            "        <property name='colorDepth'>Depth16Bit</property>" +
+            "        <property name='colorSpace'>sRGB</property>" +
+            "        <property name='filePath'>C:\\Users\\knute\\Pictures\\IMG_6530.CR2</property>" +
+            "        <property name='name'>RawFileInput1</property>" +
+            "        <property name='quality'>HalfSize</property>" +
+            "        <property name='whiteBalance'>Auto</property>" +
+            "    </layer>" +
+            "    <layer type='Gamma'>" +
+            "        <property name='active'>true</property>" +
+            "        <property name='gamma'>2.2</property>" +
+            "        <property name='name'>Gamma1</property>" +
+            "    </layer>" +
+            "    <layer type='LocalContrast'>" +
+            "        <property name='active'>true</property>" +
+            "        <property name='adaptive'>70</property>" +
+            "        <property name='amount'>100</property>" +
+            "        <property name='name'>LocalContrast1</property>" +
+            "        <property name='radius'>100</property>" +
+            "    </layer>" +
+            "</session>";
+        FileWriter out = new FileWriter(temp);
+        out.write(xml);
+        out.close();
+
+        HistoryBlimpSession session = Serializer.loadHistorySessionFromFile(
+                temp.getAbsolutePath());
+        assertNotNull(session);
+        assertEquals(3, session.layerCount());
+        assertFalse(session.isDirty());
+        assertFalse(session.getHistory().canUndo());
+        assertFalse(session.getHistory().canRedo());
+
+        session.getHistory().undo();
+        assertEquals(3, session.layerCount());
+        assertFalse(session.isDirty());
+        assertFalse(session.getHistory().canUndo());
+        assertFalse(session.getHistory().canRedo());
     }
 
     @Test

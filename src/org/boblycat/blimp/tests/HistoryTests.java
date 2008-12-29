@@ -185,7 +185,7 @@ public class HistoryTests {
         history.record();
         assertTrue(history.isDirty());
 
-        history.recordSaved();
+        history.recordSaved(false);
         assertFalse(history.isDirty());
 
         input.setPath("another value");

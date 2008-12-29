@@ -39,8 +39,7 @@ public class SessionHistory {
         this.session = session;
         historyList = new ArrayList<HistoryEntry>();
         // record initial state
-        HistoryEntry newEntry = new HistoryEntry(session);
-        historyList.add(newEntry);
+        historyList.add(new HistoryEntry(session));
         currentIndex = 0;
         savedHistoryEntry = new HistoryEntry(session);
     }
@@ -69,10 +68,19 @@ public class SessionHistory {
 
     /**
      * Record that the session has been saved in its current state.
-     * It should not be dirty after this.
+     * It will not be dirty after this.
+     * 
+     * If the <code>eraseHistory</code> parameter is true, any previous
+     * history will also be discarded, so that undo is not possible
+     * until further changes are recorded. 
      */
-    public void recordSaved() {
+    public void recordSaved(boolean eraseHistory) {
         savedHistoryEntry = new HistoryEntry(session);
+        if (eraseHistory) {
+            historyList.clear();
+            historyList.add(new HistoryEntry(session));
+            currentIndex = 0;
+        }
     }
 
     public boolean isDirty() {

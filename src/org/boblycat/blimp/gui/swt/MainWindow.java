@@ -435,7 +435,7 @@ public class MainWindow {
             }
         });
         if (!dirty)
-            session.recordSaved();
+            session.recordSaved(true);
         return imageView;
     }
 
@@ -643,7 +643,7 @@ public class MainWindow {
                         GammaLayer gamma = new GammaLayer();
                         gamma.setGamma(2.2);
                         env.session.addLayer(gamma);
-                        env.session.recordSaved();
+                        env.session.recordSaved(true);
                     }
                 }
                 updateExifView();
@@ -675,7 +675,7 @@ public class MainWindow {
         try {
             session.setNameFromFilename(filename);
             Serializer.saveBeanToFile(session, filename);
-            session.recordSaved();
+            session.recordSaved(false);
             currentImageTab.item.setText(session.getName());
             Util.info("Project saved to " + filename);
             //SwtUtil.messageDialog(shell, "Project Saved",

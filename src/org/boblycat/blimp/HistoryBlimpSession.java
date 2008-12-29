@@ -110,11 +110,19 @@ public class HistoryBlimpSession extends BlimpSession {
         return history.isDirty();
     }
 
-    public void recordSaved() {
+    /**
+     * Record that the session has been saved in its current state.
+     * It will not be dirty after this.
+     * 
+     * If the <code>eraseHistory</code> parameter is true, any previous
+     * history will also be discarded, so that undo is not possible
+     * until further changes are recorded. 
+     */
+    public void recordSaved(boolean eraseHistory) {
         tryEnsureHistoryExists();
         if (history == null)
             return;
-        history.recordSaved();
+        history.recordSaved(eraseHistory);
         historyEventSource.triggerChangeWithEvent(new LayerEvent(this));
     }
 
@@ -156,6 +164,6 @@ public class HistoryBlimpSession extends BlimpSession {
      */
     protected void beanLoaded(String filename) {
         super.beanLoaded(filename);
-        recordSaved();
+        recordSaved(true);
     }
 }
