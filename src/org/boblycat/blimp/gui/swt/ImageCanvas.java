@@ -19,7 +19,10 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -48,6 +51,8 @@ public class ImageCanvas extends Composite {
     private boolean dirty;
     private boolean delayedRedrawInProgress;
     private Runnable delayedRedrawTask;
+    private int mouseX, mouseY;
+    private Cursor dragCursor;
 
     /**
      * Construct a new image canvas.
@@ -80,10 +85,35 @@ public class ImageCanvas extends Composite {
                 invalidate();
             }
         });
+        
+        dragCursor = new Cursor(getDisplay(), SWT.CURSOR_SIZEALL);
+        mouseX = mouseY = -1;
+        canvas.addMouseMoveListener(new MouseMoveListener() {
+            public void mouseMove(MouseEvent e) {
+                if (e.stateMask == SWT.BUTTON1) {
+                    // Left mouse button down: drag
+                    if ((canvas.getHorizontalBar().isEnabled() || canvas.getVerticalBar().isEnabled())
+                            && mouseX >= 0 && mouseY >= 0) {
+                        incrementScrollBar(canvas.getHorizontalBar(), mouseX - e.x);
+                        incrementScrollBar(canvas.getVerticalBar(), mouseY - e.y);
+                        canvas.redraw();
+                    }
+                    mouseX = e.x;
+                    mouseY = e.y;
+                    canvas.setCursor(dragCursor);
+                }
+                else {
+                    // Any other combination of buttons / modifiers: reset drag
+                    mouseX = mouseY = -1;
+                    canvas.setCursor(null);
+                }
+            }
+        });
 
         addListener(SWT.Dispose, new Listener() {
             public void handleEvent(Event e) {
                 SwtUtil.dispose(currentImage);
+                SwtUtil.dispose(dragCursor);
             }
         });
 
@@ -191,6 +221,12 @@ public class ImageCanvas extends Composite {
             return;
         bar.setMinimum(0);
         bar.setMaximum(range);
+    }
+    
+    private static void incrementScrollBar(ScrollBar bar, int offset) {
+        if (!bar.isEnabled())
+            return;
+        bar.setSelection(bar.getSelection() + offset);
     }
 
     private void updateImageParams() {
