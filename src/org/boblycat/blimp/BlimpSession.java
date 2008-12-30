@@ -277,13 +277,18 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
 
     private Layer findOrCloneLayer(Layer otherLayer) {
         String layerName = otherLayer.getName();
-        Layer foundLayer = findLayer(layerName);
-        if (foundLayer != null && foundLayer.getClass() != otherLayer.getClass())
-            // different layer classes with same name
-            foundLayer = null;
-        if (foundLayer == null)
+        int i = indexOfLayer(layerName, layerList);
+        if (i >= 0) {
+            assert (layerList.get(i) != null);
+            if (layerList.get(i).getClass() != otherLayer.getClass())
+                // different layer classes with same name
+                i = -1;
+        }
+        if (i < 0)
             return (Layer) otherLayer.clone();
-        layerList.remove(foundLayer);
+        Layer foundLayer = layerList.get(i);
+        // Note: remove by index avoids equals(), so it is faster than remove(Object)
+        layerList.remove(i); 
         Serializer.copyBeanData(otherLayer, foundLayer);
         return foundLayer;
     }
@@ -359,20 +364,22 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     public int layerCount() {
         return layerList.size();
     }
-
-    private static <T extends Layer> T findLayerInList(String name,
-            List<T> layers) {
+    
+    private static <T extends Layer> int indexOfLayer(String name, List<T> layers) {
         if (name == null)
-            return null;
-        for (T layer: layers) {
-            if (layer.getName().equals(name))
-                return layer;
+            return -1;
+        for (int i=0; i<layers.size(); i++) {
+            if (layers.get(i).getName().equals(name))
+                return i;
         }
-        return null;
+        return -1;
     }
 
     public Layer findLayer(String name) {
-        return findLayerInList(name, layerList);
+        int i = indexOfLayer(name, layerList);
+        if (i < 0)
+            return null;
+        return layerList.get(i);
     }
 
     private void uniqifyLayerName(Layer layer) {
