@@ -219,11 +219,7 @@ public abstract class ImageWorkerThread extends Thread {
                 break;
             case QUERY_EXIF_DATA:
                 assert(req.exifTask != null);
-                bitmap = session.getBitmap();
-                if (bitmap == null || bitmap.getExifTable() == null)
-                    req.exifTask.data = null;
-                else
-                    req.exifTask.data = BitmapUtil.copyInterestingExifData(bitmap.getExifTable());
+                req.exifTask.data = session.getInterestingExifData();
                 asyncExec(req.exifTask);
                 break;
             }

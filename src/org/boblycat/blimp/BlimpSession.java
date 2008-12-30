@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.boblycat.blimp.exif.ExifTable;
 import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.DimensionAdjustmentLayer;
 import org.boblycat.blimp.layers.InputLayer;
@@ -308,6 +309,21 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         }
         newInput.addChangeListener(this);
         invalidate();
+    }
+    
+    /**
+     * Get an subset of "interesting" Exif data for the current session. 
+     * @return A table of Exif data, or <code>null</code>.
+     * @throws IOException if an unexpected I/O error occurs
+     */
+    public ExifTable getInterestingExifData() throws IOException {
+        InputLayer input = getInput();
+        if (input == null)
+            return null;
+        Bitmap bm = inputBitmap(input);
+        if (bm == null)
+            return null;
+        return BitmapUtil.copyInterestingExifData(bm.getExifTable());
     }
 
     public InputLayer getInput() {
