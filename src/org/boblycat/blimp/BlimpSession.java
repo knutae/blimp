@@ -255,19 +255,23 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
      * Copy session data from the other session.  The implementation will attempt
      * to reuse existing layer object, if possible.
      *
-     * The data copied includes the layers and the name of the other session.
+     * The data copied includes the layers.
+     * If the <code>forHistory</code> parameter is <code>false</code>,
+     * it will also include properties like the name and project file path.
      *
      * @param other The session to copy layers from.
+     * @param forHistory <code>true</code> if this is done for history purposes (such as undo/redo)
      */
-    public void synchronizeSessionData(BlimpSession other) {
+    public void synchronizeSessionData(BlimpSession other, boolean forHistory) {
         List<Layer> newList = new ArrayList<Layer>();
         for (Layer otherLayer: other.layerList)
             newList.add(findOrCloneLayer(otherLayer));
         layerList = newList;
-        setName(other.getName());
-        // Don't overwrite projectFilePath during e.g. undo()
-        if (other.getProjectFilePath() != null)
+        if (!forHistory) {
+            // Don't overwrite name or projectFilePath during e.g. undo()
+            setName(other.getName());
             setProjectFilePath(other.getProjectFilePath());
+        }
         //viewport.copyDataFrom(other.viewport);
     }
 

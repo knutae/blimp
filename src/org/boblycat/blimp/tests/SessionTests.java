@@ -243,7 +243,7 @@ public class SessionTests {
         session1.addLayer(layer1);
         session1.setProjectFilePath("/path/to/session1.blimp");
 
-        session2.synchronizeSessionData(session1);
+        session2.synchronizeSessionData(session1, false);
         TestInput input2 = (TestInput) session2.getInput();
         assertNotNull(input2);
         assertTrue(input1 != input2); // objects must be different
@@ -258,7 +258,7 @@ public class SessionTests {
 
         input2.setPath("input2 path");
         layer2.setStringValue("layer2 value");
-        session1.synchronizeSessionData(session2);
+        session1.synchronizeSessionData(session2, false);
         assertTrue(session1.getInput() == input1); // layer must be re-used
         assertEquals("input2 path", input1.getPath());
         assertTrue(layer1 == session1.getLayer(1));

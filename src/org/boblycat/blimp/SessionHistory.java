@@ -94,7 +94,7 @@ public class SessionHistory {
             return;
         currentIndex--;
         HistoryEntry entry = historyList.get(currentIndex);
-        session.synchronizeSessionData(entry.sessionCopy);
+        session.synchronizeSessionData(entry.sessionCopy, true);
     }
 
     public void redo() {
@@ -102,7 +102,7 @@ public class SessionHistory {
             return;
         currentIndex++;
         HistoryEntry entry = historyList.get(currentIndex);
-        session.synchronizeSessionData(entry.sessionCopy);
+        session.synchronizeSessionData(entry.sessionCopy, true);
     }
 
     public int size() {

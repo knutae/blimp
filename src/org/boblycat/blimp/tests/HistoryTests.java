@@ -201,4 +201,23 @@ public class HistoryTests {
         history.redo();
         assertFalse(history.isDirty());
     }
+    
+    @Test
+    public void testSessionNameAndHistory() {
+        HistoryBlimpSession session = new HistoryBlimpSession();
+        session.setName("initial name");
+        session.setInput(new TestInput());
+        session.triggerChangeEvent();
+        session.addLayer(new TestLayer());
+        assertTrue(session.isDirty());
+        
+        // simulate a "save as", changing the name
+        session.setName("saved name");
+        session.recordSaved(false);
+        assertFalse(session.isDirty());
+        assertTrue(session.getHistory().canUndo());
+        
+        session.undo();
+        assertEquals("saved name", session.getName());
+    }
 }

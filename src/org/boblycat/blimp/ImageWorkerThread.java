@@ -156,7 +156,7 @@ public abstract class ImageWorkerThread extends Thread {
         assert(Thread.currentThread() == this);
 
         if (req.sessionCopy != null) {
-            session.synchronizeSessionData(req.sessionCopy);
+            session.synchronizeSessionData(req.sessionCopy, false);
         }
         String outOfMemoryMessage = String.format(
                 "An out of memory error occured while processing %s.\n" +
