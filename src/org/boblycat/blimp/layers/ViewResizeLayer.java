@@ -26,13 +26,59 @@ import org.boblycat.blimp.ZoomFactor;
 
 import net.sourceforge.jiu.data.IntegerImage;
 import net.sourceforge.jiu.data.PixelImage;
-import net.sourceforge.jiu.geometry.ScaleReplication;
 import net.sourceforge.jiu.ops.ImageToImageOperation;
 import net.sourceforge.jiu.ops.MissingParameterException;
 import net.sourceforge.jiu.ops.WrongParameterException;
 
-class SuperSamplingDownScaleOperation extends ImageToImageOperation {
-    int downScaleFactor;
+/**
+ * Helper class that provides a memory-efficient upscaled view of an integer image.
+ * No more than one line is upscaled at a time.
+ */
+class UpScaledImageWrapper {
+    int scale;
+    int width, height;
+    int lastY;
+    int[] buffer;
+    IntegerImage image;
+    UpScaledImageWrapper(IntegerImage image, int scale) {
+        assert(scale >= 1);
+        this.image = image;
+        this.scale = scale;
+        width = image.getWidth() * scale;
+        height = image.getHeight() * scale;
+        lastY = -1;
+        if (scale > 1)
+            buffer = new int[width];
+    }
+    
+    void getLine(int channelIndex, int y, int[] dest) {
+        assert(dest.length >= width);
+        if (scale == 1) {
+            // optimize this very common case
+            image.getSamples(channelIndex, 0, y, width, 1, dest, 0);
+            return;
+        }
+        if (y / scale != lastY) {
+            image.getSamples(channelIndex, 0, y / scale, image.getWidth(), 1, buffer, 0);
+            // Duplicate all samples in the line "scale" times.
+            // This is possible to do in-place by starting from the right.
+            for (int x = width-1; x >= 0; x--) {
+                buffer[x] = buffer[x / scale];
+            }
+            lastY = y / scale;
+        }
+        System.arraycopy(buffer, 0, dest, 0, width);
+    }
+}
+
+/**
+ * A simple super-sampling operation for scaling integer images using a ratio
+ * (rational number).
+ * This is relatively fast and gives a decent antialiasing effect.
+ */
+class SuperSamplingScaleOperation extends ImageToImageOperation {
+    int multiplier;
+    int divisor;
     
     public void process() throws MissingParameterException,
     WrongParameterException {
@@ -41,32 +87,35 @@ class SuperSamplingDownScaleOperation extends ImageToImageOperation {
             throw new MissingParameterException("missing input image");
         if (!(pInput instanceof IntegerImage))
             throw new WrongParameterException("unsupported image type: must be IntegerImage");
-        if (downScaleFactor <= 0)
+        if (divisor <= 0)
             throw new WrongParameterException("unsupported downscale factor, must be >= 1");
+        if (multiplier <= 0)
+            throw new WrongParameterException("unsupported upscale factor, must be >= 1");
         IntegerImage input = (IntegerImage) pInput;
-        // Note: can currently drop a few pixels at the edges, but that seems acceptable...?
-        int inWidth = input.getWidth();
-        int inHeight = input.getHeight(); 
-        int outWidth = inWidth / downScaleFactor;
-        int outHeight = inHeight / downScaleFactor;
+        // Note: can currently drop a few pixels at the edges, but that should be acceptable
+        int inWidth = input.getWidth() * multiplier;
+        int inHeight = input.getHeight() * multiplier; 
+        int outWidth = inWidth / divisor;
+        int outHeight = inHeight / divisor;
         IntegerImage output = (IntegerImage) input.createCompatibleImage(outWidth, outHeight);
         int[] outLine = new int[outWidth];
         int[] inLine = new int[inWidth];
-        int factor2 = downScaleFactor * downScaleFactor;
+        UpScaledImageWrapper inWrapper = new UpScaledImageWrapper(input, multiplier);
+        int divisor2 = divisor * divisor;
         for (int channel=0; channel<input.getNumChannels(); channel++) {
             for (int y=0; y<outHeight; y++) {
                 Arrays.fill(outLine, 0);
-                int startY = y*downScaleFactor;
-                int endY = Math.min((y+1)*downScaleFactor, inHeight);
+                int startY = y*divisor;
+                int endY = Math.min((y+1)*divisor, inHeight);
                 for (int inY=startY; inY<endY; inY++) {
-                    input.getSamples(channel, 0, inY, inWidth, 1, inLine, 0);
-                    int endX = outWidth * downScaleFactor;
+                    inWrapper.getLine(channel, inY, inLine);
+                    int endX = outWidth * divisor;
                     for (int inX=0; inX < endX; inX++) {
-                        outLine[inX / downScaleFactor] += inLine[inX];
+                        outLine[inX / divisor] += inLine[inX];
                     }
                 }
                 for (int x=0; x<outWidth; x++) {
-                    outLine[x] /= factor2;
+                    outLine[x] /= divisor2;
                 }
                 output.putSamples(channel, 0, y, outWidth, 1, outLine, 0);
                 setProgress(y, outHeight);
@@ -115,20 +164,12 @@ public class ViewResizeLayer extends DimensionAdjustmentLayer {
         int sourceHeight = source.getHeight();
         setImageSize(sourceWidth, sourceHeight);
         Bitmap ret = source;
-        // FIXME: scaling to 2/3 is a memory hog due to upscaling the whole image first.
-        if (zoomFactor.getMultiplier() > 1) {
-            ScaleReplication upSizer = new ScaleReplication();
-            upSizer.setInputImage(ret.getImage());
-            upSizer.setSize(
-                    sourceWidth * zoomFactor.getMultiplier(),
-                    sourceHeight * zoomFactor.getMultiplier());
-            ret = new Bitmap(applyJiuOperation(ret.getImage(), upSizer));
-        }
-        if (zoomFactor.getDivisor() > 1) {
-            SuperSamplingDownScaleOperation downSizer = new SuperSamplingDownScaleOperation();
-            downSizer.downScaleFactor = zoomFactor.getDivisor();
-            ret = new Bitmap(applyJiuOperation(ret.getImage(), downSizer));
-        }
+        if (zoomFactor.getMultiplier() == 1 && zoomFactor.getDivisor() == 1)
+            return source;
+        SuperSamplingScaleOperation scaler = new SuperSamplingScaleOperation();
+        scaler.multiplier = zoomFactor.getMultiplier();
+        scaler.divisor = zoomFactor.getDivisor();
+        ret = new Bitmap(applyJiuOperation(ret.getImage(), scaler));
         double scaleFactor = source.getWidth() / (double) ret.getWidth();
         ret.setPixelScaleFactor(source.getPixelScaleFactor() * scaleFactor);
         return ret;
