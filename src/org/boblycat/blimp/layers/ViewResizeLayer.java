@@ -18,11 +18,63 @@
  */
 package org.boblycat.blimp.layers;
 
+import java.util.Arrays;
+
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapSize;
 import org.boblycat.blimp.ZoomFactor;
 
+import net.sourceforge.jiu.data.IntegerImage;
+import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.geometry.ScaleReplication;
+import net.sourceforge.jiu.ops.ImageToImageOperation;
+import net.sourceforge.jiu.ops.MissingParameterException;
+import net.sourceforge.jiu.ops.WrongParameterException;
+
+class SuperSamplingDownScaleOperation extends ImageToImageOperation {
+    int downScaleFactor;
+    
+    public void process() throws MissingParameterException,
+    WrongParameterException {
+        PixelImage pInput = getInputImage();
+        if (pInput == null)
+            throw new MissingParameterException("missing input image");
+        if (!(pInput instanceof IntegerImage))
+            throw new WrongParameterException("unsupported image type: must be IntegerImage");
+        if (downScaleFactor <= 0)
+            throw new WrongParameterException("unsupported downscale factor, must be >= 1");
+        IntegerImage input = (IntegerImage) pInput;
+        // Note: can currently drop a few pixels at the edges, but that seems acceptable...?
+        int inWidth = input.getWidth();
+        int inHeight = input.getHeight(); 
+        int outWidth = inWidth / downScaleFactor;
+        int outHeight = inHeight / downScaleFactor;
+        IntegerImage output = (IntegerImage) input.createCompatibleImage(outWidth, outHeight);
+        int[] outLine = new int[outWidth];
+        int[] inLine = new int[inWidth];
+        int factor2 = downScaleFactor * downScaleFactor;
+        for (int channel=0; channel<input.getNumChannels(); channel++) {
+            for (int y=0; y<outHeight; y++) {
+                Arrays.fill(outLine, 0);
+                int startY = y*downScaleFactor;
+                int endY = Math.min((y+1)*downScaleFactor, inHeight);
+                for (int inY=startY; inY<endY; inY++) {
+                    input.getSamples(channel, 0, inY, inWidth, 1, inLine, 0);
+                    int endX = outWidth * downScaleFactor;
+                    for (int inX=0; inX < endX; inX++) {
+                        outLine[inX / downScaleFactor] += inLine[inX];
+                    }
+                }
+                for (int x=0; x<outWidth; x++) {
+                    outLine[x] /= factor2;
+                }
+                output.putSamples(channel, 0, y, outWidth, 1, outLine, 0);
+                setProgress(y, outHeight);
+            }
+        }
+        setOutputImage(output);
+    }
+}
 
 /**
  * A fast resize layer for e.g. zooming in the image view.
@@ -62,27 +114,21 @@ public class ViewResizeLayer extends DimensionAdjustmentLayer {
         int sourceWidth = source.getWidth();
         int sourceHeight = source.getHeight();
         setImageSize(sourceWidth, sourceHeight);
-        ScaleReplication resize = new ScaleReplication();
-        resize.setInputImage(source.getImage());
-        int width = zoomFactor.scale(sourceWidth);
-        int height = zoomFactor.scale(sourceHeight);
-        if (width == sourceWidth && height == sourceHeight)
-            // Optimize by returning the source.
-            // Some unit tests also depends on this behaviour
-            return source;
-
-        width = Math.max(width, 1);
-        height = Math.max(height, 1);
-
-        resize.setSize(width, height);
-        try {
-            resize.process();
+        Bitmap ret = source;
+        // FIXME: scaling to 2/3 is a memory hog due to upscaling the whole image first.
+        if (zoomFactor.getMultiplier() > 1) {
+            ScaleReplication upSizer = new ScaleReplication();
+            upSizer.setInputImage(ret.getImage());
+            upSizer.setSize(
+                    sourceWidth * zoomFactor.getMultiplier(),
+                    sourceHeight * zoomFactor.getMultiplier());
+            ret = new Bitmap(applyJiuOperation(ret.getImage(), upSizer));
         }
-        catch (Exception e) {
-            System.out.println("Resize exception: " + e.getMessage());
-            return source;
+        if (zoomFactor.getDivisor() > 1) {
+            SuperSamplingDownScaleOperation downSizer = new SuperSamplingDownScaleOperation();
+            downSizer.downScaleFactor = zoomFactor.getDivisor();
+            ret = new Bitmap(applyJiuOperation(ret.getImage(), downSizer));
         }
-        Bitmap ret = new Bitmap(resize.getOutputImage());
         double scaleFactor = source.getWidth() / (double) ret.getWidth();
         ret.setPixelScaleFactor(source.getPixelScaleFactor() * scaleFactor);
         return ret;
