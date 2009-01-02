@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-COPYRIGHT = '''/*
- * Copyright (C) 2007 Knut Arild Erstad
+import re
+
+COPYRIGHT_FORMAT = '''/*
+ * Copyright (C) %(YEARS)s Knut Arild Erstad
  *
  * This file is part of Blimp, a layered photo editor.
  *
@@ -20,6 +22,8 @@ COPYRIGHT = '''/*
  */
 '''
 
+re_copyright = re.compile('.*Copyright \\(C\\) (.*) Knut Arild Erstad.*')
+
 WRITE_FORMAT = 'wb' # forced unix line endings
 
 import os, sys, re
@@ -35,15 +39,24 @@ def write_lines_to_file(file_path, lines):
 def add_copyright_to_java_file(path):
     lines = read_lines_from_file(path)
     index = -1
+    this_year = 2009
+    years = [this_year]
     for i in range(len(lines)):
         line = lines[i]
+        match = re_copyright.match(line)
+        if match:
+            #print 'Matching line:', line
+            old_years = map(int, match.group(1).split(', '))
+            assert len(old_years) > 0 and old_years[0] <= years[0]
+            years = range(old_years[0], this_year+1)
         if line.startswith('package '):
             index = i
             break
     if index < 0:
         print 'ERROR: found no package statement in file', path
         return
-    write_lines_to_file(path, [COPYRIGHT] + lines[index:])
+    copyright = COPYRIGHT_FORMAT % {'YEARS': ', '.join(map(str, years))}
+    write_lines_to_file(path, [copyright] + lines[index:])
 
 if __name__ == '__main__':
     for filepath in sys.argv[1:]:

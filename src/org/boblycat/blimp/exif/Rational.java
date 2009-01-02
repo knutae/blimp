@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007 Knut Arild Erstad
+ * Copyright (C) 2007, 2008, 2009 Knut Arild Erstad
  *
  * This file is part of Blimp, a layered photo editor.
  *
