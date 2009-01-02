@@ -30,6 +30,7 @@ import net.sourceforge.jiu.ops.WrongParameterException;
 
 /**
  * An abstract operation for modifying RGB pixels individually as doubles.
+ * Only works for RGB images ({@link RGB24Image} and {@link RGB48Image}). 
  *
  * @author Knut Arild Erstad
  */
@@ -38,7 +39,7 @@ public abstract class RGBDoubleOperation extends ImageToImageOperation {
      * Modify each pixel and put the result in the <i>out</i> array.
      *
      * Each input value is in the range [0, 1].  Output values that are
-     * not in the [0, 1] range will be cropped automatically.
+     * not in the [0, 1] range will be clamped automatically.
      *
      * @param r
      *            the red value

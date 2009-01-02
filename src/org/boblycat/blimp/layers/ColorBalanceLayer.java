@@ -20,48 +20,7 @@ package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.Util;
-import org.boblycat.blimp.jiuops.ColorUtil;
-import org.boblycat.blimp.jiuops.RGBDoubleOperation;
-
-class ColorMixerOperation extends RGBDoubleOperation {
-    double cyanRedFactor;
-    double magentaGreenFactor;
-    double yellowBlueFactor;
-    boolean preserveLightness;
-
-    private static double toFactor(int ivalue) {
-        return ivalue / 100.0;
-    }
-
-    private static double adjust(double input, double factor) {
-        if (factor <= 0.0)
-            return input * (1.0 + factor);
-        else
-            return input + (1.0 - input) * factor;
-    }
-
-    void init(int cyanRed, int magentaGreen, int yellowBlue,
-            boolean preserveLightness) {
-        cyanRedFactor = toFactor(cyanRed);
-        magentaGreenFactor = toFactor(magentaGreen);
-        yellowBlueFactor = toFactor(yellowBlue);
-        this.preserveLightness = preserveLightness;
-    }
-
-    protected void adjustColor(double r, double g, double b, double[] out) {
-        out[0] = adjust(r, cyanRedFactor);
-        out[1] = adjust(g, magentaGreenFactor);
-        out[2] = adjust(b, yellowBlueFactor);
-        if (preserveLightness) {
-            // get the original lightness
-            double[] tmp = ColorUtil.rgbToHsl(r, g, b, null);
-            double lightness = tmp[2];
-            // restore it
-            ColorUtil.rgbToHsl(out[0], out[1], out[2], tmp);
-            ColorUtil.hslToRgb(tmp[0], tmp[1], lightness, out);
-        }
-    }
-}
+import org.boblycat.blimp.jiuops.ColorBalanceOperation;
 
 /**
  * A layer for modifying specific color tones (hues).
@@ -96,12 +55,8 @@ public class ColorBalanceLayer extends AdjustmentLayer {
      */
     @Override
     public Bitmap applyLayer(Bitmap source) {
-        ColorMixerOperation op = new ColorMixerOperation();
-        op.init(cyanRed, magentaGreen, yellowBlue, preserveLightness);
-        //op.cyanRed = cyanRed;
-        //op.magentaGreen = magentaGreen;
-        //op.yellowBlue = yellowBlue;
-        //op.preserveLightness = preserveLightness;
+        ColorBalanceOperation op = new ColorBalanceOperation();
+        op.setModifiers(cyanRed, magentaGreen, yellowBlue, preserveLightness);
         return new Bitmap(applyJiuOperation(source.getImage(), op));
     }
 
