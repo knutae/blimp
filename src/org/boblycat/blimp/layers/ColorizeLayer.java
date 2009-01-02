@@ -19,9 +19,9 @@
 package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.ColorUtil;
-import org.boblycat.blimp.RGBDoubleOperation;
 import org.boblycat.blimp.Util;
+import org.boblycat.blimp.jiuops.ColorUtil;
+import org.boblycat.blimp.jiuops.RGBDoubleOperation;
 
 class ColorizeOperation extends RGBDoubleOperation {
     double hue;

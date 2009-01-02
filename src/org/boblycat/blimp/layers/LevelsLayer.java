@@ -19,10 +19,10 @@
 package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.NaturalCubicSpline;
 import org.boblycat.blimp.RGBChannel;
-import org.boblycat.blimp.SplineOperation;
 import org.boblycat.blimp.Util;
+import org.boblycat.blimp.jiuops.NaturalCubicSpline;
+import org.boblycat.blimp.jiuops.SplineOperation;
 
 class LevelsOperation extends SplineOperation {
     void setValues(double blackLevel, double center, double whiteLevel,

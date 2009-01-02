@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.jiuops;
 
 public class ColorUtil {
     public static final double UNDEFINED_HUE = -1;

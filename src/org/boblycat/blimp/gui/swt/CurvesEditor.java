@@ -19,7 +19,7 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.Debug;
-import org.boblycat.blimp.NaturalCubicSpline;
+import org.boblycat.blimp.jiuops.NaturalCubicSpline;
 import org.boblycat.blimp.PointDouble;
 import org.boblycat.blimp.RGBChannel;
 import org.boblycat.blimp.Util;

@@ -16,7 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.jiuops;
+
+import org.boblycat.blimp.Util;
 
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.data.RGB24Image;

@@ -30,9 +30,9 @@ import net.sourceforge.jiu.ops.MissingParameterException;
 import net.sourceforge.jiu.ops.WrongParameterException;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.ColorUtil;
 import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.Util;
+import org.boblycat.blimp.jiuops.ColorUtil;
 
 class MultiLineData {
     IntegerImage image;

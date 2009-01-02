@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp.tests;
 
-import static org.boblycat.blimp.ColorUtil.*;
+import static org.boblycat.blimp.jiuops.ColorUtil.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 

@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp.tests;
 
-import org.boblycat.blimp.NaturalCubicSpline;
+import org.boblycat.blimp.jiuops.NaturalCubicSpline;
 import org.junit.*;
 import static org.junit.Assert.*;
 

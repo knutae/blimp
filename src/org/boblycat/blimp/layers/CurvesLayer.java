@@ -21,10 +21,10 @@ package org.boblycat.blimp.layers;
 import java.util.TreeMap;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.NaturalCubicSpline;
 import org.boblycat.blimp.PointDouble;
 import org.boblycat.blimp.RGBChannel;
-import org.boblycat.blimp.SplineOperation;
+import org.boblycat.blimp.jiuops.NaturalCubicSpline;
+import org.boblycat.blimp.jiuops.SplineOperation;
 
 import net.sourceforge.jiu.data.PixelImage;
 
