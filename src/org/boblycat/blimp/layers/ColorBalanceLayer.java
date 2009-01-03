@@ -19,8 +19,8 @@
 package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Util;
 import org.boblycat.blimp.jiuops.ColorBalanceOperation;
+import org.boblycat.blimp.jiuops.MathUtil;
 
 /**
  * A layer for modifying specific color tones (hues).
@@ -32,7 +32,7 @@ public class ColorBalanceLayer extends AdjustmentLayer {
     public static final int MAX_VALUE = 100;
 
     private static int constrain(int value) {
-        return Util.constrainedValue(value, MIN_VALUE, MAX_VALUE);
+        return MathUtil.clamp(value, MIN_VALUE, MAX_VALUE);
     }
 
     private int cyanRed;

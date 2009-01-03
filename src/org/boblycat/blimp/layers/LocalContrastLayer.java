@@ -31,8 +31,10 @@ import net.sourceforge.jiu.ops.WrongParameterException;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.Debug;
-import org.boblycat.blimp.Util;
 import org.boblycat.blimp.jiuops.ColorUtil;
+import org.boblycat.blimp.jiuops.MathUtil;
+
+import static org.boblycat.blimp.jiuops.MathUtil.*;
 
 class MultiLineData {
     IntegerImage image;
@@ -231,19 +233,19 @@ class LocalContrastOperation extends ImageToImageOperation {
                         rgbSample);
                 if (is16Bit) {
                     output.putSample(RGBIndex.INDEX_RED, x, y,
-                            Util.cropToUnsignedShort((int) (rgbSample[0] * maxSample)));
+                            clampToUnsignedShort((int) (rgbSample[0] * maxSample)));
                     output.putSample(RGBIndex.INDEX_GREEN, x, y,
-                            Util.cropToUnsignedShort((int) (rgbSample[1] * maxSample)));
+                            clampToUnsignedShort((int) (rgbSample[1] * maxSample)));
                     output.putSample(RGBIndex.INDEX_BLUE, x, y,
-                            Util.cropToUnsignedShort((int) (rgbSample[2] * maxSample)));
+                            clampToUnsignedShort((int) (rgbSample[2] * maxSample)));
                 }
                 else {
                     output.putSample(RGBIndex.INDEX_RED, x, y,
-                            Util.cropToUnsignedByte((int) (rgbSample[0] * maxSample)));
+                            clampToUnsignedByte((int) (rgbSample[0] * maxSample)));
                     output.putSample(RGBIndex.INDEX_GREEN, x, y,
-                            Util.cropToUnsignedByte((int) (rgbSample[1] * maxSample)));
+                            clampToUnsignedByte((int) (rgbSample[1] * maxSample)));
                     output.putSample(RGBIndex.INDEX_BLUE, x, y,
-                            Util.cropToUnsignedByte((int) (rgbSample[2] * maxSample)));
+                            clampToUnsignedByte((int) (rgbSample[2] * maxSample)));
                 }
             }
             setProgress(y, height);
@@ -293,7 +295,7 @@ public class LocalContrastLayer extends AdjustmentLayer {
     }
 
     public void setRadius(int radius) {
-        this.radius = Util.constrainedValue(radius, MIN_RADIUS, MAX_RADIUS);
+        this.radius = MathUtil.clamp(radius, MIN_RADIUS, MAX_RADIUS);
     }
 
     public int getRadius() {
@@ -301,7 +303,7 @@ public class LocalContrastLayer extends AdjustmentLayer {
     }
 
     public void setAmount(int level) {
-        this.amount = Util.constrainedValue(level, MIN_AMOUNT, MAX_AMOUNT);
+        this.amount = MathUtil.clamp(level, MIN_AMOUNT, MAX_AMOUNT);
     }
 
     public int getAmount() {
@@ -309,7 +311,7 @@ public class LocalContrastLayer extends AdjustmentLayer {
     }
 
     public void setAdaptive(int adaptive) {
-        this.adaptive = Util.constrainedValue(adaptive, MIN_ADAPTIVE, MAX_ADAPTIVE);
+        this.adaptive = MathUtil.clamp(adaptive, MIN_ADAPTIVE, MAX_ADAPTIVE);
     }
 
     public int getAdaptive() {

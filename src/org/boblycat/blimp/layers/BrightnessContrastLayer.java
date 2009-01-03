@@ -19,7 +19,7 @@
 package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.jiuops.MathUtil;
 
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.data.RGB48Image;
@@ -28,7 +28,7 @@ import net.sourceforge.jiu.color.adjustment.Brightness;
 
 class MultiplicativeContrast extends LookupTableOperation {
     static double transform(double x, double contrast) {
-        return Util.constrainedValue(x * contrast, -1, 1);
+        return MathUtil.clamp(x * contrast, -1, 1);
     }
 
     void setTablesFromContrast(double contrast, int bitdepth) {
@@ -71,13 +71,11 @@ public class BrightnessContrastLayer extends AdjustmentLayer {
     }
 
     public void setBrightness(int brightness) {
-        this.brightness = Util.constrainedValue(brightness,
-                MIN_BRIGHTNESS, MAX_BRIGHTNESS);
+        this.brightness = MathUtil.clamp(brightness, MIN_BRIGHTNESS, MAX_BRIGHTNESS);
     }
 
     public void setContrast(int contrast) {
-        this.contrast = Util.constrainedValue(contrast,
-                MIN_CONTRAST, MAX_CONTRAST);
+        this.contrast = MathUtil.clamp(contrast, MIN_CONTRAST, MAX_CONTRAST);
     }
 
     public Bitmap applyLayer(Bitmap source) {

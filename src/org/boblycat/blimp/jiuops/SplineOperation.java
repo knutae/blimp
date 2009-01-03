@@ -19,7 +19,6 @@
 package org.boblycat.blimp.jiuops;
 
 import org.boblycat.blimp.RGBChannel;
-import org.boblycat.blimp.Util;
 
 import net.sourceforge.jiu.ops.LookupTableOperation;
 
@@ -44,7 +43,7 @@ public class SplineOperation extends LookupTableOperation {
         assert(splineValues.length == size);
         for (int i=0; i<size; i++) {
             int y = (int) (splineValues[i] * (size-1));
-            table[i] = Util.constrainedValue(y, 0, size-1);
+            table[i] = MathUtil.clamp(y, 0, size-1);
         }
         if (channel == null || channel.toJiuIndex() < 0) {
             setTables(table);

@@ -18,8 +18,8 @@
  */
 package org.boblycat.blimp.layers;
 
+import static org.boblycat.blimp.jiuops.MathUtil.*;
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Util;
 
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.data.RGB24Image;
@@ -74,7 +74,7 @@ class GrayscaleMixerOperation extends ImageToImageOperation {
                             * b)
                             / GrayscaleMixerLayer.FULL_WEIGHT;
                     assert (intensity >= 0);
-                    grayLine[x] = Util.cropToUnsignedByte(intensity);
+                    grayLine[x] = clampToUnsignedByte(intensity);
                 }
 
                 output24.putByteSamples(RGBIndex.INDEX_RED, 0, y, width, 1,
@@ -111,7 +111,7 @@ class GrayscaleMixerOperation extends ImageToImageOperation {
                     int intensity = (redWeight * r + greenWeight * g + blueWeight
                             * b)
                             / GrayscaleMixerLayer.FULL_WEIGHT;
-                    grayLine[x] = Util.cropToUnsignedShort(intensity);
+                    grayLine[x] = clampToUnsignedShort(intensity);
                 }
 
                 output48.putShortSamples(RGBIndex.INDEX_RED, 0, y, width, 1,
@@ -158,7 +158,7 @@ public class GrayscaleMixerLayer extends AdjustmentLayer {
     }
 
     static int constrain(int value) {
-        return Util.constrainedValue(value, MINIMUM_WEIGHT, MAXIMUM_WEIGHT);
+        return clamp(value, MINIMUM_WEIGHT, MAXIMUM_WEIGHT);
     }
 
     public void setRed(int red) {

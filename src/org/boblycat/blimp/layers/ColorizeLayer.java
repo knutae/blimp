@@ -19,8 +19,8 @@
 package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Util;
 import org.boblycat.blimp.jiuops.ColorizeOperation;
+import org.boblycat.blimp.jiuops.MathUtil;
 
 /**
  * Colorize an image using a single hue.
@@ -56,7 +56,7 @@ public class ColorizeLayer extends AdjustmentLayer {
      * @param hue the hue to set
      */
     public void setHue(int hue) {
-        this.hue = Util.constrainedValue(hue, 0, 360);
+        this.hue = MathUtil.clamp(hue, 0, 360);
     }
 
     /**
@@ -70,7 +70,7 @@ public class ColorizeLayer extends AdjustmentLayer {
      * @param lightness the lightness to set
      */
     public void setLightness(int lightness) {
-        this.lightness = Util.constrainedValue(lightness, 0, 400);
+        this.lightness = MathUtil.clamp(lightness, 0, 400);
     }
 
     /**
@@ -84,7 +84,7 @@ public class ColorizeLayer extends AdjustmentLayer {
      * @param saturation the saturation to set
      */
     public void setSaturationMultiplier(int saturationMultiplier) {
-        this.saturationMultiplier = Util.constrainedValue(saturationMultiplier, 0, 400);
+        this.saturationMultiplier = MathUtil.clamp(saturationMultiplier, 0, 400);
     }
 
     /**
@@ -98,7 +98,7 @@ public class ColorizeLayer extends AdjustmentLayer {
      * @param baseSaturation the baseSaturation to set
      */
     public void setBaseSaturation(int baseSaturation) {
-        this.baseSaturation = Util.constrainedValue(baseSaturation, 0, 400);
+        this.baseSaturation = MathUtil.clamp(baseSaturation, 0, 400);
     }
 
     /**

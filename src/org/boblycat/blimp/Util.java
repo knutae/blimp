@@ -29,28 +29,6 @@ import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.RawFileInputLayer;
 
 public class Util {
-    public static int constrainedValue(int value, int min, int max) {
-        if (max < min)
-            throw new IllegalArgumentException("max (" + max
-                    + ") must be larger than min (" + min + ")");
-        if (value < min)
-            return min;
-        if (value > max)
-            return max;
-        return value;
-    }
-
-    public static double constrainedValue(double value, double min, double max) {
-        if (max < min)
-            throw new IllegalArgumentException("max (" + max
-                    + ") must be larger than min (" + min + ")");
-        if (value < min)
-            return min;
-        if (value > max)
-            return max;
-        return value;
-    }
-
     public static int constrainedLower(int value, int min) {
         if (value < min)
             return min;
@@ -212,23 +190,6 @@ public class Util {
         for (int i = 0; i < digits; i++)
             fval *= 10;
         return Math.round(fval);
-    }
-
-    public static byte cropToUnsignedByte(int signedIntValue) {
-        if (signedIntValue < 0)
-            signedIntValue = 0;
-        else if (signedIntValue > 255)
-            signedIntValue = 255;
-        return (byte) (0xff & signedIntValue);
-    }
-
-    public static short cropToUnsignedShort(int signedIntValue) {
-        final int UNSIGNED_SHORT_MAX = 65535;
-        if (signedIntValue < 0)
-            signedIntValue = 0;
-        else if (signedIntValue > UNSIGNED_SHORT_MAX)
-            signedIntValue = UNSIGNED_SHORT_MAX;
-        return (short) (0xffff & signedIntValue);
     }
 
     /** Detect if the OS is MS Windows */

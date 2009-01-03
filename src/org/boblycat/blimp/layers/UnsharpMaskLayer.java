@@ -21,8 +21,8 @@ package org.boblycat.blimp.layers;
 import net.sourceforge.jiu.filters.ConvolutionKernelFilter;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Util;
 import org.boblycat.blimp.jiu.UnsharpMaskKernel;
+import org.boblycat.blimp.jiuops.MathUtil;
 
 public class UnsharpMaskLayer extends AdjustmentLayer {
     public static final int MIN_LEVEL = 0;
@@ -50,7 +50,7 @@ public class UnsharpMaskLayer extends AdjustmentLayer {
     }
 
     public void setLevel(int level) {
-        this.level = Util.constrainedValue(level, MIN_LEVEL, MAX_LEVEL);
+        this.level = MathUtil.clamp(level, MIN_LEVEL, MAX_LEVEL);
     }
 
     public int getLevel() {

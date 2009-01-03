@@ -19,10 +19,10 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.Debug;
+import org.boblycat.blimp.jiuops.MathUtil;
 import org.boblycat.blimp.jiuops.NaturalCubicSpline;
 import org.boblycat.blimp.PointDouble;
 import org.boblycat.blimp.RGBChannel;
-import org.boblycat.blimp.Util;
 import org.boblycat.blimp.layers.CurvesLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
@@ -96,13 +96,13 @@ public class CurvesEditor extends GridBasedLayerEditor {
                 int iMaxY = size.y - 1;
                 if (points.length > 0)
                     prevY = points[0].y;
-                int iPrevY = Util.constrainedValue(size.y
+                int iPrevY = MathUtil.clamp(size.y
                         - (int) (prevY * size.y), 0, iMaxY);
                 double[] splineValues = spline
                         .getSplineValues(0.0, 1.0, size.x);
                 for (int x = 1; x < size.x; x++) {
                     double nextY = splineValues[x];
-                    int iNextY = Util.constrainedValue(size.y
+                    int iNextY = MathUtil.clamp(size.y
                             - (int) (nextY * size.y), 0, iMaxY);
                     gc.drawLine(x - 1, iPrevY, x, iNextY);
                     prevY = nextY;

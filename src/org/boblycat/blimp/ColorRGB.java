@@ -18,6 +18,8 @@
  */
 package org.boblycat.blimp;
 
+import org.boblycat.blimp.jiuops.MathUtil;
+
 import net.sourceforge.jiu.color.quantization.RGBColor;
 
 /**
@@ -60,7 +62,7 @@ public class ColorRGB {
     }
 
     private static int constrain(int value) {
-        return Util.constrainedValue(value, 0, MAX);
+        return MathUtil.clamp(value, 0, MAX);
     }
 
     public void setRed(int red) {

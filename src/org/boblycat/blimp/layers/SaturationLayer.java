@@ -19,8 +19,8 @@
 package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Util;
 import org.boblycat.blimp.jiuops.ColorUtil;
+import org.boblycat.blimp.jiuops.MathUtil;
 import org.boblycat.blimp.jiuops.RGBDoubleOperation;
 
 class SaturationOperation extends RGBDoubleOperation {
@@ -89,7 +89,7 @@ public class SaturationLayer extends AdjustmentLayer {
     }
 
     public void setSaturation(int saturation) {
-        this.saturation = Util.constrainedValue(saturation, 0, 400);
+        this.saturation = MathUtil.clamp(saturation, 0, 400);
     }
 
     public int getSaturation() {
@@ -97,7 +97,7 @@ public class SaturationLayer extends AdjustmentLayer {
     }
 
     public void setLightness(int value) {
-        this.lightness = Util.constrainedValue(value, 0, 400);
+        this.lightness = MathUtil.clamp(value, 0, 400);
     }
 
     public int getLightness() {
@@ -105,7 +105,7 @@ public class SaturationLayer extends AdjustmentLayer {
     }
 
     public void setHue(int hue) {
-        this.hue = Util.constrainedValue(hue, -180, 180);
+        this.hue = MathUtil.clamp(hue, -180, 180);
     }
 
     public int getHue() {

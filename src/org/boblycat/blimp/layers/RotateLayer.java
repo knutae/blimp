@@ -26,7 +26,7 @@ import net.sourceforge.jiu.ops.WrongParameterException;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapSize;
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.jiuops.MathUtil;
 
 
 class RotateOperation extends ImageToImageOperation {
@@ -53,7 +53,7 @@ class RotateOperation extends ImageToImageOperation {
             getSampleOrZero(input, channel, floorx+1, floory) * dx * (1-dy) +
             getSampleOrZero(input, channel, floorx, floory+1) * (1-dx) * dy +
             getSampleOrZero(input, channel, floorx+1, floory+1) * dx * dy;
-        return Util.constrainedValue((int) sample, 0, input.getMaxSample(channel));
+        return MathUtil.clamp((int) sample, 0, input.getMaxSample(channel));
     }
 
     public void process() throws MissingParameterException,
@@ -169,7 +169,7 @@ public class RotateLayer extends DimensionAdjustmentLayer {
      * @param angle the angle to set
      */
     public void setAngle(double angle) {
-        this.angle = Util.constrainedValue(angle, -180, 180);
+        this.angle = MathUtil.clamp(angle, -180, 180);
     }
 
     /**

@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp.jiuops;
 
-import org.boblycat.blimp.Util;
+import static org.boblycat.blimp.jiuops.MathUtil.*;
 
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.data.RGB24Image;
@@ -91,12 +91,9 @@ public abstract class RGBDoubleOperation extends ImageToImageOperation {
                     g = (0xff & greenLine[x]) / MAX_8BIT;
                     b = (0xff & blueLine[x]) / MAX_8BIT;
                     adjustColor(r, g, b, rgb);
-                    redLine[x] = Util
-                            .cropToUnsignedByte((int) (rgb[0] * MAX_8BIT));
-                    greenLine[x] = Util
-                            .cropToUnsignedByte((int) (rgb[1] * MAX_8BIT));
-                    blueLine[x] = Util
-                            .cropToUnsignedByte((int) (rgb[2] * MAX_8BIT));
+                    redLine[x] = clampToUnsignedByte((int) (rgb[0] * MAX_8BIT));
+                    greenLine[x] = clampToUnsignedByte((int) (rgb[1] * MAX_8BIT));
+                    blueLine[x] = clampToUnsignedByte((int) (rgb[2] * MAX_8BIT));
                 }
 
                 output24.putByteSamples(RGBIndex.INDEX_RED, 0, y, width, 1,
@@ -130,12 +127,9 @@ public abstract class RGBDoubleOperation extends ImageToImageOperation {
                     g = (0xffff & greenLine[x]) / MAX_16BIT;
                     b = (0xffff & blueLine[x]) / MAX_16BIT;
                     adjustColor(r, g, b, rgb);
-                    redLine[x] = Util
-                            .cropToUnsignedShort((int) (rgb[0] * MAX_16BIT));
-                    greenLine[x] = Util
-                            .cropToUnsignedShort((int) (rgb[1] * MAX_16BIT));
-                    blueLine[x] = Util
-                            .cropToUnsignedShort((int) (rgb[2] * MAX_16BIT));
+                    redLine[x] = clampToUnsignedShort((int) (rgb[0] * MAX_16BIT));
+                    greenLine[x] = clampToUnsignedShort((int) (rgb[1] * MAX_16BIT));
+                    blueLine[x] = clampToUnsignedShort((int) (rgb[2] * MAX_16BIT));
                 }
 
                 output48.putShortSamples(RGBIndex.INDEX_RED, 0, y, width, 1,

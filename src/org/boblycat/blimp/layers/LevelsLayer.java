@@ -20,7 +20,7 @@ package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.RGBChannel;
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.jiuops.MathUtil;
 import org.boblycat.blimp.jiuops.NaturalCubicSpline;
 import org.boblycat.blimp.jiuops.SplineOperation;
 
@@ -65,7 +65,7 @@ public class LevelsLayer extends AdjustmentLayer {
     }
 
     public void setBlackLevel(double blackLevel) {
-        this.blackLevel = Util.constrainedValue(blackLevel, 0, 1);
+        this.blackLevel = MathUtil.clamp(blackLevel, 0, 1);
     }
 
     public double getBlackLevel() {
@@ -83,7 +83,7 @@ public class LevelsLayer extends AdjustmentLayer {
     }
 
     public void setWhiteLevel(double whiteLevel) {
-        this.whiteLevel = Util.constrainedValue(whiteLevel, 0, 1);
+        this.whiteLevel = MathUtil.clamp(whiteLevel, 0, 1);
     }
 
     public double getWhiteLevel() {
