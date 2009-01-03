@@ -20,30 +20,10 @@ package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.jiuops.MathUtil;
+import org.boblycat.blimp.jiuops.MultiplicativeContrastOperation;
 
 import net.sourceforge.jiu.data.PixelImage;
-import net.sourceforge.jiu.data.RGB48Image;
-import net.sourceforge.jiu.ops.LookupTableOperation;
 import net.sourceforge.jiu.color.adjustment.Brightness;
-
-class MultiplicativeContrast extends LookupTableOperation {
-    static double transform(double x, double contrast) {
-        return MathUtil.clamp(x * contrast, -1, 1);
-    }
-
-    void setTablesFromContrast(double contrast, int bitdepth) {
-        int size = 1 << bitdepth;
-        double factor = (size - 1);
-        int[] tableData = new int[size];
-        for (int i = 0; i < size; i++) {
-            double x = 2.0 * i / factor - 1.0;
-            double y = transform(x, contrast);
-            int iy = (int) ((0.5 * y + 0.5) * factor);
-            tableData[i] = iy;
-        }
-        setTables(tableData);
-    }
-}
 
 public class BrightnessContrastLayer extends AdjustmentLayer {
     public static final int MIN_BRIGHTNESS = -100;
@@ -86,13 +66,8 @@ public class BrightnessContrastLayer extends AdjustmentLayer {
             image = applyJiuOperation(image, bOp);
         }
         if (contrast != 100) {
-            MultiplicativeContrast op = new MultiplicativeContrast();
-            int bitDepth;
-            if (image instanceof RGB48Image)
-                bitDepth = 16;
-            else
-                bitDepth = 8;
-            op.setTablesFromContrast(contrast/100.0, bitDepth);
+            MultiplicativeContrastOperation op = new MultiplicativeContrastOperation();
+            op.setContrast(contrast);
             image = applyJiuOperation(image, op);
         }
         return new Bitmap(image);
