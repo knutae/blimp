@@ -18,9 +18,10 @@
  */
 package org.boblycat.blimp.jiuops;
 
-import org.boblycat.blimp.RGBChannel;
-
+import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.ops.LookupTableOperation;
+import net.sourceforge.jiu.ops.MissingParameterException;
+import net.sourceforge.jiu.ops.WrongParameterException;
 
 /**
  * Operation that uses a {@link NaturalCubicSpline} to create its
@@ -29,14 +30,38 @@ import net.sourceforge.jiu.ops.LookupTableOperation;
  * @author Knut Arild Erstad
  */
 public class SplineOperation extends LookupTableOperation {
+    private int channelIndex;
+    private NaturalCubicSpline spline;
+    
+    public SplineOperation() {
+        channelIndex = -1;
+    }
+    
     /**
-     * Set all tables to spline values, using the values from from 0 to 1.
-     * @param spline a spline.
-     * @param bitDepth the bit depth per color channel, must be 8 or 16.
+     * Set the spline to use for creating lookup tables.
+     * @param spline
      */
-    public void setTablesFromSpline(NaturalCubicSpline spline, int bitDepth,
-            RGBChannel channel) {
-        assert (bitDepth == 8 || bitDepth == 16);
+    public void setSpline(NaturalCubicSpline spline) {
+        this.spline = spline;
+    }
+    
+    /**
+     * Set the channel to modify, or -1 to modify all channels (default).
+     * @param channelIndex
+     */
+    public void setChannel(int channelIndex) {
+        this.channelIndex = channelIndex;
+    }
+    
+    public void process() throws MissingParameterException,
+    WrongParameterException {
+        if (spline == null)
+            throw new MissingParameterException("no spline");
+        PixelImage input = getInputImage();
+        if (input == null)
+            throw new MissingParameterException("no input image");
+        // Create and set tables based on the bit depth of the input image
+        int bitDepth = input.getBitsPerPixel() / input.getNumChannels();
         int size = 1 << bitDepth;
         int[] table = new int[size];
         double[] splineValues = spline.getSplineValues(0.0, 1.0, size);
@@ -45,20 +70,25 @@ public class SplineOperation extends LookupTableOperation {
             int y = (int) (splineValues[i] * (size-1));
             table[i] = MathUtil.clamp(y, 0, size-1);
         }
-        if (channel == null || channel.toJiuIndex() < 0) {
+        if (channelIndex < 0) {
             setTables(table);
-            return;
         }
-        setNumTables(3);
-        int[] identityTable = new int[size];
-        for (int i=0; i<size; i++)
-            identityTable[i] = i;
-        int rgbIndex = channel.toJiuIndex();
-        for (int i=0; i<3; i++) {
-            if (i == rgbIndex)
-                setTable(i, table);
-            else
-                setTable(i, identityTable);
+        else {
+            // We only want a single channel to be affected.  Since null
+            // tables are not allowed, create an "identity table" for
+            // all other channels.
+            setNumTables(input.getNumChannels());
+            int[] identityTable = new int[size];
+            for (int i=0; i<size; i++)
+                identityTable[i] = i;
+            for (int i=0; i<input.getNumChannels(); i++) {
+                if (i == channelIndex)
+                    setTable(i, table);
+                else
+                    setTable(i, identityTable);
+            }
         }
+        // the superclass does the actual work
+        super.process();
     }
 }

@@ -19,14 +19,12 @@
 package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.RGBChannel;
 import org.boblycat.blimp.jiuops.MathUtil;
 import org.boblycat.blimp.jiuops.NaturalCubicSpline;
 import org.boblycat.blimp.jiuops.SplineOperation;
 
 class LevelsOperation extends SplineOperation {
-    void setValues(double blackLevel, double center, double whiteLevel,
-            int bitDepth) {
+    void setValues(double blackLevel, double center, double whiteLevel) {
         NaturalCubicSpline spline = new NaturalCubicSpline();
         // point 1: (black, 0)
         // point 2: (center, 0.5)
@@ -36,7 +34,7 @@ class LevelsOperation extends SplineOperation {
         if (center > blackLevel && center < whiteLevel)
             spline.addPoint(center, 0.5);
         spline.addPoint(whiteLevel, 1);
-        setTablesFromSpline(spline, bitDepth, RGBChannel.All);
+        setSpline(spline);
     }
 }
 
@@ -54,8 +52,7 @@ public class LevelsLayer extends AdjustmentLayer {
     @Override
     public Bitmap applyLayer(Bitmap source) {
         LevelsOperation op = new LevelsOperation();
-        op.setValues(blackLevel, center, whiteLevel,
-                source.getChannelBitDepth());
+        op.setValues(blackLevel, center, whiteLevel);
         return new Bitmap(applyJiuOperation(source.getImage(), op));
     }
 
