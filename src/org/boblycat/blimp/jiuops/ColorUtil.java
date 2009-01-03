@@ -18,15 +18,17 @@
  */
 package org.boblycat.blimp.jiuops;
 
+/**
+ * Color-related utility functions, such as conversion between color spaces.
+ * 
+ * @author Knut Arild Erstad
+ */
 public class ColorUtil {
+    /** A constant which indicates that a hue value is undefined (for gray colors). */
     public static final double UNDEFINED_HUE = -1;
 
-    private static final double ONE_THIRD = 1.0/3.0;
-    private static final double ONE_SIXTH = 1.0/6.0;
-    private static final double TWO_THIRDS = 2.0/3.0;
-
     /**
-     * Optimized min function for three doubles.
+     * Fast min function for three doubles.
      * @param x a number
      * @param y another number
      * @param z yet another number
@@ -46,7 +48,7 @@ public class ColorUtil {
     }
 
     /**
-     * Optimized max function for three doubles.
+     * Fast max function for three doubles.
      * @param x a number
      * @param y another number
      * @param z yet another number
@@ -65,6 +67,17 @@ public class ColorUtil {
             return z;
     }
 
+    /**
+     * Convert a color from a RGB color space to the corresponding HSV
+     * (Hue, Saturation, Value) color space.
+     * See http://en.wikipedia.org/wiki/HSV_color_space for a description
+     * of the algorithm used.
+     * @param r red, 0 <= r <= 1
+     * @param g green, 0 <= g <= 1
+     * @param b blue, 0 <= b <= 1
+     * @param hsv a array in which to store the result, or <code>null</code>
+     * @return a result array, either <code>hsv</code> or a newly allocated one.
+     */
     public static double[] rgbToHsv(double r, double g, double b,
             double hsv[]) {
         double h, s, v;
@@ -102,6 +115,17 @@ public class ColorUtil {
         return new double[] {h, s, v};
     }
 
+    /**
+     * Convert a color from a HSV (Hue, Saturation, Value) to the
+     * corresponding RGB color space.
+     * See http://en.wikipedia.org/wiki/HSV_color_space for a description of
+     * the algorithm used.
+     * @param H hue, 0 <= H < 360, or <code>UNDEFINED_HUE</code>
+     * @param S saturation, 0 <= S <= 1
+     * @param V value, 0 <= L <= 1
+     * @param rgb an array in which to store the result, or <code>null</code>.
+     * @return a result array, either <code>rgb</code> or a newly allocated one.
+     */
     public static double[] hsvToRgb(double h, double s, double v,
             double[] rgb) {
         double r, g, b;
@@ -158,7 +182,7 @@ public class ColorUtil {
      * @param r red, 0 <= r <= 1
      * @param g green, 0 <= g <= 1
      * @param b blue, 0 <= b <= 1
-     * @param hsl a result array, or <code>null</code>
+     * @param hsl a array in which to store the result, or <code>null</code>
      * @return a result array, either <code>hsl</code> or a newly allocated one.
      */
     public static double[] rgbToHsl(double r, double g, double b,
@@ -201,6 +225,12 @@ public class ColorUtil {
         return new double[] {H, S, L};
     }
 
+    // constants used by hslToRgb:
+    private static final double ONE_THIRD = 1.0/3.0;
+    private static final double ONE_SIXTH = 1.0/6.0;
+    private static final double TWO_THIRDS = 2.0/3.0;
+
+    /** Private helper function for hslToRgb() */
     private static double tcolor(double Tc, double Q, double P) {
         if (Tc < ONE_SIXTH)
             return P + 6 * (Q - P) * Tc;
@@ -220,7 +250,7 @@ public class ColorUtil {
      * @param H hue, 0 <= H < 360, or UNDEFINED_HUE
      * @param S saturation, 0 <= S <= 1
      * @param L lightness (luminance), 0 <= L <= 1
-     * @param rgb a result array, or <code>null</code>.
+     * @param rgb an array in which to store the result, or <code>null</code>.
      * @return a result array, either <code>rgb</code> or a newly allocated one.
      */
     public static double[] hslToRgb(double H, double S, double L,
