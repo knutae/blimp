@@ -20,31 +20,7 @@ package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.Util;
-import org.boblycat.blimp.jiuops.ColorUtil;
-import org.boblycat.blimp.jiuops.RGBDoubleOperation;
-
-class ColorizeOperation extends RGBDoubleOperation {
-    double hue;
-    double lightnessFactor;
-    double saturationFactor;
-    double baseSaturation;
-
-    void init(int hue, int lightness, int saturation, int baseSaturation) {
-        this.hue = hue;
-        this.lightnessFactor = lightness / 100.0;
-        this.saturationFactor = saturation / 100.0;
-        this.baseSaturation = baseSaturation / 100.0;
-    }
-
-    @Override
-    protected void adjustColor(double r, double g, double b, double[] out) {
-        ColorUtil.rgbToHsl(r, g, b, out);
-        out[0] = hue;
-        out[1] = baseSaturation + out[1] * saturationFactor;
-        out[2] *= lightnessFactor;
-        ColorUtil.hslToRgb(out[0], out[1], out[2], out);
-    }
-}
+import org.boblycat.blimp.jiuops.ColorizeOperation;
 
 /**
  * Colorize an image using a single hue.
