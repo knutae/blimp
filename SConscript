@@ -27,7 +27,7 @@ if sys.platform == 'win32':
     swt_jar = 'swt-3.4-win32_64/swt.jar'
 
 env.Append(JAVACLASSPATH = [ jiu_jar, swt_jar, junit_jar ])
-env.Java(class_dir, 'src')
+env.Java(class_dir, 'src', JAVAVERSION='1.6')
 
 def emit_java_runner(target, source, env):
     assert len(target) == 1
