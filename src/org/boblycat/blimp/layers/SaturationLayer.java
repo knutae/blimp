@@ -19,37 +19,8 @@
 package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.jiuops.ColorUtil;
+import org.boblycat.blimp.jiuops.HueSaturationLightnessOperation;
 import org.boblycat.blimp.jiuops.MathUtil;
-import org.boblycat.blimp.jiuops.RGBDoubleOperation;
-
-class SaturationOperation extends RGBDoubleOperation {
-    double hueOffset;
-    double saturationFactor;
-    double lightnessFactor;
-
-    void init(int hue, int saturation, int lightness) {
-        hueOffset = hue;
-        saturationFactor = saturation / 100.0;
-        lightnessFactor = lightness / 100.0;
-    }
-
-    private static double adjust(double input, double factor) {
-        return input * factor;
-    }
-
-    protected void adjustColor(double r, double g, double b, double[] out) {
-        ColorUtil.rgbToHsl(r, g, b, out);
-        out[0] += hueOffset;
-        if (out[0] >= 360)
-            out[0] -= 360;
-        else if (out[0] < 0)
-            out[0] += 360;
-        out[1] = adjust(out[1], saturationFactor);
-        out[2] = adjust(out[2], lightnessFactor);
-        ColorUtil.hslToRgb(out[0], out[1], out[2], out);
-    }
-}
 
 /**
  * Layer which adjusts the Hue, Saturation and Lightness (luminance) of an image.
@@ -78,7 +49,7 @@ public class SaturationLayer extends AdjustmentLayer {
 
     @Override
     public Bitmap applyLayer(Bitmap source) {
-        SaturationOperation op = new SaturationOperation();
+        HueSaturationLightnessOperation op = new HueSaturationLightnessOperation();
         op.init(hue, saturation, lightness);
         return new Bitmap(applyJiuOperation(source.getImage(), op));
     }
