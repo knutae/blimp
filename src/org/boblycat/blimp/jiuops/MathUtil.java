@@ -85,4 +85,26 @@ public class MathUtil {
             signedIntValue = UNSIGNED_SHORT_MAX;
         return (short) (0xffff & signedIntValue);
     }
+    
+    /**
+     * Implements a mathematical modulus operation that returns a value of the
+     * same sign as the divisor (except when the answer is zero).
+     * This is different from Java's remainder (%) operator for negative dividends.
+     * 
+     * @param dividend the value to divide
+     * @param divisor the value to divide by, must be larger than zero.
+     * @return the remainder of the division
+     */
+    public static double mod(double dividend, double divisor) {
+        if (divisor < 0)
+            return -mod(-dividend, -divisor);
+        if (dividend < 0) {
+            double ret = (-dividend) % divisor;
+            if (ret <= 0.0)
+                return -0.0;
+            else
+                return divisor - ret;
+        }
+        return dividend % divisor;
+    }
 }

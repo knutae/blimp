@@ -25,7 +25,8 @@ public class RunTests {
     public static void main(String[] args) {
         // prevent console warnings
         Util.logger.setUseParentHandlers(false);
-        JUnitCore.main("org.boblycat.blimp.tests.SessionTests",
+        JUnitCore.main(
+                "org.boblycat.blimp.tests.SessionTests",
                 "org.boblycat.blimp.tests.CachedSessionTests",
                 "org.boblycat.blimp.tests.HistoryTests",
                 "org.boblycat.blimp.tests.SplineTests",
@@ -34,6 +35,7 @@ public class RunTests {
                 "org.boblycat.blimp.tests.UtilTests",
                 "org.boblycat.blimp.tests.ColorUtilTests",
                 "org.boblycat.blimp.tests.LayerRearrangerTest",
-                "org.boblycat.blimp.tests.ExifTests");
+                "org.boblycat.blimp.tests.ExifTests",
+                "org.boblycat.blimp.tests.MathUtilTests");
     }
 }

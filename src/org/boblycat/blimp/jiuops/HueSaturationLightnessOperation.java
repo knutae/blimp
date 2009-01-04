@@ -47,8 +47,7 @@ public class HueSaturationLightnessOperation extends RGBDoubleOperation {
      *      lightness multiplier in percentage (100 equals no change)
      */
     public void init(double hue, int saturation, int lightness) {
-        while (hue < 0) hue += 360; // modulus doesn't play well with negative numbers
-        hueOffset = hue % 360;
+        hueOffset = MathUtil.mod(hue, 360.0);
         saturationFactor = saturation / 100.0;
         lightnessFactor = lightness / 100.0;
     }
