@@ -21,6 +21,13 @@ package org.boblycat.blimp.jiuops;
 import java.util.Iterator;
 import java.util.TreeMap;
 
+/**
+ * This class interpolates a sorted set of x-y-coordinates as a natural cubic
+ * spline function.  That is, a cubic spline function in which the second
+ * derivatives of the end points are zero.
+ * 
+ * @author Knut Arild Erstad
+ */
 public class NaturalCubicSpline {
     /**
      * Solve a tri-diagonal set of equations. The matrix is on the form:
@@ -53,8 +60,6 @@ public class NaturalCubicSpline {
         // double[] x = new double[size];
         // Gauss elimination (eliminating a)
         for (int k = 1; k < size; k++) {
-            // save multiplicator in a (but why?)
-            // a[k] /= d[k-1];
             double mult = va[k] / vd[k - 1];
             vd[k] -= mult * vc[k - 1];
             vb[k] -= mult * vb[k - 1];
@@ -71,7 +76,7 @@ public class NaturalCubicSpline {
         return vb;
     }
 
-    static private double[] subArray(double[] array, int startIndex, int count) {
+    private static double[] subArray(double[] array, int startIndex, int count) {
         assert (startIndex >= 0);
         assert (startIndex < array.length || count == 0);
         if (count < 0) {
@@ -83,7 +88,7 @@ public class NaturalCubicSpline {
         return ret;
     }
 
-    static private double arrayValueOrZero(double[] array, int index) {
+    private static double arrayValueOrZero(double[] array, int index) {
         if (index < 0 || index >= array.length)
             return 0.0;
         return array[index];
@@ -105,9 +110,8 @@ public class NaturalCubicSpline {
         }
     }
 
-    TreeMap<Double, Double> points;
-
-    Coefficients coefficients;
+    private TreeMap<Double, Double> points;
+    private Coefficients coefficients;
 
     /**
      * Calculate the natural spline coefficients of the current points. The
@@ -118,7 +122,7 @@ public class NaturalCubicSpline {
      *
      * @return A wrapper of the coefficient vectors.
      */
-    Coefficients calculateCoefficients() {
+    private Coefficients calculateCoefficients() {
         double[] vx = new double[points.size()];
         double[] vy = new double[points.size()];
         int i = 0;
@@ -163,7 +167,7 @@ public class NaturalCubicSpline {
         return cof;
     }
 
-    void invalidateCoefficients() {
+    private void invalidateCoefficients() {
         coefficients = null;
     }
 
@@ -171,11 +175,24 @@ public class NaturalCubicSpline {
         points = new TreeMap<Double, Double>();
     }
 
+    /**
+     * Add a point, or replace a point at the same x-coordinate. 
+     * @param x x-coordinate
+     * @param y y-coordinate
+     */
     public void addPoint(double x, double y) {
         points.put(x, y);
         invalidateCoefficients();
     }
 
+    /**
+     * Move a point.
+     * If another point exists on the same x-coordinate as <code>newX</code>,
+     * it will be replaced.
+     * @param oldX old x-coordinate
+     * @param newX new x-coordinate
+     * @param newY new y-coordinate
+     */
     public void movePoint(double oldX, double newX, double newY) {
         if (!points.containsKey(oldX))
             return;
@@ -184,6 +201,11 @@ public class NaturalCubicSpline {
         invalidateCoefficients();
     }
 
+    /**
+     * Find the point whose x-coordinate is closest to <code>x</code>.
+     * @param x x-coordinate
+     * @return an existing x-coordinate or <code>Double.MAX_VALUE</code> if there are no points
+     */
     public double findClosestPoint(double x) {
         double closest = Double.MAX_VALUE;
         for (double px : points.keySet()) {
@@ -193,20 +215,39 @@ public class NaturalCubicSpline {
         return closest;
     }
 
+    /**
+     * Remove a point.  If the point does not exist, this is a no-op.
+     * @param x the x-coordinate of the point to remove
+     */
     public void removePoint(double x) {
         points.remove(x);
         invalidateCoefficients();
     }
 
+    /**
+     * Returns the points as a tree map.
+     * Modifying the return value can lead to undefined behavior.
+     * @return a tree map of x-y-coordinates
+     */
     public TreeMap<Double, Double> getPoints() {
         return points;
     }
 
+    /**
+     * Set the x-y-coordinates as a tree map.
+     * Modifying the parameter after calling this function can lead to undefined behavior.
+     * @param points a tree map of x-y-coordinates
+     */
     public void setPoints(TreeMap<Double, Double> points) {
         this.points = points;
         invalidateCoefficients();
     }
 
+    /**
+     * Get the interpolated y-coordinate corresponding to x.
+     * @param x an x-coordinate
+     * @return the corresponding y-coordinate calculated using spline interpolation
+     */
     public double getSplineValue(double x) {
         if (points.size() == 0)
             return 0;
@@ -231,6 +272,17 @@ public class NaturalCubicSpline {
                 + coefficients.c[i] * h + coefficients.d[i];
     }
 
+    /**
+     * Get an array of interpolated y-coordinates according to the range of x-coordinates
+     * specified.  The resulting y-coordinates are the same as if calling
+     * <code>getSplineValue(x)</code> for each <code>x</code> in the range, but
+     * using this function is more efficient.
+     * 
+     * @param startX the start of the range of x-coordinates
+     * @param endX the end of the range of x-coordinates
+     * @param steps the number of steps
+     * @return an array of size <code>steps</code> with y-coordinates
+     */
     public double[] getSplineValues(double startX, double endX, int steps) {
         double[] values = new double[steps];
         if (points.size() == 0)
