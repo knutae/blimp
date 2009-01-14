@@ -19,7 +19,7 @@ def query_windows_sdk_dir():
 
 if sys.platform == 'win32':
     env.Append(CPPDEFINES = ['WIN32', 'W32_GETC_UNLOCKED', 'ftello=ftell', 'fseeko=fseek'])
-    env.Append(CCFLAGS = ['/Ox'])
+    env.Append(CCFLAGS = ['/Ox']) # slightly faster than /O2
     # Visual Studio 2008 (vc90) hack
     sdk_dir = query_windows_sdk_dir()
     if sdk_dir:
