@@ -26,6 +26,10 @@ if sys.platform == 'win32':
         print '--- Detected Windows SDK at:', sdk_dir
         env.Append(CPPPATH = [os.path.join(sdk_dir, 'Include')])
         env.Append(LIBPATH = [os.path.join(sdk_dir, 'Lib')])
+else:
+    # assume gcc
+    env.Append(CCFLAGS = ['-O4'])
+    env.Append(LIBS='m')
 
 dcraw = env.Program('blimp-dcraw', 'dcraw.c')
 Default(dcraw)
