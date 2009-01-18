@@ -558,24 +558,12 @@ public class MainWindow {
 
     boolean tryEnsureInputFileExists(BlimpSession session)
     throws FileNotFoundException {
-        InputLayer input = session.getInput();
-        if (input == null)
-            return false;
-        BlimpBean.Property prop = input.findProperty("filePath");
-        if (prop == null)
-            return false;
-        Object value = prop.getValue();
-        if (value == null)
-            return false;
-        File filePath = null;
-        if (value instanceof String)
-            filePath = new File((String) value);
-        else {
-            Util.err("a filePath property exists, but it is not a String.");
-            return false;
-        }
-        if (filePath.exists())
-            return false;
+    	String strPath = session.inputFilePath();
+    	if (strPath == null)
+    		return false;
+    	File filePath = new File(strPath);
+    	if (filePath.exists())
+    		return false;
         // filePath is given, but does not exist
         String newPath = FileSearchView.showDialog(shell, filePath.getName());
         if (newPath == null)
@@ -584,6 +572,8 @@ public class MainWindow {
                     filePath.getAbsolutePath()));
         if (newPath.equals(filePath.getAbsolutePath()))
             return false;
+        BlimpBean.Property prop = session.getInput().findProperty("filePath");
+        assert(prop != null);
         prop.setValue(newPath);
         return true;
     }

@@ -612,4 +612,27 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     protected void beanSaved(String filename) {
         setProjectFilePath(filename);
     }
+    
+    /**
+     * If the session has an input layer with a filePath property, return it.
+     * Otherwise, return <code>null</code>.
+     * @return a string representing a file path, or <code>null</code>
+     */
+    public String inputFilePath() {
+    	InputLayer input = getInput();
+    	if (input == null)
+    		return null;
+        BlimpBean.Property prop = input.findProperty("filePath");
+        if (prop == null)
+            return null;
+        Object value = prop.getValue();
+        if (value == null)
+            return null;
+        if (value instanceof String)
+            return (String) value;
+        else {
+            Util.err("a filePath property exists, but it is not a String.");
+        	return null;
+        }
+    }
 }
