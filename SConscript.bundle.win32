@@ -1,12 +1,11 @@
 # Blimp SCons rules for bundling on windows
 
-Import('dcraw', 'install_base', 'install_bin', 'install_lib', 'xerces_jar')
+Import('dcraw', 'install_base', 'install_bin', 'install_lib', 'xerces_jar', 'BLIMP_VERSION')
 
 import os
 
 jsmoothcmd = os.path.join(os.environ['PROGRAMFILES'], 'JSmooth 0.9.9-7', 'jsmoothcmd.exe')
 
-Install(install_base, 'COPYING')
 InstallAs(install_bin + '/blimp-dcraw.exe', dcraw)
 
 # For now, only bundle 32-bit version of SWT
@@ -16,6 +15,7 @@ Install(install_lib, [xerces_jar, swt_jar])
 Install(install_base, [
     'tools/bundle-windows/blimp.jsmooth',
     'icons/blimp.ico',
+    'COPYING',
 ])
 
 if os.path.isfile(jsmoothcmd):
@@ -46,7 +46,7 @@ if wix_dir:
     env.Tool('wixtool', ['tools/scons'])
     env['ENV']['PATH'] = wix_dir
     env['WIXLIGHTFLAGS'] = '-nologo -ext WixUIExtension'
-    blimp_msi = env.WiX('Blimp.msi', [
+    blimp_msi = env.WiX('Blimp-' + BLIMP_VERSION + '.msi', [
         'tools/bundle-windows/Blimp.wxs',
         'tools/bundle-windows/WixUI_InstallDir_NoEula.wxs',
         ])

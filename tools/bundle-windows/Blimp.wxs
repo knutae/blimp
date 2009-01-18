@@ -4,8 +4,8 @@
     Note: before each release, change both the product and upgrade versions,
     and generate a new product Id GUID.
     -->
-    <Product Name='Blimp' Id='8F934390-ADB9-4071-B0CC-D9B13E0236F0'
-             Language='1033' Codepage='1252' Version='1.0.0' Manufacturer='Boblycat'
+    <Product Name='Blimp' Id='1C070E30-E5A2-11DD-8C65-002215FAE4A2'
+             Language='1033' Codepage='1252' Version='1.1.0' Manufacturer='Boblycat'
              UpgradeCode='733D3C3F-C40F-4ADD-AF62-8CD66DBE93AD'>
         <Package Keywords='Installer'
                  Description="Blimp Photo Editor Installer"
@@ -93,8 +93,8 @@
 
         <!-- Upgrade information below -->
         <Upgrade Id='733D3C3F-C40F-4ADD-AF62-8CD66DBE93AD'>
-            <UpgradeVersion Property='NEWVERSION' OnlyDetect='yes' Minimum='1.0.1' />
-            <UpgradeVersion Property='OLDVERSION' Maximum='0.999.999' />
+            <UpgradeVersion Property='NEWVERSION' OnlyDetect='yes' Minimum='1.1.1' />
+            <UpgradeVersion Property='OLDVERSION' Maximum='1.0.999' />
         </Upgrade>
 
         <!-- Refuse to install over a newer version -->
