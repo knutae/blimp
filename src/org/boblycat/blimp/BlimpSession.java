@@ -20,16 +20,46 @@ package org.boblycat.blimp;
 
 import java.beans.PropertyDescriptor;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.boblycat.blimp.exif.ExifBlobReader;
 import org.boblycat.blimp.exif.ExifTable;
+import org.boblycat.blimp.exif.ReaderError;
 import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.DimensionAdjustmentLayer;
 import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.Layer;
 import org.boblycat.blimp.layers.ViewResizeLayer;
+
+class CachedExifData {
+    private String filePath;
+    private ExifTable data;
+    
+    ExifTable exifDataForFile(String filePath) throws IOException {
+        if (filePath == null)
+            return null;
+        if (!filePath.equals(this.filePath)) {
+            try {
+                ExifBlobReader reader = new ExifBlobReader(new File(filePath));
+                ExifTable table = reader.extractIFDTable();
+                data = BitmapUtil.copyInterestingExifData(table);
+                Util.log(Level.FINE, "Loaded Exif data from " + filePath);
+            }
+            catch (ReaderError e) {
+                Util.log(Level.FINE, "No Exif data loaded from " + filePath);
+            }
+            catch (FileNotFoundException e) {
+                Util.err("File not found while loading Exif data from " + filePath, e);
+            }
+            this.filePath = filePath;
+        }
+        return data;
+    }
+}
 
 public class BlimpSession extends InputLayer implements LayerChangeListener {
     public static enum PreviewQuality {
@@ -38,12 +68,10 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     }
 
     List<Layer> layerList;
-
     Bitmap currentBitmap;
-
-    ViewResizeLayer viewLayer = new ViewResizeLayer();
-
+    ViewResizeLayer viewLayer;
     PreviewQuality previewQuality;
+    CachedExifData exifData;
 
     private String projectFilePath;
 
@@ -66,6 +94,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         currentBitmap = null;
         viewLayer = new ViewResizeLayer();
         previewQuality = PreviewQuality.Accurate;
+        exifData = new CachedExifData();
     }
 
     private void reportLayerProgress(Layer layer, double progress) {
@@ -317,13 +346,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
      * @throws IOException if an unexpected I/O error occurs
      */
     public ExifTable getInterestingExifData() throws IOException {
-        InputLayer input = getInput();
-        if (input == null)
-            return null;
-        Bitmap bm = inputBitmap(input);
-        if (bm == null)
-            return null;
-        return BitmapUtil.copyInterestingExifData(bm.getExifTable());
+        return exifData.exifDataForFile(inputFilePath());
     }
 
     public InputLayer getInput() {
