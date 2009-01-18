@@ -1,5 +1,7 @@
 # Blimp SCons rules for java
 
+Import('dcraw')
+
 import os, sys, platform, glob
 
 env = Environment()
@@ -71,7 +73,7 @@ Alias('test', 'org.boblycat.blimp.tests.RunTests')
 
 swt_runner_env = runner_env.Clone()
 swt_runner_env.Append(JAVACLASSPATH = [swt_jar])
-swt_runner_env.Append(JVMARGS = ['-Xmx1024M'])
+swt_runner_env.Append(JVMARGS = ['-Xmx1024M', '-Dblimp.dcraw.path=' + str(dcraw[0])])
 if os.path.isdir('/usr/lib/jni'):
     swt_runner_env.Append(JVMARGS = ['-Djava.library.path=/usr/lib/jni'])
 swt_runner_env.RunClass('org.boblycat.blimp.gui.swt.MainWindow')
