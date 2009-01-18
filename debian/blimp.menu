@@ -1,3 +1,0 @@
-?package(blimp):needs="X11" section="Apps/Graphics"\
-  title="Blimp" command="/usr/bin/blimp"\
-  icon="/usr/share/blimp/icons/blimp.xpm"

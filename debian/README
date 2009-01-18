@@ -1,7 +1,0 @@
-The Debian Package blimp
-----------------------------
-
-Blimp is divided into two Debian packages: blimp-dcraw, which is
-platform specific, and blimp, which is not.
-
-Knut Arild Erstad <knutae@gmail.com>, Fri,  6 Apr 2007 17:58:57 +0200
