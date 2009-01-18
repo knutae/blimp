@@ -619,9 +619,9 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
      * @return a string representing a file path, or <code>null</code>
      */
     public String inputFilePath() {
-    	InputLayer input = getInput();
-    	if (input == null)
-    		return null;
+        InputLayer input = getInput();
+        if (input == null)
+            return null;
         BlimpBean.Property prop = input.findProperty("filePath");
         if (prop == null)
             return null;
@@ -632,7 +632,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             return (String) value;
         else {
             Util.err("a filePath property exists, but it is not a String.");
-        	return null;
+            return null;
         }
     }
 }

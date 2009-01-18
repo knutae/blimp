@@ -558,12 +558,12 @@ public class MainWindow {
 
     boolean tryEnsureInputFileExists(BlimpSession session)
     throws FileNotFoundException {
-    	String strPath = session.inputFilePath();
-    	if (strPath == null)
-    		return false;
-    	File filePath = new File(strPath);
-    	if (filePath.exists())
-    		return false;
+        String strPath = session.inputFilePath();
+        if (strPath == null)
+            return false;
+        File filePath = new File(strPath);
+        if (filePath.exists())
+            return false;
         // filePath is given, but does not exist
         String newPath = FileSearchView.showDialog(shell, filePath.getName());
         if (newPath == null)

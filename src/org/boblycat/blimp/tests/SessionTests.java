@@ -423,15 +423,15 @@ public class SessionTests {
     
     @Test
     public void testInputFilePath() {
-    	BlimpSession session = newSession();
-    	assertNull(session.inputFilePath());
+        BlimpSession session = newSession();
+        assertNull(session.inputFilePath());
 
-    	TestInput input = new TestInput();
-    	input.setFilePath(null);
-    	session.setInput(input);
-    	assertNull(session.inputFilePath());
-    	
-    	input.setFilePath("path 1");
-    	assertEquals("path 1", session.inputFilePath());
+        TestInput input = new TestInput();
+        input.setFilePath(null);
+        session.setInput(input);
+        assertNull(session.inputFilePath());
+        
+        input.setFilePath("path 1");
+        assertEquals("path 1", session.inputFilePath());
     }
 }
