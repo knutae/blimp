@@ -1,10 +1,8 @@
 # Blimp SCons rules for java
 
-Import('dcraw')
+Import('dcraw', 'BLIMP_VERSION')
 
 import os, sys, platform, glob
-
-BLIMP_VERSION = '1.1.0' # should match org/boblycat/blimp/Version.java
 
 env = Environment()
 env['JAVA'] = 'java'
