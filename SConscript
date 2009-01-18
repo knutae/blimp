@@ -102,17 +102,26 @@ def build_tar(target, source, env):
     tar.close()
     return None
 
+def is_versioned(filepath):
+    # Hackish, but fast, way to check if a file is in subversion
+    assert os.path.isfile(filepath)
+    dirname, fname = os.path.split(filepath)
+    svn_file = os.path.join(dirname, '.svn', 'text-base', fname + '.svn-base')
+    return os.path.isfile(svn_file)
+
 def modify_tar_sources(target, source, env):
     import re
     new_source = []
     re_excludedirs = re.compile('build|debian|.svn|swt.*win32')
-    re_excludefiles = re.compile('^[.]|~$')
+    re_excludefiles = re.compile('~$')
     for dirpath, dirnames, filenames in os.walk('.'):
         if re_excludedirs.search(dirpath):
             continue
         for fname in filenames:
             if not re_excludefiles.search(fname):
-                new_source.append(os.path.join(dirpath, fname))
+                fpath = os.path.join(dirpath, fname)
+                if is_versioned(fpath):
+                    new_source.append(fpath)
     return target, sorted(new_source)
 
 tar_builder = Builder(action = build_tar, suffix = 'tar.gz', emitter = modify_tar_sources)
