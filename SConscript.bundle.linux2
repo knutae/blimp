@@ -1,0 +1,37 @@
+# Install rules on linux
+
+Import('install_bin')
+
+import os
+
+def build_launcher(target, source, env):
+    java_path = '/usr/lib/jvm/java-6-openjdk/jre/bin/java'
+    file_contents = '''#!/bin/sh
+JAVA=java
+if [ -x "%(java_path)s" ]; then
+  JAVA="%(java_path)s"
+fi
+BLIMP_HOME=/usr/share/blimp
+DCRAW=/usr/bin/dcraw
+LIB=$BLIMP_HOME/lib
+XERCES_JAR=/usr/share/java/xercesImpl.jar
+SWT_JAR=/usr/share/java/swt.jar
+if [ -x /usr/share/java/swt-gtk-3.4.jar ]; then
+  SWT_JAR=/usr/share/java/swt-gtk-3.4.jar
+fi
+CLASSPATH=$LIB/blimp.jar:$LIB/jiu.jar:$XERCES_JAR:$SWT_JAR
+LIBRARY_PATH=/usr/lib/jni
+
+$JAVA -classpath $CLASSPATH -Dblimp.dcraw.path=$DCRAW -Djava.library.path=$LIBRARY_PATH -Xmx1024M org.boblycat.blimp.gui.swt.MainWindow $*
+''' % {'java_path': java_path}
+    assert len(target) == 1
+    filepath = str(target[0])
+    dirpath = os.path.dirname(filepath)
+    if not os.path.isdir(dirpath):
+        os.makedirs(dirpath)
+    open(filepath, 'w').write(file_contents)
+    return None
+
+env = Environment()
+env['BUILDERS']['BlimpLauncher'] = Builder(action = build_launcher)
+env.BlimpLauncher(install_bin + '/blimp', [])

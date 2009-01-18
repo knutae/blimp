@@ -6,8 +6,7 @@ INSTALLDIR = $(DESTDIR)$(BASEDIR)
 USR_BIN = $(DESTDIR)/usr/bin
 MAN_DIR = $(DESTDIR)/usr/share/man/man1
 ICONDIR = $(INSTALLDIR)/icons
-ANT = ant -lib ant-jars
-ANT_INSTALL = $(ANT) -Dinstall.home=$(INSTALLDIR) -Dblimp.home=$(BASEDIR) -Ddcraw.install.bin=$(USR_BIN) -Dinstall.man=$(MAN_DIR)
+SCONS = scons
 SOURCE_IGNORE = -I.svn -I*-stamp -I_* -Iswt*win32*
 
 # gcj-stuff
@@ -26,24 +25,21 @@ GCJ_OBJ = build/blimp.o build/swt.o
 default: all
 
 compile:
-	$(ANT) compile
+	$(SCONS)
 
 test:
-	$(ANT) tests
+	$(SCONS) test
 
 run:
-	$(ANT) run
+	$(SCONS) run
 
 tar-source:
-	$(ANT) tar-source
-
-install-dcraw:
-	$(ANT_INSTALL) install-dcraw
-	mkdir -p $(MAN_DIR)
-	gzip -c -9 tools/bundle-unix/blimp-dcraw.1 > $(MAN_DIR)/blimp-dcraw.1.gz
+	$(SCONS) tar
 
 install-blimp:
-	$(ANT_INSTALL) install-unix
+	$(SCONS) build/install
+	mkdir -p $(INSTALLDIR)
+	cp -a build/install/* $(INSTALLDIR)
 	mkdir -p $(MAN_DIR)
 	gzip -c -9 tools/bundle-unix/blimp.1 > $(MAN_DIR)/blimp.1.gz
 	mkdir -p $(USR_BIN)
@@ -53,10 +49,10 @@ install-blimp:
 	convert icons/blimp-logo-32.png $(ICONDIR)/blimp.xpm
 
 compile-dcraw:
-	$(ANT) dcraw
+	$(SCONS) dcraw
 
 compile-java:
-	$(ANT) compile-java
+	$(SCONS)
 
 build/blimp.o: $(JIU_SOURCES) $(BLIMP_SOURCES)
 	$(GCJ) $(INC_JARS) -O1 -c $^ -o $@
@@ -74,16 +70,10 @@ build/blimp-gcj: $(GCJ_OBJ)
 	$(GCJ) --main=org.boblycat.blimp.gui.swt.MainWindow -o $@ $^ $(SWT_LIB)
 	strip $@
 
-uninstall:
-	$(ANT_INSTALL) uninstall
-	rm -f $(USR_BIN)/blimp
-
 dpkg:
 	dpkg-buildpackage -rfakeroot $(SOURCE_IGNORE)
 
 clean:
-	$(ANT) clean
+	rm -rf build
 
-all:
-	$(ANT) all
-
+all: compile test
