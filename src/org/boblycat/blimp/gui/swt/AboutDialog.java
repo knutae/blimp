@@ -74,7 +74,7 @@ public class AboutDialog {
         Link linkText = new Link(dialog, SWT.NONE);
         linkText.setText(
                 "Version " + Version.versionString + "\n\n"
-                + "Copyright (C) 2007, 2008 Knut Arild Erstad\n"
+                + "Copyright (C) 2007, 2008, 2009 Knut Arild Erstad\n"
                 + "\n"
                 + "Blimp is <a href=\"http://www.gnu.org/philosophy/free-sw.html\">free software</a>"
                 + " distributed under the <a href=\"http://www.gnu.org/licenses/gpl-2.0.html\">GNU General Public License, version 2</a>.\n"
