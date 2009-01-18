@@ -52,7 +52,7 @@ compile-dcraw:
 	$(SCONS) dcraw
 
 compile-java:
-	$(SCONS)
+	$(SCONS) build/classes
 
 build/blimp.o: $(JIU_SOURCES) $(BLIMP_SOURCES)
 	$(GCJ) $(INC_JARS) -O1 -c $^ -o $@
