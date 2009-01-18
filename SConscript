@@ -4,6 +4,8 @@ Import('dcraw')
 
 import os, sys, platform, glob
 
+BLIMP_VERSION = '1.1.0' # should match org/boblycat/blimp/Version.java
+
 env = Environment()
 env['JAVA'] = 'java'
 env['JVMARGS'] = ''
@@ -115,7 +117,7 @@ def modify_tar_sources(target, source, env):
 
 tar_builder = Builder(action = build_tar, suffix = 'tar.gz', emitter = modify_tar_sources)
 env['BUILDERS']['SourceTar'] = tar_builder
-tar = env.SourceTar('build/blimp-source', TAR_PREFIX='blimp')
+tar = env.SourceTar('build/blimp-' + BLIMP_VERSION, TAR_PREFIX='blimp-' + BLIMP_VERSION)
 Alias('tar', tar)
 
 Default(class_dir)
