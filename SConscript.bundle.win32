@@ -6,6 +6,7 @@ import os
 
 jsmoothcmd = os.path.join(os.environ['PROGRAMFILES'], 'JSmooth 0.9.9-7', 'jsmoothcmd.exe')
 
+Install(install_base, 'COPYING')
 InstallAs(install_bin + '/blimp-dcraw.exe', dcraw)
 
 # For now, only bundle 32-bit version of SWT

@@ -7,7 +7,6 @@ install_base = '#build/install'
 install_bin = install_base + '/bin'
 install_lib = install_base + '/lib'
 
-Install(install_base, 'COPYING')
 Install(install_lib, [blimp_jar, jiu_jar])
 
 platform_script = 'SConscript.bundle.' + sys.platform
