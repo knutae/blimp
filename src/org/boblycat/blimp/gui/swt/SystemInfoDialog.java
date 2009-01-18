@@ -41,7 +41,7 @@ public class SystemInfoDialog {
     
     public static void show(Shell parentShell, List<Image> appImages) {
         final Shell dialog = new Shell(parentShell,
-                SWT.APPLICATION_MODAL | SWT.CLOSE);
+                SWT.APPLICATION_MODAL | SWT.CLOSE | SWT.RESIZE);
         SwtUtil.setImages(dialog, appImages);
         dialog.setText("Blimp System Information");
         GridLayout layout = new GridLayout();
