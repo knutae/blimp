@@ -83,8 +83,39 @@ def tar_exclude():
    patterns = ['build', '.svn', '*~', 'swt*win32*', 'debian', '.classpath', '.scons*']
    return ' '.join(['--exclude='+pattern for pattern in patterns])
 
-tar = Command('build/blimp-source.tar.gz', [],
-    'tar cfvz $TARGET ' + tar_exclude() + ' .')
+def build_tar(target, source, env):
+    import tarfile
+    assert len(target) == 1
+    if env.has_key('TAR_PREFIX'):
+        prefix = env['TAR_PREFIX']
+    else:
+        prefix = None
+    tar = tarfile.open(str(target[0]), mode='w:gz')
+    for src in source:
+        path = str(src)
+        if prefix:
+            tar.add(path, os.path.join(prefix, path))
+        else:
+            tar.add(path)
+    tar.close()
+    return None
+
+def modify_tar_sources(target, source, env):
+    import re
+    new_source = []
+    re_excludedirs = re.compile('build|debian|.svn|swt.*win32')
+    re_excludefiles = re.compile('^[.]|~$')
+    for dirpath, dirnames, filenames in os.walk('.'):
+        if re_excludedirs.search(dirpath):
+            continue
+        for fname in filenames:
+            if not re_excludefiles.search(fname):
+                new_source.append(os.path.join(dirpath, fname))
+    return target, sorted(new_source)
+
+tar_builder = Builder(action = build_tar, suffix = 'tar.gz', emitter = modify_tar_sources)
+env['BUILDERS']['SourceTar'] = tar_builder
+tar = env.SourceTar('build/blimp-source', TAR_PREFIX='blimp')
 Alias('tar', tar)
 
 Default(class_dir)
