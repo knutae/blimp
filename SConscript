@@ -79,7 +79,15 @@ if os.path.isdir('/usr/lib/jni'):
 swt_runner_env.RunClass('org.boblycat.blimp.gui.swt.MainWindow')
 Alias('run', 'org.boblycat.blimp.gui.swt.MainWindow')
 
-Default(class_dir, 'test')
+def tar_exclude():
+   patterns = ['build', '.svn', '*~', 'swt*win32*', 'debian', '.classpath', '.scons*']
+   return ' '.join(['--exclude='+pattern for pattern in patterns])
+
+tar = Command('build/blimp-source.tar.gz', [],
+    'tar cfvz $TARGET ' + tar_exclude() + ' .')
+Alias('tar', tar)
+
+Default(class_dir)
 
 # Export variables for bundling
 install_jars = [ blimp_jar, jiu_jar, xerces_jar, swt_jar ]
