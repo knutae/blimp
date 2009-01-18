@@ -34,11 +34,11 @@ public class TestInput extends InputLayer {
         height = 100;
     }
 
-    public void setPath(String newPath) {
+    public void setFilePath(String newPath) {
         path = newPath;
     }
 
-    public String getPath() {
+    public String getFilePath() {
         return path;
     }
 

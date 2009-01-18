@@ -312,7 +312,7 @@ public class SerializationTests {
     public void testSessionToXml() throws Exception {
         BlimpSession session = new BlimpSession();
         TestInput input = new TestInput();
-        input.setPath("dummy/path");
+        input.setFilePath("dummy/path");
         session.setInput(input);
         TestLayer layer = new TestLayer();
         layer.setIntValue(54);
@@ -333,7 +333,7 @@ public class SerializationTests {
         assertEquals("layer", child.getNodeName());
         assertEquals("org.boblycat.blimp.tests.TestInput", child
                 .getAttribute("class"));
-        assertHasPropertyChild(child, "path", "dummy/path");
+        assertHasPropertyChild(child, "filePath", "dummy/path");
 
         child = (Element) child.getNextSibling();
         assertNotNull(child);
@@ -348,7 +348,7 @@ public class SerializationTests {
         String xml =
             "<session>" +
             "  <layer class=\"org.boblycat.blimp.tests.TestInput\">" +
-            "    <property name=\"path\">some.path</property>" +
+            "    <property name=\"filePath\">some.path</property>" +
             "  </layer>" +
             "  <layer class=\"org.boblycat.blimp.tests.TestLayer\">" +
             "    <property name=\"stringValue\">Some string value</property>" +
@@ -360,7 +360,7 @@ public class SerializationTests {
 
         TestInput input = (TestInput) session.getLayer(0);
         assertNotNull(input);
-        assertEquals("some.path", input.getPath());
+        assertEquals("some.path", input.getFilePath());
         assertTrue(input == session.getInput());
 
         TestLayer layer = (TestLayer) session.getLayer(1);
@@ -372,7 +372,7 @@ public class SerializationTests {
     public void testCloneSession() {
         BlimpSession session = new BlimpSession();
         TestInput input = new TestInput();
-        input.setPath("a path");
+        input.setFilePath("a path");
         session.setInput(input);
         TestLayer layer = new TestLayer();
         layer.setDoubleValue(3.45);
@@ -386,7 +386,7 @@ public class SerializationTests {
         TestInput inputClone = (TestInput) sessionClone.getLayer(0);
         assertNotNull(inputClone);
         assertTrue(input != inputClone);
-        assertEquals("a path", inputClone.getPath());
+        assertEquals("a path", inputClone.getFilePath());
 
         TestLayer layerClone = (TestLayer) sessionClone.getLayer(1);
         assertNotNull(layerClone);
@@ -547,7 +547,7 @@ public class SerializationTests {
         String xml =
             "<session>" +
             "  <layer class=\"org.boblycat.blimp.tests.TestInput\">" +
-            "    <property name=\"path\">initial path</property>" +
+            "    <property name=\"filePath\">initial path</property>" +
             "  </layer>" +
             "</session>";
         FileWriter out = new FileWriter(temp);
@@ -560,7 +560,7 @@ public class SerializationTests {
         assertFalse(session.isDirty());
         TestInput input = (TestInput) session.getInput();
         assertNotNull(input);
-        assertEquals("initial path", input.getPath());
+        assertEquals("initial path", input.getFilePath());
 
         eventCount = 0;
         session.addChangeListener(new LayerChangeListener () {
@@ -569,14 +569,14 @@ public class SerializationTests {
             }
         });
 
-        input.setPath("new path");
+        input.setFilePath("new path");
         input.invalidate();
         assertEquals(1, eventCount);
         assertNotNull(session.getHistory());
         assertTrue(session.getHistory().canUndo());
 
         session.undo();
-        assertEquals("initial path", input.getPath());
+        assertEquals("initial path", input.getFilePath());
         assertFalse(session.getHistory().canUndo());
     }
 
@@ -637,7 +637,7 @@ public class SerializationTests {
         String xml =
             "<session>" +
             "  <layer class=\"org.boblycat.blimp.tests.TestInput\">" +
-            "    <property name=\"path\">initial path</property>" +
+            "    <property name=\"filePath\">initial path</property>" +
             "  </layer>" +
             "</session>";
         FileWriter out = new FileWriter(temp);
@@ -651,14 +651,14 @@ public class SerializationTests {
         // change a value and record history
         TestInput input = (TestInput) session.getInput();
         input.invalidate();
-        assertEquals("initial path", input.getPath());
-        input.setPath("new path");
+        assertEquals("initial path", input.getFilePath());
+        input.setFilePath("new path");
         input.invalidate();
         assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
 
         // undo
         session.undo();
-        assertEquals("initial path", input.getPath());
+        assertEquals("initial path", input.getFilePath());
         assertEquals(temp.getAbsolutePath(), session.getProjectFilePath());
     }
     
@@ -711,7 +711,7 @@ public class SerializationTests {
         session1.setName("session1");
         TestInput input = new TestInput();
         input.setName("input1");
-        input.setPath("input path");
+        input.setFilePath("input path");
         session1.setInput(input);
         addTestLayer(session1, "layer1", "value1");
         addTestLayer(session1, "layer2", "value2");

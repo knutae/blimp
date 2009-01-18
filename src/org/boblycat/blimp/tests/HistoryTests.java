@@ -32,7 +32,7 @@ public class HistoryTests {
         session.setInput(input);
         SessionHistory history = new SessionHistory(session);
         assertFalse(history.canUndo());
-        input.setPath("new value");
+        input.setFilePath("new value");
         assertFalse(history.canUndo());
         history.record();
         assertTrue(history.canUndo());
@@ -47,7 +47,7 @@ public class HistoryTests {
         session.setInput(input);
         SessionHistory history = new SessionHistory(session);
         assertFalse(history.canRedo());
-        input.setPath("new value");
+        input.setFilePath("new value");
         history.record();
         assertFalse(history.canRedo());
         history.undo();
@@ -60,44 +60,44 @@ public class HistoryTests {
     public void testUndo() {
         BlimpSession session = new BlimpSession();
         TestInput input = new TestInput();
-        input.setPath("initial value");
+        input.setFilePath("initial value");
         session.setInput(input);
         SessionHistory history = new SessionHistory(session);
-        input.setPath("new value 1");
+        input.setFilePath("new value 1");
         history.record();
-        input.setPath("new value 2");
+        input.setFilePath("new value 2");
         history.record();
 
-        assertEquals("new value 2", input.getPath());
+        assertEquals("new value 2", input.getFilePath());
         history.undo();
-        assertEquals("new value 1", input.getPath());
+        assertEquals("new value 1", input.getFilePath());
         history.undo();
-        assertEquals("initial value", input.getPath());
+        assertEquals("initial value", input.getFilePath());
         history.undo();
-        assertEquals("initial value", input.getPath());
+        assertEquals("initial value", input.getFilePath());
     }
 
     @Test
     public void testRedo() {
         BlimpSession session = new BlimpSession();
         TestInput input = new TestInput();
-        input.setPath("initial value");
+        input.setFilePath("initial value");
         session.setInput(input);
         SessionHistory history = new SessionHistory(session);
-        input.setPath("new value 1");
+        input.setFilePath("new value 1");
         history.record();
-        input.setPath("new value 2");
+        input.setFilePath("new value 2");
         history.record();
         history.undo();
         history.undo();
 
-        assertEquals("initial value", input.getPath());
+        assertEquals("initial value", input.getFilePath());
         history.redo();
-        assertEquals("new value 1", input.getPath());
+        assertEquals("new value 1", input.getFilePath());
         history.redo();
-        assertEquals("new value 2", input.getPath());
+        assertEquals("new value 2", input.getFilePath());
         history.redo();
-        assertEquals("new value 2", input.getPath());
+        assertEquals("new value 2", input.getFilePath());
     }
 
     @Test
@@ -124,12 +124,12 @@ public class HistoryTests {
     public void testRecordNoChanges() {
         BlimpSession session = new BlimpSession();
         TestInput input = new TestInput();
-        input.setPath("initial value");
+        input.setFilePath("initial value");
         session.setInput(input);
         SessionHistory history = new SessionHistory(session);
 
         assertEquals(1, history.size());
-        input.setPath("new value");
+        input.setFilePath("new value");
         history.record();
         assertEquals(2, history.size());
         history.record(); // should be rejected
@@ -141,54 +141,54 @@ public class HistoryTests {
         HistoryBlimpSession session = new HistoryBlimpSession();
         TestInput input = new TestInput();
         session.setInput(input);
-        input.setPath("initial path");
+        input.setFilePath("initial path");
         input.invalidate();
-        input.setPath("new path");
+        input.setFilePath("new path");
         input.invalidate();
 
-        assertEquals("new path", input.getPath());
+        assertEquals("new path", input.getFilePath());
         session.undo();
-        assertEquals("initial path", input.getPath());
+        assertEquals("initial path", input.getFilePath());
         session.redo();
-        assertEquals("new path", input.getPath());
+        assertEquals("new path", input.getFilePath());
 
         input.invalidate();
         session.undo();
-        assertEquals("initial path", input.getPath());
+        assertEquals("initial path", input.getFilePath());
     }
 
     @Test
     public void testDirtyFlag() {
         BlimpSession session = new BlimpSession();
         TestInput input = new TestInput();
-        input.setPath("initial path");
+        input.setFilePath("initial path");
         session.setInput(input);
         SessionHistory history = new SessionHistory(session);
         assertFalse(history.isDirty());
 
-        input.setPath("new path");
+        input.setFilePath("new path");
         history.record();
         assertTrue(history.isDirty());
 
         history.undo();
         assertFalse(history.isDirty());
 
-        input.setPath("new path 2");
+        input.setFilePath("new path 2");
         history.record();
         assertTrue(history.isDirty());
 
-        input.setPath("initial path");
+        input.setFilePath("initial path");
         history.record();
         assertFalse(history.isDirty());
 
-        input.setPath("save value");
+        input.setFilePath("save value");
         history.record();
         assertTrue(history.isDirty());
 
         history.recordSaved(false);
         assertFalse(history.isDirty());
 
-        input.setPath("another value");
+        input.setFilePath("another value");
         history.record();
         assertTrue(history.isDirty());
 

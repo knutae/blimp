@@ -234,7 +234,7 @@ public class SessionTests {
         BlimpSession session1 = newSession();
         BlimpSession session2 = newSession();
         TestInput input1 = new TestInput();
-        input1.setPath("input1 path");
+        input1.setFilePath("input1 path");
         input1.setName("input1 name");
         session1.setInput(input1);
         TestLayer layer1 = new TestLayer();
@@ -247,7 +247,7 @@ public class SessionTests {
         TestInput input2 = (TestInput) session2.getInput();
         assertNotNull(input2);
         assertTrue(input1 != input2); // objects must be different
-        assertEquals("input1 path", input2.getPath());
+        assertEquals("input1 path", input2.getFilePath());
         assertEquals("input1 name", input2.getName());
         TestLayer layer2 = (TestLayer) session2.getLayer(1);
         assertNotNull(layer2);
@@ -256,11 +256,11 @@ public class SessionTests {
         assertEquals("layer1 name", layer2.getName());
         assertEquals("/path/to/session1.blimp", session2.getProjectFilePath());
 
-        input2.setPath("input2 path");
+        input2.setFilePath("input2 path");
         layer2.setStringValue("layer2 value");
         session1.synchronizeSessionData(session2, false);
         assertTrue(session1.getInput() == input1); // layer must be re-used
-        assertEquals("input2 path", input1.getPath());
+        assertEquals("input2 path", input1.getFilePath());
         assertTrue(layer1 == session1.getLayer(1));
         assertEquals("layer2 value", layer1.getStringValue());
     }
