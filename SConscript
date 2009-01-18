@@ -1,12 +1,22 @@
 # Blimp SCons rules for java
 
-import os, sys, glob
+import os, sys, platform, glob
 
 env = Environment()
+env['JAVA'] = 'java'
+env['JVMARGS'] = ''
 if os.environ.has_key('JAVA_HOME'):
     java_home = os.environ['JAVA_HOME']
     print '--- Using JAVA_HOME:', java_home
     env['ENV']['PATH'] = os.path.join(java_home, 'bin')
+
+def copy_os_env(key):
+    if os.environ.has_key(key):
+        env['ENV'][key] = os.environ[key]
+
+# Needed for "scons run" to work on unix systems
+copy_os_env('DISPLAY')
+copy_os_env('XAUTHORITY')
 
 class_dir = 'build/classes'
 
@@ -22,9 +32,18 @@ swt_jar = '/usr/lib/java/swt.jar'
 junit_jar = 'junit4.1/junit-4.1.jar'
 blimp_jar = env.Jar('build/blimp.jar', class_dir, JARCHDIR = class_dir)
 
+def first_existing(*paths):
+    for path in paths:
+        if os.path.isfile(path):
+            return path
+    return paths[-1]
+
 if sys.platform == 'win32':
     # TODO: detect 32/64-bit java VM (or support both somehow)
     swt_jar = 'swt-3.4-win32_64/swt.jar'
+else:
+    # Search for a usable swt jar (a bit ugly)
+    swt_jar = first_existing('/usr/share/java/swt-gtk-3.4.jar', '/usr/share/java/swt.jar', swt_jar)
 
 env.Append(JAVACLASSPATH = [ jiu_jar, swt_jar, junit_jar ])
 env.Java(class_dir, 'src', JAVAVERSION='1.6')
@@ -37,15 +56,8 @@ def emit_java_runner(target, source, env):
     # Quirky hack: return the source as the target and discard the old target
     return source, []
 
-def generate_java_runner(source, target, env, for_signature):
-    assert len(target) == 1
-    mainclass = str(target[0])
-    classpath = os.pathsep.join(env['JAVACLASSPATH'])
-    cmd = 'java -classpath ' + classpath + ' ' + mainclass
-    return cmd
-
 java_runner = Builder(
-    generator = generate_java_runner,
+    action = '$JAVA $JVMARGS $_JAVACLASSPATH $TARGET',
     emitter = emit_java_runner)
 
 runner_env = env.Clone()
@@ -59,6 +71,9 @@ Alias('test', 'org.boblycat.blimp.tests.RunTests')
 
 swt_runner_env = runner_env.Clone()
 swt_runner_env.Append(JAVACLASSPATH = [swt_jar])
+swt_runner_env.Append(JVMARGS = ['-Xmx1024M'])
+if os.path.isdir('/usr/lib/jni'):
+    swt_runner_env.Append(JVMARGS = ['-Djava.library.path=/usr/lib/jni'])
 swt_runner_env.RunClass('org.boblycat.blimp.gui.swt.MainWindow')
 Alias('run', 'org.boblycat.blimp.gui.swt.MainWindow')
 
