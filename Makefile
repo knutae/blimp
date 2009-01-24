@@ -8,6 +8,7 @@ MAN_DIR = $(DESTDIR)/usr/share/man/man1
 ICONDIR = $(INSTALLDIR)/icons
 SCONS = scons
 SOURCE_IGNORE = -I.svn -I*-stamp -I_* -Iswt*win32*
+DIFF_IGNORE = -i.svn
 
 # gcj-stuff
 GCJ = gcj-4.2
@@ -71,7 +72,7 @@ build/blimp-gcj: $(GCJ_OBJ)
 	strip $@
 
 dpkg:
-	dpkg-buildpackage -rfakeroot $(SOURCE_IGNORE)
+	dpkg-buildpackage -rfakeroot $(SOURCE_IGNORE) $(DIFF_IGNORE)
 
 clean:
 	rm -rf build
