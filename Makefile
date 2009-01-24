@@ -75,5 +75,6 @@ dpkg:
 
 clean:
 	rm -rf build
+	rm -f .sconsign.dblite
 
 all: compile test
