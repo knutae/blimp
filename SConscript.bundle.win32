@@ -1,6 +1,6 @@
 # Blimp SCons rules for bundling on windows
 
-Import('dcraw', 'install_base', 'install_bin', 'install_lib', 'xerces_jar', 'BLIMP_VERSION')
+Import('dcraw', 'install_base', 'install_bin', 'install_lib', 'xerces_jar', 'jiu_jar', 'BLIMP_VERSION')
 
 import os
 
@@ -10,7 +10,7 @@ InstallAs(install_bin + '/blimp-dcraw.exe', dcraw)
 
 # For now, only bundle 32-bit version of SWT
 swt_jar = 'swt-3.4-win32/swt.jar'
-Install(install_lib, [xerces_jar, swt_jar])
+Install(install_lib, [jiu_jar, xerces_jar, swt_jar])
 
 Install(install_base, [
     'tools/bundle-windows/blimp.jsmooth',

@@ -14,12 +14,13 @@ fi
 BLIMP_HOME=/usr/share/blimp
 DCRAW=/usr/bin/dcraw
 LIB=$BLIMP_HOME/lib
+JIU_JAR=/usr/share/java/net.sourceforge.jiu-0.14.2.jar
 XERCES_JAR=/usr/share/java/xercesImpl.jar
 SWT_JAR=/usr/share/java/swt.jar
 if [ -x /usr/share/java/swt-gtk-3.4.jar ]; then
   SWT_JAR=/usr/share/java/swt-gtk-3.4.jar
 fi
-CLASSPATH=$LIB/blimp.jar:$LIB/jiu.jar:$XERCES_JAR:$SWT_JAR
+CLASSPATH=$LIB/blimp.jar:$JIU_JAR:$XERCES_JAR:$SWT_JAR
 LIBRARY_PATH=/usr/lib/jni
 
 $JAVA -classpath $CLASSPATH -Dblimp.dcraw.path=$DCRAW -Djava.library.path=$LIBRARY_PATH -Xmx1024M org.boblycat.blimp.gui.swt.MainWindow $*
