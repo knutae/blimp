@@ -1,13 +1,13 @@
 # Blimp SCons rules for bundling
 import os, sys
 
-Import('blimp_jar', 'jiu_jar')
+Import('blimp_jar')
 
 install_base = '#build/install'
 install_bin = install_base + '/bin'
 install_lib = install_base + '/lib'
 
-Install(install_lib, [blimp_jar, jiu_jar])
+Install(install_lib, [blimp_jar])
 
 platform_script = 'SConscript.bundle.' + sys.platform
 if os.path.isfile(platform_script):
