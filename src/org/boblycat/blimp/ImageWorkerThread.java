@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.boblycat.blimp.BlimpSession.PreviewQuality;
+
 /**
  * A worker thread for doing image (layer) processing.
  * Useful for GUI applications.
@@ -36,47 +38,172 @@ public abstract class ImageWorkerThread extends Thread {
         void handleError(File filename, String errorMessage);
     }
 
-    enum RequestType {
-        GENERATE_BITMAP,
-        GENERATE_HISTOGRAMS,
-        GENERATE_SIZE,
-        QUERY_EXIF_DATA,
-        ZOOM_IN,
-        ZOOM_OUT,
-        EXPORT_BITMAP,
-        QUIT,
-    }
-
-    class Request {
+    protected abstract class Request {
         Object owner;
-        RequestType type;
         Runnable runnable;
         BlimpSession sessionCopy;
-        String layerName;
-        HistogramGeneratedTask histogramTask;
-        BitmapSizeGeneratedTask sizeTask;
-        ExifQueryTask exifTask;
-        int viewWidth;
-        int viewHeight;
-        BlimpSession.PreviewQuality previewQuality;
-        File exportFile;
-        double exportQuality;
-        FileExportTask exportTask;
 
-        Request(Object owner, RequestType type) {
+        Request(Object owner, BlimpSession session, Runnable runnable) {
             this.owner = owner;
-            this.type = type;
-        }
-
-        Request(Object owner, RequestType type, BlimpSession session) {
-            this(owner, type);
-            this.sessionCopy = BlimpSession.createCopy(session);
-        }
-
-        Request(Object owner, RequestType type, BlimpSession session,
-                Runnable runnable) {
-            this(owner, type, session);
             this.runnable = runnable;
+            if (session != null)
+                this.sessionCopy = BlimpSession.createCopy(session);
+        }
+        
+        protected abstract void execute() throws IOException;
+    }
+    
+    private class BitmapRequest extends Request {
+        private int viewWidth;
+        private int viewHeight;
+        private PreviewQuality previewQuality;
+        
+        BitmapRequest(Object owner, BlimpSession session, Runnable runnable,
+                int viewWidth, int viewHeight, PreviewQuality previewQuality) {
+            super(owner, session, runnable);
+            this.viewWidth = viewWidth;
+            this.viewHeight = viewHeight;
+            this.previewQuality = previewQuality;
+        }
+        
+        protected void execute() throws IOException {
+            assert(runnable != null);
+            // Generate the bitmap on this thread.  It should not be transferred
+            // to other threads.
+            Bitmap bitmap;
+            Debug.print(this, "generating bitmap");
+            if (viewWidth > 0 && viewHeight > 0)
+                bitmap = session.getSizedBitmap(viewWidth, viewHeight, previewQuality);
+            else
+                bitmap = session.getBitmap();
+            Debug.print(this, "finished generating bitmap");
+            bitmapGenerated(runnable, bitmap);
+        }
+    }
+    
+    private class HistogramRequest extends Request {
+        private HistogramGeneratedTask histogramTask;
+        private String layerName;
+        
+        HistogramRequest(Object owner, BlimpSession session,
+                HistogramGeneratedTask task, String layerName) {
+            super(owner, session, task);
+            this.histogramTask = task;
+            this.layerName = layerName;
+        }
+        
+        protected void execute() throws IOException {
+            assert(histogramTask != null && layerName != null);
+            Debug.print(this, "generating histogram for layer " + layerName);
+            RGBHistograms histograms = session.getHistogramsBeforeLayer(layerName, true);
+            Debug.print(this, "finished generating histogram");
+            // Note: the following should work without synchronization problems,
+            // because the histogram task is only used by one thread at a time.
+            histogramTask.setHistograms(histograms);
+            asyncExec(histogramTask);
+        }
+    }
+    
+    private class SizeRequest extends Request {
+        private BitmapSizeGeneratedTask sizeTask;
+        private String layerName;
+        
+        SizeRequest(Object owner, BlimpSession session,
+                BitmapSizeGeneratedTask task, String layerName) {
+            super(owner, session, task);
+            this.sizeTask = task;
+            this.layerName = layerName;
+        }
+        
+        protected void execute() throws IOException {
+            assert(sizeTask != null && layerName != null);
+            Debug.print(this, "generating size for layer " + layerName);
+            BitmapSize size = session.getBitmapSizeBeforeLayer(layerName);
+            Debug.print(this, "finished generating size");
+            if (size == null)
+                Util.err("Failed to get size for layer " + layerName);
+            sizeTask.setSize(size);
+            asyncExec(sizeTask);
+        }
+    }
+
+    private class ZoomInRequest extends Request {
+        ZoomInRequest(Object owner, BlimpSession session, Runnable runnable) {
+            super(owner, session, runnable);
+        }
+        
+        protected void execute() throws IOException {
+            session.zoomIn();
+            bitmapGenerated(runnable, session.getBitmap());
+        }
+    }
+
+    private class ZoomOutRequest extends Request {
+        ZoomOutRequest(Object owner, BlimpSession session, Runnable runnable) {
+            super(owner, session, runnable);
+        }
+        
+        protected void execute() throws IOException {
+            session.zoomOut();
+            bitmapGenerated(runnable, session.getBitmap());
+        }
+    }
+    
+    private class ExportBitmapRequest extends Request {
+        private File file;
+        private double exportQuality;
+        private FileExportTask exportTask;
+        
+        ExportBitmapRequest(Object owner, BlimpSession session,
+                FileExportTask task, File file, double quality) {
+            // runnable can be null because IOException is handled internally
+            super(owner, session, null);
+            this.file = file;
+            this.exportQuality = quality;
+            this.exportTask = task;
+        }
+
+        protected void execute() throws IOException {
+            assert(file != null);
+            assert(exportTask != null);
+            try {
+                Debug.print(this, "exporting bitmap to " + file);
+                Bitmap bitmap = session.getFullBitmap();
+                Debug.print(this, "finished generating full bitmap for export");
+                String ext = Util.getFileExtension(file);
+                BitmapUtil.writeBitmap(bitmap, ext, file, exportQuality);
+                Debug.print(this, "finished writing bitmap");
+                asyncExec(new FileExportSuccess(exportTask, file));
+            }
+            catch (IOException e) {
+                // special handling of IOException during export
+                asyncExec(new FileExportFailure(exportTask, file, e.getMessage()));
+            }
+        }
+    }
+    
+    private class ExifRequest extends Request {
+        private ExifQueryTask exifTask;
+        
+        ExifRequest(Object owner, BlimpSession session, ExifQueryTask task) {
+            super(owner, session, task);
+            this.exifTask = task;
+        }
+        
+        protected void execute() throws IOException {
+            assert(exifTask != null);
+            exifTask.data = session.getInterestingExifData();
+            asyncExec(exifTask);
+        }
+    }
+    
+    private class QuitRequest extends Request {
+        QuitRequest(Object owner) {
+            super(owner, null, null);
+        }
+        
+        protected void execute() {
+            assert(false); // unreachable
         }
     }
 
@@ -105,7 +232,7 @@ public abstract class ImageWorkerThread extends Thread {
             task.handleError(filename, errorMessage);
         }
     }
-
+    
     BlockingQueue<Request> requestQueue;
 
     protected BlimpSession session;
@@ -141,17 +268,6 @@ public abstract class ImageWorkerThread extends Thread {
 
     protected abstract void handleError(Runnable runnable, String errorMessage);
 
-    private void handleExceptionError(Request req, String message) {
-        if (req.exportTask != null) {
-            assert(req.exportFile != null);
-            asyncExec(new FileExportFailure(req.exportTask, req.exportFile, message));
-        }
-        else {
-            assert(req.runnable != null);
-            handleError(req.runnable, message);
-        }
-    }
-
     private void processRequest(Request req) {
         assert(Thread.currentThread() == this);
 
@@ -163,82 +279,23 @@ public abstract class ImageWorkerThread extends Thread {
                 "Please close some open images to free more space.",
                 session.getName());
         try {
-            Bitmap bitmap = null;
-            switch (req.type) {
-            case GENERATE_BITMAP:
-                assert(req.runnable != null);
-                // Generate the bitmap on this thread.  It should not be transferred
-                // to other threads.
-                Debug.print(this, "generating bitmap");
-                if (req.viewWidth > 0 && req.viewHeight > 0)
-                    bitmap = session.getSizedBitmap(req.viewWidth, req.viewHeight,
-                            req.previewQuality);
-                else
-                    bitmap = session.getBitmap();
-                Debug.print(this, "finished generating bitmap");
-                bitmapGenerated(req.runnable, bitmap);
-                break;
-            case GENERATE_HISTOGRAMS:
-                assert(req.histogramTask != null && req.layerName != null);
-                Debug.print(this, "generating histogram for layer " + req.layerName);
-                RGBHistograms histograms = session.getHistogramsBeforeLayer(req.layerName, true);
-                Debug.print(this, "finished generating histogram");
-                // Note: the following should work without synchronization problems,
-                // because the histogram task is only used by one thread at a time.
-                req.histogramTask.setHistograms(histograms);
-                asyncExec(req.histogramTask);
-                break;
-            case GENERATE_SIZE:
-                assert(req.sizeTask != null && req.layerName != null);
-                Debug.print(this, "generating size for layer " + req.layerName);
-                BitmapSize size = session.getBitmapSizeBeforeLayer(req.layerName);
-                Debug.print(this, "finished generating size");
-                if (size == null)
-                    Util.err("Failed to get size for layer " + req.layerName);
-                req.sizeTask.setSize(size);
-                asyncExec(req.sizeTask);
-                break;
-            case ZOOM_IN:
-                session.zoomIn();
-                bitmapGenerated(req.runnable, session.getBitmap());
-                break;
-            case ZOOM_OUT:
-                session.zoomOut();
-                bitmapGenerated(req.runnable, session.getBitmap());
-                break;
-            case EXPORT_BITMAP:
-                assert(req.exportFile != null);
-                assert(req.exportTask != null);
-                Debug.print(this, "exporting bitmap to " + req.exportFile);
-                bitmap = session.getFullBitmap();
-                Debug.print(this, "finished generating full bitmap for export");
-                String ext = Util.getFileExtension(req.exportFile);
-                BitmapUtil.writeBitmap(bitmap, ext, req.exportFile, req.exportQuality);
-                Debug.print(this, "finished writing bitmap");
-                asyncExec(new FileExportSuccess(req.exportTask, req.exportFile));
-                break;
-            case QUERY_EXIF_DATA:
-                assert(req.exifTask != null);
-                req.exifTask.data = session.getInterestingExifData();
-                asyncExec(req.exifTask);
-                break;
-            }
+            req.execute();
         }
         catch (IOException e) {
-            handleExceptionError(req, e.getMessage());
+            handleError(req.runnable, e.getMessage());
         }
         catch (OutOfMemoryError e) {
             // While there is no guarantee that recovering from an out-of-memory
             // error will succeed, but the following attempt does no harm,
             // at least.
-            handleExceptionError(req, outOfMemoryMessage);
+            handleError(req.runnable, outOfMemoryMessage);
             cancelAllRequests();
             quit();
         }
         catch (Exception e) {
             // should never happen?
             e.printStackTrace(System.err);
-            handleExceptionError(req, "Unexpected error on image thread: "
+            handleError(req.runnable, "Unexpected error on image thread: "
                     + e.getMessage());
         }
     }
@@ -248,8 +305,8 @@ public abstract class ImageWorkerThread extends Thread {
             try {
                 Debug.print(this, "waiting for queue...");
                 Request req = requestQueue.take();
-                Debug.print(this, "got request from queue: " + req.type.toString());
-                if (req.type == RequestType.QUIT)
+                Debug.print(this, "got request from queue: " + req.getClass().getSimpleName());
+                if (req instanceof QuitRequest)
                     break;
                 processRequest(req);
             }
@@ -288,7 +345,7 @@ public abstract class ImageWorkerThread extends Thread {
     }
 
     public void quit() {
-        putRequest(new Request(this, RequestType.QUIT));
+        putRequest(new QuitRequest(this));
     }
 
     protected void putRequest(Request req) {
@@ -306,53 +363,34 @@ public abstract class ImageWorkerThread extends Thread {
             Runnable runnable, int width, int height,
             BlimpSession.PreviewQuality quality) {
         // the following can happen on any thread
-        Request req = new Request(owner, RequestType.GENERATE_BITMAP, session);
-        req.runnable = runnable;
-        req.viewWidth = width;
-        req.viewHeight = height;
-        req.previewQuality = quality;
-        putRequest(req);
+        putRequest(new BitmapRequest(owner, session, runnable, width, height, quality));
     }
 
     public void asyncGenerateHistogram(Object owner, BlimpSession session,
             String layerName, HistogramGeneratedTask task) {
-        Request req = new Request(owner, RequestType.GENERATE_HISTOGRAMS, session);
-        req.histogramTask = task;
-        req.layerName = layerName;
-        putRequest(req);
+        putRequest(new HistogramRequest(owner, session, task, layerName));
     }
 
     public void asyncGenerateBitmapSize(Object owner, BlimpSession session,
             String layerName, BitmapSizeGeneratedTask task) {
-        Request req = new Request(owner, RequestType.GENERATE_SIZE, session);
-        req.sizeTask = task;
-        req.layerName = layerName;
-        putRequest(req);
+        putRequest(new SizeRequest(owner, session, task, layerName));
     }
 
     public void asyncExportBitmap(Object owner, BlimpSession session,
             File filePath, double quality, FileExportTask task) {
-        Request req = new Request(owner, RequestType.EXPORT_BITMAP, session);
-        req.exportTask = task;
-        req.exportFile = filePath;
-        req.exportQuality = quality;
-        putRequest(req);
+        putRequest(new ExportBitmapRequest(owner, session, task, filePath, quality));
     }
 
     public void zoomIn(Object owner, BlimpSession session, Runnable runnable) {
-        Request req = new Request(owner, RequestType.ZOOM_IN, session, runnable);
-        putRequest(req);
+        putRequest(new ZoomInRequest(owner, session, runnable));
     }
 
     public void zoomOut(Object owner, BlimpSession session, Runnable runnable) {
-        Request req = new Request(owner, RequestType.ZOOM_OUT, session, runnable);
-        putRequest(req);
+        putRequest(new ZoomOutRequest(owner, session, runnable));
     }
 
     public void getExifData(Object owner, BlimpSession session,
             ExifQueryTask task) {
-        Request req = new Request(owner, RequestType.QUERY_EXIF_DATA, session);
-        req.exifTask = task;
-        putRequest(req);
+        putRequest(new ExifRequest(owner, session, task));
     }
 }
