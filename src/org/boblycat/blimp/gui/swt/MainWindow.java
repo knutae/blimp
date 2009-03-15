@@ -83,6 +83,7 @@ public class MainWindow {
     MenuItem menuFileSaveSession;
     MenuItem menuFileSaveSessionAs;
     MenuItem menuFileExportImage;
+    MenuItem menuFilePrint;
     MenuItem menuHelpAbout;
     MenuItem menuHelpSystemInfo;
     MenuItem menuUndo;
@@ -128,6 +129,9 @@ public class MainWindow {
             }
             else if (event.widget == menuFileExportImage) {
                 doMenuExportImage();
+            }
+            else if (event.widget == menuFilePrint) {
+                PrinterTest.run(shell);
             }
             else if (event.widget == menuHelpAbout) {
                 doMenuAbout();
@@ -250,6 +254,8 @@ public class MainWindow {
                 "Save the current project in a new file");
         menuFileExportImage = addMenuItem(fileMenu, "&Export Image",
                 "Export the current image");
+        menuFilePrint = addMenuItem(fileMenu, "&Print",
+                "Print the current image (NOT WORKING)");
         menuFileExit = addMenuItem(fileMenu, "E&xit", "Exit the program");
         fileMenu.addListener(SWT.Show, new Listener() {
             public void handleEvent(Event e) {
