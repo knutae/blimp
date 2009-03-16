@@ -153,6 +153,7 @@ public abstract class ImageWorkerThread extends Thread {
         private File file;
         private double exportQuality;
         private FileExportTask exportTask;
+        private String errorMessage;
         
         ExportBitmapRequest(Object owner, BlimpSession session,
                 FileExportTask task, File file, double quality) {
@@ -173,11 +174,20 @@ public abstract class ImageWorkerThread extends Thread {
                 String ext = Util.getFileExtension(file);
                 BitmapUtil.writeBitmap(bitmap, ext, file, exportQuality);
                 Debug.print(this, "finished writing bitmap");
-                asyncExec(new FileExportSuccess(exportTask, file));
+                asyncExec(new Runnable() {
+                    public void run() {
+                        exportTask.handleSuccess(file);
+                    }
+                });
             }
             catch (IOException e) {
                 // special handling of IOException during export
-                asyncExec(new FileExportFailure(exportTask, file, e.getMessage()));
+                errorMessage = e.getMessage();
+                asyncExec(new Runnable() {
+                    public void run() {
+                        exportTask.handleError(file, errorMessage);
+                    }
+                });
             }
         }
     }
@@ -207,32 +217,6 @@ public abstract class ImageWorkerThread extends Thread {
         }
     }
 
-    private class FileExportSuccess implements Runnable {
-        FileExportTask task;
-        File filename;
-        FileExportSuccess(FileExportTask task, File filename) {
-            this.task = task;
-            this.filename = filename;
-        }
-        public void run() {
-            task.handleSuccess(filename);
-        }
-    }
-
-    private class FileExportFailure implements Runnable {
-        FileExportTask task;
-        File filename;
-        String errorMessage;
-        FileExportFailure(FileExportTask task, File filename, String errorMessage) {
-            this.task = task;
-            this.filename = filename;
-            this.errorMessage = errorMessage;
-        }
-        public void run() {
-            task.handleError(filename, errorMessage);
-        }
-    }
-    
     BlockingQueue<Request> requestQueue;
 
     protected BlimpSession session;
