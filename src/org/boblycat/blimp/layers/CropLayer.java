@@ -18,14 +18,10 @@
  */
 package org.boblycat.blimp.layers;
 
-import net.sourceforge.jiu.data.PixelImage;
-import net.sourceforge.jiu.data.RGB48Image;
-import net.sourceforge.jiu.geometry.Crop;
-
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapSize;
 import org.boblycat.blimp.Util;
-import org.boblycat.blimp.jiuops.CroppedRGB48Image;
+import org.boblycat.blimp.jiuops.LazyCrop;
 
 /**
  * Crop layer.
@@ -50,13 +46,7 @@ public class CropLayer extends DimensionAdjustmentLayer {
         int x2 = source.getWidth() - cright - 1;
         int y1 = ctop;
         int y2 = source.getHeight() - cbottom - 1;
-        // TODO: this is temporary, should not hardcode image classes here
-        if (source.getImage() instanceof RGB48Image) {
-            PixelImage newImage = new CroppedRGB48Image((RGB48Image) source.getImage(),
-                    x1, y1, x2, y2);
-            return new Bitmap(newImage);
-        }
-        Crop crop = new Crop();
+        LazyCrop crop = new LazyCrop();
         try {
             crop.setBounds(x1, y1, x2, y2);
         }
