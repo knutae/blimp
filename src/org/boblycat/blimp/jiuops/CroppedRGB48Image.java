@@ -30,43 +30,35 @@ public class CroppedRGB48Image extends CroppedIntegerImage implements
         otherImage = other;
     }
 
-    @Override
     public void clear(short newValue) {
         readOnlyError("clear");
     }
 
-    @Override
     public void clear(int channelIndex, short newValue) {
         readOnlyError("clear");
     }
 
-    @Override
     public short getShortSample(int x, int y) {
         return otherImage.getShortSample(x1+x, y1+y);
     }
 
-    @Override
     public short getShortSample(int channel, int x, int y) {
         return otherImage.getShortSample(channel, x1+x, y1+y);
     }
 
-    @Override
     public void getShortSamples(int channelIndex, int x, int y, int w, int h,
             short[] dest, int destOffset) {
         otherImage.getShortSamples(channelIndex, x1+x, y1+y, w, h, dest, destOffset);
     }
 
-    @Override
     public void putShortSample(int x, int y, short newValue) {
         readOnlyError("put samples");
     }
 
-    @Override
     public void putShortSample(int channel, int x, int y, short newValue) {
         readOnlyError("put samples");
     }
 
-    @Override
     public void putShortSamples(int channel, int x, int y, int w, int h,
             short[] src, int srcOffset) {
         readOnlyError("put samples");

@@ -38,59 +38,48 @@ public abstract class WrappedIntegerImage implements IntegerImage {
         this.otherIntegerImage = other;
     }
 
-    @Override
     public void clear(int newValue) {
         readOnlyError("clear");
     }
 
-    @Override
     public void clear(int channelIndex, int newValue) {
         readOnlyError("clear");
     }
 
-    @Override
     public int getMaxSample(int channel) {
         return otherIntegerImage.getMaxSample(channel);
     }
 
-    @Override
     public void putSample(int x, int y, int newValue) {
         readOnlyError("put samples");
     }
 
-    @Override
     public void putSample(int channel, int x, int y, int newValue) {
         readOnlyError("put samples");
     }
 
-    @Override
     public void putSamples(int channel, int x, int y, int w, int h, int[] src,
             int srcOffset) {
         readOnlyError("put samples");
     }
 
-    @Override
     public long getAllocatedMemory() {
         // Is this useful for wrapped images?
         return 0;
     }
 
-    @Override
     public int getBitsPerPixel() {
         return otherIntegerImage.getBitsPerPixel();
     }
 
-    @Override
     public Class<?> getImageType() {
         return otherIntegerImage.getImageType();
     }
 
-    @Override
     public int getNumChannels() {
         return otherIntegerImage.getNumChannels();
     }
 
-    @Override
     public PixelImage createCompatibleImage(int width, int height) {
         return otherIntegerImage.createCompatibleImage(width, height);
     }

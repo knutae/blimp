@@ -53,34 +53,29 @@ public class CroppedIntegerImage extends WrappedIntegerImage {
             throw new IllegalArgumentException("height < y2");
     }
 
-    @Override
     public int getSample(int x, int y) {
         return otherIntegerImage.getSample(x1+x, y1+y);
     }
 
-    @Override
     public int getSample(int channel, int x, int y) {
         return otherIntegerImage.getSample(channel, x1+x, y1+y);
     }
 
-    @Override
     public void getSamples(int channelIndex, int x, int y, int w, int h,
             int[] dest, int destOffs) {
         otherIntegerImage.getSamples(channelIndex, x1+x, y1+y, w, h, dest, destOffs);
     }
 
-    @Override
     public PixelImage createCopy() {
         return new CroppedIntegerImage(otherIntegerImage, x1, y1, x2, y2);
     }
 
-    @Override
     public int getHeight() {
         return y2 - y1;
     }
 
-    @Override
     public int getWidth() {
         return x2 - x1;
     }
+
 }
