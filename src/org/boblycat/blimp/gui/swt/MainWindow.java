@@ -571,7 +571,7 @@ public class MainWindow {
         if (filePath.exists())
             return false;
         // filePath is given, but does not exist
-        String newPath = FileSearchView.showDialog(shell, filePath.getName());
+        String newPath = FileSearchView.showDialog(shell, Util.portableGetFileName(strPath));
         if (newPath == null)
             throw new FileNotFoundException(String.format(
                     "The input image %s was not found.",

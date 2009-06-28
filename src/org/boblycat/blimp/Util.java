@@ -80,8 +80,7 @@ public class Util {
     public static String getFileNameFromPath(String path) {
         if (path == null || path.length() == 0)
             return "<No file>";
-        File file = new File(path);
-        return file.getName();
+        return portableGetFileName(path);
     }
 
     public static Logger logger = Logger.getLogger("org.boblycat.blimp");
@@ -142,6 +141,25 @@ public class Util {
         if (dotpos < 0)
             return "";
         return filePath.substring(dotpos + 1).toLowerCase();
+    }
+    
+    /**
+     * Get the file name (last path element) from a file path.
+     * This is a kind of workaround for lacking functionality in {@link java.io.File}.
+     * 
+     * @param fullFilePath a file path, possibly created on a different platform.
+     * @return the last path element (file name).
+     */
+    public static String portableGetFileName(String fullFilePath) {
+        File file;
+        if (!isWindowsOS() && fullFilePath.contains("\\")) {
+            // hack for windows filenames on non-windows platforms 
+            file = new File(fullFilePath.replace('\\', File.separatorChar));
+        }
+        else {
+            file = new File(fullFilePath);
+        }
+        return file.getName();
     }
 
     private static boolean isRawFile(String path) {
