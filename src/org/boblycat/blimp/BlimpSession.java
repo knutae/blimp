@@ -98,8 +98,6 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     }
 
     private void reportLayerProgress(Layer layer, double progress) {
-        if (layer instanceof ViewResizeLayer)
-            return;
         triggerProgress(layer.getProgressDescription(), progress);
     }
 

@@ -81,7 +81,7 @@ public class ViewResizeLayer extends DimensionAdjustmentLayer {
     }
 
     public String getDescription() {
-        return "View Resize";
+        return "Zoom";
     }
 
     public double getZoomValue() {
