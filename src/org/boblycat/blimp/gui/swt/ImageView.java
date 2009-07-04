@@ -66,7 +66,7 @@ public class ImageView extends Composite {
 
     HistoryBlimpSession session;
     Runnable bitmapGeneratedTask;
-    int delayedRequestCount;
+    Runnable delayedBitmapRequest;
     ImageCanvas imageCanvas;
     CLabel zoomLabel;
     Combo qualityCombo;
@@ -174,6 +174,15 @@ public class ImageView extends Composite {
         imageCanvas.setLayoutData(data);
 
         setLayout(new FormLayout());
+        
+        delayedBitmapRequest = new Runnable() {
+            public void run() {
+                if (isDisposed())
+                    return;
+                cachedSessionXml = null;
+                asyncGenerateBitmap();
+            }
+        };
 
         // Create session
         if (aSession != null)
@@ -224,28 +233,15 @@ public class ImageView extends Composite {
     }
     
     private void startDelayedRequest() {
-        if (getDisplay().isDisposed())
+        if (isDisposed())
             return;
-        assert (delayedRequestCount >= 0);
-        delayedRequestCount++;
-        //Util.info("start, count=" + delayedRequestCount);
-        getDisplay().timerExec(CHANGE_EVENT_DELAY, new Runnable() {
-            public void run() {
-                endDelayedRequest();
-                if (delayedRequestCount == 0) {
-                    cachedSessionXml = null;
-                    asyncGenerateBitmap();
-                }
-            }
-        });
+        // Note: running timerExec() on this runnable will cancel
+        // previous timerExec() calls on the same runnable,
+        // which is the desired behavior here.
+        // (Not sure if this is a documented feature, but it works.)
+        getDisplay().timerExec(CHANGE_EVENT_DELAY, delayedBitmapRequest);
     }
     
-    private void endDelayedRequest() {
-        assert (delayedRequestCount > 0);
-        delayedRequestCount--;
-        //Util.info("end, count=" + delayedRequestCount);
-    }
-
     public HistoryBlimpSession getSession() {
         return session;
     }
