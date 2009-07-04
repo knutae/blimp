@@ -62,9 +62,11 @@ class ImageInfo {
 
 public class ImageView extends Composite {
     static final int PROGRESS_REDRAW_DELAY = 500;
+    static final int CHANGE_EVENT_DELAY = 100;
 
     HistoryBlimpSession session;
     Runnable bitmapGeneratedTask;
+    int delayedRequestCount;
     ImageCanvas imageCanvas;
     CLabel zoomLabel;
     Combo qualityCombo;
@@ -180,8 +182,7 @@ public class ImageView extends Composite {
             session = new HistoryBlimpSession();
         session.addChangeListener(new LayerChangeListener() {
             public void handleChange(LayerEvent event) {
-                cachedSessionXml = null;
-                asyncGenerateBitmap();
+                startDelayedRequest();
             }
         });
 
@@ -220,6 +221,29 @@ public class ImageView extends Composite {
                 // For instance, an image export could be in progress.
             }
         });
+    }
+    
+    private void startDelayedRequest() {
+        if (getDisplay().isDisposed())
+            return;
+        assert (delayedRequestCount >= 0);
+        delayedRequestCount++;
+        //Util.info("start, count=" + delayedRequestCount);
+        getDisplay().timerExec(CHANGE_EVENT_DELAY, new Runnable() {
+            public void run() {
+                endDelayedRequest();
+                if (delayedRequestCount == 0) {
+                    cachedSessionXml = null;
+                    asyncGenerateBitmap();
+                }
+            }
+        });
+    }
+    
+    private void endDelayedRequest() {
+        assert (delayedRequestCount > 0);
+        delayedRequestCount--;
+        //Util.info("end, count=" + delayedRequestCount);
     }
 
     public HistoryBlimpSession getSession() {
@@ -286,7 +310,7 @@ public class ImageView extends Composite {
             && lastRequestedImageInfo.equals(cachedSessionXml, zoomLevel,
                     getPreviewQuality());
     }
-
+    
     private void asyncGenerateBitmap() {
         if (isDisposed())
             return;
