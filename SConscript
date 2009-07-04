@@ -66,11 +66,6 @@ runner_env = env.Clone()
 runner_env.Replace(JAVACLASSPATH = [class_dir, jiu_jar, xerces_jar])
 runner_env.Append(BUILDERS = {'RunClass': java_runner})
 
-test_runner_env = runner_env.Clone()
-test_runner_env.Append(JAVACLASSPATH = [junit_jar])
-test_runner_env.RunClass('org.boblycat.blimp.tests.RunTests')
-Alias('test', 'org.boblycat.blimp.tests.RunTests')
-
 swt_runner_env = runner_env.Clone()
 swt_runner_env.Append(JAVACLASSPATH = [swt_jar])
 swt_runner_env.Append(JVMARGS = ['-Xmx1024M', '-Dblimp.dcraw.path=' + str(dcraw[0])])
@@ -78,6 +73,11 @@ if os.path.isdir('/usr/lib/jni'):
     swt_runner_env.Append(JVMARGS = ['-Djava.library.path=/usr/lib/jni'])
 swt_runner_env.RunClass('org.boblycat.blimp.gui.swt.MainWindow')
 Alias('run', 'org.boblycat.blimp.gui.swt.MainWindow')
+
+test_runner_env = swt_runner_env.Clone()
+test_runner_env.Append(JAVACLASSPATH = [junit_jar])
+test_runner_env.RunClass('org.boblycat.blimp.tests.RunTests')
+Alias('test', 'org.boblycat.blimp.tests.RunTests')
 
 def tar_exclude():
    patterns = ['build', '.svn', '*~', 'swt*win32*', 'debian', '.classpath', '.scons*']
