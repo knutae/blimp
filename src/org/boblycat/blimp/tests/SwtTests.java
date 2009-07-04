@@ -22,6 +22,13 @@ import org.eclipse.swt.widgets.Display;
 import org.junit.*;
 import static org.junit.Assert.*;
 
+class RunCounter implements Runnable {
+    public int count = 0;
+    public void run() {
+        count++;
+    }
+}
+
 public class SwtTests {
     private static final int DEFAULT_TEST_TIMEOUT = 1000;
     
@@ -70,11 +77,24 @@ public class SwtTests {
     public void testTimeout() {
         // ensure that test failures will occur on timeouts
         try {
-            runLoop(10); // use a short timeout
+            runLoop(5); // use a short timeout
             fail("control should not reach this point");
         }
         catch (AssertionError e) {
             // everything OK
         }
+    }
+    
+    @Test
+    public void testTimerExecTwiceOnSameRunnable() {
+        // Multiple timerExec() calls on the same Runnable should only cause one run.
+        // ImageView depends on this (undocumented?) behavior.
+        RunCounter counter = new RunCounter();
+        display.timerExec(1, counter);
+        display.timerExec(3, counter);
+        display.timerExec(5, counter);
+        display.timerExec(10, asyncFinish);
+        runLoop();
+        assertEquals(1, counter.count);
     }
 }
