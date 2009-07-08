@@ -35,7 +35,7 @@ public class RotateLayer extends DimensionAdjustmentLayer {
         Fast,
         AntiAliased,
     }
-    
+
     public enum SizeStrategy {
         Keep,
         Expand,
@@ -52,7 +52,7 @@ public class RotateLayer extends DimensionAdjustmentLayer {
         quality = Quality.AntiAliased;
         sizeStrategy = SizeStrategy.AutoCrop;
     }
-    
+
     private static double calculateAutoCropLongerSide(double inLonger, double inShorter, double radAngle) {
         double sina = Math.abs(Math.sin(radAngle));
         double cosa = Math.abs(Math.cos(radAngle));
