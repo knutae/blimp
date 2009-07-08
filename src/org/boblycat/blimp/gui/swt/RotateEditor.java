@@ -33,6 +33,9 @@ public class RotateEditor extends GridBasedLayerEditor {
     private ValueSlider angleSlider;
     private Button fastRadioButton;
     private Button antiAliasedRadioButton;
+    private Button keepSizeButton;
+    private Button expandSizeButton;
+    private Button autoCropButton;
 
     public RotateEditor(Composite parent, int style) {
         super(parent, style);
@@ -40,6 +43,10 @@ public class RotateEditor extends GridBasedLayerEditor {
         Group group = createGroup("Quality");
         fastRadioButton = createRadioButton(group, "Fast");
         antiAliasedRadioButton = createRadioButton(group, "Anti-Aliased");
+        group = createGroup("Sizing Strategy");
+        keepSizeButton = createRadioButton(group, "Keep Existing Size");
+        expandSizeButton = createRadioButton(group, "Expand");
+        autoCropButton = createRadioButton(group, "Auto-Crop (Keep Aspect)");
     }
 
     @Override
@@ -49,6 +56,12 @@ public class RotateEditor extends GridBasedLayerEditor {
             rotateLayer.setQuality(RotateLayer.Quality.Fast);
         else
             rotateLayer.setQuality(RotateLayer.Quality.AntiAliased);
+        if (keepSizeButton.getSelection())
+            rotateLayer.setSizeStrategy(RotateLayer.SizeStrategy.Keep);
+        else if (expandSizeButton.getSelection())
+            rotateLayer.setSizeStrategy(RotateLayer.SizeStrategy.Expand);
+        else
+            rotateLayer.setSizeStrategy(RotateLayer.SizeStrategy.AutoCrop);
     }
 
     @Override
@@ -63,6 +76,17 @@ public class RotateEditor extends GridBasedLayerEditor {
             break;
         case AntiAliased:
             antiAliasedRadioButton.setSelection(true);
+            break;
+        }
+        switch (rotateLayer.getSizeStrategy()) {
+        case Keep:
+            keepSizeButton.setSelection(true);
+            break;
+        case Expand:
+            expandSizeButton.setSelection(true);
+            break;
+        case AutoCrop:
+            autoCropButton.setSelection(true);
             break;
         }
     }
