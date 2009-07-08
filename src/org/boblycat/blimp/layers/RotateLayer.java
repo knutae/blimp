@@ -35,16 +35,22 @@ public class RotateLayer extends DimensionAdjustmentLayer {
         Fast,
         AntiAliased,
     }
+    
+    public enum SizeStrategy {
+        Keep,
+        Expand,
+        AutoCrop,
+    }
 
     private double angle;
 
     private Quality quality;
 
-    private boolean autoCrop;
+    private SizeStrategy sizeStrategy;
 
     public RotateLayer() {
         quality = Quality.AntiAliased;
-        autoCrop = false;
+        sizeStrategy = SizeStrategy.AutoCrop;
     }
     
     private static double calculateAutoCropLongerSide(double inLonger, double inShorter, double radAngle) {
@@ -58,30 +64,41 @@ public class RotateLayer extends DimensionAdjustmentLayer {
      */
     @Override
     public BitmapSize calculateSize(BitmapSize inputSize) {
-        double a = Math.toRadians(angle);
-        double w, h;
-        double inWidth = inputSize.width;
-        double inHeight = inputSize.height;
-        if (autoCrop) {
-            if (inWidth > inHeight) {
-                w = calculateAutoCropLongerSide(inWidth, inHeight, a);
-                h = inHeight * w / inWidth;
+        switch (getSizeStrategy()) {
+        case Keep:
+            return inputSize;
+        case Expand:
+            {
+                double a = Math.toRadians(angle);
+                double inWidth = inputSize.width;
+                double inHeight = inputSize.height;
+                double cosa = Math.cos(a);
+                double sina = Math.sin(a);
+                double w = Math.abs(inWidth * cosa) + Math.abs(inHeight * sina);
+                double h = Math.abs(inWidth * sina) + Math.abs(inHeight * cosa);
+                return new BitmapSize((int) Math.ceil(w),
+                        (int) Math.ceil(h), inputSize.pixelScaleFactor);
             }
-            else {
-                h = calculateAutoCropLongerSide(inHeight, inWidth, a);
-                w = inWidth * h / inHeight;
+        case AutoCrop:
+            {
+                double a = Math.toRadians(angle);
+                double inWidth = inputSize.width;
+                double inHeight = inputSize.height;
+                double w, h;
+                if (inWidth > inHeight) {
+                    w = calculateAutoCropLongerSide(inWidth, inHeight, a);
+                    h = inHeight * w / inWidth;
+                }
+                else {
+                    h = calculateAutoCropLongerSide(inHeight, inWidth, a);
+                    w = inWidth * h / inHeight;
+                }
+                return new BitmapSize((int) Math.ceil(w),
+                        (int) Math.ceil(h), inputSize.pixelScaleFactor);
             }
         }
-        else {
-            double cosa = Math.cos(a);
-            double sina = Math.sin(a);
-            w = Math.abs(inWidth * cosa) +
-                Math.abs(inHeight * sina);
-            h = Math.abs(inWidth * sina) +
-                Math.abs(inHeight * cosa);
-        }
-        return new BitmapSize((int) Math.ceil(w),
-                (int) Math.ceil(h), inputSize.pixelScaleFactor);
+        assert(false); // should never get here
+        return inputSize;
     }
 
     /* (non-Javadoc)
@@ -137,22 +154,22 @@ public class RotateLayer extends DimensionAdjustmentLayer {
     }
 
     /**
-     * Set the auto-crop flag.
-     * If auto-crop is enabled, the output image will be cropped to avoid black borders.
-     * The output image will have the same aspect as the original.
-     * @param autoCrop auto-crop
+     * Set the strategy for calculating the size of the output image.
+     * Either expand the size with black borders, keep the original size, or auto-crop
+     * the image while keeping the aspect ratio of the original.
+     * @param sizeStrategy the new size strategy
      */
-    public void setAutoCrop(boolean autoCrop) {
-        this.autoCrop = autoCrop;
+    public void setSizeStrategy(SizeStrategy sizeStrategy) {
+        this.sizeStrategy = sizeStrategy;
     }
 
     /**
-     * Get the auto-crop flag.
-     * If auto-crop is enabled, the output image will be cropped to avoid black borders.
-     * The output image will have the same aspect as the original.
-     * @return the current auto-crop flag.
+     * Get the strategy for calculating the size of the output image.
+     * Either expand the size with black borders, keep the original size, or auto-crop
+     * the image while keeping the aspect ratio of the original.
+     * @return the current size strategy
      */
-    public boolean getAutoCrop() {
-        return autoCrop;
+    public SizeStrategy getSizeStrategy() {
+        return sizeStrategy;
     }
 }
