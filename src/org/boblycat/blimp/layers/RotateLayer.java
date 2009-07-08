@@ -40,8 +40,17 @@ public class RotateLayer extends DimensionAdjustmentLayer {
 
     private Quality quality;
 
+    private boolean autoCrop;
+
     public RotateLayer() {
         quality = Quality.AntiAliased;
+        autoCrop = false;
+    }
+    
+    private static double calculateAutoCropLongerSide(double inLonger, double inShorter, double radAngle) {
+        double sina = Math.abs(Math.sin(radAngle));
+        double cosa = Math.abs(Math.cos(radAngle));
+        return inLonger * inShorter / (sina * inLonger + cosa * inShorter);
     }
 
     /* (non-Javadoc)
@@ -50,12 +59,27 @@ public class RotateLayer extends DimensionAdjustmentLayer {
     @Override
     public BitmapSize calculateSize(BitmapSize inputSize) {
         double a = Math.toRadians(angle);
-        double cosa = Math.cos(a);
-        double sina = Math.sin(a);
-        double w = Math.abs(inputSize.width * cosa) +
-            Math.abs(inputSize.height * sina);
-        double h = Math.abs(inputSize.width * sina) +
-            Math.abs(inputSize.height * cosa);
+        double w, h;
+        double inWidth = inputSize.width;
+        double inHeight = inputSize.height;
+        if (autoCrop) {
+            if (inWidth > inHeight) {
+                w = calculateAutoCropLongerSide(inWidth, inHeight, a);
+                h = inHeight * w / inWidth;
+            }
+            else {
+                h = calculateAutoCropLongerSide(inHeight, inWidth, a);
+                w = inWidth * h / inHeight;
+            }
+        }
+        else {
+            double cosa = Math.cos(a);
+            double sina = Math.sin(a);
+            w = Math.abs(inWidth * cosa) +
+                Math.abs(inHeight * sina);
+            h = Math.abs(inWidth * sina) +
+                Math.abs(inHeight * cosa);
+        }
         return new BitmapSize((int) Math.ceil(w),
                 (int) Math.ceil(h), inputSize.pixelScaleFactor);
     }
@@ -110,5 +134,25 @@ public class RotateLayer extends DimensionAdjustmentLayer {
      */
     public Quality getQuality() {
         return quality;
+    }
+
+    /**
+     * Set the auto-crop flag.
+     * If auto-crop is enabled, the output image will be cropped to avoid black borders.
+     * The output image will have the same aspect as the original.
+     * @param autoCrop auto-crop
+     */
+    public void setAutoCrop(boolean autoCrop) {
+        this.autoCrop = autoCrop;
+    }
+
+    /**
+     * Get the auto-crop flag.
+     * If auto-crop is enabled, the output image will be cropped to avoid black borders.
+     * The output image will have the same aspect as the original.
+     * @return the current auto-crop flag.
+     */
+    public boolean getAutoCrop() {
+        return autoCrop;
     }
 }
