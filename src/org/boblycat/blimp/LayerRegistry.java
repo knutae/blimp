@@ -22,7 +22,25 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.boblycat.blimp.layers.*;
+import org.boblycat.blimp.layers.AdjustmentLayer;
+import org.boblycat.blimp.layers.BrightnessContrastLayer;
+import org.boblycat.blimp.layers.Color16BitLayer;
+import org.boblycat.blimp.layers.ColorBalanceLayer;
+import org.boblycat.blimp.layers.ColorizeLayer;
+import org.boblycat.blimp.layers.CropLayer;
+import org.boblycat.blimp.layers.CurvesLayer;
+import org.boblycat.blimp.layers.GammaLayer;
+import org.boblycat.blimp.layers.GrayscaleMixerLayer;
+import org.boblycat.blimp.layers.InvertLayer;
+import org.boblycat.blimp.layers.LevelsLayer;
+import org.boblycat.blimp.layers.LocalContrastLayer;
+import org.boblycat.blimp.layers.OrientationLayer;
+import org.boblycat.blimp.layers.PrintLayer;
+import org.boblycat.blimp.layers.ResizeLayer;
+import org.boblycat.blimp.layers.RotateLayer;
+import org.boblycat.blimp.layers.SaturationLayer;
+import org.boblycat.blimp.layers.SolidColorBorderLayer;
+import org.boblycat.blimp.layers.UnsharpMaskLayer;
 
 /**
  * Registry for adjustment layers (not input layers).
@@ -117,6 +135,10 @@ public class LayerRegistry implements Iterable<LayerRegistry.Category> {
                 "Increase contrast locally in adjacent areas of the image");
         cat.registerLayer(UnsharpMaskLayer.class, "&Unsharp Mask",
                 "Sharpen the image");
+
+        cat = reg.addCategory("&Printing");
+        cat.registerLayer(PrintLayer.class, "&Print",
+                "Prepare the image for printing");
         return reg;
     }
 }
