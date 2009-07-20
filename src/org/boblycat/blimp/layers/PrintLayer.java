@@ -29,6 +29,7 @@ public class PrintLayer extends DimensionAdjustmentLayer {
     private int paperWidth;
     private int paperHeight;
     private double borderPercentage; // maybe make this absolute?
+    private boolean preview;
 
     public PrintLayer() {
         //paperWidth = 0;
@@ -36,6 +37,7 @@ public class PrintLayer extends DimensionAdjustmentLayer {
         paperWidth = 1000;
         paperHeight = 700;
         borderPercentage = 10;
+        preview = true;
     }
 
     public BitmapSize caluclateSizeWithoutBorder(BitmapSize inputSize) {
@@ -60,7 +62,10 @@ public class PrintLayer extends DimensionAdjustmentLayer {
 
     @Override
     public BitmapSize calculateSize(BitmapSize inputSize) {
-        return new BitmapSize(paperWidth, paperHeight);
+        if (preview)
+            return new BitmapSize(paperWidth, paperHeight);
+        else
+            return caluclateSizeWithoutBorder(inputSize);
     }
 
     @Override
@@ -77,6 +82,10 @@ public class PrintLayer extends DimensionAdjustmentLayer {
         resample.setSize(rescaleWidth, rescaleHeight);
         resample.setInputImage(source.getImage());
         IntegerImage rescaled = (IntegerImage) applyJiuOperation(source.getImage(), resample);
+
+        if (!isPreview())
+            // don't add borders unless for previewing
+            return new Bitmap(rescaled);
 
         // Create white image
         int whiteIntesity = (1 << source.getChannelBitDepth()) - 1;
@@ -132,6 +141,14 @@ public class PrintLayer extends DimensionAdjustmentLayer {
      */
     public int getPaperHeight() {
         return paperHeight;
+    }
+
+    public void setPreview(boolean preview) {
+        this.preview = preview;
+    }
+
+    public boolean isPreview() {
+        return preview;
     }
 
 }
