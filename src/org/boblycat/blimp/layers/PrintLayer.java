@@ -23,7 +23,7 @@ import net.sourceforge.jiu.geometry.Resample;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapSize;
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.jiuops.MathUtil;
 
 public class PrintLayer extends DimensionAdjustmentLayer {
     private int paperWidth;
@@ -32,10 +32,8 @@ public class PrintLayer extends DimensionAdjustmentLayer {
     private boolean preview;
 
     public PrintLayer() {
-        //paperWidth = 0;
-        //paperHeight = 0;
-        paperWidth = 1000;
-        paperHeight = 700;
+        paperWidth = 0;
+        paperHeight = 0;
         borderPercentage = 10;
         preview = true;
     }
@@ -62,6 +60,8 @@ public class PrintLayer extends DimensionAdjustmentLayer {
 
     @Override
     public BitmapSize calculateSize(BitmapSize inputSize) {
+        if (paperWidth <= 0 || paperHeight <= 0)
+            return inputSize;
         if (preview)
             return new BitmapSize(paperWidth, paperHeight);
         else
@@ -71,7 +71,7 @@ public class PrintLayer extends DimensionAdjustmentLayer {
     @Override
     public Bitmap applyLayer(Bitmap source) {
         if (paperWidth <= 0 || paperHeight <= 0) {
-            Util.err("Need a paper size");
+            // This is normal before a printer is selected, not necessarily an error
             return source;
         }
 
@@ -151,4 +151,11 @@ public class PrintLayer extends DimensionAdjustmentLayer {
         return preview;
     }
 
+    public void setBorderPercentage(double borderPercentage) {
+        this.borderPercentage = MathUtil.clamp(borderPercentage, 0, 99);
+    }
+
+    public double getBorderPercentage() {
+        return borderPercentage;
+    }
 }
