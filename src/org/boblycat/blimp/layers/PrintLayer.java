@@ -38,6 +38,26 @@ public class PrintLayer extends DimensionAdjustmentLayer {
         borderPercentage = 10;
     }
 
+    public BitmapSize caluclateSizeWithoutBorder(BitmapSize inputSize) {
+        double maxAmount = 1.0 - borderPercentage/100.0;
+        int maxWidth = (int) (paperWidth * maxAmount);
+        int maxHeight = (int) (paperHeight * maxAmount);
+        int rescaleWidth, rescaleHeight;
+        int inputHeight = inputSize.height;
+        int inputWidth = inputSize.width;
+        if (maxWidth * inputHeight < inputWidth * maxHeight) {
+            // use maxWidth
+            rescaleWidth = maxWidth;
+            rescaleHeight = inputHeight * rescaleWidth / inputWidth;
+        }
+        else {
+            // use maxHeight
+            rescaleHeight = maxHeight;
+            rescaleWidth = inputWidth * rescaleHeight / inputHeight;
+        }
+        return new BitmapSize(rescaleWidth, rescaleHeight);
+    }
+
     @Override
     public BitmapSize calculateSize(BitmapSize inputSize) {
         return new BitmapSize(paperWidth, paperHeight);
@@ -50,20 +70,9 @@ public class PrintLayer extends DimensionAdjustmentLayer {
             return source;
         }
 
-        double maxAmount = 1.0 - borderPercentage/100.0;
-        int maxWidth = (int) (paperWidth * maxAmount);
-        int maxHeight = (int) (paperHeight * maxAmount);
-        int rescaleWidth, rescaleHeight;
-        if (maxWidth * source.getHeight() < source.getWidth() * maxHeight) {
-            // use maxWidth
-            rescaleWidth = maxWidth;
-            rescaleHeight = source.getHeight() * rescaleWidth / source.getWidth();
-        }
-        else {
-            // use maxHeight
-            rescaleHeight = maxHeight;
-            rescaleWidth = source.getWidth() * rescaleHeight / source.getHeight();
-        }
+        BitmapSize rescaleSize = caluclateSizeWithoutBorder(source.getSize());
+        int rescaleWidth = rescaleSize.width;
+        int rescaleHeight = rescaleSize.height;
         Resample resample = new Resample();
         resample.setSize(rescaleWidth, rescaleHeight);
         resample.setInputImage(source.getImage());
