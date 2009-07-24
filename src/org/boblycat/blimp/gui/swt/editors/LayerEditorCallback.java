@@ -16,35 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp.gui.swt;
+package org.boblycat.blimp.gui.swt.editors;
 
-import org.boblycat.blimp.layers.UnsharpMaskLayer;
-import org.eclipse.swt.widgets.Composite;
 
 /**
- * Editor for unsharp mask.
+ * A simple callback interface for layer editors.
  *
  * @author Knut Arild Erstad
  */
-public class UnsharpMaskEditor extends GridBasedLayerEditor {
-    UnsharpMaskLayer unsharpMask;
-    ValueSlider levelSlider;
-
-    public UnsharpMaskEditor(Composite parent, int style) {
-        super(parent, style);
-        levelSlider = createSlider("Level", UnsharpMaskLayer.MIN_LEVEL,
-                UnsharpMaskLayer.MAX_LEVEL, 0);
-    }
-
-    @Override
-    protected void updateLayer() {
-        unsharpMask.setLevel(levelSlider.getSelection());
-    }
-
-    @Override
-    protected void layerChanged() {
-        unsharpMask = (UnsharpMaskLayer) layer;
-        levelSlider.setSelection(unsharpMask.getLevel());
-    }
-
+public interface LayerEditorCallback {
+    public void editingFinished(LayerEditorEnvironment env, boolean cancelled);
 }

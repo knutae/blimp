@@ -16,37 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp.gui.swt;
+package org.boblycat.blimp.gui.swt.editors;
 
-import org.boblycat.blimp.layers.SaturationLayer;
+import org.boblycat.blimp.gui.swt.ValueSlider;
+import org.boblycat.blimp.layers.GammaLayer;
 import org.eclipse.swt.widgets.Composite;
 
-public class SaturationEditor extends GridBasedLayerEditor {
-    SaturationLayer saturation;
-    ValueSlider saturationSlider;
-    ValueSlider lightnessSlider;
-    ValueSlider hueSlider;
+public class GammaEditor extends GridBasedLayerEditor {
+    GammaLayer gamma;
 
-    public SaturationEditor(Composite parent, int style) {
+    ValueSlider gammaSlider;
+
+    public GammaEditor(Composite parent, int style) {
         super(parent, style);
-        hueSlider = createSlider("Hue", -180, 180, 0);
-        saturationSlider = createSlider("Saturation", 0, 400, 0);
-        lightnessSlider = createSlider("Lightness", 0, 400, 0);
+        // allow gamma values from 0.50 to 5.00
+        gammaSlider = createSlider("Gamma", 50, 500, 2);
     }
 
     @Override
     protected void updateLayer() {
-        saturation.setSaturation(saturationSlider.getSelection());
-        saturation.setLightness(lightnessSlider.getSelection());
-        saturation.setHue(hueSlider.getSelection());
+        gamma.setGamma(gammaSlider.getSelectionAsDouble());
     }
 
     @Override
     protected void layerChanged() {
-        saturation = (SaturationLayer) layer;
-        saturationSlider.setSelection(saturation.getSaturation());
-        lightnessSlider.setSelection(saturation.getLightness());
-        hueSlider.setSelection(saturation.getHue());
+        gamma = (GammaLayer) layer;
+        gammaSlider.setSelectionAsDouble(gamma.getGamma());
     }
-
 }

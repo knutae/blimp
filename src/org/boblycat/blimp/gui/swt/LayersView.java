@@ -19,6 +19,10 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.*;
+import org.boblycat.blimp.gui.swt.editors.DefaultEditorRegistry;
+import org.boblycat.blimp.gui.swt.editors.LayerEditorCallback;
+import org.boblycat.blimp.gui.swt.editors.LayerEditorEnvironment;
+import org.boblycat.blimp.gui.swt.editors.LayerEditorRegistry;
 import org.boblycat.blimp.layers.Layer;
 
 import org.eclipse.swt.*;

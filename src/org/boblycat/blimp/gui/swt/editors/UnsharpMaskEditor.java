@@ -16,30 +16,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp.gui.swt;
+package org.boblycat.blimp.gui.swt.editors;
 
-import org.boblycat.blimp.layers.GammaLayer;
+import org.boblycat.blimp.gui.swt.ValueSlider;
+import org.boblycat.blimp.layers.UnsharpMaskLayer;
 import org.eclipse.swt.widgets.Composite;
 
-public class GammaEditor extends GridBasedLayerEditor {
-    GammaLayer gamma;
+/**
+ * Editor for unsharp mask.
+ *
+ * @author Knut Arild Erstad
+ */
+public class UnsharpMaskEditor extends GridBasedLayerEditor {
+    UnsharpMaskLayer unsharpMask;
+    ValueSlider levelSlider;
 
-    ValueSlider gammaSlider;
-
-    public GammaEditor(Composite parent, int style) {
+    public UnsharpMaskEditor(Composite parent, int style) {
         super(parent, style);
-        // allow gamma values from 0.50 to 5.00
-        gammaSlider = createSlider("Gamma", 50, 500, 2);
+        levelSlider = createSlider("Level", UnsharpMaskLayer.MIN_LEVEL,
+                UnsharpMaskLayer.MAX_LEVEL, 0);
     }
 
     @Override
     protected void updateLayer() {
-        gamma.setGamma(gammaSlider.getSelectionAsDouble());
+        unsharpMask.setLevel(levelSlider.getSelection());
     }
 
     @Override
     protected void layerChanged() {
-        gamma = (GammaLayer) layer;
-        gammaSlider.setSelectionAsDouble(gamma.getGamma());
+        unsharpMask = (UnsharpMaskLayer) layer;
+        levelSlider.setSelection(unsharpMask.getLevel());
     }
+
 }

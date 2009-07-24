@@ -20,6 +20,8 @@ package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.*;
 import org.boblycat.blimp.exif.ExifTable;
+import org.boblycat.blimp.gui.swt.editors.LayerEditorCallback;
+import org.boblycat.blimp.gui.swt.editors.LayerEditorEnvironment;
 import org.boblycat.blimp.layers.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;

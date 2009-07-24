@@ -16,10 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp.gui.swt;
+package org.boblycat.blimp.gui.swt.editors;
 
 import static org.boblycat.blimp.layers.LocalContrastLayer.*;
 
+import org.boblycat.blimp.gui.swt.ValueSlider;
 import org.boblycat.blimp.layers.LocalContrastLayer;
 import org.eclipse.swt.widgets.Composite;
 

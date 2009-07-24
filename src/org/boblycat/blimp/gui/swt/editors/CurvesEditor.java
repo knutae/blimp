@@ -16,9 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp.gui.swt;
+package org.boblycat.blimp.gui.swt.editors;
 
 import org.boblycat.blimp.Debug;
+import org.boblycat.blimp.gui.swt.SwtUtil;
 import org.boblycat.blimp.jiuops.MathUtil;
 import org.boblycat.blimp.jiuops.NaturalCubicSpline;
 import org.boblycat.blimp.PointDouble;
