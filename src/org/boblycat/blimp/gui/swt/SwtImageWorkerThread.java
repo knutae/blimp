@@ -70,14 +70,14 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
             printer = new Printer(printerData);
             printLayerCopy = (PrintLayer) sessionCopy.findLayer(printLayer.getName());
             assert (printLayerCopy != null);
+            printLayerCopy.setActive(true);
+            printLayerCopy.setPreview(false);
+            sessionCopy.setPreviewQuality(PreviewQuality.Accurate);
         }
 
         @Override
         protected void execute() throws IOException {
-            printLayerCopy.setActive(true);
-            printLayerCopy.setPreview(false);
-            sessionCopy.setPreviewQuality(PreviewQuality.Accurate);
-            Bitmap bitmap = sessionCopy.getFullBitmap();
+            Bitmap bitmap = session.getFullBitmap();
             ImageData imageData = ImageConverter.jiuToSwtImageData(bitmap.getImage());
             Image swtImage = new Image(printer, imageData);
             String jobName = "Blimp: " + sessionCopy.getName();
