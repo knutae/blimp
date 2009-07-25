@@ -99,6 +99,16 @@ public class SwtUtil {
     }
 
     /**
+     * Dispose the given device if it is not <code>null</code>.
+     * @param device A device, or <code>null</code>.
+     */
+    public static void dispose(Device device) {
+        if (device == null || device.isDisposed())
+            return;
+        device.dispose();
+    }
+
+    /**
      * Get a platform-dependent list of extensions useful for SWT file dialogs.
      * @param extensions
      *      an array of extension names not including the dot,

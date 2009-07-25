@@ -84,19 +84,27 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
             if (printer.startJob(jobName)) {
                 Util.info("Started printer job " + jobName);
                 GC gc = new GC(printer);
-                int left = (printLayerCopy.getPaperWidth() - imageData.width) / 2;
-                int top = (printLayerCopy.getPaperHeight() - imageData.height) / 2;
-                gc.drawImage(swtImage, left, top);
-                printer.endPage();
-                printer.endJob();
-                Util.info("Finished printer job " + jobName);
-                gc.dispose();
+                try {
+                    int left = (printLayerCopy.getPaperWidth() - imageData.width) / 2;
+                    int top = (printLayerCopy.getPaperHeight() - imageData.height) / 2;
+                    gc.drawImage(swtImage, left, top);
+                    printer.endPage();
+                    printer.endJob();
+                    Util.info("Finished printer job " + jobName);
+                }
+                finally {
+                    gc.dispose();
+                }
             }
             else {
                 Util.err("Failed to start printer job " + jobName);
             }
-            // TODO: make safe
-            printer.dispose();
+        }
+
+        @Override
+        protected void dispose() {
+            assert (printer != null && !printer.isDisposed());
+            SwtUtil.dispose(printer);
         }
 
     }

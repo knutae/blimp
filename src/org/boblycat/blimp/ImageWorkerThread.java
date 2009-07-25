@@ -51,6 +51,11 @@ public abstract class ImageWorkerThread extends Thread {
         }
 
         protected abstract void execute() throws IOException;
+
+        // Will be called once, either after execute or during cancel.
+        // Override to dispose of (non-memory) resources.
+        protected void dispose() {
+        }
     }
 
     private class BitmapRequest extends Request {
@@ -290,6 +295,7 @@ public abstract class ImageWorkerThread extends Thread {
             handleError(req.runnable, "Unexpected error on image thread: "
                     + e.getMessage());
         }
+        req.dispose();
     }
 
     @Override
@@ -314,7 +320,11 @@ public abstract class ImageWorkerThread extends Thread {
     }
 
     private void cancelAllRequests() {
-        requestQueue.clear();
+        List<Request> tmp = new ArrayList<Request>();
+        requestQueue.drainTo(tmp);
+        for (Request req: tmp) {
+            req.dispose();
+        }
         // TODO: cancel ongoing operation (if possible)
     }
 
@@ -330,8 +340,10 @@ public abstract class ImageWorkerThread extends Thread {
         for (Request req: tmp) {
             if (req.owner != owner)
                 putRequest(req);
-            else
+            else {
                 count++;
+                req.dispose();
+            }
         }
         Debug.print(this, "cancelled " + count + " request(s)");
         return count;
