@@ -108,6 +108,12 @@ public class PrintLayer extends DimensionAdjustmentLayer {
     }
 
     @Override
+    public boolean canChangeColors() {
+        // must return true to avoid issues (overflow?) with border color
+        return true;
+    }
+
+    @Override
     public String getDescription() {
         return "Printer Preparation";
     }
