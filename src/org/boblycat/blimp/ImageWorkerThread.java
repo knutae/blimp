@@ -39,25 +39,25 @@ public abstract class ImageWorkerThread extends Thread {
     }
 
     protected abstract class Request {
-        Object owner;
-        Runnable runnable;
-        BlimpSession sessionCopy;
+        private Object owner;
+        protected Runnable runnable;
+        protected BlimpSession sessionCopy;
 
-        Request(Object owner, BlimpSession session, Runnable runnable) {
+        protected Request(Object owner, BlimpSession session, Runnable runnable) {
             this.owner = owner;
             this.runnable = runnable;
             if (session != null)
                 this.sessionCopy = BlimpSession.createCopy(session);
         }
-        
+
         protected abstract void execute() throws IOException;
     }
-    
+
     private class BitmapRequest extends Request {
         private int viewWidth;
         private int viewHeight;
         private PreviewQuality previewQuality;
-        
+
         BitmapRequest(Object owner, BlimpSession session, Runnable runnable,
                 int viewWidth, int viewHeight, PreviewQuality previewQuality) {
             super(owner, session, runnable);
@@ -65,7 +65,8 @@ public abstract class ImageWorkerThread extends Thread {
             this.viewHeight = viewHeight;
             this.previewQuality = previewQuality;
         }
-        
+
+        @Override
         protected void execute() throws IOException {
             assert(runnable != null);
             // Generate the bitmap on this thread.  It should not be transferred
@@ -80,18 +81,19 @@ public abstract class ImageWorkerThread extends Thread {
             bitmapGenerated(runnable, bitmap);
         }
     }
-    
+
     private class HistogramRequest extends Request {
         private HistogramGeneratedTask histogramTask;
         private String layerName;
-        
+
         HistogramRequest(Object owner, BlimpSession session,
                 HistogramGeneratedTask task, String layerName) {
             super(owner, session, task);
             this.histogramTask = task;
             this.layerName = layerName;
         }
-        
+
+        @Override
         protected void execute() throws IOException {
             assert(histogramTask != null && layerName != null);
             Debug.print(this, "generating histogram for layer " + layerName);
@@ -103,18 +105,19 @@ public abstract class ImageWorkerThread extends Thread {
             asyncExec(histogramTask);
         }
     }
-    
+
     private class SizeRequest extends Request {
         private BitmapSizeGeneratedTask sizeTask;
         private String layerName;
-        
+
         SizeRequest(Object owner, BlimpSession session,
                 BitmapSizeGeneratedTask task, String layerName) {
             super(owner, session, task);
             this.sizeTask = task;
             this.layerName = layerName;
         }
-        
+
+        @Override
         protected void execute() throws IOException {
             assert(sizeTask != null && layerName != null);
             Debug.print(this, "generating size for layer " + layerName);
@@ -131,7 +134,8 @@ public abstract class ImageWorkerThread extends Thread {
         ZoomInRequest(Object owner, BlimpSession session, Runnable runnable) {
             super(owner, session, runnable);
         }
-        
+
+        @Override
         protected void execute() throws IOException {
             session.zoomIn();
             bitmapGenerated(runnable, session.getBitmap());
@@ -142,19 +146,20 @@ public abstract class ImageWorkerThread extends Thread {
         ZoomOutRequest(Object owner, BlimpSession session, Runnable runnable) {
             super(owner, session, runnable);
         }
-        
+
+        @Override
         protected void execute() throws IOException {
             session.zoomOut();
             bitmapGenerated(runnable, session.getBitmap());
         }
     }
-    
+
     private class ExportBitmapRequest extends Request {
         private File file;
         private double exportQuality;
         private FileExportTask exportTask;
         private String errorMessage;
-        
+
         ExportBitmapRequest(Object owner, BlimpSession session,
                 FileExportTask task, File file, double quality) {
             // runnable can be null because IOException is handled internally
@@ -164,6 +169,7 @@ public abstract class ImageWorkerThread extends Thread {
             this.exportTask = task;
         }
 
+        @Override
         protected void execute() throws IOException {
             assert(file != null);
             assert(exportTask != null);
@@ -191,27 +197,29 @@ public abstract class ImageWorkerThread extends Thread {
             }
         }
     }
-    
+
     private class ExifRequest extends Request {
         private ExifQueryTask exifTask;
-        
+
         ExifRequest(Object owner, BlimpSession session, ExifQueryTask task) {
             super(owner, session, task);
             this.exifTask = task;
         }
-        
+
+        @Override
         protected void execute() throws IOException {
             assert(exifTask != null);
             exifTask.data = session.getInterestingExifData();
             asyncExec(exifTask);
         }
     }
-    
+
     private class QuitRequest extends Request {
         QuitRequest(Object owner) {
             super(owner, null, null);
         }
-        
+
+        @Override
         protected void execute() {
             assert(false); // unreachable
         }
@@ -284,6 +292,7 @@ public abstract class ImageWorkerThread extends Thread {
         }
     }
 
+    @Override
     public void run() {
         while (!isFinished()) {
             try {

@@ -18,6 +18,7 @@
  */
 package org.boblycat.blimp.gui.swt.editors;
 
+import org.boblycat.blimp.gui.swt.SwtUtil;
 import org.boblycat.blimp.gui.swt.ValueSlider;
 import org.boblycat.blimp.layers.PrintLayer;
 import org.eclipse.swt.SWT;
@@ -32,6 +33,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
 public class PrintEditor extends GridBasedLayerEditor {
+    private PrinterData printerData;
     private PrintLayer printLayer;
     private Label sizeLabel;
     private ValueSlider borderSlider;
@@ -52,6 +54,25 @@ public class PrintEditor extends GridBasedLayerEditor {
         });
         sizeLabel = createLabel("No printer selected");
         borderSlider = createSlider("Border (%)", 0, 99, 0);
+        button = new Button(this, SWT.PUSH);
+        button.setText("Print Now");
+        button.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                if (isDisposed())
+                    return;
+                if (printerData == null) {
+                    SwtUtil.messageDialog(getShell(), "Select Printer", "Please select a printer",
+                            SWT.ICON_INFORMATION);
+                    return;
+                }
+                Runnable testRunnable = new Runnable() {
+                    public void run() {
+                        SwtUtil.messageDialog(getShell(), "Test", "Hello", SWT.ICON_INFORMATION);
+                    }
+                };
+                workerThread.asyncPrint(PrintEditor.this, session, testRunnable, printerData, printLayer);
+            }
+        });
     }
 
     private Label createLabel(String initialText) {
@@ -64,6 +85,7 @@ public class PrintEditor extends GridBasedLayerEditor {
     private void updateWithPrinterData(PrinterData data) {
         if (data == null)
             return;
+        printerData = data;
         Printer printer = new Printer(data);
         try {
             printLayer.setPaperWidth(printer.getClientArea().width);
@@ -86,6 +108,10 @@ public class PrintEditor extends GridBasedLayerEditor {
             sizeLabel.setText(String.format("Printing resolution: %s x %s",
                     printLayer.getPaperWidth(), printLayer.getPaperHeight()));
         borderSlider.setSelectionAsDouble(printLayer.getBorderPercentage());
+
+        // Try to auto-select the default printer
+        if (printerData == null)
+            updateWithPrinterData(Printer.getDefaultPrinterData());
     }
 
     @Override

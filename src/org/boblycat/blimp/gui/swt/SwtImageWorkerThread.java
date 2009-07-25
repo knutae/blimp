@@ -18,14 +18,24 @@
  */
 package org.boblycat.blimp.gui.swt;
 
+import java.io.IOException;
+
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapUtil;
+import org.boblycat.blimp.BlimpSession;
 import org.boblycat.blimp.ImageWorkerThread;
 import org.boblycat.blimp.ProgressEvent;
 import org.boblycat.blimp.ProgressEventSource;
 import org.boblycat.blimp.ProgressListener;
+import org.boblycat.blimp.Util;
+import org.boblycat.blimp.BlimpSession.PreviewQuality;
+import org.boblycat.blimp.layers.PrintLayer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.printing.Printer;
+import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -50,6 +60,47 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
     private ProgressEventSource guiProgressEventSource;
     private Listener disposeListener;
 
+    private class PrintRequest extends Request {
+        private Printer printer;
+        private PrintLayer printLayerCopy;
+
+        PrintRequest(Object owner, BlimpSession session, Runnable runnable, PrinterData printerData,
+                PrintLayer printLayer) {
+            super(owner, session, runnable);
+            printer = new Printer(printerData);
+            printLayerCopy = (PrintLayer) sessionCopy.findLayer(printLayer.getName());
+            assert (printLayerCopy != null);
+        }
+
+        @Override
+        protected void execute() throws IOException {
+            printLayerCopy.setActive(true);
+            printLayerCopy.setPreview(false);
+            sessionCopy.setPreviewQuality(PreviewQuality.Accurate);
+            Bitmap bitmap = sessionCopy.getFullBitmap();
+            ImageData imageData = ImageConverter.jiuToSwtImageData(bitmap.getImage());
+            Image swtImage = new Image(printer, imageData);
+            String jobName = "Blimp: " + sessionCopy.getName();
+            if (printer.startJob(jobName)) {
+                Util.info("Started printer job " + jobName);
+                GC gc = new GC(printer);
+                int left = (printLayerCopy.getPaperWidth() - imageData.width) / 2;
+                int top = (printLayerCopy.getPaperHeight() - imageData.height) / 2;
+                gc.drawImage(swtImage, left, top);
+                printer.endPage();
+                printer.endJob();
+                Util.info("Finished printer job " + jobName);
+                gc.dispose();
+            }
+            else {
+                Util.err("Failed to start printer job " + jobName);
+            }
+            // TODO: make safe
+            printer.dispose();
+        }
+
+    }
+
     class ProgressGuiEventRunner implements Runnable {
         ProgressEvent event;
 
@@ -72,7 +123,7 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
         display.addListener(SWT.Dispose, displayDisposeListener);
         sharedData = new SharedData();
         guiProgressEventSource = new ProgressEventSource();
-        
+
         disposeListener = new Listener() {
             public void handleEvent(Event e) {
                 cancelRequestsByOwner(e.widget);
@@ -127,6 +178,7 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
             display.asyncExec(runnable);
     }
 
+    @Override
     protected synchronized boolean isFinished() {
         return finished;
     }
@@ -153,15 +205,20 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
     public void removeProgressListener(ProgressListener listener) {
         guiProgressEventSource.removeListener(listener);
     }
-    
+
     /**
      * Register a widget as a possible owner for asynchronous events.
      * Causes outstanding events to be canceled when the widget is disposed
      * (except for events that are already started).
-     * 
+     *
      * @param widget a widget that is also an event owner.
      */
     public void registerOwnerWidget(Widget widget) {
         widget.addListener(SWT.Dispose, disposeListener);
+    }
+
+    public void asyncPrint(Object owner, BlimpSession session, Runnable runnable, PrinterData printerData,
+            PrintLayer printLayer) {
+        putRequest(new PrintRequest(owner, session, runnable, printerData, printLayer));
     }
 }

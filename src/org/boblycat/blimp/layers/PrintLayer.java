@@ -80,6 +80,7 @@ public class PrintLayer extends DimensionAdjustmentLayer {
         int rescaleHeight = rescaleSize.height;
         Resample resample = new Resample();
         resample.setSize(rescaleWidth, rescaleHeight);
+        resample.setFilter(Resample.FILTER_TYPE_LANCZOS3); // hardcode to high quality
         resample.setInputImage(source.getImage());
         IntegerImage rescaled = (IntegerImage) applyJiuOperation(source.getImage(), resample);
 
