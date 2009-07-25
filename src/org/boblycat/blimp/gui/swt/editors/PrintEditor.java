@@ -29,13 +29,16 @@ import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Text;
 
 public class PrintEditor extends GridBasedLayerEditor {
+    private static final String NO_PRINTER = "No printer selected";
+
     private PrinterData printerData;
     private PrintLayer printLayer;
-    private Label sizeLabel;
+    private Text printerDescription;
     private ValueSlider borderSlider;
 
     public PrintEditor(Composite parent, int style) {
@@ -52,7 +55,12 @@ public class PrintEditor extends GridBasedLayerEditor {
                 updateWithPrinterData(data);
             }
         });
-        sizeLabel = createLabel("No printer selected");
+
+        Group group = createGroup("Printer Information");
+        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        printerDescription = new Text(group, SWT.READ_ONLY | SWT.MULTI | SWT.LEFT);
+        printerDescription.setText(NO_PRINTER);
+
         borderSlider = createSlider("Border (%)", 0, 99, 0);
         button = new Button(this, SWT.PUSH);
         button.setText("Print Now");
@@ -75,13 +83,6 @@ public class PrintEditor extends GridBasedLayerEditor {
         });
     }
 
-    private Label createLabel(String initialText) {
-        Label label = new Label(this, SWT.NONE);
-        label.setText(initialText);
-        label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        return label;
-    }
-
     private void updateWithPrinterData(PrinterData data) {
         if (data == null)
             return;
@@ -102,16 +103,25 @@ public class PrintEditor extends GridBasedLayerEditor {
     @Override
     protected void layerChanged() {
         printLayer = (PrintLayer) layer;
-        if (printLayer.getPaperWidth() <= 0 || printLayer.getPaperHeight() <= 0)
-            sizeLabel.setText("No printer selected");
-        else
-            sizeLabel.setText(String.format("Printing resolution: %s x %s",
-                    printLayer.getPaperWidth(), printLayer.getPaperHeight()));
         borderSlider.setSelectionAsDouble(printLayer.getBorderPercentage());
 
-        // Try to auto-select the default printer
-        if (printerData == null)
+        if (printerData == null) {
+            printerDescription.setText(NO_PRINTER);
+            // Try to auto-select the default printer
             updateWithPrinterData(Printer.getDefaultPrinterData());
+        }
+        else {
+            String orientation;
+            if (printLayer.getPaperWidth() > printLayer.getPaperHeight())
+                orientation = "Landscape";
+            else
+                orientation = "Portrait";
+            printerDescription.setText(
+                    "Printer: " + printerData.name + "\n" +
+                    "Driver: " + printerData.driver + "\n" +
+                    "Orientation: " + orientation + "\n" +
+                    "Resolution: " + printLayer.getPaperWidth() + "x" + printLayer.getPaperHeight());
+        }
     }
 
     @Override
