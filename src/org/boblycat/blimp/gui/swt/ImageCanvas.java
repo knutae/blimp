@@ -135,6 +135,8 @@ public class ImageCanvas extends Composite {
      */
     public void setImageData(ImageData data) {
         SwtUtil.dispose(currentImage);
+        if (isDisposed())
+            return;
         if (data == null)
             currentImage = null;
         else

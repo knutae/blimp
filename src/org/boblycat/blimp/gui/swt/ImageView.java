@@ -202,6 +202,8 @@ public class ImageView extends Composite {
             public void run() {
                 assert(asyncRequestCount > 0);
                 asyncRequestCount--;
+                if (isDisposed())
+                    return;
                 threadData = workerThread.getSharedData();
                 ImageData data = threadData.imageData;
                 if (data == null) {
