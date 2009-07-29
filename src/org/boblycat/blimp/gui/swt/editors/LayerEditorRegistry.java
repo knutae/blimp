@@ -46,7 +46,7 @@ public class LayerEditorRegistry {
 
     Shell parentShell;
 
-    static Constructor<? extends LayerEditor> getConstructor(
+    public static Constructor<? extends LayerEditor> getConstructor(
             Class<? extends LayerEditor> editorClass) {
         Class<?>[] argTypes = { Composite.class, Integer.TYPE };
         try {

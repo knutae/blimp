@@ -20,8 +20,11 @@ package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.*;
 import org.boblycat.blimp.exif.ExifTable;
+import org.boblycat.blimp.gui.swt.editors.EditorDialog;
 import org.boblycat.blimp.gui.swt.editors.LayerEditorCallback;
 import org.boblycat.blimp.gui.swt.editors.LayerEditorEnvironment;
+import org.boblycat.blimp.gui.swt.editors.LayerEditorRegistry;
+import org.boblycat.blimp.gui.swt.editors.PrintEditor;
 import org.boblycat.blimp.layers.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -85,6 +88,7 @@ public class MainWindow {
     MenuItem menuFileSaveSession;
     MenuItem menuFileSaveSessionAs;
     MenuItem menuFileExportImage;
+    MenuItem menuFilePrintImage;
     MenuItem menuHelpAbout;
     MenuItem menuHelpSystemInfo;
     MenuItem menuUndo;
@@ -130,6 +134,9 @@ public class MainWindow {
             }
             else if (event.widget == menuFileExportImage) {
                 doMenuExportImage();
+            }
+            else if (event.widget == menuFilePrintImage) {
+                doMenuPrintImage();
             }
             else if (event.widget == menuHelpAbout) {
                 doMenuAbout();
@@ -243,7 +250,7 @@ public class MainWindow {
         Menu fileMenu = addMenu(bar, "&File");
         menuFileOpenImage = addMenuItem(fileMenu, "Open &Image",
                 "Open an image");
-        menuFileOpenSession = addMenuItem(fileMenu, "Open &Project",
+        menuFileOpenSession = addMenuItem(fileMenu, "&Open Project",
                 "Open a blimp project");
         menuFileSaveSession = addMenuItem(fileMenu, "&Save Project\tCtrl+S",
                 "Save the current project");
@@ -252,6 +259,8 @@ public class MainWindow {
                 "Save the current project in a new file");
         menuFileExportImage = addMenuItem(fileMenu, "&Export Image",
                 "Export the current image");
+        menuFilePrintImage = addMenuItem(fileMenu, "&Print Image",
+                "Print the current image");
         menuFileExit = addMenuItem(fileMenu, "E&xit", "Exit the program");
         fileMenu.addListener(SWT.Show, new Listener() {
             public void handleEvent(Event e) {
@@ -764,6 +773,36 @@ public class MainWindow {
                                 "An I/O error occurred: " + errorMessage);
                     }
                 });
+    }
+    
+    void doMenuPrintImage() {
+        if (currentImageTab == null)
+            return;
+        HistoryBlimpSession session = currentImageTab.getSession();
+        session.beginDisableAutoRecord();
+        PrintLayer layer = new PrintLayer();
+        LayerEditorEnvironment env = currentImageTab.editorEnv.clone();
+        try {
+            // New layers are always inactive before the editing starts
+            layer.setActive(false);
+            session.addLayer(layer);
+            env.layerWasJustAdded = true;
+            env.layer = layer;
+            env.editorCallback = new LayerEditorCallback() {
+                public void editingFinished(LayerEditorEnvironment env,
+                        boolean cancelled) {
+                    // unconditionally remove the print layer
+                    env.session.removeLayer(env.layer);
+                }
+            };
+            EditorDialog dlg = new EditorDialog(shell,
+                    LayerEditorRegistry.getConstructor(PrintEditor.class), env);
+            dlg.show();
+        }
+        finally {
+            env.layerWasJustAdded = false;
+            session.endDisableAutoRecord();
+        }
     }
 
     void doMenuAbout() {
