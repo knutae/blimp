@@ -18,23 +18,7 @@
  */
 package org.boblycat.blimp.gui.swt.editors;
 
-import org.boblycat.blimp.layers.BrightnessContrastLayer;
-import org.boblycat.blimp.layers.ColorBalanceLayer;
-import org.boblycat.blimp.layers.ColorizeLayer;
-import org.boblycat.blimp.layers.CropLayer;
-import org.boblycat.blimp.layers.CurvesLayer;
-import org.boblycat.blimp.layers.GammaLayer;
-import org.boblycat.blimp.layers.GrayscaleMixerLayer;
-import org.boblycat.blimp.layers.LevelsLayer;
-import org.boblycat.blimp.layers.LocalContrastLayer;
-import org.boblycat.blimp.layers.OrientationLayer;
-import org.boblycat.blimp.layers.PrintLayer;
-import org.boblycat.blimp.layers.RawFileInputLayer;
-import org.boblycat.blimp.layers.ResizeLayer;
-import org.boblycat.blimp.layers.RotateLayer;
-import org.boblycat.blimp.layers.SaturationLayer;
-import org.boblycat.blimp.layers.SolidColorBorderLayer;
-import org.boblycat.blimp.layers.UnsharpMaskLayer;
+import org.boblycat.blimp.layers.*;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -63,6 +47,5 @@ public class DefaultEditorRegistry extends LayerEditorRegistry {
         register(ColorBalanceLayer.class, ColorBalanceEditor.class);
         register(ColorizeLayer.class, ColorizeEditor.class);
         register(UnsharpMaskLayer.class, UnsharpMaskEditor.class);
-        register(PrintLayer.class, PrintEditor.class);
     }
 }
