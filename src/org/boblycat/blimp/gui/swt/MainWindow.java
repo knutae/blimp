@@ -266,6 +266,7 @@ public class MainWindow {
                 menuFileSaveSession.setEnabled(canSave);
                 menuFileSaveSessionAs.setEnabled(canSave);
                 menuFileExportImage.setEnabled(canSave);
+                menuFilePrintImage.setEnabled(canSave);
             }
         });
         fileMenu.addListener(SWT.Hide, enableAllMenuItems);
