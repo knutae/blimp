@@ -62,13 +62,6 @@ public class PrintEditor extends GridBasedLayerEditor {
         printerDescription.setText(NO_PRINTER);
 
         borderSlider = createSlider("Border (%)", 0, 99, 0);
-        button = new Button(this, SWT.PUSH);
-        button.setText("Print Now");
-        button.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                asyncPrint();
-            }
-        });
     }
     
     public void asyncPrint() {
