@@ -43,7 +43,7 @@ public class EditorDialog {
     private Layer workingClone;
     private Layer actualLayer;
     private Shell dialog;
-    private LayerEditorEnvironment env;
+    protected LayerEditorEnvironment env;
     private Button previewCheckButton;
     private LayerEditor editor;
     private Shell parentShell;

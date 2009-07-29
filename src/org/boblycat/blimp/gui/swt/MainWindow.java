@@ -20,11 +20,9 @@ package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.*;
 import org.boblycat.blimp.exif.ExifTable;
-import org.boblycat.blimp.gui.swt.editors.EditorDialog;
 import org.boblycat.blimp.gui.swt.editors.LayerEditorCallback;
 import org.boblycat.blimp.gui.swt.editors.LayerEditorEnvironment;
-import org.boblycat.blimp.gui.swt.editors.LayerEditorRegistry;
-import org.boblycat.blimp.gui.swt.editors.PrintEditor;
+import org.boblycat.blimp.gui.swt.editors.PrintLayerDialog;
 import org.boblycat.blimp.layers.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -778,31 +776,8 @@ public class MainWindow {
     void doMenuPrintImage() {
         if (currentImageTab == null)
             return;
-        HistoryBlimpSession session = currentImageTab.getSession();
-        session.beginDisableAutoRecord();
-        PrintLayer layer = new PrintLayer();
-        LayerEditorEnvironment env = currentImageTab.editorEnv.clone();
-        try {
-            // New layers are always inactive before the editing starts
-            layer.setActive(false);
-            session.addLayer(layer);
-            env.layerWasJustAdded = true;
-            env.layer = layer;
-            env.editorCallback = new LayerEditorCallback() {
-                public void editingFinished(LayerEditorEnvironment env,
-                        boolean cancelled) {
-                    // unconditionally remove the print layer
-                    env.session.removeLayer(env.layer);
-                }
-            };
-            EditorDialog dlg = new EditorDialog(shell,
-                    LayerEditorRegistry.getConstructor(PrintEditor.class), env);
-            dlg.show();
-        }
-        finally {
-            env.layerWasJustAdded = false;
-            session.endDisableAutoRecord();
-        }
+        PrintLayerDialog dlg = new PrintLayerDialog(shell, currentImageTab.editorEnv);
+        dlg.show();
     }
 
     void doMenuAbout() {
