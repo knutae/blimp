@@ -19,16 +19,48 @@
 package org.boblycat.blimp.gui.swt.editors;
 
 import org.boblycat.blimp.layers.PrintLayer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 public class PrintLayerDialog extends EditorDialog {
+    
+    private PrintEditor printEditor;
 
     public PrintLayerDialog(Shell parentShell,
             LayerEditorEnvironment environment) {
-        super(parentShell, LayerEditorRegistry.getConstructor(PrintEditor.class),
-                environment);
+        super(parentShell, null, environment);
+    }
+    
+    protected LayerEditor createEditor(Composite parent) {
+        printEditor = new PrintEditor(parent, SWT.NONE);
+        return printEditor;
     }
 
+    protected void addButtonRow() {
+        Composite buttonRow = new Composite(dialog, SWT.NONE);
+        buttonRow.setLayout(new FillLayout());
+        Button button = new Button(buttonRow, SWT.NONE);
+        button.setText("Print");
+        button.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event e) {
+                printEditor.asyncPrint();
+                //editingFinished(false);
+            }
+        });
+        button = new Button(buttonRow, SWT.NONE);
+        button.setText("Close");
+        button.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event e) {
+                editingFinished(false);
+            }
+        });
+
+    }
     public void show() {
         env.layerWasJustAdded = true;
         env.session.beginDisableAutoRecord();

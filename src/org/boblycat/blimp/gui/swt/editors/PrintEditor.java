@@ -66,21 +66,25 @@ public class PrintEditor extends GridBasedLayerEditor {
         button.setText("Print Now");
         button.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event event) {
-                if (isDisposed())
-                    return;
-                if (printerData == null) {
-                    SwtUtil.messageDialog(getShell(), "Select Printer", "Please select a printer",
-                            SWT.ICON_INFORMATION);
-                    return;
-                }
-                Runnable testRunnable = new Runnable() {
-                    public void run() {
-                        SwtUtil.messageDialog(getShell(), "Test", "Hello", SWT.ICON_INFORMATION);
-                    }
-                };
-                workerThread.asyncPrint(PrintEditor.this, session, testRunnable, printerData, printLayer);
+                asyncPrint();
             }
         });
+    }
+    
+    public void asyncPrint() {
+        if (isDisposed())
+            return;
+        if (printerData == null) {
+            SwtUtil.messageDialog(getShell(), "Select Printer", "Please select a printer",
+                    SWT.ICON_INFORMATION);
+            return;
+        }
+        Runnable testRunnable = new Runnable() {
+            public void run() {
+                SwtUtil.messageDialog(getShell(), "Test", "Hello", SWT.ICON_INFORMATION);
+            }
+        };
+        workerThread.asyncPrint(PrintEditor.this, session, testRunnable, printerData, printLayer);
     }
 
     private void updateWithPrinterData(PrinterData data) {

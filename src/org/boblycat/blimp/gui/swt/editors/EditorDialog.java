@@ -19,6 +19,7 @@
 package org.boblycat.blimp.gui.swt.editors;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.boblycat.blimp.Serializer;
 import org.boblycat.blimp.Util;
@@ -42,10 +43,10 @@ public class EditorDialog {
     private Layer originalClone;
     private Layer workingClone;
     private Layer actualLayer;
-    private Shell dialog;
+    protected Shell dialog;
     protected LayerEditorEnvironment env;
     private Button previewCheckButton;
-    private LayerEditor editor;
+    protected LayerEditor editor;
     private Shell parentShell;
     private Constructor<? extends LayerEditor> editorConstructor;
 
@@ -66,6 +67,39 @@ public class EditorDialog {
         this.editorConstructor = editorConstructor;
         this.env = environment;
     }
+    
+    protected void addButtonRow() {
+        Composite buttonRow = new Composite(dialog, SWT.NONE);
+        buttonRow.setLayout(new FillLayout());
+        Button button = new Button(buttonRow, SWT.NONE);
+        button.setText("Ok");
+        button.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event e) {
+                if (editedLayer() != actualLayer)
+                    Serializer.copyBeanData(editedLayer(), actualLayer);
+                if (env.layerWasJustAdded)
+                    actualLayer.setActive(true);
+                actualLayer.invalidate();
+                editingFinished(false);
+            }
+        });
+        button = new Button(buttonRow, SWT.NONE);
+        button.setText("Cancel");
+        button.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event e) {
+                // revert layer changes
+                Serializer.copyBeanData(originalClone, actualLayer);
+                editingFinished(true);
+            }
+        });
+
+    }
+    
+    protected LayerEditor createEditor(Composite parent)
+    throws IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        Object args[] = { parent, SWT.NONE };
+        return editorConstructor.newInstance(args);
+    }
 
     public void show() {
         dialog = new Shell(parentShell, SWT.APPLICATION_MODAL
@@ -75,10 +109,8 @@ public class EditorDialog {
         ScrolledComposite wrapper = new ScrolledComposite(dialog,
                 SWT.V_SCROLL | SWT.H_SCROLL);
         wrapper.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        Object args[] = { wrapper, SWT.NONE };
-        editor = null;
         try {
-            editor = editorConstructor.newInstance(args);
+            editor = createEditor(wrapper);
         }
         catch (Exception e) {
             Util.err("Failed to construct editor", e);
@@ -122,36 +154,14 @@ public class EditorDialog {
             actualLayer.setActive(true);
             actualLayer.invalidate();
         }
-
-        Composite buttonRow = new Composite(dialog, SWT.NONE);
-        buttonRow.setLayout(new FillLayout());
-        Button button = new Button(buttonRow, SWT.NONE);
-        button.setText("Ok");
-        button.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event e) {
-                if (editedLayer() != actualLayer)
-                    Serializer.copyBeanData(editedLayer(), actualLayer);
-                if (env.layerWasJustAdded)
-                    actualLayer.setActive(true);
-                actualLayer.invalidate();
-                editingFinished(false);
-            }
-        });
-        button = new Button(buttonRow, SWT.NONE);
-        button.setText("Cancel");
-        button.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event e) {
-                // revert layer changes
-                Serializer.copyBeanData(originalClone, actualLayer);
-                editingFinished(true);
-            }
-        });
+        
+        addButtonRow();
 
         dialog.pack();
         dialog.open();
     }
 
-    private void editingFinished(boolean cancelled) {
+    protected void editingFinished(boolean cancelled) {
         dialog.close();
         dialog = null;
         env.layerWasJustAdded = false;
