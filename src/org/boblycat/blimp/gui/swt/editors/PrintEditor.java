@@ -18,6 +18,7 @@
  */
 package org.boblycat.blimp.gui.swt.editors;
 
+import org.boblycat.blimp.gui.swt.SwtImageWorkerThread;
 import org.boblycat.blimp.gui.swt.SwtUtil;
 import org.boblycat.blimp.gui.swt.ValueSlider;
 import org.boblycat.blimp.layers.PrintLayer;
@@ -72,12 +73,25 @@ public class PrintEditor extends GridBasedLayerEditor {
                     SWT.ICON_INFORMATION);
             return;
         }
-        Runnable testRunnable = new Runnable() {
-            public void run() {
-                SwtUtil.messageDialog(getShell(), "Test", "Hello", SWT.ICON_INFORMATION);
+        SwtImageWorkerThread.PrintTask task = new SwtImageWorkerThread.PrintTask() {
+            public void handleError(String printJobName, String errorMessage) {
+                if (isDisposed())
+                    return;
+                SwtUtil.errorDialog(getShell(), "Printing Error",
+                        "An error occurred while printing. Error details:\n" +
+                        errorMessage);
             }
+
+            public void handleSuccess(String printJobName) {
+                if (isDisposed())
+                    return;
+                SwtUtil.messageDialog(getShell(), "Sent to Printer",
+                        "The image was sent to the printer (job name " + printJobName + ").",
+                        SWT.ICON_INFORMATION);
+            }
+            
         };
-        workerThread.asyncPrint(PrintEditor.this, session, testRunnable, printerData, printLayer);
+        workerThread.asyncPrint(PrintEditor.this, session, task, printerData, printLayer);
     }
 
     private void updateWithPrinterData(PrinterData data) {

@@ -47,6 +47,11 @@ import org.eclipse.swt.widgets.Widget;
  * @author Knut Arild Erstad
  */
 public class SwtImageWorkerThread extends ImageWorkerThread {
+    public interface PrintTask {
+        void handleSuccess(String printJobName);
+        void handleError(String printJobName, String errorMessage);
+    }
+    
     public class SharedData {
         ImageData imageData;
         double zoom;
@@ -63,10 +68,13 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
     private class PrintRequest extends Request {
         private Printer printer;
         private PrintLayer printLayerCopy;
+        private PrintTask printTask;
+        private String printJobName;
 
-        PrintRequest(Object owner, BlimpSession session, Runnable runnable, PrinterData printerData,
+        PrintRequest(Object owner, BlimpSession session, PrintTask task, PrinterData printerData,
                 PrintLayer printLayer) {
-            super(owner, session, runnable);
+            super(owner, session, null);
+            printTask = task;
             printer = new Printer(printerData);
             printLayerCopy = (PrintLayer) sessionCopy.findLayer(printLayer.getName());
             assert (printLayerCopy != null);
@@ -80,9 +88,8 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
             Bitmap bitmap = session.getFullBitmap();
             ImageData imageData = ImageConverter.jiuToSwtImageData(bitmap.getImage());
             Image swtImage = new Image(printer, imageData);
-            String jobName = "Blimp: " + sessionCopy.getName();
-            if (printer.startJob(jobName)) {
-                Util.info("Started printer job " + jobName);
+            printJobName = "blimp_" + sessionCopy.getName();
+            if (printer.startJob(printJobName)) {
                 GC gc = new GC(printer);
                 try {
                     int left = (printLayerCopy.getPaperWidth() - imageData.width) / 2;
@@ -90,14 +97,23 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
                     gc.drawImage(swtImage, left, top);
                     printer.endPage();
                     printer.endJob();
-                    Util.info("Finished printer job " + jobName);
+                    asyncExec(new Runnable() {
+                        public void run() {
+                            printTask.handleSuccess(printJobName);
+                        }
+                    });
                 }
                 finally {
                     gc.dispose();
                 }
             }
             else {
-                Util.err("Failed to start printer job " + jobName);
+                Util.err("Failed to start printer job " + printJobName);
+                asyncExec(new Runnable() {
+                    public void run() {
+                        printTask.handleError(printJobName, "Failed to start print job (Printer.startJob() returned false)");
+                    }
+                });
             }
         }
 
@@ -225,8 +241,8 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
         widget.addListener(SWT.Dispose, disposeListener);
     }
 
-    public void asyncPrint(Object owner, BlimpSession session, Runnable runnable, PrinterData printerData,
+    public void asyncPrint(Object owner, BlimpSession session, PrintTask task, PrinterData printerData,
             PrintLayer printLayer) {
-        putRequest(new PrintRequest(owner, session, runnable, printerData, printLayer));
+        putRequest(new PrintRequest(owner, session, task, printerData, printLayer));
     }
 }
