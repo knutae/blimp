@@ -24,6 +24,7 @@ import org.boblycat.blimp.gui.swt.editors.LayerEditorCallback;
 import org.boblycat.blimp.gui.swt.editors.LayerEditorEnvironment;
 import org.boblycat.blimp.gui.swt.editors.PrintLayerDialog;
 import org.boblycat.blimp.layers.*;
+import org.boblycat.blimp.thread.ImageWorkerThread;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;

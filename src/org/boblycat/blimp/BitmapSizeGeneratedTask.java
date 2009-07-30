@@ -18,6 +18,8 @@
  */
 package org.boblycat.blimp;
 
+import org.boblycat.blimp.thread.ImageWorkerThread;
+
 /**
  * Task used when asynchronously querying the size of a bitmap from the
  * image worker thread.

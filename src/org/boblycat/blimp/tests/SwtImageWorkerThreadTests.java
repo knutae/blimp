@@ -193,4 +193,5 @@ public class SwtImageWorkerThreadTests {
         assertEquals(1, req2.executeCount);
         assertEquals(1, req2.disposeCount);
     }
+    
 }

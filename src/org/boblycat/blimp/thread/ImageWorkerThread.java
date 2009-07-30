@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.thread;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +25,19 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.BitmapSize;
+import org.boblycat.blimp.BitmapSizeGeneratedTask;
+import org.boblycat.blimp.BitmapUtil;
+import org.boblycat.blimp.BlimpSession;
+import org.boblycat.blimp.CachedBlimpSession;
+import org.boblycat.blimp.Debug;
+import org.boblycat.blimp.ExifQueryTask;
+import org.boblycat.blimp.HistogramGeneratedTask;
+import org.boblycat.blimp.ProgressEvent;
+import org.boblycat.blimp.ProgressListener;
+import org.boblycat.blimp.RGBHistograms;
+import org.boblycat.blimp.Util;
 import org.boblycat.blimp.BlimpSession.PreviewQuality;
 
 /**
