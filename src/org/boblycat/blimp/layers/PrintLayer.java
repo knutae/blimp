@@ -18,7 +18,10 @@
  */
 package org.boblycat.blimp.layers;
 
+import net.sourceforge.jiu.color.reduction.ReduceRGB;
 import net.sourceforge.jiu.data.IntegerImage;
+import net.sourceforge.jiu.data.MemoryRGB24Image;
+import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.geometry.Resample;
 
 import org.boblycat.blimp.Bitmap;
@@ -74,6 +77,18 @@ public class PrintLayer extends DimensionAdjustmentLayer {
             // This is normal before a printer is selected, not necessarily an error
             return source;
         }
+        
+        PixelImage image = source.getImage();
+        
+        if (source.getChannelBitDepth() > 8) {
+            // start by reducing the bit depth, for large pixel resolutions
+            // this can reduce memory usage a lot
+            ReduceRGB reducer = new ReduceRGB();
+            reducer.setBitsPerSample(8);
+            // TODO: creating the output image should be automatic?
+            reducer.setOutputImage(new MemoryRGB24Image(image.getWidth(), image.getHeight()));
+            image = applyJiuOperation(image, reducer);
+        }
 
         BitmapSize rescaleSize = caluclateSizeWithoutBorder(source.getSize());
         int rescaleWidth = rescaleSize.width;
@@ -84,8 +99,7 @@ public class PrintLayer extends DimensionAdjustmentLayer {
             resample.setFilter(Resample.FILTER_TYPE_TRIANGLE);
         else
             resample.setFilter(Resample.FILTER_TYPE_LANCZOS3); // hardcode to high quality
-        resample.setInputImage(source.getImage());
-        IntegerImage rescaled = (IntegerImage) applyJiuOperation(source.getImage(), resample);
+        IntegerImage rescaled = (IntegerImage) applyJiuOperation(image, resample);
 
         if (!isPreview())
             // don't add borders unless for previewing
