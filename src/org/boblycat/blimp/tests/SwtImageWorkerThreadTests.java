@@ -50,21 +50,17 @@ class TestableImageWorkerThread extends SwtImageWorkerThread {
         }
     }
     
-    public class SleepRequest extends Request {
-        private int milliseconds;
+    public class CallbackRequest extends Request {
+        private Runnable callback;
         
-        public SleepRequest(Object owner, int milliseconds) {
+        public CallbackRequest(Object owner, Runnable callback) {
             super(owner, null, null);
-            this.milliseconds = milliseconds;
+            this.callback = callback;
         }
 
         @Override
         protected void execute() throws IOException {
-            try {
-                sleep(milliseconds);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            callback.run();
         }
     }
     
@@ -135,7 +131,17 @@ public class SwtImageWorkerThreadTests {
     }
     
     private void putSleepRequest(Object owner, int milliseconds) {
-        thread.putRequest(thread.new SleepRequest(owner, milliseconds));
+        final int millis = milliseconds;
+        thread.putRequest(thread.new CallbackRequest(owner, new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(millis);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    fail(e.getMessage());
+                }
+            }
+        }));
     }
     
     @Test
