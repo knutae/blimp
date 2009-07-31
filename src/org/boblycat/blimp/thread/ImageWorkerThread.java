@@ -30,7 +30,6 @@ import org.boblycat.blimp.BitmapSizeGeneratedTask;
 import org.boblycat.blimp.BlimpSession;
 import org.boblycat.blimp.CachedBlimpSession;
 import org.boblycat.blimp.Debug;
-import org.boblycat.blimp.ExifQueryTask;
 import org.boblycat.blimp.HistogramGeneratedTask;
 import org.boblycat.blimp.ProgressEvent;
 import org.boblycat.blimp.ProgressListener;
