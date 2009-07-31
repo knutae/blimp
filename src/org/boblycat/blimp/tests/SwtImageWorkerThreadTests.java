@@ -21,7 +21,7 @@ package org.boblycat.blimp.tests;
 import java.io.IOException;
 
 import org.boblycat.blimp.BlimpSession;
-import org.boblycat.blimp.gui.swt.SwtImageWorkerThread;
+import org.boblycat.blimp.gui.swt.thread.SwtImageWorkerThread;
 import org.boblycat.blimp.thread.ImageWorkerThread;
 import org.boblycat.blimp.thread.Request;
 import org.eclipse.swt.widgets.Display;

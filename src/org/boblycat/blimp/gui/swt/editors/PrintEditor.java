@@ -18,9 +18,9 @@
  */
 package org.boblycat.blimp.gui.swt.editors;
 
-import org.boblycat.blimp.gui.swt.SwtImageWorkerThread;
 import org.boblycat.blimp.gui.swt.SwtUtil;
 import org.boblycat.blimp.gui.swt.ValueSlider;
+import org.boblycat.blimp.gui.swt.thread.SwtImageWorkerThread;
 import org.boblycat.blimp.layers.PrintLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;

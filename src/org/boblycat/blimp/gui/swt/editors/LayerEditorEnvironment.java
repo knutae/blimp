@@ -19,7 +19,7 @@
 package org.boblycat.blimp.gui.swt.editors;
 
 import org.boblycat.blimp.HistoryBlimpSession;
-import org.boblycat.blimp.gui.swt.SwtImageWorkerThread;
+import org.boblycat.blimp.gui.swt.thread.SwtImageWorkerThread;
 import org.boblycat.blimp.layers.Layer;
 
 /**

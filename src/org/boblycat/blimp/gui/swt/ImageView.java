@@ -20,6 +20,7 @@ package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.*;
 import org.boblycat.blimp.BlimpSession.PreviewQuality;
+import org.boblycat.blimp.gui.swt.thread.SwtImageWorkerThread;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;

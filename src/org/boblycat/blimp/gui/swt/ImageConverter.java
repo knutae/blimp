@@ -53,7 +53,7 @@ public class ImageConverter {
         return new Image(device, inputStream);
     }
 
-    static ImageData jiuToSwtImageData(PixelImage pixelImage) {
+    public static ImageData jiuToSwtImageData(PixelImage pixelImage) {
         byte[] bytes = BitmapUtil.get8BitBGRData(pixelImage);
         if (bytes == null)
             return null;

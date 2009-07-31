@@ -20,7 +20,7 @@ package org.boblycat.blimp.gui.swt.editors;
 
 import org.eclipse.swt.widgets.Composite;
 import org.boblycat.blimp.BlimpSession;
-import org.boblycat.blimp.gui.swt.SwtImageWorkerThread;
+import org.boblycat.blimp.gui.swt.thread.SwtImageWorkerThread;
 import org.boblycat.blimp.layers.Layer;
 
 public abstract class LayerEditor extends Composite {

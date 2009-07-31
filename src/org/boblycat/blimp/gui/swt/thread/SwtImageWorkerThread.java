@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp.gui.swt;
+package org.boblycat.blimp.gui.swt.thread;
 
 import java.io.IOException;
 
@@ -28,6 +28,8 @@ import org.boblycat.blimp.ProgressEventSource;
 import org.boblycat.blimp.ProgressListener;
 import org.boblycat.blimp.Util;
 import org.boblycat.blimp.BlimpSession.PreviewQuality;
+import org.boblycat.blimp.gui.swt.ImageConverter;
+import org.boblycat.blimp.gui.swt.SwtUtil;
 import org.boblycat.blimp.layers.PrintLayer;
 import org.boblycat.blimp.thread.ImageWorkerThread;
 import org.boblycat.blimp.thread.Request;
@@ -54,10 +56,10 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
     }
     
     public class SharedData {
-        ImageData imageData;
-        double zoom;
-        Bitmap viewBitmap;
-        String errorMessage;
+        public ImageData imageData;
+        public double zoom;
+        public Bitmap viewBitmap;
+        public String errorMessage;
     }
 
     private Display display;
