@@ -26,9 +26,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.BitmapSize;
 import org.boblycat.blimp.BitmapSizeGeneratedTask;
-import org.boblycat.blimp.BitmapUtil;
 import org.boblycat.blimp.BlimpSession;
 import org.boblycat.blimp.CachedBlimpSession;
 import org.boblycat.blimp.Debug;
@@ -36,9 +34,7 @@ import org.boblycat.blimp.ExifQueryTask;
 import org.boblycat.blimp.HistogramGeneratedTask;
 import org.boblycat.blimp.ProgressEvent;
 import org.boblycat.blimp.ProgressListener;
-import org.boblycat.blimp.RGBHistograms;
 import org.boblycat.blimp.Util;
-import org.boblycat.blimp.BlimpSession.PreviewQuality;
 
 /**
  * A worker thread for doing image (layer) processing.
@@ -51,201 +47,8 @@ public abstract class ImageWorkerThread extends Thread {
         void handleError(File filename, String errorMessage);
     }
 
-    protected abstract class Request {
-        private Object owner;
-        protected Runnable runnable;
-        protected BlimpSession sessionCopy;
-
-        protected Request(Object owner, BlimpSession session, Runnable runnable) {
-            this.owner = owner;
-            this.runnable = runnable;
-            if (session != null)
-                this.sessionCopy = BlimpSession.createCopy(session);
-        }
-
-        protected abstract void execute() throws IOException;
-
-        // Will be called once, either after execute or during cancel.
-        // Override to dispose of (non-memory) resources.
-        protected void dispose() {
-        }
-    }
-
-    private class BitmapRequest extends Request {
-        private int viewWidth;
-        private int viewHeight;
-        private PreviewQuality previewQuality;
-
-        BitmapRequest(Object owner, BlimpSession session, Runnable runnable,
-                int viewWidth, int viewHeight, PreviewQuality previewQuality) {
-            super(owner, session, runnable);
-            this.viewWidth = viewWidth;
-            this.viewHeight = viewHeight;
-            this.previewQuality = previewQuality;
-        }
-
-        @Override
-        protected void execute() throws IOException {
-            assert(runnable != null);
-            // Generate the bitmap on this thread.  It should not be transferred
-            // to other threads.
-            Bitmap bitmap;
-            Debug.print(this, "generating bitmap");
-            if (viewWidth > 0 && viewHeight > 0)
-                bitmap = session.getSizedBitmap(viewWidth, viewHeight, previewQuality);
-            else
-                bitmap = session.getBitmap();
-            Debug.print(this, "finished generating bitmap");
-            bitmapGenerated(runnable, bitmap);
-        }
-    }
-
-    private class HistogramRequest extends Request {
-        private HistogramGeneratedTask histogramTask;
-        private String layerName;
-
-        HistogramRequest(Object owner, BlimpSession session,
-                HistogramGeneratedTask task, String layerName) {
-            super(owner, session, task);
-            this.histogramTask = task;
-            this.layerName = layerName;
-        }
-
-        @Override
-        protected void execute() throws IOException {
-            assert(histogramTask != null && layerName != null);
-            Debug.print(this, "generating histogram for layer " + layerName);
-            RGBHistograms histograms = session.getHistogramsBeforeLayer(layerName, true);
-            Debug.print(this, "finished generating histogram");
-            // Note: the following should work without synchronization problems,
-            // because the histogram task is only used by one thread at a time.
-            histogramTask.setHistograms(histograms);
-            asyncExec(histogramTask);
-        }
-    }
-
-    private class SizeRequest extends Request {
-        private BitmapSizeGeneratedTask sizeTask;
-        private String layerName;
-
-        SizeRequest(Object owner, BlimpSession session,
-                BitmapSizeGeneratedTask task, String layerName) {
-            super(owner, session, task);
-            this.sizeTask = task;
-            this.layerName = layerName;
-        }
-
-        @Override
-        protected void execute() throws IOException {
-            assert(sizeTask != null && layerName != null);
-            Debug.print(this, "generating size for layer " + layerName);
-            BitmapSize size = session.getBitmapSizeBeforeLayer(layerName);
-            Debug.print(this, "finished generating size");
-            if (size == null)
-                Util.err("Failed to get size for layer " + layerName);
-            sizeTask.setSize(size);
-            asyncExec(sizeTask);
-        }
-    }
-
-    private class ZoomInRequest extends Request {
-        ZoomInRequest(Object owner, BlimpSession session, Runnable runnable) {
-            super(owner, session, runnable);
-        }
-
-        @Override
-        protected void execute() throws IOException {
-            session.zoomIn();
-            bitmapGenerated(runnable, session.getBitmap());
-        }
-    }
-
-    private class ZoomOutRequest extends Request {
-        ZoomOutRequest(Object owner, BlimpSession session, Runnable runnable) {
-            super(owner, session, runnable);
-        }
-
-        @Override
-        protected void execute() throws IOException {
-            session.zoomOut();
-            bitmapGenerated(runnable, session.getBitmap());
-        }
-    }
-
-    private class ExportBitmapRequest extends Request {
-        private File file;
-        private double exportQuality;
-        private FileExportTask exportTask;
-        private String errorMessage;
-
-        ExportBitmapRequest(Object owner, BlimpSession session,
-                FileExportTask task, File file, double quality) {
-            // runnable can be null because IOException is handled internally
-            super(owner, session, null);
-            this.file = file;
-            this.exportQuality = quality;
-            this.exportTask = task;
-        }
-
-        @Override
-        protected void execute() throws IOException {
-            assert(file != null);
-            assert(exportTask != null);
-            try {
-                Debug.print(this, "exporting bitmap to " + file);
-                Bitmap bitmap = session.getFullBitmap();
-                Debug.print(this, "finished generating full bitmap for export");
-                String ext = Util.getFileExtension(file);
-                BitmapUtil.writeBitmap(bitmap, ext, file, exportQuality);
-                Debug.print(this, "finished writing bitmap");
-                asyncExec(new Runnable() {
-                    public void run() {
-                        exportTask.handleSuccess(file);
-                    }
-                });
-            }
-            catch (IOException e) {
-                // special handling of IOException during export
-                errorMessage = e.getMessage();
-                asyncExec(new Runnable() {
-                    public void run() {
-                        exportTask.handleError(file, errorMessage);
-                    }
-                });
-            }
-        }
-    }
-
-    private class ExifRequest extends Request {
-        private ExifQueryTask exifTask;
-
-        ExifRequest(Object owner, BlimpSession session, ExifQueryTask task) {
-            super(owner, session, task);
-            this.exifTask = task;
-        }
-
-        @Override
-        protected void execute() throws IOException {
-            assert(exifTask != null);
-            exifTask.data = session.getInterestingExifData();
-            asyncExec(exifTask);
-        }
-    }
-
-    private class QuitRequest extends Request {
-        QuitRequest(Object owner) {
-            super(owner, null, null);
-        }
-
-        @Override
-        protected void execute() {
-            assert(false); // unreachable
-        }
-    }
-
-    BlockingQueue<Request> requestQueue;
-
-    protected BlimpSession session;
+    private BlockingQueue<Request> requestQueue;
+    private BlimpSession session;
 
     public ImageWorkerThread() {
         super("Blimp Image Worker");
@@ -270,7 +73,7 @@ public abstract class ImageWorkerThread extends Thread {
      */
     protected abstract void bitmapGenerated(Runnable runnable, Bitmap bitmap);
 
-    protected abstract void asyncExec(Runnable runnable);
+    public abstract void asyncExec(Runnable runnable);
 
     protected abstract void progressReported(ProgressEvent event);
 
@@ -381,34 +184,38 @@ public abstract class ImageWorkerThread extends Thread {
             Runnable runnable, int width, int height,
             BlimpSession.PreviewQuality quality) {
         // the following can happen on any thread
-        putRequest(new BitmapRequest(owner, session, runnable, width, height, quality));
+        putRequest(new BitmapRequest(this, owner, session, runnable, width, height, quality));
     }
 
     public void asyncGenerateHistogram(Object owner, BlimpSession session,
             String layerName, HistogramGeneratedTask task) {
-        putRequest(new HistogramRequest(owner, session, task, layerName));
+        putRequest(new HistogramRequest(this, owner, session, task, layerName));
     }
 
     public void asyncGenerateBitmapSize(Object owner, BlimpSession session,
             String layerName, BitmapSizeGeneratedTask task) {
-        putRequest(new SizeRequest(owner, session, task, layerName));
+        putRequest(new SizeRequest(this, owner, session, task, layerName));
     }
 
     public void asyncExportBitmap(Object owner, BlimpSession session,
             File filePath, double quality, FileExportTask task) {
-        putRequest(new ExportBitmapRequest(owner, session, task, filePath, quality));
+        putRequest(new ExportBitmapRequest(this, owner, session, task, filePath, quality));
     }
 
     public void zoomIn(Object owner, BlimpSession session, Runnable runnable) {
-        putRequest(new ZoomInRequest(owner, session, runnable));
+        putRequest(new ZoomInRequest(this, owner, session, runnable));
     }
 
     public void zoomOut(Object owner, BlimpSession session, Runnable runnable) {
-        putRequest(new ZoomOutRequest(owner, session, runnable));
+        putRequest(new ZoomOutRequest(this, owner, session, runnable));
     }
 
     public void getExifData(Object owner, BlimpSession session,
             ExifQueryTask task) {
-        putRequest(new ExifRequest(owner, session, task));
+        putRequest(new ExifRequest(this, owner, session, task));
+    }
+
+    public BlimpSession getSession() {
+        return session;
     }
 }

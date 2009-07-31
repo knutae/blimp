@@ -30,6 +30,7 @@ import org.boblycat.blimp.Util;
 import org.boblycat.blimp.BlimpSession.PreviewQuality;
 import org.boblycat.blimp.layers.PrintLayer;
 import org.boblycat.blimp.thread.ImageWorkerThread;
+import org.boblycat.blimp.thread.Request;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -71,9 +72,9 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
         private PrintTask printTask;
         private String printJobName;
 
-        PrintRequest(Object owner, BlimpSession session, PrintTask task, PrinterData printerData,
+        PrintRequest(ImageWorkerThread thread, Object owner, BlimpSession session, PrintTask task, PrinterData printerData,
                 PrintLayer printLayer) {
-            super(owner, session, null);
+            super(thread, owner, session, null);
             printTask = task;
             printer = new Printer(printerData);
             printLayerCopy = (PrintLayer) sessionCopy.findLayer(printLayer.getName());
@@ -85,7 +86,7 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
 
         @Override
         protected void execute() throws IOException {
-            Bitmap bitmap = session.getFullBitmap();
+            Bitmap bitmap = getSession().getFullBitmap();
             ImageData imageData = ImageConverter.jiuToSwtImageData(bitmap.getImage());
             Image swtImage = new Image(printer, imageData);
             printJobName = "blimp_" + sessionCopy.getName();
@@ -163,7 +164,7 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
         if (bitmap != null) {
             Bitmap tmpBitmap = BitmapUtil.create8BitCopy(bitmap);
             ImageData data = ImageConverter.jiuToSwtImageData(tmpBitmap.getImage());
-            double currentZoom = session.getCurrentZoom();
+            double currentZoom = getSession().getCurrentZoom();
             synchronized (sharedData) {
                 sharedData.viewBitmap = tmpBitmap;
                 sharedData.imageData = data;
@@ -176,7 +177,7 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
     }
 
     @Override
-    protected void asyncExec(Runnable runnable) {
+    public void asyncExec(Runnable runnable) {
         if (isFinished() || display.isDisposed())
             return;
         display.asyncExec(runnable);
@@ -243,6 +244,6 @@ public class SwtImageWorkerThread extends ImageWorkerThread {
 
     public void asyncPrint(Object owner, BlimpSession session, PrintTask task, PrinterData printerData,
             PrintLayer printLayer) {
-        putRequest(new PrintRequest(owner, session, task, printerData, printLayer));
+        putRequest(new PrintRequest(this, owner, session, task, printerData, printLayer));
     }
 }

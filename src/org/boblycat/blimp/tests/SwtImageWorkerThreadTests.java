@@ -22,48 +22,49 @@ import java.io.IOException;
 
 import org.boblycat.blimp.BlimpSession;
 import org.boblycat.blimp.gui.swt.SwtImageWorkerThread;
-import org.boblycat.blimp.tests.TestableImageWorkerThread.TestRequest;
+import org.boblycat.blimp.thread.ImageWorkerThread;
+import org.boblycat.blimp.thread.Request;
 import org.eclipse.swt.widgets.Display;
 import org.junit.*;
 import static org.junit.Assert.*;
 
+class TestRequest extends Request {
+    public volatile int executeCount;
+    public volatile int disposeCount;
+    
+    public TestRequest(ImageWorkerThread thread, Object owner, BlimpSession session,
+            Runnable runnable) {
+        super(thread, owner, session, runnable);
+    }
+
+    @Override
+    protected void execute() throws IOException {
+        executeCount++;
+        if (runnable != null)
+            thread.asyncExec(runnable);
+    }
+    
+    @Override
+    protected void dispose() {
+        disposeCount++;
+    }
+}
+
+class CallbackRequest extends Request {
+    private Runnable callback;
+    
+    public CallbackRequest(ImageWorkerThread thread, Object owner, Runnable callback) {
+        super(thread, owner, null, null);
+        this.callback = callback;
+    }
+
+    @Override
+    protected void execute() throws IOException {
+        callback.run();
+    }
+}
+
 class TestableImageWorkerThread extends SwtImageWorkerThread {
-    public class TestRequest extends Request {
-        public volatile int executeCount;
-        public volatile int disposeCount;
-        
-        public TestRequest(Object owner, BlimpSession session,
-                Runnable runnable) {
-            super(owner, session, runnable);
-        }
-
-        @Override
-        protected void execute() throws IOException {
-            executeCount++;
-            if (runnable != null)
-                asyncExec(runnable);
-        }
-        
-        @Override
-        protected void dispose() {
-            disposeCount++;
-        }
-    }
-    
-    public class CallbackRequest extends Request {
-        private Runnable callback;
-        
-        public CallbackRequest(Object owner, Runnable callback) {
-            super(owner, null, null);
-            this.callback = callback;
-        }
-
-        @Override
-        protected void execute() throws IOException {
-            callback.run();
-        }
-    }
-    
     public TestableImageWorkerThread(Display display) {
         super(display);
     }
@@ -122,7 +123,7 @@ public class SwtImageWorkerThreadTests {
     }
 
     private TestRequest createFinishRequest(Object owner) {
-        TestRequest req = thread.new TestRequest(owner, null, new Runnable() {
+        TestRequest req = new TestRequest(thread, owner, null, new Runnable() {
             public void run() {
                 finished = true;
             }
@@ -132,7 +133,7 @@ public class SwtImageWorkerThreadTests {
     
     private void putSleepRequest(Object owner, int milliseconds) {
         final int millis = milliseconds;
-        thread.putRequest(thread.new CallbackRequest(owner, new Runnable() {
+        thread.putRequest(new CallbackRequest(thread, owner, new Runnable() {
             public void run() {
                 try {
                     Thread.sleep(millis);
