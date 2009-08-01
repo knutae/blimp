@@ -19,9 +19,9 @@
 package org.boblycat.blimp.layers;
 
 import net.sourceforge.jiu.filters.ConvolutionKernelFilter;
+import net.sourceforge.jiu.filters.UnsharpMaskKernel;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.jiu.UnsharpMaskKernel;
 import org.boblycat.blimp.jiuops.MathUtil;
 
 public class UnsharpMaskLayer extends AdjustmentLayer {
