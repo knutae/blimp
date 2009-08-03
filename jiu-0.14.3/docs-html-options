@@ -1,10 +1,10 @@
 -sourcepath .
--header '<a target="_top" href="http://schmidt.devlib.org/jiu/">JIU 0.14.2</a>'
+-header '<a target="_top" href="http://jiu.sourceforce.net/">JIU 0.14.3</a>'
 -bottom 'Copyright &copy; 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007 Marco Schmidt'
--linkoffline "http://java.sun.com/j2se/1.4/docs/api/" file:///f:\jdk\docs\api 
+-link "http://java.sun.com/javase/6/docs/api/"
 -author 
 -use
 -quiet
 -windowtitle "JIU API documentation"
 -doctitle "JIU API specification"
--d doc\api 
+-d doc/api

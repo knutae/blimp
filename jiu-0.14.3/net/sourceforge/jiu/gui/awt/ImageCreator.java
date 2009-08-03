@@ -99,7 +99,6 @@ public class ImageCreator
 	 * Convert a JIU {@link RGB24Image} to a {@link BufferedImage} with the 
 	 * given alpha value (use {@link RGBA#DEFAULT_ALPHA} as default). 
 	 * @param image JIU image to be converted
-	 * @param alpha alpha value to be used with each pixel
 	 * @return a new BufferedImage
 	 * @since 0.14.2
 	 */
@@ -141,6 +140,7 @@ public class ImageCreator
 	 * This method checks the type of the argument image via instanceof
 	 * and the calls the right convertToAwtImage method of this class.
 	 * @param image the RGB24Image to be converted
+	 * @param alpha alpha value to be used with each pixel
 	 * @return newly-created AWT image instance
 	 */
 	public static Image convertToAwtImage(PixelImage image, int alpha)

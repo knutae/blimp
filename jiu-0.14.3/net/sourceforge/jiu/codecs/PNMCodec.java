@@ -2,6 +2,7 @@
  * PNMCodec
  * 
  * Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006 Marco Schmidt.
+ * Copyright (c) 2009 Knut Arild Erstad.
  * All rights reserved.
  */
 
@@ -498,10 +499,26 @@ public class PNMCodec extends ImageCodec
 		}
 	}
 
+	/**
+	 * Read a 16-bit binary value in network (big-endian) order.
+	 * @return An integer between 0 and 65535, or -1 for EOF.
+	 * @throws IOException If the underlying read operation failed. 
+	 */
+	private int read16BitBinaryValue() throws IOException {
+		int byte1 = in.read();
+		if (byte1 < 0)
+			return -1;
+		int byte2 = in.read();
+		if (byte2 < 0)
+			return -1;
+		return (byte1 << 8) | byte2;
+	}
+
 	private void loadColorImage() throws InvalidFileStructureException, IOException
 	{
 		RGBIntegerImage image = null;
 		RGB24Image image24 = null;
+		RGB48Image image48 = null;
 		if (maxSample <= 255)
 		{
 			image24 = new MemoryRGB24Image(width, height);
@@ -510,7 +527,8 @@ public class PNMCodec extends ImageCodec
 		}
 		else
 		{
-			image = new MemoryRGB48Image(width, height);
+			image48 = new MemoryRGB48Image(width, height);
+			image = image48;
 			setImage(image);
 		}
 		for (int y = 0, destY = - getBoundsY1(); y < height; y++, destY++)
@@ -577,6 +595,36 @@ public class PNMCodec extends ImageCodec
 								"x=" + x + ", y=" + y + ".");
 						}
 						image24.putByteSample(RGBIndex.INDEX_BLUE, x, y, (byte)(blue & 0xff));
+					}
+				}
+				else if (image48 != null)
+				{
+					for (int x = 0; x < width; x++)
+					{
+						int red = read16BitBinaryValue();
+						if (red == -1)
+						{
+							throw new InvalidFileStructureException("Unexpected " +
+								"end of file while reading red sample for pixel " +
+								"x=" + x + ", y=" + y + ".");
+						}
+						image48.putShortSample(RGBIndex.INDEX_RED, x, y, (short)(red & 0xffff));
+						int green = read16BitBinaryValue();
+						if (green == -1)
+						{
+							throw new InvalidFileStructureException("Unexpected " +
+								"end of file while reading green sample for pixel " +
+								"x=" + x + ", y=" + y + ".");
+						}
+						image48.putShortSample(RGBIndex.INDEX_GREEN, x, y, (short)(green & 0xffff));
+						int blue = read16BitBinaryValue();
+						if (blue == -1)
+						{
+							throw new InvalidFileStructureException("Unexpected " +
+								"end of file while reading blue sample for pixel " +
+								"x=" + x + ", y=" + y + ".");
+						}
+						image48.putShortSample(RGBIndex.INDEX_BLUE, x, y, (short)(blue & 0xffff));
 					}
 				}
 			}

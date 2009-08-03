@@ -28,7 +28,7 @@ env.Install(
     class_dir + '/resources/images',
     [x for x in glob.glob('icons/*.png') if 'wix' not in x])
 
-jiu_jar = 'jiu-0.14.2/jiu.jar'
+jiu_jar = 'jiu-0.14.3/jiu.jar'
 xerces_jar = 'jars/xercesImpl.jar'
 swt_jar = '/usr/lib/java/swt.jar'
 junit_jar = 'junit4.1/junit-4.1.jar'

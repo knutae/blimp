@@ -1,0 +1,11 @@
+syntax: glob
+*.class
+.classpath
+.project
+.settings
+.sconsign*
+classes
+jiu.jar
+doc/api
+java-imaging-utilities-*
+*.pyc

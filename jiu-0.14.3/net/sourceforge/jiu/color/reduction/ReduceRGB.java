@@ -2,6 +2,7 @@
  * ReduceRGB
  *
  * Copyright (c) 2003, 2004 Marco Schmidt.
+ * Copyright (c) 2009 Knut Arild Erstad.
  * All rights reserved.
  */
 
@@ -100,6 +101,7 @@ public class ReduceRGB extends ImageToImageOperation
 			if (out == null)
 			{
 				out = new MemoryRGB24Image(in.getWidth(), in.getHeight());
+				setOutputImage(out);
 			}
 			else
 			{
@@ -117,6 +119,7 @@ public class ReduceRGB extends ImageToImageOperation
 			if (out == null)
 			{
 				out = new MemoryRGB48Image(in.getWidth(), in.getHeight());
+				setOutputImage(out);
 			}
 			else
 			{
