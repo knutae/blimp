@@ -37,7 +37,8 @@ import org.boblycat.blimp.ColorDepth;
 import org.boblycat.blimp.ColorSpace;
 import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.Util;
-import org.boblycat.blimp.jiu.PNMCodec;
+
+import net.sourceforge.jiu.codecs.PNMCodec;
 import net.sourceforge.jiu.ops.OperationFailedException;
 import net.sourceforge.jiu.ops.ProgressListener;
 
