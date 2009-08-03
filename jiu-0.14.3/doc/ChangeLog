@@ -1,5 +1,6 @@
 2009-08-03
 o Added experimental support for using the Eclipse compiler from scons. Surprisingly, this seems to produce significantly faster code that a standard jdk6 javac compiler.
+o README: Updated defunct URI, removed FreshMeat section, and added some information about the new maintainer (yours truly).
 
 2009-08-02
 o ReduceRGB: ensured that the output image is not null after processing.

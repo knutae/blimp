@@ -2,18 +2,20 @@ JIU - Java Imaging Utilities - README file
 
 JIU is a Java library to load, process, analyze and save pixel images.
 
-The project's Web site is at <http://schmidt.devlib.org/jiu/>.
+The project's Web site is at <http://jiu.sourceforge.net/>.
+
+In 2009 the JIU project, which seems to have been unmaintained for a while,
+was picked up by a new author (Knut Arild Erstad) and is back on SourceForge.
+Please understand that I do not have full knowledge of the library, and have
+not been able to contact the original author.  A new maintainer naturally also
+means that priorities will change, so take the TODO list with more than a
+grain of salt.
 
 If you want to give feedback (questions, suggestions, bug reports), 
 please write a message on the Open Discussion Forum at 
 <http://sourceforge.net/forum/forum.php?forum_id=51534>. Please
 check the subjects, the question you want to ask may already have been
 answered.
-
-You can be notified about new releases by subscribing to JIU on
-its Freshmeat page <http://freshmeat.net/projects/jiu/> (under
-"Subscribe to new releases"). If you don't have a Freshmeat user
-account yet you can get one for free.
 
 The library is distributed under the GNU General Public License version 
 2. See the LICENSE file that is part of the distribution or visit 
