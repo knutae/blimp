@@ -29,6 +29,7 @@
                                               Advertise='yes'
                                               Directory='BoblycatMenuFolder' Name='Blimp'
                                               Show='normal' WorkingDirectory='InstallBin'>
+                                        <Icon Id='blimp.ico' SourceFile='icons\blimp.ico' />
                                     </Shortcut>
                                 </File>
                                 <RemoveFolder Id='RemoveBoblycatMenuFolder' On='uninstall'
