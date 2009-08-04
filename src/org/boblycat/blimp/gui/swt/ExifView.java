@@ -102,7 +102,7 @@ public class ExifView extends Composite {
     
     private static String describeFlashValue(ExifField field) {
         int value = (Integer) field.valueAt(0);
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         // Bit 0: flash fired
         if ((value & 0x01) == 0)
             result.append("No");

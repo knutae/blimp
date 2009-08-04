@@ -20,7 +20,7 @@ package org.boblycat.blimp.gui.swt.editors;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import org.boblycat.blimp.*;
 import org.boblycat.blimp.layers.Layer;
@@ -42,7 +42,7 @@ public class LayerEditorRegistry {
         }
     }
 
-    Hashtable<String, Entry> registry;
+    HashMap<String, Entry> registry;
 
     Shell parentShell;
 
@@ -59,7 +59,7 @@ public class LayerEditorRegistry {
 
     public LayerEditorRegistry(Shell parent) {
         parentShell = parent;
-        registry = new Hashtable<String, Entry>();
+        registry = new HashMap<String, Entry>();
     }
 
     public void register(Class<? extends Layer> layerClass,
