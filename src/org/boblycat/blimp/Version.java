@@ -24,5 +24,5 @@ package org.boblycat.blimp;
  * @author Knut Arild Erstad
  */
 public class Version {
-    public static final String versionString = "1.1.0 Beta";
+    public static final String versionString = "1.2.0 Beta";
 }
