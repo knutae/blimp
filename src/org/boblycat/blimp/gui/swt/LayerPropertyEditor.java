@@ -124,7 +124,6 @@ public class LayerPropertyEditor extends Composite {
     void disposeOldEditor() {
         Control oldEditor = treeEditor.getEditor();
         if (oldEditor != null) {
-            Debug.print(this, "disposing old editor");
             oldEditor.dispose();
         }
     }
@@ -139,7 +138,6 @@ public class LayerPropertyEditor extends Composite {
 
         String[] enumValues = getEnumValuesForItem(editedItem);
         if (enumValues != null) {
-            Debug.print(this, "combo editor...");
             Combo comboEditor = new Combo(propertyTree, SWT.DROP_DOWN);
             Listener comboListener = new Listener() {
                 public void handleEvent(Event e) {
@@ -157,7 +155,6 @@ public class LayerPropertyEditor extends Composite {
             setTreeEditor(comboEditor);
         }
         else {
-            Debug.print(this, "text editor...");
             Text textEditor = new Text(propertyTree, SWT.NONE);
             textEditor.addListener(SWT.DefaultSelection, new Listener() {
                 public void handleEvent(Event e) {
@@ -276,7 +273,6 @@ public class LayerPropertyEditor extends Composite {
     }
 
     void subTreeEdited(TreeItem parentItem, String newText) {
-        Debug.print(this, "subitem " + parentItem.indexOf(editedItem));
         int index = propertyTree.indexOf(parentItem);
         if ((index < 0) || (index >= layerProperties.size()))
             return;
@@ -307,7 +303,6 @@ public class LayerPropertyEditor extends Composite {
     }
 
     void cellEdited(String newText) {
-        Debug.print(this, "new text: " + newText);
         TreeItem parentItem = editedItem.getParentItem();
         if (parentItem != null) {
             subTreeEdited(parentItem, newText);

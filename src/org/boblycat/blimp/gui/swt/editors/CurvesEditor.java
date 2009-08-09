@@ -18,7 +18,6 @@
  */
 package org.boblycat.blimp.gui.swt.editors;
 
-import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.gui.swt.SwtUtil;
 import org.boblycat.blimp.io.PointDouble;
 import org.boblycat.blimp.RGBChannel;
@@ -51,10 +50,6 @@ public class CurvesEditor extends GridBasedLayerEditor {
         Point size = canvas.getSize();
         return new PointDouble((double) x / (double) size.x,
                 (double) (size.y - y) / (double) size.y);
-    }
-
-    private void debug(String msg) {
-        Debug.print(this, msg);
     }
 
     public CurvesEditor(Composite parent, int style) {
@@ -154,13 +149,11 @@ public class CurvesEditor extends GridBasedLayerEditor {
                         // move existing point
                         spline.movePoint(closest, p.x, p.y);
                         currentPointX = p.x;
-                        debug("moved point " + closest + " -> " + p.x);
                     }
                     else {
                         // add new point
                         currentPointX = p.x;
                         spline.addPoint(p.x, p.y);
-                        debug("added point " + p.x);
                     }
                     selectedPointX = currentPointX;
                 }

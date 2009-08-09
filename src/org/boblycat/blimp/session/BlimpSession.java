@@ -29,7 +29,6 @@ import java.util.logging.Level;
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapSize;
 import org.boblycat.blimp.BitmapUtil;
-import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.LayerChangeListener;
 import org.boblycat.blimp.LayerEvent;
 import org.boblycat.blimp.ProgressEvent;
@@ -209,7 +208,6 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         if (bm == null)
             return null;
 
-        Debug.print(this, "preview quality " + previewQuality);
         List<AdjustmentLayer> layers = tryRearrangeLayersBefore(layerName,
                 useViewport);
 
@@ -271,7 +269,6 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
         BitmapSize size = inputSize(input);
         if (size.pixelScaleFactor <= 0)
             size.pixelScaleFactor = 1.0;
-        Debug.print(this, "input size: " + size.width + "x" + size.height);
         List<AdjustmentLayer> layers = layersBefore(layerName);
         double lastFactor = size.pixelScaleFactor;
         for (AdjustmentLayer layer: layers) {
@@ -281,7 +278,6 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
                 if (size.pixelScaleFactor <= 0)
                     size.pixelScaleFactor = lastFactor;
                 lastFactor = size.pixelScaleFactor;
-                Debug.print(this, dLayer.getDescription() + ": " + size.width + "x" + size.height);
             }
         }
         return size;
@@ -329,7 +325,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
             return (Layer) otherLayer.clone();
         Layer foundLayer = layerList.get(i);
         // Note: remove by index avoids equals(), so it is faster than remove(Object)
-        layerList.remove(i); 
+        layerList.remove(i);
         Serializer.copyBeanData(otherLayer, foundLayer);
         return foundLayer;
     }
@@ -352,7 +348,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     }
     
     /**
-     * Get an subset of "interesting" Exif data for the current session. 
+     * Get an subset of "interesting" Exif data for the current session.
      * @return A table of Exif data, or <code>null</code>.
      * @throws IOException if an unexpected I/O error occurs
      */

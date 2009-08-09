@@ -23,7 +23,6 @@ package org.boblycat.blimp.thread;
 
 import java.io.IOException;
 
-import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.HistogramGeneratedTask;
 import org.boblycat.blimp.RGBHistograms;
 import org.boblycat.blimp.session.BlimpSession;
@@ -42,9 +41,7 @@ public class HistogramRequest extends Request {
     @Override
     protected void execute() throws IOException {
         assert(histogramTask != null && layerName != null);
-        Debug.print(this, "generating histogram for layer " + layerName);
         RGBHistograms histograms = thread.getSession().getHistogramsBeforeLayer(layerName, true);
-        Debug.print(this, "finished generating histogram");
         // Note: the following should work without synchronization problems,
         // because the histogram task is only used by one thread at a time.
         histogramTask.setHistograms(histograms);

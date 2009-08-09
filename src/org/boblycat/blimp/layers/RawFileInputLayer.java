@@ -35,7 +35,6 @@ import javax.imageio.IIOException;
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.ColorDepth;
 import org.boblycat.blimp.ColorSpace;
-import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.Util;
 
 import net.sourceforge.jiu.codecs.PNMCodec;
@@ -234,8 +233,6 @@ public class RawFileInputLayer extends FileInputLayer {
 
             commandLine.add("-c"); // write to stdout
             commandLine.add(filePath); // raw file
-
-            Debug.print(this, commandLine.toString());
 
             ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
             Process process = processBuilder.start();

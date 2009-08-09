@@ -21,7 +21,6 @@ package org.boblycat.blimp.session;
 import java.util.WeakHashMap;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.io.Serializer;
 import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.InputLayer;
@@ -73,15 +72,5 @@ public class BitmapCache {
 
     public Bitmap get(InputLayer layer) {
         return inputTable.get(layer);
-    }
-
-    void printSizes() {
-        if (!Debug.debugEnabled(this))
-            return;
-        int size = inputTable.size();
-        for (BitmapTable atable: adjustmentTables.values()) {
-            size += atable.size();
-        }
-        Debug.print(this, "Number of cached bitmaps: " + size);
     }
 }

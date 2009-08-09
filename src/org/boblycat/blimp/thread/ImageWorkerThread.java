@@ -27,7 +27,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapSizeGeneratedTask;
-import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.HistogramGeneratedTask;
 import org.boblycat.blimp.ProgressEvent;
 import org.boblycat.blimp.ProgressListener;
@@ -117,9 +116,7 @@ public abstract class ImageWorkerThread extends Thread {
     public void run() {
         while (!isFinished()) {
             try {
-                Debug.print(this, "waiting for queue...");
                 Request req = requestQueue.take();
-                Debug.print(this, "got request from queue: " + req.getClass().getSimpleName());
                 if (req instanceof QuitRequest)
                     break;
                 processRequest(req);
@@ -160,7 +157,6 @@ public abstract class ImageWorkerThread extends Thread {
                 req.dispose();
             }
         }
-        Debug.print(this, "cancelled " + count + " request(s)");
         return count;
     }
 

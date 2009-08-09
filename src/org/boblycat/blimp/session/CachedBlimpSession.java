@@ -22,7 +22,6 @@ import java.io.IOException;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapSize;
-import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.Layer;
@@ -39,10 +38,7 @@ public class CachedBlimpSession extends BlimpSession {
     }
 
     private void log(String msg) {
-        if (Debug.debugEnabled(this)) {
-            Debug.print(this, msg);
-            cache.printSizes();
-        }
+        // Implement if needed?
     }
 
     protected Bitmap applyLayer(Bitmap source, AdjustmentLayer layer) {

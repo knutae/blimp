@@ -70,17 +70,6 @@ public class Bitmap {
         return image.getBitsPerPixel() / image.getNumChannels();
     }
 
-    public void printDebugInfo(String prefix) {
-        if (!Debug.debugEnabled(this))
-            return;
-        System.out.print(prefix + " ");
-        if (image == null) {
-            System.out.println("(null)");
-            return;
-        }
-        System.out.println("yep");
-    }
-
     /**
      * Set the pixel size factor, which describes how large each pixel is
      * compared to a pixel in the original input data.

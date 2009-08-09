@@ -26,7 +26,6 @@ import java.io.IOException;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapUtil;
-import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.Util;
 import org.boblycat.blimp.session.BlimpSession;
 import org.boblycat.blimp.thread.ImageWorkerThread.FileExportTask;
@@ -51,12 +50,9 @@ public class ExportBitmapRequest extends Request {
         assert(file != null);
         assert(exportTask != null);
         try {
-            Debug.print(this, "exporting bitmap to " + file);
             Bitmap bitmap = thread.getSession().getFullBitmap();
-            Debug.print(this, "finished generating full bitmap for export");
             String ext = Util.getFileExtension(file);
             BitmapUtil.writeBitmap(bitmap, ext, file, exportQuality);
-            Debug.print(this, "finished writing bitmap");
             thread.asyncExec(new Runnable() {
                 public void run() {
                     exportTask.handleSuccess(file);

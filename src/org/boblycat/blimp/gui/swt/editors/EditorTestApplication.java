@@ -20,7 +20,6 @@ package org.boblycat.blimp.gui.swt.editors;
 
 import java.util.logging.Level;
 
-import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.Util;
 import org.boblycat.blimp.layers.Layer;
 import org.eclipse.swt.SWT;
@@ -52,7 +51,6 @@ public class EditorTestApplication {
         if (!layerClassName.contains("."))
             layerClassName = "org.boblycat.blimp.layers." + layerClassName;
         Class<?> layerClass = Class.forName(layerClassName);
-        Debug.register(layerClass);
 
         Layer layer = (Layer) layerClass.newInstance();
 
@@ -70,7 +68,6 @@ public class EditorTestApplication {
                     + layer.getClass().getName());
             return;
         }
-        Debug.register(editor.getClass());
         editor.setLayer(layer);
         shell.setText(editor.getClass().getSimpleName());
         shell.open();

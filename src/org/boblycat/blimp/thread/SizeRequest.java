@@ -25,7 +25,6 @@ import java.io.IOException;
 
 import org.boblycat.blimp.BitmapSize;
 import org.boblycat.blimp.BitmapSizeGeneratedTask;
-import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.Util;
 import org.boblycat.blimp.session.BlimpSession;
 
@@ -43,9 +42,7 @@ public class SizeRequest extends Request {
     @Override
     protected void execute() throws IOException {
         assert(sizeTask != null && layerName != null);
-        Debug.print(this, "generating size for layer " + layerName);
         BitmapSize size = thread.getSession().getBitmapSizeBeforeLayer(layerName);
-        Debug.print(this, "finished generating size");
         if (size == null)
             Util.err("Failed to get size for layer " + layerName);
         sizeTask.setSize(size);

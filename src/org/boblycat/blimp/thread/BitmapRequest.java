@@ -24,7 +24,6 @@ package org.boblycat.blimp.thread;
 import java.io.IOException;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.session.BlimpSession;
 import org.boblycat.blimp.session.BlimpSession.PreviewQuality;
 
@@ -47,12 +46,10 @@ public class BitmapRequest extends Request {
         // Generate the bitmap on this thread.  It should not be transferred
         // to other threads.
         Bitmap bitmap;
-        Debug.print(this, "generating bitmap");
         if (viewWidth > 0 && viewHeight > 0)
             bitmap = thread.getSession().getSizedBitmap(viewWidth, viewHeight, previewQuality);
         else
             bitmap = thread.getSession().getBitmap();
-        Debug.print(this, "finished generating bitmap");
         thread.bitmapGenerated(runnable, bitmap);
     }
 }

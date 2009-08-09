@@ -18,7 +18,6 @@
  */
 package org.boblycat.blimp.session;
 
-import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.LayerChangeListener;
 import org.boblycat.blimp.LayerEvent;
 import org.boblycat.blimp.LayerEventSource;
@@ -65,7 +64,6 @@ public class HistoryBlimpSession extends BlimpSession {
         if (history == null)
             return;
         history.record();
-        Debug.print(this, "recorded, history size is now " + history.size());
         triggerHistoryChange();
     }
 
@@ -141,12 +139,10 @@ public class HistoryBlimpSession extends BlimpSession {
      */
     public void beginDisableAutoRecord() {
         autoRecordDisableLevel++;
-        Debug.print(this, "beginDisableAutoRecord " + autoRecordDisableLevel);
     }
 
     private void internalEndDisableAutoRecord() {
         autoRecordDisableLevel--;
-        Debug.print(this, "endDisableAutoRecord " + autoRecordDisableLevel);
         if (autoRecordDisableLevel < 0) {
             Util.err("internal error: autoRecordDisableLevel < 0");
             autoRecordDisableLevel = 0;
