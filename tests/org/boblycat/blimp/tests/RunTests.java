@@ -22,21 +22,31 @@ import org.boblycat.blimp.util.Util;
 import org.junit.runner.*;
 
 public class RunTests {
+    private static void runClasses(Class<?>... classes)
+    {
+        String[] names = new String[classes.length];
+        for (int i=0; i<classes.length; i++) {
+            names[i] = classes[i].getName();
+        }
+        JUnitCore.main(names);
+    }
+    
     public static void main(String[] args) {
         // prevent console warnings
         Util.logger.setUseParentHandlers(false);
-        JUnitCore.main(
-                "org.boblycat.blimp.tests.SessionTests",
-                "org.boblycat.blimp.tests.CachedSessionTests",
-                "org.boblycat.blimp.tests.HistoryTests",
-                "org.boblycat.blimp.tests.SplineTests",
-                "org.boblycat.blimp.tests.SerializationTests",
-                "org.boblycat.blimp.tests.ZoomTests",
-                "org.boblycat.blimp.tests.UtilTests",
-                "org.boblycat.blimp.tests.ColorUtilTests",
-                "org.boblycat.blimp.tests.LayerRearrangerTest",
-                "org.boblycat.blimp.tests.ExifTests",
-                "org.boblycat.blimp.tests.MathUtilTests",
-                "org.boblycat.blimp.tests.SwtTests");
+        runClasses(
+                SessionTests.class,
+                CachedSessionTests.class,
+                HistoryTests.class,
+                SplineTests.class,
+                SerializationTests.class,
+                ZoomTests.class,
+                UtilTests.class,
+                ColorUtilTests.class,
+                LayerRearrangerTest.class,
+                ExifTests.class,
+                MathUtilTests.class,
+                SwtTests.class,
+                SwtImageWorkerThreadTests.class);
     }
 }
