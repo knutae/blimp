@@ -18,10 +18,10 @@
  */
 package org.boblycat.blimp.session;
 
-import org.boblycat.blimp.LayerChangeListener;
-import org.boblycat.blimp.LayerEvent;
-import org.boblycat.blimp.LayerEventSource;
 import org.boblycat.blimp.Util;
+import org.boblycat.blimp.event.LayerChangeListener;
+import org.boblycat.blimp.event.LayerEvent;
+import org.boblycat.blimp.event.LayerEventSource;
 
 /**
  * A subclass of BlimpSession which has a SessionHistory member and

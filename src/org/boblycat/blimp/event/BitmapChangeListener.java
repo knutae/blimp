@@ -16,24 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.event;
 
-import java.util.EventObject;
 
-import org.boblycat.blimp.layers.Layer;
-
-public class LayerEvent extends EventObject {
-    private static final long serialVersionUID = 1L;
-
-    // TODO: make sure layer is really serializable using normal Java serialization?
-    private Layer layer;
-
-    public LayerEvent(Layer layer) {
-        super(layer);
-        this.layer = layer;
-    }
-
-    public Layer getLayer() {
-        return layer;
-    }
+public interface BitmapChangeListener {
+    void handleChange(BitmapEvent event);
 }

@@ -18,12 +18,12 @@
  */
 package org.boblycat.blimp.layers;
 
-import org.boblycat.blimp.LayerChangeListener;
-import org.boblycat.blimp.LayerEvent;
-import org.boblycat.blimp.LayerEventSource;
-import org.boblycat.blimp.ProgressEvent;
-import org.boblycat.blimp.ProgressEventSource;
-import org.boblycat.blimp.ProgressListener;
+import org.boblycat.blimp.event.LayerChangeListener;
+import org.boblycat.blimp.event.LayerEvent;
+import org.boblycat.blimp.event.LayerEventSource;
+import org.boblycat.blimp.event.ProgressEvent;
+import org.boblycat.blimp.event.ProgressEventSource;
+import org.boblycat.blimp.event.ProgressListener;
 import org.boblycat.blimp.io.BlimpBean;
 
 /**

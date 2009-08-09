@@ -16,21 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.event;
 
-import java.util.EventObject;
+import org.boblycat.blimp.layers.Layer;
 
-public class BitmapEvent extends EventObject {
+public class ProgressEvent extends LayerEvent {
     private static final long serialVersionUID = 1L;
 
-    transient Bitmap bitmap;
+    public double progress;
+    public String message;
 
-    public BitmapEvent(Object source, Bitmap bitmap) {
-        super(source);
-        this.bitmap = bitmap;
+    public ProgressEvent(Layer layer, String message, double progress) {
+        super(layer);
+        this.message = message;
+        this.progress = progress;
     }
 
-    public Bitmap getBitmap() {
-        return bitmap;
+    public ProgressEvent(Layer layer) {
+        this(layer, null, 0.0);
     }
 }

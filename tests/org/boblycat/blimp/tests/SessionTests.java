@@ -21,6 +21,8 @@ package org.boblycat.blimp.tests;
 import java.io.IOException;
 
 import org.boblycat.blimp.*;
+import org.boblycat.blimp.event.LayerChangeListener;
+import org.boblycat.blimp.event.LayerEvent;
 import org.boblycat.blimp.layers.Layer;
 import org.boblycat.blimp.layers.ResizeLayer;
 import org.boblycat.blimp.layers.ViewResizeLayer;

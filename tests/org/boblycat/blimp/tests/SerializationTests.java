@@ -29,6 +29,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.boblycat.blimp.*;
+import org.boblycat.blimp.event.LayerChangeListener;
+import org.boblycat.blimp.event.LayerEvent;
 import org.boblycat.blimp.io.BlimpBean;
 import org.boblycat.blimp.io.ColorRGB;
 import org.boblycat.blimp.io.DOMNodeIterator;

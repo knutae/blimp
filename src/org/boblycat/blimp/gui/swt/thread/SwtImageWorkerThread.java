@@ -21,9 +21,9 @@ package org.boblycat.blimp.gui.swt.thread;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapUtil;
-import org.boblycat.blimp.ProgressEvent;
-import org.boblycat.blimp.ProgressEventSource;
-import org.boblycat.blimp.ProgressListener;
+import org.boblycat.blimp.event.ProgressEvent;
+import org.boblycat.blimp.event.ProgressEventSource;
+import org.boblycat.blimp.event.ProgressListener;
 import org.boblycat.blimp.gui.swt.ImageConverter;
 import org.boblycat.blimp.layers.PrintLayer;
 import org.boblycat.blimp.session.BlimpSession;

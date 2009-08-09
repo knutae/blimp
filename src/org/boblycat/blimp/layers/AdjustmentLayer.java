@@ -21,8 +21,8 @@ package org.boblycat.blimp.layers;
 import java.util.logging.Level;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.ProgressEvent;
 import org.boblycat.blimp.Util;
+import org.boblycat.blimp.event.ProgressEvent;
 import org.boblycat.blimp.session.LayerRearranger;
 
 import net.sourceforge.jiu.data.PixelImage;

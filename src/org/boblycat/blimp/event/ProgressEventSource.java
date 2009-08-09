@@ -16,8 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.event;
 
-public interface BitmapChangeListener {
-    void handleChange(BitmapEvent event);
+import org.boblycat.blimp.util.EventSource;
+
+public class ProgressEventSource extends
+        EventSource<ProgressListener, ProgressEvent> {
+
+    protected void triggerListenerEvent(ProgressListener listener,
+            ProgressEvent event) {
+        listener.reportProgress(event);
+    }
 }

@@ -26,9 +26,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.ProgressEvent;
-import org.boblycat.blimp.ProgressListener;
 import org.boblycat.blimp.Util;
+import org.boblycat.blimp.event.ProgressEvent;
+import org.boblycat.blimp.event.ProgressListener;
 import org.boblycat.blimp.session.BlimpSession;
 import org.boblycat.blimp.session.CachedBlimpSession;
 

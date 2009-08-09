@@ -19,6 +19,10 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.*;
+import org.boblycat.blimp.event.BitmapChangeListener;
+import org.boblycat.blimp.event.BitmapEvent;
+import org.boblycat.blimp.event.LayerChangeListener;
+import org.boblycat.blimp.event.LayerEvent;
 import org.boblycat.blimp.exif.ExifTable;
 import org.boblycat.blimp.gui.swt.editors.LayerEditorCallback;
 import org.boblycat.blimp.gui.swt.editors.LayerEditorEnvironment;
