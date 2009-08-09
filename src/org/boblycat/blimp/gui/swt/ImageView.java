@@ -18,7 +18,6 @@
  */
 package org.boblycat.blimp.gui.swt;
 
-import org.boblycat.blimp.*;
 import org.boblycat.blimp.event.BitmapChangeListener;
 import org.boblycat.blimp.event.BitmapEvent;
 import org.boblycat.blimp.event.LayerChangeListener;
