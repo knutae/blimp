@@ -37,8 +37,8 @@ import org.boblycat.blimp.layers.AdjustmentLayer;
 public class LayerRearranger {
     public static <T extends AdjustmentLayer> ArrayList<T> optimizeLayerOrder(
             List<T> layers) {
-        ArrayList<T> newLayers = new ArrayList<T>();
-        ArrayList<T> buffer = new ArrayList<T>();
+        ArrayList<T> newLayers = new ArrayList<T>(layers.size());
+        ArrayList<T> buffer = new ArrayList<T>(layers.size());
         for (T layer: layers) {
             if (layer.canChangeDimensions()) {
                 if (layer.canChangeColors()) {
