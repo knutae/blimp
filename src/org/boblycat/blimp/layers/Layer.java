@@ -18,13 +18,13 @@
  */
 package org.boblycat.blimp.layers;
 
-import org.boblycat.blimp.BlimpBean;
 import org.boblycat.blimp.LayerChangeListener;
 import org.boblycat.blimp.LayerEvent;
 import org.boblycat.blimp.LayerEventSource;
 import org.boblycat.blimp.ProgressEvent;
 import org.boblycat.blimp.ProgressEventSource;
 import org.boblycat.blimp.ProgressListener;
+import org.boblycat.blimp.io.BlimpBean;
 
 /**
  * Abstract base class for all layers in Blimp, which includes adjustment layers

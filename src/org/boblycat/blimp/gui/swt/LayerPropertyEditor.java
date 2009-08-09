@@ -19,13 +19,16 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.*;
+import org.boblycat.blimp.io.ColorRGB;
+import org.boblycat.blimp.io.PointDouble;
 import org.boblycat.blimp.layers.Layer;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
-import static org.boblycat.blimp.Serializer.propertyValueToString;
+
+import static org.boblycat.blimp.io.Serializer.propertyValueToString;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

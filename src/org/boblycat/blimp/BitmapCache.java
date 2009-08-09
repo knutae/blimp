@@ -20,6 +20,7 @@ package org.boblycat.blimp;
 
 import java.util.WeakHashMap;
 
+import org.boblycat.blimp.io.Serializer;
 import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.Layer;

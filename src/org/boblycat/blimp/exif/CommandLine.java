@@ -22,7 +22,7 @@ import java.io.File;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 
-import org.boblycat.blimp.DOMNodeIterator;
+import org.boblycat.blimp.io.DOMNodeIterator;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;

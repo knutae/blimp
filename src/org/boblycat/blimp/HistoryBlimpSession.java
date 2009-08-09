@@ -116,7 +116,7 @@ public class HistoryBlimpSession extends BlimpSession {
      * 
      * If the <code>eraseHistory</code> parameter is true, any previous
      * history will also be discarded, so that undo is not possible
-     * until further changes are recorded. 
+     * until further changes are recorded.
      */
     public void recordSaved(boolean eraseHistory) {
         tryEnsureHistoryExists();

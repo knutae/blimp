@@ -23,6 +23,8 @@ import org.boblycat.blimp.exif.ExifTable;
 import org.boblycat.blimp.gui.swt.editors.LayerEditorCallback;
 import org.boblycat.blimp.gui.swt.editors.LayerEditorEnvironment;
 import org.boblycat.blimp.gui.swt.editors.PrintLayerDialog;
+import org.boblycat.blimp.io.BlimpBean;
+import org.boblycat.blimp.io.Serializer;
 import org.boblycat.blimp.layers.*;
 import org.boblycat.blimp.thread.ExifQueryTask;
 import org.boblycat.blimp.thread.ImageWorkerThread;

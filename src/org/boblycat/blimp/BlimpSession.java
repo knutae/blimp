@@ -29,6 +29,8 @@ import java.util.logging.Level;
 import org.boblycat.blimp.exif.ExifBlobReader;
 import org.boblycat.blimp.exif.ExifTable;
 import org.boblycat.blimp.exif.ReaderError;
+import org.boblycat.blimp.io.BlimpBean;
+import org.boblycat.blimp.io.Serializer;
 import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.DimensionAdjustmentLayer;
 import org.boblycat.blimp.layers.InputLayer;

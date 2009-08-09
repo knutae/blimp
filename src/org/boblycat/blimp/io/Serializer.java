@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.io;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -30,6 +30,9 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.boblycat.blimp.BlimpSession;
+import org.boblycat.blimp.HistoryBlimpSession;
+import org.boblycat.blimp.Util;
 import org.boblycat.blimp.layers.Layer;
 import org.w3c.dom.*;
 import org.w3c.dom.ls.*;
@@ -490,7 +493,8 @@ public class Serializer {
         HistoryBlimpSession session = (HistoryBlimpSession)
             loadSessionFromFile(filename, HistoryBlimpSession.class);
         if (session != null) {
-            session.beanLoaded(filename);
+            BlimpBean bean = session;
+            bean.beanLoaded(filename);
         }
         return session;
     }

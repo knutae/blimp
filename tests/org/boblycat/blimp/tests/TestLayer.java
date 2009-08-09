@@ -19,7 +19,7 @@
 package org.boblycat.blimp.tests;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.ColorRGB;
+import org.boblycat.blimp.io.ColorRGB;
 import org.boblycat.blimp.layers.AdjustmentLayer;
 
 public class TestLayer extends AdjustmentLayer {

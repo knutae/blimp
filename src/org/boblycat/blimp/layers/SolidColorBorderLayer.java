@@ -23,8 +23,8 @@ import net.sourceforge.jiu.data.RGBIntegerImage;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapSize;
-import org.boblycat.blimp.ColorRGB;
 import org.boblycat.blimp.Util;
+import org.boblycat.blimp.io.ColorRGB;
 
 /**
  * A layer which adds a solid color border around the image.

@@ -18,10 +18,10 @@
  */
 package org.boblycat.blimp.gui.swt.editors;
 
-import org.boblycat.blimp.ColorRGB;
 import org.boblycat.blimp.Util;
 import org.boblycat.blimp.gui.swt.SwtUtil;
 import org.boblycat.blimp.gui.swt.ValueSlider;
+import org.boblycat.blimp.io.ColorRGB;
 import org.boblycat.blimp.layers.SolidColorBorderLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
