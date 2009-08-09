@@ -20,7 +20,7 @@ package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.jiuops.HueSaturationLightnessOperation;
-import org.boblycat.blimp.jiuops.MathUtil;
+import org.boblycat.blimp.util.MathUtil;
 
 /**
  * Layer which adjusts the Hue, Saturation and Lightness (luminance) of an image.

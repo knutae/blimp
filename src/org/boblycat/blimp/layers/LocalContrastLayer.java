@@ -20,7 +20,7 @@ package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.jiuops.LocalContrastOperation;
-import org.boblycat.blimp.jiuops.MathUtil;
+import org.boblycat.blimp.util.MathUtil;
 
 /**
  * A layer for adding contrast in local areas within an image.

@@ -18,7 +18,8 @@
  */
 package org.boblycat.blimp.layers;
 
-import static org.boblycat.blimp.jiuops.MathUtil.*;
+import static org.boblycat.blimp.util.MathUtil.*;
+
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.jiuops.GrayscaleMixerOperation;
 

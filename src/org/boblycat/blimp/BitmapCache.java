@@ -23,6 +23,7 @@ import java.util.WeakHashMap;
 import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.Layer;
+import org.boblycat.blimp.util.SoftHashMap;
 
 class BitmapTable extends SoftHashMap<String, Bitmap> {
     void put(Layer layer, Bitmap bitmap) {

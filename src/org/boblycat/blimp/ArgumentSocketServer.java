@@ -30,6 +30,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.boblycat.blimp.util.EventSource;
+
 /**
  * A socket server which serves two purposes:
  *

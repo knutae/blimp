@@ -20,7 +20,7 @@ package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.jiuops.ColorBalanceOperation;
-import org.boblycat.blimp.jiuops.MathUtil;
+import org.boblycat.blimp.util.MathUtil;
 
 /**
  * A layer for modifying specific color tones (hues).

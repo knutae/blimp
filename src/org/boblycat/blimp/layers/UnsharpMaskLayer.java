@@ -22,7 +22,7 @@ import net.sourceforge.jiu.filters.ConvolutionKernelFilter;
 import net.sourceforge.jiu.filters.UnsharpMaskKernel;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.jiuops.MathUtil;
+import org.boblycat.blimp.util.MathUtil;
 
 public class UnsharpMaskLayer extends AdjustmentLayer {
     public static final int MIN_LEVEL = 0;

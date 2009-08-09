@@ -18,8 +18,8 @@
  */
 package org.boblycat.blimp.jiuops;
 
-import static org.boblycat.blimp.jiuops.MathUtil.clampToUnsignedByte;
-import static org.boblycat.blimp.jiuops.MathUtil.clampToUnsignedShort;
+import static org.boblycat.blimp.util.MathUtil.clampToUnsignedByte;
+import static org.boblycat.blimp.util.MathUtil.clampToUnsignedShort;
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.data.RGB24Image;
 import net.sourceforge.jiu.data.RGB48Image;

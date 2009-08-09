@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp;
 
-import org.boblycat.blimp.jiuops.MathUtil;
+import org.boblycat.blimp.util.MathUtil;
 
 import net.sourceforge.jiu.color.quantization.RGBColor;
 

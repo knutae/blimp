@@ -22,8 +22,8 @@ import net.sourceforge.jiu.data.PixelImage;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapSize;
-import org.boblycat.blimp.jiuops.MathUtil;
 import org.boblycat.blimp.jiuops.RotateOperation;
+import org.boblycat.blimp.util.MathUtil;
 
 /**
  * A layer for rotating given an arbitrary angle.

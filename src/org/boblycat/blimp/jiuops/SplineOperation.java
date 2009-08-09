@@ -18,6 +18,9 @@
  */
 package org.boblycat.blimp.jiuops;
 
+import org.boblycat.blimp.util.MathUtil;
+import org.boblycat.blimp.util.NaturalCubicSpline;
+
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.ops.LookupTableOperation;
 import net.sourceforge.jiu.ops.MissingParameterException;

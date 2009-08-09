@@ -19,8 +19,8 @@
 package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.jiuops.MathUtil;
 import org.boblycat.blimp.jiuops.MultiplicativeContrastOperation;
+import org.boblycat.blimp.util.MathUtil;
 
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.color.adjustment.Brightness;

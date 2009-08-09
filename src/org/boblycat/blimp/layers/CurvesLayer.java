@@ -23,8 +23,8 @@ import java.util.TreeMap;
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.PointDouble;
 import org.boblycat.blimp.RGBChannel;
-import org.boblycat.blimp.jiuops.NaturalCubicSpline;
 import org.boblycat.blimp.jiuops.SplineOperation;
+import org.boblycat.blimp.util.NaturalCubicSpline;
 
 import net.sourceforge.jiu.data.PixelImage;
 

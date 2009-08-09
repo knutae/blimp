@@ -18,6 +18,8 @@
  */
 package org.boblycat.blimp;
 
+import org.boblycat.blimp.util.EventSource;
+
 public class LayerEventSource extends
         EventSource<LayerChangeListener, LayerEvent> {
 

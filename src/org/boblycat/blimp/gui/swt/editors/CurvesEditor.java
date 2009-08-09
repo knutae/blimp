@@ -20,11 +20,11 @@ package org.boblycat.blimp.gui.swt.editors;
 
 import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.gui.swt.SwtUtil;
-import org.boblycat.blimp.jiuops.MathUtil;
-import org.boblycat.blimp.jiuops.NaturalCubicSpline;
 import org.boblycat.blimp.PointDouble;
 import org.boblycat.blimp.RGBChannel;
 import org.boblycat.blimp.layers.CurvesLayer;
+import org.boblycat.blimp.util.MathUtil;
+import org.boblycat.blimp.util.NaturalCubicSpline;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;

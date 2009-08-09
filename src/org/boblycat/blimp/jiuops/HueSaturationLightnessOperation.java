@@ -18,6 +18,8 @@
  */
 package org.boblycat.blimp.jiuops;
 
+import org.boblycat.blimp.util.MathUtil;
+
 /**
  * Adjust the Hue, Saturation and Lightness (Luminance) of an image.
  *

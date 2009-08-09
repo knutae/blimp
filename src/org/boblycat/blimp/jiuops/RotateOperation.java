@@ -18,6 +18,8 @@
  */
 package org.boblycat.blimp.jiuops;
 
+import org.boblycat.blimp.util.MathUtil;
+
 import net.sourceforge.jiu.data.IntegerImage;
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.ops.ImageToImageOperation;
