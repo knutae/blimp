@@ -20,7 +20,8 @@ package org.boblycat.blimp.tests;
 
 import java.io.IOException;
 
-import org.boblycat.blimp.*;
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.data.BitmapSize;
 import org.boblycat.blimp.event.LayerChangeListener;
 import org.boblycat.blimp.event.LayerEvent;
 import org.boblycat.blimp.layers.Layer;

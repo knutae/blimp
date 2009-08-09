@@ -16,31 +16,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp.io;
+package org.boblycat.blimp.data;
 
-public class PointDouble {
-    public double x;
-    public double y;
+import net.sourceforge.jiu.data.RGBIndex;
 
-    public PointDouble() {
+/**
+ * An enumeration for specifying one or all of the red, green or blue color
+ * channels.
+ *
+ * @author Knut Arild Erstad
+ */
+public enum RGBChannel {
+    Red,
+    Green,
+    Blue,
+    All;
+
+    public int toJiuIndex() {
+        switch (this) {
+        case Red:
+            return RGBIndex.INDEX_RED;
+        case Green:
+            return RGBIndex.INDEX_GREEN;
+        case Blue:
+            return RGBIndex.INDEX_BLUE;
+        default:
+            return -1;
+        }
     }
 
-    public PointDouble(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public String toCommaString() {
-        return Double.toString(x) + ',' + Double.toString(y);
-    }
-
-    public static PointDouble valueOfCommaString(String input)
-            throws NumberFormatException {
-        int comma = input.indexOf(',');
-        if (comma < 0)
-            throw new NumberFormatException("Missing comma in point: " + input);
-        double x = Double.valueOf(input.substring(0, comma));
-        double y = Double.valueOf(input.substring(comma + 1, input.length()));
-        return new PointDouble(x, y);
-    }
+    /**
+     * An array of all RGB channels (Red, Green and Blue).
+     * This does not include special enum values like "All".
+     */
+    public static final RGBChannel[] COLORS = { Red, Green, Blue };
 }

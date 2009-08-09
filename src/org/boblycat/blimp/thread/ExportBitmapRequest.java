@@ -24,11 +24,11 @@ package org.boblycat.blimp.thread;
 import java.io.File;
 import java.io.IOException;
 
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.BitmapUtil;
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.data.BitmapUtil;
 import org.boblycat.blimp.session.BlimpSession;
 import org.boblycat.blimp.thread.ImageWorkerThread.FileExportTask;
+import org.boblycat.blimp.util.Util;
 
 public class ExportBitmapRequest extends Request {
     private File file;

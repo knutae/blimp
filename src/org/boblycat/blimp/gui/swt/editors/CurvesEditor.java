@@ -18,9 +18,9 @@
  */
 package org.boblycat.blimp.gui.swt.editors;
 
+import org.boblycat.blimp.data.PointDouble;
+import org.boblycat.blimp.data.RGBChannel;
 import org.boblycat.blimp.gui.swt.SwtUtil;
-import org.boblycat.blimp.io.PointDouble;
-import org.boblycat.blimp.RGBChannel;
 import org.boblycat.blimp.layers.CurvesLayer;
 import org.boblycat.blimp.util.MathUtil;
 import org.boblycat.blimp.util.NaturalCubicSpline;

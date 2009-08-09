@@ -21,7 +21,7 @@ package org.boblycat.blimp.gui.swt;
 import java.io.InputStream;
 import java.util.List;
 
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.util.Util;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;

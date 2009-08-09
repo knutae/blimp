@@ -28,11 +28,11 @@ import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageOutputStream;
 
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.BitmapUtil;
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.data.BitmapUtil;
 import org.boblycat.blimp.io.Serializer;
 import org.boblycat.blimp.session.BlimpSession;
+import org.boblycat.blimp.util.Util;
 
 /**
  *

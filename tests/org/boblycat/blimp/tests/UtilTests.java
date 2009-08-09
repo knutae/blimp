@@ -18,7 +18,8 @@
  */
 package org.boblycat.blimp.tests;
 
-import static org.boblycat.blimp.Util.*;
+import static org.boblycat.blimp.util.Util.*;
+
 import org.junit.*;
 import static org.junit.Assert.*;
 

@@ -21,7 +21,7 @@ package org.boblycat.blimp.tests;
 import net.sourceforge.jiu.data.MemoryRGB24Image;
 import net.sourceforge.jiu.data.PixelImage;
 
-import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.data.Bitmap;
 import org.boblycat.blimp.layers.InputLayer;
 
 public class TestInput extends InputLayer {

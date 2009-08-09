@@ -16,38 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
-
-import net.sourceforge.jiu.data.RGBIndex;
+package org.boblycat.blimp.data;
 
 /**
- * An enumeration for specifying one or all of the red, green or blue color
- * channels.
- *
- * @author Knut Arild Erstad
+ * Color depths (bits per channel) supported by Blimp.
  */
-public enum RGBChannel {
-    Red,
-    Green,
-    Blue,
-    All;
-
-    public int toJiuIndex() {
-        switch (this) {
-        case Red:
-            return RGBIndex.INDEX_RED;
-        case Green:
-            return RGBIndex.INDEX_GREEN;
-        case Blue:
-            return RGBIndex.INDEX_BLUE;
-        default:
-            return -1;
-        }
-    }
-
-    /**
-     * An array of all RGB channels (Red, Green and Blue).
-     * This does not include special enum values like "All".
-     */
-    public static final RGBChannel[] COLORS = { Red, Green, Blue };
+public enum ColorDepth {
+    Depth8Bit, Depth16Bit,
 }

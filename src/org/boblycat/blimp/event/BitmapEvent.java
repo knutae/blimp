@@ -20,7 +20,7 @@ package org.boblycat.blimp.event;
 
 import java.util.EventObject;
 
-import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.data.Bitmap;
 
 public class BitmapEvent extends EventObject {
     private static final long serialVersionUID = 1L;

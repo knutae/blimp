@@ -20,8 +20,8 @@ package org.boblycat.blimp.session;
 
 import java.io.IOException;
 
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.BitmapSize;
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.data.BitmapSize;
 import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.Layer;

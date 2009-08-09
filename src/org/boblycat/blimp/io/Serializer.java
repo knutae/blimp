@@ -30,10 +30,12 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.data.ColorRGB;
+import org.boblycat.blimp.data.PointDouble;
 import org.boblycat.blimp.layers.Layer;
 import org.boblycat.blimp.session.BlimpSession;
 import org.boblycat.blimp.session.HistoryBlimpSession;
+import org.boblycat.blimp.util.Util;
 import org.w3c.dom.*;
 import org.w3c.dom.ls.*;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;

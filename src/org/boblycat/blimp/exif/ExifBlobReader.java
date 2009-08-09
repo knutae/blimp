@@ -29,8 +29,8 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
 
-import org.boblycat.blimp.BitmapUtil;
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.data.BitmapUtil;
+import org.boblycat.blimp.util.Util;
 
 /**
  * A class for extracting Exif data from binary data.

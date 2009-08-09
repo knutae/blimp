@@ -28,13 +28,13 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.boblycat.blimp.*;
+import org.boblycat.blimp.data.ColorDepth;
+import org.boblycat.blimp.data.ColorRGB;
+import org.boblycat.blimp.data.PointDouble;
 import org.boblycat.blimp.event.LayerChangeListener;
 import org.boblycat.blimp.event.LayerEvent;
 import org.boblycat.blimp.io.BlimpBean;
-import org.boblycat.blimp.io.ColorRGB;
 import org.boblycat.blimp.io.DOMNodeIterator;
-import org.boblycat.blimp.io.PointDouble;
 import org.boblycat.blimp.io.Serializer;
 import org.boblycat.blimp.layers.*;
 import org.boblycat.blimp.layers.RawFileInputLayer.WhiteBalance;

@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp.tests;
 
-import org.boblycat.blimp.ZoomFactor;
+import org.boblycat.blimp.data.ZoomFactor;
 import org.junit.*;
 import static org.junit.Assert.*;
 

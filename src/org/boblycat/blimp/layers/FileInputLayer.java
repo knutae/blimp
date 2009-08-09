@@ -23,11 +23,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.data.Bitmap;
 import org.boblycat.blimp.exif.ExifBlobReader;
 import org.boblycat.blimp.exif.ExifTable;
 import org.boblycat.blimp.exif.ReaderError;
+import org.boblycat.blimp.util.Util;
 
 /**
  * A base class for loading a bitmap from file.

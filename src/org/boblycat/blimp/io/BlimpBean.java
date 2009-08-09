@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.util.Util;
 
 /**
  * Base class for serializable Blimp objects.

@@ -20,8 +20,8 @@ package org.boblycat.blimp.gui.swt;
 
 import java.util.List;
 
-import org.boblycat.blimp.Util;
-import org.boblycat.blimp.Version;
+import org.boblycat.blimp.data.Version;
+import org.boblycat.blimp.util.Util;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;

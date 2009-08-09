@@ -16,11 +16,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.data;
+
 
 /**
- * Color depths (bits per channel) supported by Blimp.
+ * This class creates and holds histograms for an RGB image.
+ * Separate red, green and blue histograms are created.
+ *
+ * @author Knut Arild Erstad
  */
-public enum ColorDepth {
-    Depth8Bit, Depth16Bit,
+public class RGBHistograms {
+    Histogram hRed;
+    Histogram hGreen;
+    Histogram hBlue;
+
+    public RGBHistograms(Bitmap bitmap) {
+        hRed = new Histogram(RGBChannel.Red, bitmap);
+        hGreen = new Histogram(RGBChannel.Green, bitmap);
+        hBlue = new Histogram(RGBChannel.Blue, bitmap);
+    }
+
+    public Histogram getHistogram(RGBChannel channel) {
+        switch (channel) {
+        case Red:
+            return hRed;
+        case Green:
+            return hGreen;
+        case Blue:
+            return hBlue;
+        }
+        return null;
+    }
 }

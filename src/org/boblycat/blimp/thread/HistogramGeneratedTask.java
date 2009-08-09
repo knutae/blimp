@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp.thread;
 
-import org.boblycat.blimp.RGBHistograms;
+import org.boblycat.blimp.data.RGBHistograms;
 
 public abstract class HistogramGeneratedTask implements Runnable {
     RGBHistograms histograms;

@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp.layers;
 
-import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.data.Bitmap;
 
 import net.sourceforge.jiu.color.promotion.PromotionRGB48;
 import net.sourceforge.jiu.data.PixelImage;

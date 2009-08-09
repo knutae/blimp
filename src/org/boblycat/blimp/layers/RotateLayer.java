@@ -20,8 +20,8 @@ package org.boblycat.blimp.layers;
 
 import net.sourceforge.jiu.data.PixelImage;
 
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.BitmapSize;
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.data.BitmapSize;
 import org.boblycat.blimp.jiuops.RotateOperation;
 import org.boblycat.blimp.util.MathUtil;
 

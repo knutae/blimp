@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp.layers;
 
-import org.boblycat.blimp.BitmapSize;
+import org.boblycat.blimp.data.BitmapSize;
 
 /**
  * Base class for adjustment layers that can change the dimensions of a bitmap.

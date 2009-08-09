@@ -16,13 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.data;
 
-/**
- * Version information for Blimp.
- * 
- * @author Knut Arild Erstad
- */
-public class Version {
-    public static final String versionString = "1.2.0 Beta";
+public enum ColorSpace {
+    // These following color spaces are supported by dcraw
+    Uncalibrated, // raw
+    sRGB, // standard for web
+    Adobe, // Adobe RGB (good for printing)
+    AdobeWide, // Adobe Wide Gamut RGB
+    ProPhoto, // ?
+    XYZ, // CIE 1931 XYZ ?
 }

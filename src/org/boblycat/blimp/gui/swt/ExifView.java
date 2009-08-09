@@ -18,11 +18,11 @@
  */
 package org.boblycat.blimp.gui.swt;
 
-import org.boblycat.blimp.Util;
 import org.boblycat.blimp.exif.ExifField;
 import org.boblycat.blimp.exif.ExifTable;
 import org.boblycat.blimp.exif.ExifTag;
 import org.boblycat.blimp.exif.Rational;
+import org.boblycat.blimp.util.Util;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;

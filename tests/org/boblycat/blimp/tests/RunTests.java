@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp.tests;
 
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.util.Util;
 import org.junit.runner.*;
 
 public class RunTests {

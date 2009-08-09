@@ -26,12 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.BitmapSize;
-import org.boblycat.blimp.BitmapUtil;
-import org.boblycat.blimp.RGBHistograms;
-import org.boblycat.blimp.Util;
-import org.boblycat.blimp.ZoomFactor;
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.data.BitmapSize;
+import org.boblycat.blimp.data.BitmapUtil;
+import org.boblycat.blimp.data.RGBHistograms;
+import org.boblycat.blimp.data.ZoomFactor;
 import org.boblycat.blimp.event.LayerChangeListener;
 import org.boblycat.blimp.event.LayerEvent;
 import org.boblycat.blimp.event.ProgressEvent;
@@ -46,6 +45,7 @@ import org.boblycat.blimp.layers.DimensionAdjustmentLayer;
 import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.Layer;
 import org.boblycat.blimp.layers.ViewResizeLayer;
+import org.boblycat.blimp.util.Util;
 
 class CachedExifData {
     private String filePath;

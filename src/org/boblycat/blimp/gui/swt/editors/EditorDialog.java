@@ -21,9 +21,9 @@ package org.boblycat.blimp.gui.swt.editors;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.boblycat.blimp.Util;
 import org.boblycat.blimp.io.Serializer;
 import org.boblycat.blimp.layers.Layer;
+import org.boblycat.blimp.util.Util;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.FillLayout;

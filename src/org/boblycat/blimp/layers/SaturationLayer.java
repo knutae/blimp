@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp.layers;
 
-import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.data.Bitmap;
 import org.boblycat.blimp.jiuops.HueSaturationLightnessOperation;
 import org.boblycat.blimp.util.MathUtil;
 

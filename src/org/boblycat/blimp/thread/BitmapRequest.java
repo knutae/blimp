@@ -23,7 +23,7 @@ package org.boblycat.blimp.thread;
 
 import java.io.IOException;
 
-import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.data.Bitmap;
 import org.boblycat.blimp.session.BlimpSession;
 import org.boblycat.blimp.session.BlimpSession.PreviewQuality;
 

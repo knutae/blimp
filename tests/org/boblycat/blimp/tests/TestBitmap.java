@@ -20,7 +20,7 @@ package org.boblycat.blimp.tests;
 
 import net.sourceforge.jiu.data.PixelImage;
 
-import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.data.Bitmap;
 
 public class TestBitmap extends Bitmap {
     String creator;

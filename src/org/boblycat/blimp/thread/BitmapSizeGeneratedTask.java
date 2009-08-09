@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp.thread;
 
-import org.boblycat.blimp.BitmapSize;
+import org.boblycat.blimp.data.BitmapSize;
 
 /**
  * Task used when asynchronously querying the size of a bitmap from the

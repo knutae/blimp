@@ -32,10 +32,10 @@ import java.util.List;
 
 import javax.imageio.IIOException;
 //import net.sourceforge.jiu.codecs.PNMCodec;
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.ColorDepth;
-import org.boblycat.blimp.ColorSpace;
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.data.ColorDepth;
+import org.boblycat.blimp.data.ColorSpace;
+import org.boblycat.blimp.util.Util;
 
 import net.sourceforge.jiu.codecs.PNMCodec;
 import net.sourceforge.jiu.ops.OperationFailedException;

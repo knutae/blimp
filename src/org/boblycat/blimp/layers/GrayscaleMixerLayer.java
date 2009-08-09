@@ -20,7 +20,7 @@ package org.boblycat.blimp.layers;
 
 import static org.boblycat.blimp.util.MathUtil.*;
 
-import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.data.Bitmap;
 import org.boblycat.blimp.jiuops.GrayscaleMixerOperation;
 
 import net.sourceforge.jiu.data.PixelImage;

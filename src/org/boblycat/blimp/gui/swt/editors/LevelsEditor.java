@@ -18,7 +18,7 @@
  */
 package org.boblycat.blimp.gui.swt.editors;
 
-import org.boblycat.blimp.RGBHistograms;
+import org.boblycat.blimp.data.RGBHistograms;
 import org.boblycat.blimp.gui.swt.HistogramView;
 import org.boblycat.blimp.gui.swt.ValueSlider;
 import org.boblycat.blimp.layers.LevelsLayer;

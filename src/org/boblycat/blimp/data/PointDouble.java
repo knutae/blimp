@@ -16,34 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.data;
 
-/**
- * This class creates and holds histograms for an RGB image.
- * Separate red, green and blue histograms are created.
- *
- * @author Knut Arild Erstad
- */
-public class RGBHistograms {
-    Histogram hRed;
-    Histogram hGreen;
-    Histogram hBlue;
+public class PointDouble {
+    public double x;
+    public double y;
 
-    public RGBHistograms(Bitmap bitmap) {
-        hRed = new Histogram(RGBChannel.Red, bitmap);
-        hGreen = new Histogram(RGBChannel.Green, bitmap);
-        hBlue = new Histogram(RGBChannel.Blue, bitmap);
+    public PointDouble() {
     }
 
-    public Histogram getHistogram(RGBChannel channel) {
-        switch (channel) {
-        case Red:
-            return hRed;
-        case Green:
-            return hGreen;
-        case Blue:
-            return hBlue;
-        }
-        return null;
+    public PointDouble(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public String toCommaString() {
+        return Double.toString(x) + ',' + Double.toString(y);
+    }
+
+    public static PointDouble valueOfCommaString(String input)
+            throws NumberFormatException {
+        int comma = input.indexOf(',');
+        if (comma < 0)
+            throw new NumberFormatException("Missing comma in point: " + input);
+        double x = Double.valueOf(input.substring(0, comma));
+        double y = Double.valueOf(input.substring(comma + 1, input.length()));
+        return new PointDouble(x, y);
     }
 }

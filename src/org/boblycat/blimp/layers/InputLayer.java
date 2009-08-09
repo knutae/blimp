@@ -20,8 +20,8 @@ package org.boblycat.blimp.layers;
 
 import java.io.IOException;
 
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.BitmapSize;
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.data.BitmapSize;
 
 /**
  * An input layer generates a bitmap from some source, such as a file.

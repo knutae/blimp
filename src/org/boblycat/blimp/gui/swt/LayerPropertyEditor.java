@@ -18,10 +18,10 @@
  */
 package org.boblycat.blimp.gui.swt;
 
-import org.boblycat.blimp.*;
-import org.boblycat.blimp.io.ColorRGB;
-import org.boblycat.blimp.io.PointDouble;
+import org.boblycat.blimp.data.ColorRGB;
+import org.boblycat.blimp.data.PointDouble;
 import org.boblycat.blimp.layers.Layer;
+import org.boblycat.blimp.util.Util;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;

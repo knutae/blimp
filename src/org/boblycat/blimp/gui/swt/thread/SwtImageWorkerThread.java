@@ -19,8 +19,8 @@
 package org.boblycat.blimp.gui.swt.thread;
 
 
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.BitmapUtil;
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.data.BitmapUtil;
 import org.boblycat.blimp.event.ProgressEvent;
 import org.boblycat.blimp.event.ProgressEventSource;
 import org.boblycat.blimp.event.ProgressListener;

@@ -18,8 +18,8 @@
  */
 package org.boblycat.blimp.layers;
 
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.util.Util;
 
 import net.sourceforge.jiu.color.adjustment.GammaCorrection;
 

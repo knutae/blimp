@@ -25,8 +25,8 @@ import net.sourceforge.jiu.geometry.Rotate180;
 import net.sourceforge.jiu.geometry.Rotate90Left;
 import net.sourceforge.jiu.geometry.Rotate90Right;
 
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.BitmapSize;
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.data.BitmapSize;
 
 public class OrientationLayer extends DimensionAdjustmentLayer {
     public enum Rotation {

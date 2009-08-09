@@ -20,8 +20,8 @@ package org.boblycat.blimp.layers;
 
 import java.io.IOException;
 
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.util.Util;
 
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.gui.awt.ToolkitLoader;

@@ -18,12 +18,16 @@
  */
 package org.boblycat.blimp.gui.swt;
 
-import org.boblycat.blimp.*;
+import org.boblycat.blimp.data.BitmapUtil;
+import org.boblycat.blimp.data.ColorDepth;
+import org.boblycat.blimp.data.Version;
 import org.boblycat.blimp.event.BitmapChangeListener;
 import org.boblycat.blimp.event.BitmapEvent;
 import org.boblycat.blimp.event.LayerChangeListener;
 import org.boblycat.blimp.event.LayerEvent;
 import org.boblycat.blimp.exif.ExifTable;
+import org.boblycat.blimp.gui.helper.ArgumentSocketServer;
+import org.boblycat.blimp.gui.helper.LayerRegistry;
 import org.boblycat.blimp.gui.swt.editors.LayerEditorCallback;
 import org.boblycat.blimp.gui.swt.editors.LayerEditorEnvironment;
 import org.boblycat.blimp.gui.swt.editors.PrintLayerDialog;
@@ -35,6 +39,7 @@ import org.boblycat.blimp.session.HistoryBlimpSession;
 import org.boblycat.blimp.session.SessionHistory;
 import org.boblycat.blimp.thread.ExifQueryTask;
 import org.boblycat.blimp.thread.ImageWorkerThread;
+import org.boblycat.blimp.util.Util;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;

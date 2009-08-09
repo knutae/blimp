@@ -18,11 +18,11 @@
  */
 package org.boblycat.blimp.gui.swt.editors;
 
-import org.boblycat.blimp.ColorDepth;
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.data.ColorDepth;
 import org.boblycat.blimp.layers.RawFileInputLayer;
 import org.boblycat.blimp.layers.RawFileInputLayer.Quality;
 import org.boblycat.blimp.layers.RawFileInputLayer.WhiteBalance;
+import org.boblycat.blimp.util.Util;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;

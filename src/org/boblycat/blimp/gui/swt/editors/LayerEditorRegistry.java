@@ -22,8 +22,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
-import org.boblycat.blimp.*;
 import org.boblycat.blimp.layers.Layer;
+import org.boblycat.blimp.util.Util;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 

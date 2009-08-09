@@ -23,7 +23,7 @@ package org.boblycat.blimp.thread;
 
 import java.io.IOException;
 
-import org.boblycat.blimp.RGBHistograms;
+import org.boblycat.blimp.data.RGBHistograms;
 import org.boblycat.blimp.session.BlimpSession;
 
 public class HistogramRequest extends Request {

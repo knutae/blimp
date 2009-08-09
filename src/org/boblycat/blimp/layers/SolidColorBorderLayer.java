@@ -21,10 +21,10 @@ package org.boblycat.blimp.layers;
 import net.sourceforge.jiu.data.RGBIndex;
 import net.sourceforge.jiu.data.RGBIntegerImage;
 
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.BitmapSize;
-import org.boblycat.blimp.Util;
-import org.boblycat.blimp.io.ColorRGB;
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.data.BitmapSize;
+import org.boblycat.blimp.data.ColorRGB;
+import org.boblycat.blimp.util.Util;
 
 /**
  * A layer which adds a solid color border around the image.

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.data;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -39,6 +39,7 @@ import org.boblycat.blimp.exif.ExifTable;
 import org.boblycat.blimp.exif.ExifTag;
 import org.boblycat.blimp.exif.MetaDataUtil;
 import org.boblycat.blimp.exif.ValidationError;
+import org.boblycat.blimp.util.Util;
 
 import net.sourceforge.jiu.data.MemoryRGB24Image;
 import net.sourceforge.jiu.data.PixelImage;

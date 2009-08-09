@@ -22,10 +22,10 @@ import net.sourceforge.jiu.data.MemoryRGB24Image;
 import net.sourceforge.jiu.data.RGB24Image;
 import net.sourceforge.jiu.data.RGBIndex;
 
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Histogram;
-import org.boblycat.blimp.RGBChannel;
-import org.boblycat.blimp.RGBHistograms;
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.data.Histogram;
+import org.boblycat.blimp.data.RGBChannel;
+import org.boblycat.blimp.data.RGBHistograms;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.FillLayout;

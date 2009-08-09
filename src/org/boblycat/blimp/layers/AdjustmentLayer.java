@@ -20,10 +20,10 @@ package org.boblycat.blimp.layers;
 
 import java.util.logging.Level;
 
-import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.Util;
+import org.boblycat.blimp.data.Bitmap;
 import org.boblycat.blimp.event.ProgressEvent;
 import org.boblycat.blimp.session.LayerRearranger;
+import org.boblycat.blimp.util.Util;
 
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.ops.ImageToImageOperation;
