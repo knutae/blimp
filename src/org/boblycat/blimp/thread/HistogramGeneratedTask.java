@@ -16,7 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.thread;
+
+import org.boblycat.blimp.RGBHistograms;
 
 public abstract class HistogramGeneratedTask implements Runnable {
     RGBHistograms histograms;

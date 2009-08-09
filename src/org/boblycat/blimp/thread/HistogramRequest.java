@@ -23,7 +23,6 @@ package org.boblycat.blimp.thread;
 
 import java.io.IOException;
 
-import org.boblycat.blimp.HistogramGeneratedTask;
 import org.boblycat.blimp.RGBHistograms;
 import org.boblycat.blimp.session.BlimpSession;
 
