@@ -18,7 +18,19 @@
  */
 package org.boblycat.blimp.tests;
 
+import org.boblycat.blimp.data.ZoomTests;
+import org.boblycat.blimp.exif.ExifTests;
+import org.boblycat.blimp.gui.swt.SwtTests;
+import org.boblycat.blimp.gui.swt.thread.SwtImageWorkerThreadTests;
+import org.boblycat.blimp.io.SerializationTests;
+import org.boblycat.blimp.session.CachedSessionTests;
+import org.boblycat.blimp.session.HistoryTests;
+import org.boblycat.blimp.session.LayerRearrangerTest;
+import org.boblycat.blimp.session.SessionTests;
+import org.boblycat.blimp.util.MathUtilTests;
+import org.boblycat.blimp.util.SplineTests;
 import org.boblycat.blimp.util.Util;
+import org.boblycat.blimp.util.UtilTests;
 import org.junit.runner.*;
 
 public class RunTests {

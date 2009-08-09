@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp.tests;
+package org.boblycat.blimp.session;
 
 import static org.junit.Assert.*;
 
@@ -30,6 +30,7 @@ import org.boblycat.blimp.layers.GammaLayer;
 import org.boblycat.blimp.layers.GrayscaleMixerLayer;
 import org.boblycat.blimp.layers.ResizeLayer;
 import org.boblycat.blimp.layers.SolidColorBorderLayer;
+import org.boblycat.blimp.layers.TestLayer;
 import org.boblycat.blimp.layers.ViewResizeLayer;
 import org.boblycat.blimp.session.LayerRearranger;
 import org.junit.Test;

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp.tests;
+package org.boblycat.blimp.io;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -121,7 +121,7 @@ public class SerializationTests {
         assertTrue(xml.length() > 0);
 
         Element root = parseLayerXml(xml);
-        assertEquals("org.boblycat.blimp.tests.TestLayer", root
+        assertEquals("org.boblycat.blimp.layers.TestLayer", root
                 .getAttribute("class"));
 
         assertTrue(root.getChildNodes().getLength() >= 5);
@@ -177,7 +177,7 @@ public class SerializationTests {
     @Test
     public void testFromXml() throws Exception {
         String xml =
-            "<layer class=\"org.boblycat.blimp.tests.TestLayer\">" +
+            "<layer class=\"org.boblycat.blimp.layers.TestLayer\">" +
             "  <property name=\"active\">false</property>" +
             "  <property name=\"intValue\">-33</property>" +
             "  <property name=\"stringValue\">Ouagadougou</property>" +
@@ -225,7 +225,7 @@ public class SerializationTests {
     @Test
     public void testFromXmlWithWhiteSpace() throws Exception {
         String xml =
-            "<layer class=\"org.boblycat.blimp.tests.TestLayer\">" +
+            "<layer class=\"org.boblycat.blimp.layers.TestLayer\">" +
             "  <property name=\"stringValue\">    </property>" +
             "</layer>";
         Layer layer = Serializer.layerFromXml(xml);
@@ -337,14 +337,14 @@ public class SerializationTests {
 
         assertNotNull(child);
         assertEquals("layer", child.getNodeName());
-        assertEquals("org.boblycat.blimp.tests.TestInput", child
+        assertEquals("org.boblycat.blimp.layers.TestInput", child
                 .getAttribute("class"));
         assertHasPropertyChild(child, "filePath", "dummy/path");
 
         child = (Element) child.getNextSibling();
         assertNotNull(child);
         assertEquals("layer", child.getNodeName());
-        assertEquals("org.boblycat.blimp.tests.TestLayer", child
+        assertEquals("org.boblycat.blimp.layers.TestLayer", child
                 .getAttribute("class"));
         assertHasPropertyChild(child, "intValue", "54");
     }
@@ -353,10 +353,10 @@ public class SerializationTests {
     public void testSessionFromXml() throws Exception {
         String xml =
             "<session>" +
-            "  <layer class=\"org.boblycat.blimp.tests.TestInput\">" +
+            "  <layer class=\"org.boblycat.blimp.layers.TestInput\">" +
             "    <property name=\"filePath\">some.path</property>" +
             "  </layer>" +
-            "  <layer class=\"org.boblycat.blimp.tests.TestLayer\">" +
+            "  <layer class=\"org.boblycat.blimp.layers.TestLayer\">" +
             "    <property name=\"stringValue\">Some string value</property>" +
             "  </layer>" +
             "</session>";
@@ -552,7 +552,7 @@ public class SerializationTests {
         temp.deleteOnExit();
         String xml =
             "<session>" +
-            "  <layer class=\"org.boblycat.blimp.tests.TestInput\">" +
+            "  <layer class=\"org.boblycat.blimp.layers.TestInput\">" +
             "    <property name=\"filePath\">initial path</property>" +
             "  </layer>" +
             "</session>";
@@ -642,7 +642,7 @@ public class SerializationTests {
         temp.deleteOnExit();
         String xml =
             "<session>" +
-            "  <layer class=\"org.boblycat.blimp.tests.TestInput\">" +
+            "  <layer class=\"org.boblycat.blimp.layers.TestInput\">" +
             "    <property name=\"filePath\">initial path</property>" +
             "  </layer>" +
             "</session>";

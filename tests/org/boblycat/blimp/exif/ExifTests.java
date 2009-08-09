@@ -16,13 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp.tests;
+package org.boblycat.blimp.exif;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Iterator;
 import java.util.List;
 
-import org.boblycat.blimp.exif.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 
