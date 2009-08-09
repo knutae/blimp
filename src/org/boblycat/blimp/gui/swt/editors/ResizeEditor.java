@@ -19,10 +19,10 @@
 package org.boblycat.blimp.gui.swt.editors;
 
 import org.boblycat.blimp.BitmapSize;
-import org.boblycat.blimp.BitmapSizeGeneratedTask;
 import org.boblycat.blimp.Util;
 import org.boblycat.blimp.gui.swt.ValueSlider;
 import org.boblycat.blimp.layers.ResizeLayer;
+import org.boblycat.blimp.thread.BitmapSizeGeneratedTask;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;

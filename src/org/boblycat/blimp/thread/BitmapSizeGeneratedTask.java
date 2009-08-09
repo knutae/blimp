@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.thread;
 
-import org.boblycat.blimp.thread.ImageWorkerThread;
+import org.boblycat.blimp.BitmapSize;
 
 /**
  * Task used when asynchronously querying the size of a bitmap from the
