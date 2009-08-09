@@ -21,10 +21,11 @@ package org.boblycat.blimp.tests;
 import java.io.IOException;
 
 import org.boblycat.blimp.*;
-import org.boblycat.blimp.BlimpSession.PreviewQuality;
 import org.boblycat.blimp.layers.Layer;
 import org.boblycat.blimp.layers.ResizeLayer;
 import org.boblycat.blimp.layers.ViewResizeLayer;
+import org.boblycat.blimp.session.BlimpSession;
+import org.boblycat.blimp.session.BlimpSession.PreviewQuality;
 import org.junit.*;
 import static org.junit.Assert.*;
 

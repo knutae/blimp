@@ -18,8 +18,8 @@
  */
 package org.boblycat.blimp.tests;
 
-import org.boblycat.blimp.BlimpSession;
-import org.boblycat.blimp.CachedBlimpSession;
+import org.boblycat.blimp.session.BlimpSession;
+import org.boblycat.blimp.session.CachedBlimpSession;
 
 public class CachedSessionTests extends SessionTests {
     // Note: all tests in SessionTests will be executed

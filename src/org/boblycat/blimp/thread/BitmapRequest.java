@@ -24,9 +24,9 @@ package org.boblycat.blimp.thread;
 import java.io.IOException;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.BlimpSession;
 import org.boblycat.blimp.Debug;
-import org.boblycat.blimp.BlimpSession.PreviewQuality;
+import org.boblycat.blimp.session.BlimpSession;
+import org.boblycat.blimp.session.BlimpSession.PreviewQuality;
 
 public class BitmapRequest extends Request {
     private int viewWidth;

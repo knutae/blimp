@@ -36,6 +36,8 @@ import org.boblycat.blimp.io.PointDouble;
 import org.boblycat.blimp.io.Serializer;
 import org.boblycat.blimp.layers.*;
 import org.boblycat.blimp.layers.RawFileInputLayer.WhiteBalance;
+import org.boblycat.blimp.session.BlimpSession;
+import org.boblycat.blimp.session.HistoryBlimpSession;
 import org.junit.*;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;

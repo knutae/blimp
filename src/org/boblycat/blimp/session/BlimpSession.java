@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.session;
 
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -26,6 +26,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.BitmapSize;
+import org.boblycat.blimp.BitmapUtil;
+import org.boblycat.blimp.Debug;
+import org.boblycat.blimp.LayerChangeListener;
+import org.boblycat.blimp.LayerEvent;
+import org.boblycat.blimp.ProgressEvent;
+import org.boblycat.blimp.ProgressListener;
+import org.boblycat.blimp.RGBHistograms;
+import org.boblycat.blimp.Util;
+import org.boblycat.blimp.ZoomFactor;
 import org.boblycat.blimp.exif.ExifBlobReader;
 import org.boblycat.blimp.exif.ExifTable;
 import org.boblycat.blimp.exif.ReaderError;

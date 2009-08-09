@@ -18,9 +18,9 @@
  */
 package org.boblycat.blimp.tests;
 
-import org.boblycat.blimp.BlimpSession;
-import org.boblycat.blimp.HistoryBlimpSession;
-import org.boblycat.blimp.SessionHistory;
+import org.boblycat.blimp.session.BlimpSession;
+import org.boblycat.blimp.session.HistoryBlimpSession;
+import org.boblycat.blimp.session.SessionHistory;
 import org.junit.*;
 import static org.junit.Assert.*;
 

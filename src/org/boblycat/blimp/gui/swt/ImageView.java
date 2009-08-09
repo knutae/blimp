@@ -19,9 +19,11 @@
 package org.boblycat.blimp.gui.swt;
 
 import org.boblycat.blimp.*;
-import org.boblycat.blimp.BlimpSession.PreviewQuality;
 import org.boblycat.blimp.gui.swt.thread.SwtImageWorkerThread;
 import org.boblycat.blimp.io.Serializer;
+import org.boblycat.blimp.session.BlimpSession;
+import org.boblycat.blimp.session.HistoryBlimpSession;
+import org.boblycat.blimp.session.BlimpSession.PreviewQuality;
 import org.boblycat.blimp.util.EventSource;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;

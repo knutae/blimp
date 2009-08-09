@@ -23,7 +23,7 @@ package org.boblycat.blimp.thread;
 
 import java.io.IOException;
 
-import org.boblycat.blimp.BlimpSession;
+import org.boblycat.blimp.session.BlimpSession;
 
 public abstract class Request {
     Object owner;

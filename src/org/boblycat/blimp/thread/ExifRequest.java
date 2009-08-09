@@ -23,7 +23,7 @@ package org.boblycat.blimp.thread;
 
 import java.io.IOException;
 
-import org.boblycat.blimp.BlimpSession;
+import org.boblycat.blimp.session.BlimpSession;
 
 public class ExifRequest extends Request {
     private ExifQueryTask exifTask;

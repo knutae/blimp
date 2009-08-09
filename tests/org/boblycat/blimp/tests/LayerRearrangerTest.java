@@ -23,7 +23,6 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.boblycat.blimp.LayerRearranger;
 import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.CropLayer;
 import org.boblycat.blimp.layers.CurvesLayer;
@@ -32,6 +31,7 @@ import org.boblycat.blimp.layers.GrayscaleMixerLayer;
 import org.boblycat.blimp.layers.ResizeLayer;
 import org.boblycat.blimp.layers.SolidColorBorderLayer;
 import org.boblycat.blimp.layers.ViewResizeLayer;
+import org.boblycat.blimp.session.LayerRearranger;
 import org.junit.Test;
 
 public class LayerRearrangerTest {

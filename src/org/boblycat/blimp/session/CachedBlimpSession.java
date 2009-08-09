@@ -16,10 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.session;
 
 import java.io.IOException;
 
+import org.boblycat.blimp.Bitmap;
+import org.boblycat.blimp.BitmapSize;
+import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.layers.AdjustmentLayer;
 import org.boblycat.blimp.layers.InputLayer;
 import org.boblycat.blimp.layers.Layer;

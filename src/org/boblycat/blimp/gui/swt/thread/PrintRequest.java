@@ -24,13 +24,13 @@ package org.boblycat.blimp.gui.swt.thread;
 import java.io.IOException;
 
 import org.boblycat.blimp.Bitmap;
-import org.boblycat.blimp.BlimpSession;
 import org.boblycat.blimp.Util;
-import org.boblycat.blimp.BlimpSession.PreviewQuality;
 import org.boblycat.blimp.gui.swt.ImageConverter;
 import org.boblycat.blimp.gui.swt.SwtUtil;
 import org.boblycat.blimp.gui.swt.thread.SwtImageWorkerThread.PrintTask;
 import org.boblycat.blimp.layers.PrintLayer;
+import org.boblycat.blimp.session.BlimpSession;
+import org.boblycat.blimp.session.BlimpSession.PreviewQuality;
 import org.boblycat.blimp.thread.ImageWorkerThread;
 import org.boblycat.blimp.thread.Request;
 import org.eclipse.swt.graphics.GC;

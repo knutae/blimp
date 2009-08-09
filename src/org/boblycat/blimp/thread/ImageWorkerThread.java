@@ -27,13 +27,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapSizeGeneratedTask;
-import org.boblycat.blimp.BlimpSession;
-import org.boblycat.blimp.CachedBlimpSession;
 import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.HistogramGeneratedTask;
 import org.boblycat.blimp.ProgressEvent;
 import org.boblycat.blimp.ProgressListener;
 import org.boblycat.blimp.Util;
+import org.boblycat.blimp.session.BlimpSession;
+import org.boblycat.blimp.session.CachedBlimpSession;
 
 /**
  * A worker thread for doing image (layer) processing.

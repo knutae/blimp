@@ -30,9 +30,9 @@ import javax.imageio.stream.ImageOutputStream;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapUtil;
-import org.boblycat.blimp.BlimpSession;
 import org.boblycat.blimp.Util;
 import org.boblycat.blimp.io.Serializer;
+import org.boblycat.blimp.session.BlimpSession;
 
 /**
  *

@@ -18,9 +18,9 @@
  */
 package org.boblycat.blimp.gui.swt.editors;
 
-import org.boblycat.blimp.HistoryBlimpSession;
 import org.boblycat.blimp.gui.swt.thread.SwtImageWorkerThread;
 import org.boblycat.blimp.layers.Layer;
+import org.boblycat.blimp.session.HistoryBlimpSession;
 
 /**
  * A collection of variables used by layer editors.

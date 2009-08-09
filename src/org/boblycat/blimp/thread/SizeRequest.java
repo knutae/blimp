@@ -25,9 +25,9 @@ import java.io.IOException;
 
 import org.boblycat.blimp.BitmapSize;
 import org.boblycat.blimp.BitmapSizeGeneratedTask;
-import org.boblycat.blimp.BlimpSession;
 import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.Util;
+import org.boblycat.blimp.session.BlimpSession;
 
 public class SizeRequest extends Request {
     private BitmapSizeGeneratedTask sizeTask;

@@ -16,7 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp;
+package org.boblycat.blimp.session;
+
+import org.boblycat.blimp.Debug;
+import org.boblycat.blimp.LayerChangeListener;
+import org.boblycat.blimp.LayerEvent;
+import org.boblycat.blimp.LayerEventSource;
+import org.boblycat.blimp.Util;
 
 /**
  * A subclass of BlimpSession which has a SessionHistory member and

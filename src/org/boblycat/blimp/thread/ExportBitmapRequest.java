@@ -26,9 +26,9 @@ import java.io.IOException;
 
 import org.boblycat.blimp.Bitmap;
 import org.boblycat.blimp.BitmapUtil;
-import org.boblycat.blimp.BlimpSession;
 import org.boblycat.blimp.Debug;
 import org.boblycat.blimp.Util;
+import org.boblycat.blimp.session.BlimpSession;
 import org.boblycat.blimp.thread.ImageWorkerThread.FileExportTask;
 
 public class ExportBitmapRequest extends Request {
