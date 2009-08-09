@@ -27,6 +27,7 @@ import org.boblycat.blimp.session.CachedSessionTests;
 import org.boblycat.blimp.session.HistoryTests;
 import org.boblycat.blimp.session.LayerRearrangerTest;
 import org.boblycat.blimp.session.SessionTests;
+import org.boblycat.blimp.util.ColorUtilTests;
 import org.boblycat.blimp.util.MathUtilTests;
 import org.boblycat.blimp.util.SplineTests;
 import org.boblycat.blimp.util.Util;

@@ -23,6 +23,8 @@ import static org.boblycat.blimp.util.MathUtil.clampToUnsignedShort;
 
 import java.util.ArrayList;
 
+import org.boblycat.blimp.util.ColorUtil;
+
 import net.sourceforge.jiu.data.IntegerImage;
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.data.RGB24Image;
