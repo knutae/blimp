@@ -43,6 +43,9 @@ def first_existing(*paths):
 if sys.platform == 'win32':
     # TODO: detect 32/64-bit java VM (or support both somehow)
     swt_jar = 'swt-3.4-win32_64/swt.jar'
+elif sys.platform == 'darwin':
+    #swt_jar = 'swt-3.4-carbon-macosx/swt.jar'
+    swt_jar = 'swt-3.3.2-carbon-macosx/swt.jar'
 else:
     # Search for a usable swt jar (a bit ugly)
     swt_jar = first_existing('/usr/share/java/swt-gtk-3.4.jar', '/usr/share/java/swt.jar', swt_jar)

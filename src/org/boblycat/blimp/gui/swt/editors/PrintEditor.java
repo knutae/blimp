@@ -47,7 +47,6 @@ public class PrintEditor extends GridBasedLayerEditor {
         Button button = new Button(this, SWT.PUSH);
         button.setText("Select Printer and Options ...");
         button.addListener(SWT.Selection, new Listener() {
-            @Override
             public void handleEvent(Event event) {
                 if (isDisposed())
                     return;

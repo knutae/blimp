@@ -101,44 +101,14 @@ public class RawFileInputLayer extends FileInputLayer {
         if (path != null)
             Util.warn("blimp.dcraw.path is set, but was not found: " + path);
 
-        // Embedded as a jar file resource (for Java Web Start).
         String dcrawExe;
         if (Util.isWindowsOS())
             dcrawExe = "blimp-dcraw.exe";
         else
             dcrawExe = "blimp-dcraw";
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL dcrawUrl = classLoader.getResource(dcrawExe);
-        if (dcrawUrl != null) {
-            try {
-                Util.info("Found dcraw as resource: " + dcrawUrl.toString());
-                URLConnection conn = dcrawUrl.openConnection();
-                InputStream istream = conn.getInputStream();
-                File tempFile = File.createTempFile("blimp-dcraw", "exe", null);
-                tempFile.deleteOnExit();
-                FileOutputStream ostream = new FileOutputStream(tempFile);
-                byte[] buffer = new byte[1024];
-                int count = istream.read(buffer);
-                while (count > 0) {
-                    ostream.write(buffer, 0, count);
-                    count = istream.read(buffer);
-                }
-                istream.close();
-                ostream.close();
-                tempFile.setExecutable(true);
-                Util.info("Extracted dcraw to " + tempFile);
-                return tempFile.toString();
-            }
-            catch (IOException e) {
-                Util.err(e.getMessage());
-            }
-        }
-        else {
-            Util.warn("Failed to find dcraw executable as a resource");
-        }
 
         // return file name without path and hope for the best
-        Util.err("Failed to find or extract dcraw executable");
+        Util.err("Failed to find dcraw executable");
         return dcrawExe;
     }
 
