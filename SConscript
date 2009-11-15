@@ -45,7 +45,7 @@ if sys.platform == 'win32':
     swt_jar = 'swt-3.4-win32_64/swt.jar'
 else:
     # Search for a usable swt jar (a bit ugly)
-    swt_jar = first_existing('/usr/share/java/swt-gtk-3.4.jar', '/usr/share/java/swt.jar', swt_jar)
+    swt_jar = first_existing('/usr/lib/java/swt-gtk-3.5.jar', '/usr/share/java/swt-gtk-3.4.jar', '/usr/share/java/swt.jar', swt_jar)
 
 env.Append(JAVACLASSPATH = [ jiu_jar, swt_jar, junit_jar ])
 env.Java(class_dir, 'src', JAVAVERSION='1.6')
