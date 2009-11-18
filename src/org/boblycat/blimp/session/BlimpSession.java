@@ -509,7 +509,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
 
     public String getDescription() {
         String name = getName();
-        if (!name.isEmpty())
+        if (name.length() > 0)
             return name;
         if (layerList.isEmpty())
             return "Empty session";
@@ -598,7 +598,7 @@ public class BlimpSession extends InputLayer implements LayerChangeListener {
     public void setNameFromFilename(String filename) {
         File file = new File(filename);
         String shortName = Util.changeFileExtension(file.getName(), "");
-        if (!shortName.isEmpty())
+        if (shortName.length() > 0)
             setName(shortName);
     }
 

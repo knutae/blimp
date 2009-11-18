@@ -227,7 +227,7 @@ public class Util {
         int lastDotPos = filename.lastIndexOf('.');
         int lastSlashPos = Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\'));
         String suffix;
-        if (ext.isEmpty())
+        if (ext.length() == 0)
             suffix = "";
         else
             suffix = '.' + ext;
