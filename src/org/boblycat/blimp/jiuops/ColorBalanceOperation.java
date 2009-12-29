@@ -18,6 +18,8 @@
  */
 package org.boblycat.blimp.jiuops;
 
+import org.boblycat.blimp.util.ColorUtil;
+
 /**
  * Adjust the color tones of an image along three "axes":
  * cyan to red, magenta to green and yellow to blue.

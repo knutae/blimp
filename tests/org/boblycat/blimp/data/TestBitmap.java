@@ -16,15 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp.tests;
+package org.boblycat.blimp.data;
 
-import org.boblycat.blimp.session.BlimpSession;
-import org.boblycat.blimp.session.CachedBlimpSession;
+import net.sourceforge.jiu.data.PixelImage;
 
-public class CachedSessionTests extends SessionTests {
-    // Note: all tests in SessionTests will be executed
-    @Override
-    protected BlimpSession newSession() {
-        return new CachedBlimpSession();
+import org.boblycat.blimp.data.Bitmap;
+
+public class TestBitmap extends Bitmap {
+    public String creator;
+    public String testValue;
+
+    public TestBitmap(PixelImage image) {
+        super(image);
     }
 }

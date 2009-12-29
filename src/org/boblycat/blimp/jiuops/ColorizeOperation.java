@@ -18,6 +18,8 @@
  */
 package org.boblycat.blimp.jiuops;
 
+import org.boblycat.blimp.util.ColorUtil;
+
 /**
  * Colorizes an image using a single hue (color tone).
  * The result can be referred to as a monotone image.

@@ -16,8 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp.tests;
+package org.boblycat.blimp.session;
 
+import org.boblycat.blimp.layers.TestInput;
+import org.boblycat.blimp.layers.TestLayer;
 import org.boblycat.blimp.session.BlimpSession;
 import org.boblycat.blimp.session.HistoryBlimpSession;
 import org.boblycat.blimp.session.SessionHistory;

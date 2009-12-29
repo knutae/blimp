@@ -16,9 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.boblycat.blimp.tests;
+package org.boblycat.blimp.util;
 
-import static org.boblycat.blimp.jiuops.ColorUtil.*;
+import static org.boblycat.blimp.util.ColorUtil.*;
+
 import org.junit.*;
 import static org.junit.Assert.*;
 

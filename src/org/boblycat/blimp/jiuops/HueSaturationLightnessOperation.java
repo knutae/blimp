@@ -18,6 +18,7 @@
  */
 package org.boblycat.blimp.jiuops;
 
+import org.boblycat.blimp.util.ColorUtil;
 import org.boblycat.blimp.util.MathUtil;
 
 /**
