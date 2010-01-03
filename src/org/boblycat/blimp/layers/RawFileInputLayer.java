@@ -20,23 +20,15 @@ package org.boblycat.blimp.layers;
 
 import java.beans.PropertyDescriptor;
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.imageio.IIOException;
-//import net.sourceforge.jiu.codecs.PNMCodec;
 import org.boblycat.blimp.data.Bitmap;
 import org.boblycat.blimp.data.ColorDepth;
 import org.boblycat.blimp.data.ColorSpace;
 import org.boblycat.blimp.util.Util;
-
 import net.sourceforge.jiu.codecs.PNMCodec;
 import net.sourceforge.jiu.ops.OperationFailedException;
 import net.sourceforge.jiu.ops.ProgressListener;
