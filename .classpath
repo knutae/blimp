@@ -6,6 +6,6 @@
 	<classpathentry kind="lib" path="junit4.1/junit-4.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="SWT_JAR" sourcepath="/SWT_SRC"/>
-	<classpathentry kind="lib" path="jiu-0.14.3/jiu.jar"/>
+	<classpathentry kind="lib" path="jiu/jiu.jar" sourcepath="jiu"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

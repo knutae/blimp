@@ -24,18 +24,18 @@ import org.boblycat.blimp.util.Util;
 
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.geometry.Resample;
+import net.sourceforge.jiu.geometry.Resample.FilterType;
 
 public class ResizeLayer extends DimensionAdjustmentLayer {
     public enum Filter {
-        BSpline  { int getType() { return Resample.FILTER_TYPE_B_SPLINE; } },
-        Bell     { int getType() { return Resample.FILTER_TYPE_BELL; } },
-        // Box     { int getType() { return Resample.FILTER_TYPE_BOX; } },
-        Hermite  { int getType() { return Resample.FILTER_TYPE_HERMITE; } },
-        Lanczos3 { int getType() { return Resample.FILTER_TYPE_LANCZOS3; } },
-        Mitchell { int getType() { return Resample.FILTER_TYPE_MITCHELL; } },
-        Triangle { int getType() { return Resample.FILTER_TYPE_TRIANGLE; } };
+        BSpline  { FilterType getType() { return FilterType.B_SPLINE; } },
+        Bell     { FilterType getType() { return FilterType.BELL; } },
+        Hermite  { FilterType getType() { return FilterType.HERMITE; } },
+        Lanczos3 { FilterType getType() { return FilterType.LANCZOS3; } },
+        Mitchell { FilterType getType() { return FilterType.MITCHELL; } },
+        Triangle { FilterType getType() { return FilterType.TRIANGLE; } };
 
-        abstract int getType();
+        abstract FilterType getType();
     }
 
     static final Filter DEFAULT_FILTER = Filter.Lanczos3;

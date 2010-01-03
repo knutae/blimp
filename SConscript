@@ -28,7 +28,12 @@ env.Install(
     class_dir + '/resources/images',
     [x for x in glob.glob('icons/*.png') if 'wix' not in x])
 
-jiu_jar = 'jiu-0.14.3/jiu.jar'
+jiu_jar = 'jiu/jiu.jar'
+if not os.path.exists(jiu_jar):
+    # Prepare jiu through a script
+    import subprocess
+    subprocess.check_call([sys.executable, 'tools/prepare_jiu.py'])
+
 xerces_jar = 'jars/xercesImpl.jar'
 swt_jar = '/usr/lib/java/swt.jar'
 junit_jar = 'junit4.1/junit-4.1.jar'

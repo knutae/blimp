@@ -96,9 +96,9 @@ public class PrintLayer extends DimensionAdjustmentLayer {
         Resample resample = new Resample();
         resample.setSize(rescaleWidth, rescaleHeight);
         if (isPreview())
-            resample.setFilter(Resample.FILTER_TYPE_TRIANGLE);
+            resample.setFilter(Resample.FilterType.TRIANGLE);
         else
-            resample.setFilter(Resample.FILTER_TYPE_LANCZOS3); // hardcode to high quality
+            resample.setFilter(Resample.FilterType.LANCZOS3); // hardcode to high quality
         IntegerImage rescaled = (IntegerImage) applyJiuOperation(image, resample);
 
         if (!isPreview())

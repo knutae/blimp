@@ -72,7 +72,7 @@ public abstract class WrappedIntegerImage implements IntegerImage {
         return otherIntegerImage.getBitsPerPixel();
     }
 
-    public Class<?> getImageType() {
+    public Class<? extends PixelImage> getImageType() {
         return otherIntegerImage.getImageType();
     }
 
