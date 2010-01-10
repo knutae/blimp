@@ -29,7 +29,6 @@ import org.boblycat.blimp.session.LayerRearrangerTest;
 import org.boblycat.blimp.session.SessionTests;
 import org.boblycat.blimp.util.ColorUtilTests;
 import org.boblycat.blimp.util.MathUtilTests;
-import org.boblycat.blimp.util.SplineTests;
 import org.boblycat.blimp.util.Util;
 import org.boblycat.blimp.util.UtilTests;
 import org.junit.runner.*;
@@ -51,7 +50,6 @@ public class RunTests {
                 SessionTests.class,
                 CachedSessionTests.class,
                 HistoryTests.class,
-                SplineTests.class,
                 SerializationTests.class,
                 ZoomTests.class,
                 UtilTests.class,

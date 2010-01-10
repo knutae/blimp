@@ -19,10 +19,10 @@
 package org.boblycat.blimp.layers;
 
 import net.sourceforge.jiu.data.PixelImage;
+import net.sourceforge.jiu.geometry.Rotate;
 
 import org.boblycat.blimp.data.Bitmap;
 import org.boblycat.blimp.data.BitmapSize;
-import org.boblycat.blimp.jiuops.RotateOperation;
 import org.boblycat.blimp.util.MathUtil;
 
 /**
@@ -107,7 +107,7 @@ public class RotateLayer extends DimensionAdjustmentLayer {
     @Override
     public Bitmap applyLayer(Bitmap source) {
         BitmapSize outputSize = calculateSize(source.getSize());
-        RotateOperation op = new RotateOperation();
+        Rotate op = new Rotate();
         op.setAngle(angle);
         op.setOutputSize(outputSize.width, outputSize.height);
         op.setUseAntiAliasing(quality == Quality.AntiAliased);

@@ -23,10 +23,10 @@ import java.util.TreeMap;
 import org.boblycat.blimp.data.Bitmap;
 import org.boblycat.blimp.data.PointDouble;
 import org.boblycat.blimp.data.RGBChannel;
-import org.boblycat.blimp.jiuops.SplineOperation;
-import org.boblycat.blimp.util.NaturalCubicSpline;
 
+import net.sourceforge.jiu.color.adjustment.Curves;
 import net.sourceforge.jiu.data.PixelImage;
+import net.sourceforge.jiu.util.NaturalCubicSpline;
 
 public class CurvesLayer extends AdjustmentLayer {
     NaturalCubicSpline spline;
@@ -40,7 +40,7 @@ public class CurvesLayer extends AdjustmentLayer {
     }
 
     public Bitmap applyLayer(Bitmap source) {
-        SplineOperation curvesOp = new SplineOperation();
+        Curves curvesOp = new Curves();
         curvesOp.setSpline(spline);
         curvesOp.setChannel(channel.toJiuIndex());
         PixelImage image = source.getImage();

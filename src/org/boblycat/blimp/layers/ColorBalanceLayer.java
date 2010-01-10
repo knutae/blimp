@@ -18,8 +18,9 @@
  */
 package org.boblycat.blimp.layers;
 
+import net.sourceforge.jiu.color.adjustment.ColorBalance;
+
 import org.boblycat.blimp.data.Bitmap;
-import org.boblycat.blimp.jiuops.ColorBalanceOperation;
 import org.boblycat.blimp.util.MathUtil;
 
 /**
@@ -55,7 +56,7 @@ public class ColorBalanceLayer extends AdjustmentLayer {
      */
     @Override
     public Bitmap applyLayer(Bitmap source) {
-        ColorBalanceOperation op = new ColorBalanceOperation();
+        ColorBalance op = new ColorBalance();
         op.setModifiers(cyanRed, magentaGreen, yellowBlue, preserveLightness);
         return new Bitmap(applyJiuOperation(source.getImage(), op));
     }

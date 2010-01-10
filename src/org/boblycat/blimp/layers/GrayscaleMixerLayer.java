@@ -21,8 +21,8 @@ package org.boblycat.blimp.layers;
 import static org.boblycat.blimp.util.MathUtil.*;
 
 import org.boblycat.blimp.data.Bitmap;
-import org.boblycat.blimp.jiuops.GrayscaleMixerOperation;
 
+import net.sourceforge.jiu.color.adjustment.GrayscaleMixer;
 import net.sourceforge.jiu.data.PixelImage;
 
 public class GrayscaleMixerLayer extends AdjustmentLayer {
@@ -73,7 +73,7 @@ public class GrayscaleMixerLayer extends AdjustmentLayer {
 
     @Override
     public Bitmap applyLayer(Bitmap source) {
-        GrayscaleMixerOperation mixerOp = new GrayscaleMixerOperation();
+        GrayscaleMixer mixerOp = new GrayscaleMixer();
         mixerOp.setWeights(red, green, blue);
         PixelImage image = source.getImage();
         image = applyJiuOperation(image, mixerOp);

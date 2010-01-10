@@ -19,11 +19,11 @@
 package org.boblycat.blimp.layers;
 
 import org.boblycat.blimp.data.Bitmap;
-import org.boblycat.blimp.jiuops.MultiplicativeContrastOperation;
 import org.boblycat.blimp.util.MathUtil;
 
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.color.adjustment.Brightness;
+import net.sourceforge.jiu.color.adjustment.MultiplicativeContrast;
 
 public class BrightnessContrastLayer extends AdjustmentLayer {
     public static final int MIN_BRIGHTNESS = -100;
@@ -66,7 +66,7 @@ public class BrightnessContrastLayer extends AdjustmentLayer {
             image = applyJiuOperation(image, bOp);
         }
         if (contrast != 100) {
-            MultiplicativeContrastOperation op = new MultiplicativeContrastOperation();
+            MultiplicativeContrast op = new MultiplicativeContrast();
             op.setContrast(contrast);
             image = applyJiuOperation(image, op);
         }

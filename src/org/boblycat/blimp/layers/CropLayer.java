@@ -18,9 +18,10 @@
  */
 package org.boblycat.blimp.layers;
 
+import net.sourceforge.jiu.geometry.LazyCrop;
+
 import org.boblycat.blimp.data.Bitmap;
 import org.boblycat.blimp.data.BitmapSize;
-import org.boblycat.blimp.jiuops.LazyCrop;
 import org.boblycat.blimp.util.Util;
 
 /**

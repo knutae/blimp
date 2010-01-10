@@ -18,10 +18,11 @@
  */
 package org.boblycat.blimp.layers;
 
+import net.sourceforge.jiu.geometry.SuperSamplingScale;
+
 import org.boblycat.blimp.data.Bitmap;
 import org.boblycat.blimp.data.BitmapSize;
 import org.boblycat.blimp.data.ZoomFactor;
-import org.boblycat.blimp.jiuops.SuperSamplingScaleOperation;
 
 /**
  * A fast resize layer for e.g. zooming in the image view.
@@ -64,7 +65,7 @@ public class ViewResizeLayer extends DimensionAdjustmentLayer {
         Bitmap ret = source;
         if (zoomFactor.getMultiplier() == 1 && zoomFactor.getDivisor() == 1)
             return source;
-        SuperSamplingScaleOperation scaler = new SuperSamplingScaleOperation();
+        SuperSamplingScale scaler = new SuperSamplingScale();
         scaler.setRatio(zoomFactor.getMultiplier(), zoomFactor.getDivisor());
         ret = new Bitmap(applyJiuOperation(ret.getImage(), scaler));
         double scaleFactor = source.getWidth() / (double) ret.getWidth();

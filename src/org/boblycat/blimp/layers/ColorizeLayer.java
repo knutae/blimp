@@ -18,8 +18,9 @@
  */
 package org.boblycat.blimp.layers;
 
+import net.sourceforge.jiu.color.adjustment.Colorize;
+
 import org.boblycat.blimp.data.Bitmap;
-import org.boblycat.blimp.jiuops.ColorizeOperation;
 import org.boblycat.blimp.util.MathUtil;
 
 /**
@@ -42,7 +43,7 @@ public class ColorizeLayer extends AdjustmentLayer {
 
     @Override
     public Bitmap applyLayer(Bitmap source) {
-        ColorizeOperation op = new ColorizeOperation();
+        Colorize op = new Colorize();
         op.init(hue, lightness, saturationMultiplier, baseSaturation);
         return new Bitmap(applyJiuOperation(source.getImage(), op));
     }

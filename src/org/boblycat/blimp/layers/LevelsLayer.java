@@ -18,12 +18,13 @@
  */
 package org.boblycat.blimp.layers;
 
-import org.boblycat.blimp.data.Bitmap;
-import org.boblycat.blimp.jiuops.SplineOperation;
-import org.boblycat.blimp.util.MathUtil;
-import org.boblycat.blimp.util.NaturalCubicSpline;
+import net.sourceforge.jiu.color.adjustment.Curves;
+import net.sourceforge.jiu.util.NaturalCubicSpline;
 
-class LevelsOperation extends SplineOperation {
+import org.boblycat.blimp.data.Bitmap;
+import org.boblycat.blimp.util.MathUtil;
+
+class LevelsOperation extends Curves {
     void setValues(double blackLevel, double center, double whiteLevel) {
         NaturalCubicSpline spline = new NaturalCubicSpline();
         // point 1: (black, 0)

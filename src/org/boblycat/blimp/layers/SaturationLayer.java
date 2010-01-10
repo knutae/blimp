@@ -18,8 +18,9 @@
  */
 package org.boblycat.blimp.layers;
 
+import net.sourceforge.jiu.color.adjustment.HueSaturationLightness;
+
 import org.boblycat.blimp.data.Bitmap;
-import org.boblycat.blimp.jiuops.HueSaturationLightnessOperation;
 import org.boblycat.blimp.util.MathUtil;
 
 /**
@@ -49,7 +50,7 @@ public class SaturationLayer extends AdjustmentLayer {
 
     @Override
     public Bitmap applyLayer(Bitmap source) {
-        HueSaturationLightnessOperation op = new HueSaturationLightnessOperation();
+        HueSaturationLightness op = new HueSaturationLightness();
         op.init(hue, saturation, lightness);
         return new Bitmap(applyJiuOperation(source.getImage(), op));
     }

@@ -18,8 +18,9 @@
  */
 package org.boblycat.blimp.layers;
 
+import net.sourceforge.jiu.filters.LocalContrast;
+
 import org.boblycat.blimp.data.Bitmap;
-import org.boblycat.blimp.jiuops.LocalContrastOperation;
 import org.boblycat.blimp.util.MathUtil;
 
 /**
@@ -40,14 +41,14 @@ public class LocalContrastLayer extends AdjustmentLayer {
     public static final int MIN_ADAPTIVE = 0;
     public static final int MAX_AMOUNT = 1000;
     public static final int MAX_RADIUS = 1000;
-    public static final int MAX_ADAPTIVE = LocalContrastOperation.MAX_ADAPTIVE;
+    public static final int MAX_ADAPTIVE = LocalContrast.MAX_ADAPTIVE;
     private int radius = 100;
     private int amount = 100;
     private int adaptive = 70;
 
     @Override
     public Bitmap applyLayer(Bitmap source) {
-        LocalContrastOperation op = new LocalContrastOperation();
+        LocalContrast op = new LocalContrast();
         op.setModifiers((int) (radius / source.getPixelScaleFactor()), amount, adaptive);
         return new Bitmap(applyJiuOperation(source.getImage(), op));
     }
