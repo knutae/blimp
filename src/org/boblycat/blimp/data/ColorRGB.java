@@ -18,9 +18,8 @@
  */
 package org.boblycat.blimp.data;
 
-import org.boblycat.blimp.util.MathUtil;
-
 import net.sourceforge.jiu.color.quantization.RGBColor;
+import net.sourceforge.jiu.util.MathUtil;
 
 /**
  * A representation of a 24-bit RGB color triplet.

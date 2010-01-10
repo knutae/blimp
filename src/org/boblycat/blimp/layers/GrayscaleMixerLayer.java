@@ -18,12 +18,12 @@
  */
 package org.boblycat.blimp.layers;
 
-import static org.boblycat.blimp.util.MathUtil.*;
-
 import org.boblycat.blimp.data.Bitmap;
 
 import net.sourceforge.jiu.color.adjustment.GrayscaleMixer;
 import net.sourceforge.jiu.data.PixelImage;
+
+import static net.sourceforge.jiu.util.MathUtil.*;
 
 public class GrayscaleMixerLayer extends AdjustmentLayer {
     public static final int FULL_WEIGHT = 100;

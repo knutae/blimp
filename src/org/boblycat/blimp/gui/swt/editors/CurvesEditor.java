@@ -18,13 +18,13 @@
  */
 package org.boblycat.blimp.gui.swt.editors;
 
+import net.sourceforge.jiu.util.MathUtil;
 import net.sourceforge.jiu.util.NaturalCubicSpline;
 
 import org.boblycat.blimp.data.PointDouble;
 import org.boblycat.blimp.data.RGBChannel;
 import org.boblycat.blimp.gui.swt.SwtUtil;
 import org.boblycat.blimp.layers.CurvesLayer;
-import org.boblycat.blimp.util.MathUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;

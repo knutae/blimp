@@ -20,9 +20,9 @@ package org.boblycat.blimp.layers;
 
 import net.sourceforge.jiu.filters.ConvolutionKernelFilter;
 import net.sourceforge.jiu.filters.UnsharpMaskKernel;
+import net.sourceforge.jiu.util.MathUtil;
 
 import org.boblycat.blimp.data.Bitmap;
-import org.boblycat.blimp.util.MathUtil;
 
 public class UnsharpMaskLayer extends AdjustmentLayer {
     public static final int MIN_LEVEL = 0;

@@ -23,10 +23,10 @@ import net.sourceforge.jiu.data.IntegerImage;
 import net.sourceforge.jiu.data.MemoryRGB24Image;
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.geometry.Resample;
+import net.sourceforge.jiu.util.MathUtil;
 
 import org.boblycat.blimp.data.Bitmap;
 import org.boblycat.blimp.data.BitmapSize;
-import org.boblycat.blimp.util.MathUtil;
 
 public class PrintLayer extends DimensionAdjustmentLayer {
     private int paperWidth;

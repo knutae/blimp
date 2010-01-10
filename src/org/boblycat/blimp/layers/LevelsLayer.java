@@ -19,10 +19,10 @@
 package org.boblycat.blimp.layers;
 
 import net.sourceforge.jiu.color.adjustment.Curves;
+import net.sourceforge.jiu.util.MathUtil;
 import net.sourceforge.jiu.util.NaturalCubicSpline;
 
 import org.boblycat.blimp.data.Bitmap;
-import org.boblycat.blimp.util.MathUtil;
 
 class LevelsOperation extends Curves {
     void setValues(double blackLevel, double center, double whiteLevel) {

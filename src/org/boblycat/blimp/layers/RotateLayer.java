@@ -20,10 +20,10 @@ package org.boblycat.blimp.layers;
 
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.geometry.Rotate;
+import net.sourceforge.jiu.util.MathUtil;
 
 import org.boblycat.blimp.data.Bitmap;
 import org.boblycat.blimp.data.BitmapSize;
-import org.boblycat.blimp.util.MathUtil;
 
 /**
  * A layer for rotating given an arbitrary angle.

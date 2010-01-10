@@ -19,9 +19,9 @@
 package org.boblycat.blimp.layers;
 
 import net.sourceforge.jiu.color.adjustment.HueSaturationLightness;
+import net.sourceforge.jiu.util.MathUtil;
 
 import org.boblycat.blimp.data.Bitmap;
-import org.boblycat.blimp.util.MathUtil;
 
 /**
  * Layer which adjusts the Hue, Saturation and Lightness (luminance) of an image.

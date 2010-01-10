@@ -19,9 +19,9 @@
 package org.boblycat.blimp.layers;
 
 import net.sourceforge.jiu.color.adjustment.Colorize;
+import net.sourceforge.jiu.util.MathUtil;
 
 import org.boblycat.blimp.data.Bitmap;
-import org.boblycat.blimp.util.MathUtil;
 
 /**
  * Colorize an image using a single hue.
