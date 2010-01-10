@@ -4,3 +4,5 @@ build
 bin
 .sconsign.dblite
 *.pyc
+jiu
+.pydevproject
