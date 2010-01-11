@@ -53,6 +53,8 @@ public class PrintEditor extends GridBasedLayerEditor {
                 if (isDisposed())
                     return;
                 PrintDialog dlg = new PrintDialog(getShell());
+                if (printerData != null)
+                    dlg.setPrinterData(printerData);
                 PrinterData data = dlg.open();
                 updateWithPrinterData(data);
             }
