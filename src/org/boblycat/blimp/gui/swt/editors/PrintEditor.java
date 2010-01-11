@@ -41,6 +41,8 @@ public class PrintEditor extends GridBasedLayerEditor {
     private PrintLayer printLayer;
     private Text printerDescription;
     private ValueSlider borderSlider;
+    private Button radioPortrait;
+    private Button radioLandscape;
 
     public PrintEditor(Composite parent, int style) {
         super(parent, style);
@@ -61,9 +63,28 @@ public class PrintEditor extends GridBasedLayerEditor {
         printerDescription = new Text(group, SWT.READ_ONLY | SWT.MULTI | SWT.LEFT);
         printerDescription.setText(NO_PRINTER);
 
+        group = createGroup("Paper Orientation");
+        radioPortrait = createRadioButton(group, "Portrait");
+        radioPortrait.setSelection(true);
+        radioLandscape = createRadioButton(group, "Landscape");
+        Listener orientationListener = new Listener() {
+            public void handleEvent(Event event) {
+                if (isDisposed() || printerData == null)
+                    return;
+                boolean isLandscape = radioLandscape.getSelection();
+                if (isLandscape)
+                    printerData.orientation = PrinterData.LANDSCAPE;
+                else
+                    printerData.orientation = PrinterData.PORTRAIT;
+                updateWithPrinterData(printerData);
+            }
+        };
+        radioPortrait.addListener(SWT.Selection, orientationListener);
+        radioLandscape.addListener(SWT.Selection, orientationListener);
+
         borderSlider = createSlider("Border (%)", 0, 99, 0);
     }
-    
+
     public void asyncPrint() {
         if (isDisposed())
             return;
@@ -88,9 +109,19 @@ public class PrintEditor extends GridBasedLayerEditor {
                         "The image was sent to the printer (job name " + printJobName + ").",
                         SWT.ICON_INFORMATION);
             }
-            
+
         };
+        if (radioLandscape.getSelection())
+            printerData.orientation = PrinterData.LANDSCAPE;
+        else
+            printerData.orientation = PrinterData.PORTRAIT;
         workerThread.asyncPrint(PrintEditor.this, session, task, printerData, printLayer);
+    }
+
+    private void updateOrientationRadioButtons(int paperWidth, int paperHeight) {
+        boolean isLandscape = paperWidth > paperHeight;
+        radioPortrait.setSelection(!isLandscape);
+        radioLandscape.setSelection(isLandscape);
     }
 
     private void updateWithPrinterData(PrinterData data) {
@@ -99,8 +130,11 @@ public class PrintEditor extends GridBasedLayerEditor {
         printerData = data;
         Printer printer = new Printer(data);
         try {
-            printLayer.setPaperWidth(printer.getClientArea().width);
-            printLayer.setPaperHeight(printer.getClientArea().height);
+            int w = printer.getClientArea().width;
+            int h = printer.getClientArea().height;
+            printLayer.setPaperWidth(w);
+            printLayer.setPaperHeight(h);
+            updateOrientationRadioButtons(w, h);
         }
         finally {
             printer.dispose();
@@ -131,6 +165,7 @@ public class PrintEditor extends GridBasedLayerEditor {
                     "Driver: " + printerData.driver + "\n" +
                     "Orientation: " + orientation + "\n" +
                     "Resolution: " + printLayer.getPaperWidth() + "x" + printLayer.getPaperHeight());
+            updateOrientationRadioButtons(printLayer.getPaperWidth(), printLayer.getPaperHeight());
         }
     }
 
