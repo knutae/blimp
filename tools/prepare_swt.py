@@ -13,14 +13,16 @@ def prepare_swt(version, rev, variant, platform, arch):
         'ARCH': arch,
     }
     dirname = 'swt-%(VERSION)s-%(VARIANT)s-%(PLATFORM)s-%(ARCH)s' % keys
-    filename = dirname + '.zip'
-    if not os.path.exists(filename):
-        url = ECLIPSE_MIRROR + ('eclipse/downloads/drops/R-%(VERSION)s-%(REV)s/' % keys) + filename
-        urllib.urlretrieve(url, filename)
-    assert os.path.exists(filename)
+    zipfilename = dirname + '.zip'
+    if not os.path.exists(zipfilename):
+        url = ECLIPSE_MIRROR + ('eclipse/downloads/drops/R-%(VERSION)s-%(REV)s/' % keys) + zipfilename
+        print 'Downloading:', url
+        urllib.urlretrieve(url, zipfilename)
+    assert os.path.exists(zipfilename)
     if not os.path.isdir(dirname):
+        print 'Extracting', zipfilename
         os.mkdir(dirname)
-        zip = zipfile.ZipFile(filename, 'r')
+        zip = zipfile.ZipFile(zipfilename, 'r')
         for filename in zip.namelist():
             extract_path = os.path.normpath(dirname + '/' + filename)
             if filename.endswith('/'):

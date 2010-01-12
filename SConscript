@@ -1,8 +1,9 @@
+# -*- Mode: python -*-
 # Blimp SCons rules for java
 
 Import('dcraw', 'BLIMP_VERSION')
 
-import os, sys, platform, glob
+import os, sys, platform, glob, subprocess
 
 env = Environment()
 env['JAVA'] = 'java'
@@ -47,7 +48,9 @@ def first_existing(*paths):
 
 if sys.platform == 'win32':
     # TODO: detect 32/64-bit java VM (or support both somehow)
-    swt_jar = 'swt-3.4-win32_64/swt.jar'
+    swt_jar = 'swt-3.5.1-win32-win32-x86_64/swt.jar'
+    if not os.path.exists(swt_jar):
+        subprocess.check_call([sys.executable, 'tools/prepare_swt.py'])
 elif sys.platform == 'darwin':
     #swt_jar = 'swt-3.4-carbon-macosx/swt.jar'
     swt_jar = 'swt-3.3.2-carbon-macosx/swt.jar'
