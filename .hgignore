@@ -6,3 +6,4 @@ bin
 *.pyc
 jiu
 .pydevproject
+swt-*-win32-x86*
