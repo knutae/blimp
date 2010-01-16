@@ -65,7 +65,7 @@ if wix_dir:
     
     env['BUILDERS']['InstallMsi'] = Builder(action = 'msiexec /quiet /i $SOURCE')
     # not generic at all... could parse Blimp.wxs to find the GUID? 
-    env['BUILDERS']['UninstallBlimp'] = Builder(action = 'msiexec /quiet /x {8F934390-ADB9-4071-B0CC-D9B13E0236F0}')
+    env['BUILDERS']['UninstallBlimp'] = Builder(action = 'msiexec /quiet /x {6A99210F-810A-11DE-AFD2-CBCCE3646322}')
     
     dummy_target = env.InstallMsi('dummy-msi-target', 'Blimp.msi')
     env.Alias('install-msi', dummy_target)
