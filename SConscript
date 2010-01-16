@@ -35,6 +35,14 @@ if not os.path.exists(jiu_jar):
     import subprocess
     subprocess.check_call([sys.executable, 'tools/prepare_jiu.py'])
 
+# Surprisingly, the Eclipse compiler seems to produce significantly faster
+# code than a standard jdk6 javac, so try to use it if possible.
+if os.environ.has_key('ECLIPSE_HOME'):
+    # try to use eclipse java compiler
+    # the eclipse_javac tool is prepared as part of JIU
+    env.Tool('eclipse_javac', ['jiu/site_scons/site_tools'])
+    env['JAVACFLAGS'] = '-1.5'
+
 xerces_jar = 'jars/xercesImpl.jar'
 swt_jar = '/usr/lib/java/swt.jar'
 junit_jar = 'jiu/junit.jar' # Use junit.jar prepared by JIU build
