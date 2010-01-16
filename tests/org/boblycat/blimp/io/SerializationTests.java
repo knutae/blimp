@@ -46,6 +46,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import static org.junit.Assert.*;
+import static org.boblycat.blimp.tests.Assert.*;
 
 public class SerializationTests {
     int eventCount;
@@ -197,12 +198,12 @@ public class SerializationTests {
         assertEquals(-33, dummyLayer.getIntValue());
         assertEquals("Ouagadougou", dummyLayer.getStringValue());
         assertEquals(TestLayer.Enum.THREE, dummyLayer.getEnumValue());
-        assertEquals(42.43, dummyLayer.getDoubleValue());
+        assertEqualsD(42.43, dummyLayer.getDoubleValue());
         double[] array = dummyLayer.getDoubleArrayValue();
         assertNotNull(array);
         assertEquals(2, array.length);
-        assertEquals(43.2, array[0]);
-        assertEquals(-23.4, array[1]);
+        assertEqualsD(43.2, array[0]);
+        assertEqualsD(-23.4, array[1]);
         ColorRGB color = dummyLayer.getColorValue();
         assertNotNull(color);
         assertEquals(255, color.getRed());
@@ -283,17 +284,17 @@ public class SerializationTests {
         PointDouble[] points = curves.getPoints();
         assertEquals(4, points.length);
 
-        assertEquals(0.1, points[0].x);
-        assertEquals(1.0, points[0].y);
+        assertEqualsD(0.1, points[0].x);
+        assertEqualsD(1.0, points[0].y);
 
-        assertEquals(0.5, points[1].x);
-        assertEquals(0.98, points[1].y);
+        assertEqualsD(0.5, points[1].x);
+        assertEqualsD(0.98, points[1].y);
 
-        assertEquals(0.7, points[2].x);
-        assertEquals(0.5, points[2].y);
+        assertEqualsD(0.7, points[2].x);
+        assertEqualsD(0.5, points[2].y);
 
-        assertEquals(1.0, points[3].x);
-        assertEquals(0.34, points[3].y);
+        assertEqualsD(1.0, points[3].x);
+        assertEqualsD(0.34, points[3].y);
     }
 
     static void assertHasPropertyChild(Element layerElement,
@@ -397,7 +398,7 @@ public class SerializationTests {
         TestLayer layerClone = (TestLayer) sessionClone.getLayer(1);
         assertNotNull(layerClone);
         assertTrue(layer != layerClone);
-        assertEquals(3.45, layerClone.getDoubleValue());
+        assertEqualsD(3.45, layerClone.getDoubleValue());
     }
 
     private static void checkTypeIdXml(Class <? extends Layer> layerClass,
@@ -685,16 +686,16 @@ public class SerializationTests {
         
         assertEquals(false, layer2.isActive());
         assertEquals(ColorRGB.Black, layer2.getColorValue());
-        assertEquals(4.2, layer2.getDoubleValue());
+        assertEqualsD(4.2, layer2.getDoubleValue());
         assertEquals(TestLayer.Enum.TWO, layer2.getEnumValue());
         assertEquals(-43, layer2.getIntValue());
         assertEquals("layer1", layer2.getName());
         assertEquals("Text Value", layer2.getStringValue());
         double[] arr = layer2.getDoubleArrayValue();
         assertEquals(3, arr.length);
-        assertEquals(1.0, arr[0]);
-        assertEquals(2.0, arr[1]);
-        assertEquals(3.0, arr[2]);
+        assertEqualsD(1.0, arr[0]);
+        assertEqualsD(2.0, arr[1]);
+        assertEqualsD(3.0, arr[2]);
     }
     
     private static void addTestLayer(BlimpSession session, String name, String stringValue) {

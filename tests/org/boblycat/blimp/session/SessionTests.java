@@ -34,6 +34,7 @@ import org.boblycat.blimp.session.BlimpSession;
 import org.boblycat.blimp.session.BlimpSession.PreviewQuality;
 import org.junit.*;
 import static org.junit.Assert.*;
+import static org.boblycat.blimp.tests.Assert.*;
 
 public class SessionTests {
     int eventCount;
@@ -276,28 +277,28 @@ public class SessionTests {
     public void testPixelScaleFactor() throws IOException {
         BlimpSession session = createTestSession();
         Bitmap output = session.getBitmap();
-        assertEquals(1.0, output.getPixelScaleFactor());
+        assertEqualsD(1.0, output.getPixelScaleFactor());
 
         int origWidth = output.getWidth();
         int origHeight = output.getHeight();
 
         session.addLayer(new TestLayer());
         output = session.getBitmap();
-        assertEquals(1.0, output.getPixelScaleFactor());
+        assertEqualsD(1.0, output.getPixelScaleFactor());
 
         ViewResizeLayer viewResize = new ViewResizeLayer();
         viewResize.setViewWidth(origWidth / 2);
         viewResize.setViewHeight(origHeight / 2);
         session.addLayer(viewResize);
         output = session.getBitmap();
-        assertEquals(2.0, output.getPixelScaleFactor());
+        assertEqualsD(2.0, output.getPixelScaleFactor());
         session.removeLayer(viewResize);
 
         ResizeLayer resize = new ResizeLayer();
         resize.setMaxSize(origWidth / 4);
         session.addLayer(resize);
         output = session.getBitmap();
-        assertEquals(4.0, output.getPixelScaleFactor());
+        assertEqualsD(4.0, output.getPixelScaleFactor());
     }
 
     @Test
@@ -388,7 +389,7 @@ public class SessionTests {
         Bitmap bitmap = session.getSizedBitmap(200, 200, PreviewQuality.Fast);
         assertEquals(150, bitmap.getWidth());
         assertEquals(100, bitmap.getHeight());
-        assertEquals(1.0, session.getCurrentZoom());
+        assertEqualsD(1.0, session.getCurrentZoom());
     }
 
     @Test
@@ -400,7 +401,7 @@ public class SessionTests {
         Bitmap bitmap = session.getSizedBitmap(100, 100, PreviewQuality.Fast);
         assertEquals(95, bitmap.getWidth());
         assertEquals(50, bitmap.getHeight());
-        assertEquals(0.5, session.getCurrentZoom());
+        assertEqualsD(0.5, session.getCurrentZoom());
     }
 
     @Test
@@ -415,7 +416,7 @@ public class SessionTests {
         Bitmap bitmap = session.getSizedBitmap(100, 100, PreviewQuality.Fast);
         assertEquals(90, bitmap.getWidth());
         assertEquals(45, bitmap.getHeight());
-        assertEquals(1.0, session.getCurrentZoom());
+        assertEqualsD(1.0, session.getCurrentZoom());
     }
     
     @Test
@@ -423,9 +424,9 @@ public class SessionTests {
         BlimpSession session = createTestSession();
         TestInput input = (TestInput) session.getInput();
         input.setInputSize(1000, 500);
-        assertEquals(1.0, session.getCurrentZoom());
+        assertEqualsD(1.0, session.getCurrentZoom());
         session.getBitmap(); // just for side effects
-        assertEquals(1.0, session.getCurrentZoom());
+        assertEqualsD(1.0, session.getCurrentZoom());
     }
     
     @Test

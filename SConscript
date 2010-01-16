@@ -37,7 +37,7 @@ if not os.path.exists(jiu_jar):
 
 xerces_jar = 'jars/xercesImpl.jar'
 swt_jar = '/usr/lib/java/swt.jar'
-junit_jar = 'junit4.1/junit-4.1.jar'
+junit_jar = 'jiu/junit.jar' # Use junit.jar prepared by JIU build
 blimp_jar = env.Jar('build/blimp.jar', class_dir, JARCHDIR = class_dir)
 
 def first_existing(*paths):
