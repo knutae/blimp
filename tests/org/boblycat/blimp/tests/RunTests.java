@@ -22,6 +22,7 @@ import org.boblycat.blimp.data.ZoomTests;
 import org.boblycat.blimp.exif.ExifTests;
 import org.boblycat.blimp.gui.swt.SwtTests;
 import org.boblycat.blimp.gui.swt.thread.SwtImageWorkerThreadTests;
+import org.boblycat.blimp.io.LayerRegistryTests;
 import org.boblycat.blimp.io.SerializationTests;
 import org.boblycat.blimp.session.CachedSessionTests;
 import org.boblycat.blimp.session.HistoryTests;
@@ -54,6 +55,7 @@ public class RunTests {
                 LayerRearrangerTest.class,
                 ExifTests.class,
                 SwtTests.class,
-                SwtImageWorkerThreadTests.class);
+                SwtImageWorkerThreadTests.class,
+                LayerRegistryTests.class);
     }
 }

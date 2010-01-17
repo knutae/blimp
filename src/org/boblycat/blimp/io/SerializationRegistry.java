@@ -102,6 +102,9 @@ public class SerializationRegistry {
         reg.registerTypeId(SolidColorBorderLayer.class, "Border");
         reg.registerTypeId(RawFileInputLayer.class, "RawInput");
         reg.registerTypeId(SimpleFileInputLayer.class, "FileInput");
+        reg.registerTypeId(ColorBalanceLayer.class, "ColorBalance");
+        reg.registerTypeId(ColorizeLayer.class, "Colorize");
+        reg.registerTypeId(RotateLayer.class, "Rotate");
         return reg;
     }
 }
