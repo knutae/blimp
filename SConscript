@@ -104,10 +104,6 @@ run_tests = test_runner_env.RunClass('org.boblycat.blimp.tests.RunTests')
 Depends(run_tests, class_dir)
 Alias('test', run_tests)
 
-def tar_exclude():
-   patterns = ['build', '.svn', '*~', 'swt*win32*', 'debian', '.classpath', '.scons*']
-   return ' '.join(['--exclude='+pattern for pattern in patterns])
-
 def build_tar(target, source, env):
     import tarfile
     assert len(target) == 1
