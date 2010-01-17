@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests"/>
-	<classpathentry kind="lib" path="jars/xercesImpl.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="SWT_JAR" sourcepath="/SWT_SRC"/>
 	<classpathentry kind="lib" path="jiu/jiu.jar" sourcepath="jiu"/>
