@@ -43,7 +43,6 @@ if os.environ.has_key('ECLIPSE_HOME'):
     env.Tool('eclipse_javac', ['jiu/site_scons/site_tools'])
     env['JAVACFLAGS'] = '-1.5'
 
-xerces_jar = 'jars/xercesImpl.jar'
 swt_jar = '/usr/lib/java/swt.jar'
 junit_jar = 'jiu/junit.jar' # Use junit.jar prepared by JIU build
 blimp_jar = env.Jar('build/blimp.jar', class_dir, JARCHDIR = class_dir)
@@ -86,7 +85,7 @@ java_runner = Builder(
     emitter = emit_java_runner)
 
 runner_env = env.Clone()
-runner_env.Replace(JAVACLASSPATH = [class_dir, jiu_jar, xerces_jar])
+runner_env.Replace(JAVACLASSPATH = [class_dir, jiu_jar])
 runner_env.Append(BUILDERS = {'RunClass': java_runner})
 
 swt_runner_env = runner_env.Clone()
@@ -147,7 +146,7 @@ Alias('tar', tar)
 Default(class_dir)
 
 # Export variables for bundling
-install_jars = [ blimp_jar, jiu_jar, xerces_jar, swt_jar ]
+install_jars = [ blimp_jar, jiu_jar, swt_jar ]
 #Export('install_jars')
-Export('blimp_jar', 'jiu_jar', 'xerces_jar', 'swt_jar')
+Export('blimp_jar', 'jiu_jar', 'swt_jar')
 

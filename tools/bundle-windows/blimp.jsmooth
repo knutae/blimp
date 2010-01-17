@@ -9,7 +9,6 @@
 <arguments></arguments>
 <classPath>lib\blimp.jar</classPath>
 <classPath>lib\swt.jar</classPath>
-<classPath>lib\xercesImpl.jar</classPath>
 <classPath>lib\jiu.jar</classPath>
 <embeddedJar>false</embeddedJar>
 <executableName>bin\blimp.exe</executableName>

@@ -58,12 +58,6 @@
                                 <File Id='swt.jar' Name='swt.jar' DiskId='1'
                                       Source='build\install\lib\swt.jar' />
                             </Component>
-                            <Component Id='XercesImplJar'
-                                       Guid='362B634C-B06C-4F4D-9919-4026EAAAD8DD'>
-                                <File Id='xercesImpl.jar' DiskId='1'
-                                      Name='xercesImpl.jar'
-                                      Source='build\install\lib\xercesImpl.jar' />
-                            </Component>
                         </Directory>
                     </Directory>
                 </Directory>
@@ -82,7 +76,6 @@
             <ComponentRef Id='BlimpJar'/>
             <ComponentRef Id='JiuJar'/>
             <ComponentRef Id='SwtJar'/>
-            <ComponentRef Id='XercesImplJar'/>
         </Feature>
 
         <Property Id='WIXUI_INSTALLDIR' Value='INSTALLDIR'/>
