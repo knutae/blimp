@@ -23,6 +23,7 @@ import net.sourceforge.jiu.data.IntegerImage;
 import net.sourceforge.jiu.data.MemoryRGB24Image;
 import net.sourceforge.jiu.data.PixelImage;
 import net.sourceforge.jiu.geometry.Resample;
+import net.sourceforge.jiu.geometry.Rotate90Left;
 import net.sourceforge.jiu.util.MathUtil;
 
 import org.boblycat.blimp.data.Bitmap;
@@ -33,6 +34,7 @@ public class PrintLayer extends DimensionAdjustmentLayer {
     private int paperHeight;
     private double borderPercentage; // maybe make this absolute?
     private boolean preview;
+    private boolean rotate90; // can be used as a fail-safe landscape method
 
     public PrintLayer() {
         paperWidth = 0;
@@ -77,9 +79,9 @@ public class PrintLayer extends DimensionAdjustmentLayer {
             // This is normal before a printer is selected, not necessarily an error
             return source;
         }
-        
+
         PixelImage image = source.getImage();
-        
+
         if (source.getChannelBitDepth() > 8) {
             // start by reducing the bit depth, for large pixel resolutions
             // this can reduce memory usage a lot
@@ -90,7 +92,14 @@ public class PrintLayer extends DimensionAdjustmentLayer {
             image = applyJiuOperation(image, reducer);
         }
 
-        BitmapSize rescaleSize = caluclateSizeWithoutBorder(source.getSize());
+        if (rotate90) {
+            Rotate90Left rotate = new Rotate90Left();
+            rotate.setInputImage(image);
+            image = applyJiuOperation(image, rotate);
+        }
+
+        BitmapSize sourceSize = new BitmapSize(image.getWidth(), image.getHeight());
+        BitmapSize rescaleSize = caluclateSizeWithoutBorder(sourceSize);
         int rescaleWidth = rescaleSize.width;
         int rescaleHeight = rescaleSize.height;
         Resample resample = new Resample();
@@ -181,5 +190,24 @@ public class PrintLayer extends DimensionAdjustmentLayer {
 
     public double getBorderPercentage() {
         return borderPercentage;
+    }
+
+    /**
+     * If true, the image will be rotated by 90 degrees.
+     * This has a performance and memory cost, but can be used as a fail-safe landscape
+     * mode if the printer or printer driver has problems with landscape mode.
+     *
+     * @param rotate90 to rotate or not to rotate
+     */
+    public void setRotate90(boolean rotate90) {
+        this.rotate90 = rotate90;
+    }
+
+    /**
+     * If true, the image will be rotated by 90 degrees.
+     * @return to rotate or not to rotate
+     */
+    public boolean getRotate90() {
+        return rotate90;
     }
 }

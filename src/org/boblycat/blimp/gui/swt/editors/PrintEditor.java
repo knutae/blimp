@@ -43,6 +43,7 @@ public class PrintEditor extends GridBasedLayerEditor {
     private ValueSlider borderSlider;
     private Button radioPortrait;
     private Button radioLandscape;
+    private Button radioLandscapeFailSafe;
 
     public PrintEditor(Composite parent, int style) {
         super(parent, style);
@@ -68,23 +69,37 @@ public class PrintEditor extends GridBasedLayerEditor {
         group = createGroup("Paper Orientation");
         radioPortrait = createRadioButton(group, "Portrait");
         radioPortrait.setSelection(true);
-        radioLandscape = createRadioButton(group, "Landscape");
+        radioLandscape = createRadioButton(group, "Landscape (Normal)");
+        radioLandscapeFailSafe = createRadioButton(group, "Landscape (Fail-Safe)");
         Listener orientationListener = new Listener() {
             public void handleEvent(Event event) {
-                if (isDisposed() || printerData == null)
+                if (isDisposed() || printerData == null || printLayer == null)
                     return;
-                boolean isLandscape = radioLandscape.getSelection();
-                if (isLandscape)
-                    printerData.orientation = PrinterData.LANDSCAPE;
-                else
-                    printerData.orientation = PrinterData.PORTRAIT;
+                updatePrintOrientationFromGui();
                 updateWithPrinterData(printerData);
             }
         };
         radioPortrait.addListener(SWT.Selection, orientationListener);
         radioLandscape.addListener(SWT.Selection, orientationListener);
+        radioLandscapeFailSafe.addListener(SWT.Selection, orientationListener);
 
         borderSlider = createSlider("Border (%)", 0, 99, 0);
+    }
+
+    private void updatePrintOrientationFromGui() {
+        if (radioLandscape.getSelection()) {
+            printLayer.setRotate90(false);
+            printerData.orientation = PrinterData.LANDSCAPE;
+        }
+        else if (radioPortrait.getSelection()) {
+            printLayer.setRotate90(false);
+            printerData.orientation = PrinterData.PORTRAIT;
+        }
+        else {
+            // fail-safe landscape
+            printLayer.setRotate90(true);
+            printerData.orientation = PrinterData.PORTRAIT;
+        }
     }
 
     public void asyncPrint() {
@@ -113,17 +128,23 @@ public class PrintEditor extends GridBasedLayerEditor {
             }
 
         };
-        if (radioLandscape.getSelection())
-            printerData.orientation = PrinterData.LANDSCAPE;
-        else
-            printerData.orientation = PrinterData.PORTRAIT;
+        updatePrintOrientationFromGui();
         workerThread.asyncPrint(PrintEditor.this, session, task, printerData, printLayer);
     }
 
-    private void updateOrientationRadioButtons(int paperWidth, int paperHeight) {
-        boolean isLandscape = paperWidth > paperHeight;
-        radioPortrait.setSelection(!isLandscape);
-        radioLandscape.setSelection(isLandscape);
+    private void updateOrientationGui(int paperWidth, int paperHeight, boolean rotate90) {
+        if (rotate90) {
+            // this should only be set in the landscape fail-safe mode
+            radioPortrait.setSelection(false);
+            radioLandscape.setSelection(false);
+            radioLandscapeFailSafe.setSelection(true);
+        }
+        else {
+            boolean isLandscape = paperWidth > paperHeight;
+            radioPortrait.setSelection(!isLandscape);
+            radioLandscape.setSelection(isLandscape);
+            radioLandscapeFailSafe.setSelection(false);
+        }
     }
 
     private void updateWithPrinterData(PrinterData data) {
@@ -136,7 +157,7 @@ public class PrintEditor extends GridBasedLayerEditor {
             int h = printer.getClientArea().height;
             printLayer.setPaperWidth(w);
             printLayer.setPaperHeight(h);
-            updateOrientationRadioButtons(w, h);
+            updateOrientationGui(w, h, printLayer.getRotate90());
         }
         finally {
             printer.dispose();
@@ -167,7 +188,7 @@ public class PrintEditor extends GridBasedLayerEditor {
                     "Driver: " + printerData.driver + "\n" +
                     "Orientation: " + orientation + "\n" +
                     "Resolution: " + printLayer.getPaperWidth() + "x" + printLayer.getPaperHeight());
-            updateOrientationRadioButtons(printLayer.getPaperWidth(), printLayer.getPaperHeight());
+            updateOrientationGui(printLayer.getPaperWidth(), printLayer.getPaperHeight(), printLayer.getRotate90());
         }
     }
 
