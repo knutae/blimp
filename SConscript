@@ -60,7 +60,7 @@ def first_existing(*paths):
 
 if sys.platform == 'win32':
     # TODO: detect 32/64-bit java VM (or support both somehow)
-    swt_jar = 'swt-3.5.1-win32-win32-x86_64/swt.jar'
+    swt_jar = 'swt-3.5.1-win32-win32-x86/swt.jar'
     if not os.path.exists(swt_jar):
         subprocess.check_call([sys.executable, 'tools/prepare_swt.py'])
 elif sys.platform == 'darwin':
