@@ -5,13 +5,18 @@ Import('dcraw', 'BLIMP_VERSION')
 
 import os, sys, platform, glob, subprocess
 
-env = Environment()
-env['JAVA'] = 'java'
-env['JVMARGS'] = ''
 if os.environ.has_key('JAVA_HOME'):
     java_home = os.environ['JAVA_HOME']
     print '--- Using JAVA_HOME:', java_home
-    env['ENV']['PATH'] = os.path.join(java_home, 'bin')
+    # To ensure that all java tools (such as jar) are detected, the
+    # path has to be initialized when creating the environment.
+    env = Environment(ENV = {'PATH': os.path.join(java_home, 'bin')})
+else:
+    # Create a default environment and hope that jdk tools are in the path
+    env = Environment()
+
+env['JAVA'] = 'java'
+env['JVMARGS'] = ''
 
 def copy_os_env(key):
     if os.environ.has_key(key):
