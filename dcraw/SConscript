@@ -2,7 +2,12 @@
 
 import os, sys
 
-env = Environment()
+if sys.platform == 'win32':
+    env = Environment(MSVC_VERSION = '9.0', MSVS_ARCH = 'x86')
+    #env = Environment()
+    print env['ENV']['PATH']
+else:
+    env = Environment()
 env.Append(CPPDEFINES = ['NO_JPEG', 'NO_LCMS'])
 
 def query_windows_sdk_dir():
@@ -18,14 +23,19 @@ def query_windows_sdk_dir():
     return ''
 
 if sys.platform == 'win32':
+    #print 'MSVS:', env['MSVS']
+    print 'ARCH:', env['MSVS_ARCH']
+    #env['MSVS']['MSVS_ARCH'] = 'x86'
     env.Append(CPPDEFINES = ['WIN32', 'W32_GETC_UNLOCKED', 'ftello=ftell', 'fseeko=fseek'])
     env.Append(CCFLAGS = ['/Ox']) # slightly faster than /O2
+    # With scons 1.3 we don't need any windows SDK hacks
     # Visual Studio 2008 (vc90) hack
-    sdk_dir = query_windows_sdk_dir()
-    if sdk_dir:
-        print '--- Detected Windows SDK at:', sdk_dir
-        env.Append(CPPPATH = [os.path.join(sdk_dir, 'Include')])
-        env.Append(LIBPATH = [os.path.join(sdk_dir, 'Lib')])
+    #sdk_dir = query_windows_sdk_dir()
+    #if sdk_dir:
+    #    print '--- Detected Windows SDK at:', sdk_dir
+    #    env.Append(CPPPATH = [os.path.join(sdk_dir, 'Include')])
+    #    env.Append(LIBPATH = [os.path.join(sdk_dir, 'Lib')])
+    #env.Append(LIBS = 'ws2_32.lib')
 else:
     # assume gcc
     env.Append(CCFLAGS = ['-O4'])
