@@ -7,3 +7,5 @@ bin
 jiu
 .pydevproject
 swt-*-win32-x86*
+waf-*
+.lock-wscript
