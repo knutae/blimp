@@ -22,6 +22,7 @@ import java.io.File;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.boblycat.blimp.gui.helper.LayerRegistry;
@@ -40,23 +41,27 @@ public class LayerRegistryTests {
         ArrayList<Class<? extends T>> classes = new ArrayList<Class<? extends T>>();
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         String path = packageName.replace('.', '/');
-        URL resource = loader.getResource(path);
-        assertNotNull("package resource (" + path + ") should not be null", resource);
-        File packageDir = new File(resource.toURI());
-        assertTrue(packageDir.exists());
-        for (String fname: packageDir.list()) {
-            if (!fname.endsWith(".class"))
-                continue;
-            File file = new File(fname);
-            String shortClassName = file.getName().substring(0, file.getName().length() - 6);
-            String fullClassName = packageName + '.' + shortClassName;
-            //System.out.println("Detected class: " + fullClassName);
-            Class<?> klass = Class.forName(fullClassName);
-            if (!baseClass.isAssignableFrom(klass)) {
-                //System.out.println("Skipping (wrong type): " + fullClassName);
-                continue;
+        Enumeration<URL> resources = loader.getResources(path);
+        assertTrue("at least one package resource (" + path + ") should exist", resources.hasMoreElements());
+        while (resources.hasMoreElements()) {
+        	URL resource = resources.nextElement();
+            assertNotNull("package resource (" + path + ") should not be null", resource);
+            File packageDir = new File(resource.toURI());
+            assertTrue(packageDir.exists());
+            for (String fname: packageDir.list()) {
+                if (!fname.endsWith(".class"))
+                    continue;
+                File file = new File(fname);
+                String shortClassName = file.getName().substring(0, file.getName().length() - 6);
+                String fullClassName = packageName + '.' + shortClassName;
+                //System.out.println("Detected class: " + fullClassName);
+                Class<?> klass = Class.forName(fullClassName);
+                if (!baseClass.isAssignableFrom(klass)) {
+                    //System.out.println("Skipping (wrong type): " + fullClassName);
+                    continue;
+                }
+                classes.add(klass.asSubclass(baseClass));
             }
-            classes.add(klass.asSubclass(baseClass));
         }
         return classes;
     }
