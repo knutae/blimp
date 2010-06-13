@@ -48,6 +48,11 @@ def build(ctx):
         name='test_classes',
         after='classes',
         shell=False)
+    ctx(rule='${JAR} cf ${TGT} -C ${SRC} .',
+        source='classes',
+        target='blimp.jar',
+        after='classes',
+        shell=False)
     #ctx(rule='${JAVA} -classpath ${RUN_TESTS_CLASSPATH} org.boblycat.blimp.tests.RunTests',
     #    after='test_classes',
     #    always=True,
