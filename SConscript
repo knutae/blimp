@@ -61,14 +61,14 @@ def first_existing(*paths):
 if sys.platform == 'win32':
     # TODO: detect 32/64-bit java VM (or support both somehow)
     swt_jar = 'swt-3.5.1-win32-win32-x86/swt.jar'
-    if not os.path.exists(swt_jar):
-        subprocess.check_call([sys.executable, 'tools/prepare_swt.py'])
 elif sys.platform == 'darwin':
-    #swt_jar = 'swt-3.4-carbon-macosx/swt.jar'
-    swt_jar = 'swt-3.3.2-carbon-macosx/swt.jar'
+    swt_jar = 'swt-3.6.1-cocoa-macosx-x86_64/swt.jar'
 else:
     # Search for a usable swt jar (a bit ugly)
     swt_jar = first_existing('/usr/lib/java/swt-gtk-3.5.jar', '/usr/share/java/swt-gtk-3.4.jar', '/usr/share/java/swt.jar', swt_jar)
+
+if not os.path.exists(swt_jar):
+    subprocess.check_call([sys.executable, 'tools/prepare_swt.py'])
 
 env.Append(JAVACLASSPATH = [ jiu_jar, swt_jar, junit_jar ])
 env.Java(class_dir, 'src', JAVAVERSION='1.6')
