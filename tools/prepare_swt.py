@@ -4,15 +4,14 @@ import os, sys, urllib, zipfile
 
 ECLIPSE_MIRROR = 'http://filemirror.hu/pub/'
 
-def prepare_swt(version, rev, variant, platform, arch):
+def prepare_swt(version, rev, variant, platform):
     keys = {
         'VERSION': version,
         'REV': rev,
         'VARIANT': variant,
         'PLATFORM': platform,
-        'ARCH': arch,
     }
-    dirname = 'swt-%(VERSION)s-%(VARIANT)s-%(PLATFORM)s-%(ARCH)s' % keys
+    dirname = 'swt-%(VERSION)s-%(VARIANT)s-%(PLATFORM)s' % keys
     zipfilename = dirname + '.zip'
     if not os.path.exists(zipfilename):
         url = ECLIPSE_MIRROR + ('eclipse/downloads/drops/R-%(VERSION)s-%(REV)s/' % keys) + zipfilename
@@ -38,5 +37,8 @@ def prepare_swt(version, rev, variant, platform, arch):
 
 if __name__ == '__main__':
     if sys.platform == 'win32':
-        prepare_swt('3.5.1', '200909170800', 'win32', 'win32', 'x86_64')
-        prepare_swt('3.5.1', '200909170800', 'win32', 'win32', 'x86')
+        prepare_swt('3.5.1', '200909170800', 'win32', 'win32-x86_64')
+        prepare_swt('3.5.1', '200909170800', 'win32', 'win32-x86')
+    elif sys.platform == 'darwin':
+        prepare_swt('3.6.1', '201009090800', 'cocoa', 'macosx')
+        prepare_swt('3.6.1', '201009090800', 'cocoa', 'macosx-x86_64')
