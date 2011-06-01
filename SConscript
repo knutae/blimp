@@ -96,6 +96,8 @@ runner_env.Append(BUILDERS = {'RunClass': java_runner})
 swt_runner_env = runner_env.Clone()
 swt_runner_env.Append(JAVACLASSPATH = [swt_jar])
 swt_runner_env.Append(JVMARGS = ['-Xmx1024M', '-Dblimp.dcraw.path=' + str(dcraw[0])])
+if sys.platform == 'darwin':
+    swt_runner_env.Append(JVMARGS = ['-XstartOnFirstThread']) # cocoa requirement
 if os.path.isdir('/usr/lib/jni'):
     swt_runner_env.Append(JVMARGS = ['-Djava.library.path=/usr/lib/jni'])
 run_blimp = swt_runner_env.RunClass('org.boblycat.blimp.gui.swt.MainWindow')
