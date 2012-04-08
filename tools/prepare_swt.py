@@ -2,7 +2,7 @@
 
 import os, sys, urllib, zipfile
 
-ECLIPSE_MIRROR = 'http://filemirror.hu/pub/'
+ECLIPSE_MIRROR = 'http://archive.eclipse.org/'
 
 def prepare_swt(version, rev, variant, platform):
     keys = {
