@@ -3,9 +3,9 @@
 import os, sys
 
 if sys.platform == 'win32':
-    env = Environment(MSVC_VERSION = '9.0', MSVS_ARCH = 'x86')
+    env = Environment(MSVC_VERSION = '10.0Exp', MSVS_ARCH = 'x86', TARGET_ARCH = 'x86')
     #env = Environment()
-    print env['ENV']['PATH']
+    #print env['ENV']
 else:
     env = Environment()
 env.Append(CPPDEFINES = ['NO_JPEG', 'NO_LCMS'])
@@ -24,7 +24,7 @@ def query_windows_sdk_dir():
 
 if sys.platform == 'win32':
     #print 'MSVS:', env['MSVS']
-    print 'ARCH:', env['MSVS_ARCH']
+    #print 'ARCH:', env['MSVS_ARCH']
     #env['MSVS']['MSVS_ARCH'] = 'x86'
     env.Append(CPPDEFINES = ['WIN32', 'W32_GETC_UNLOCKED', 'ftello=ftell', 'fseeko=fseek'])
     env.Append(CCFLAGS = ['/Ox']) # slightly faster than /O2
